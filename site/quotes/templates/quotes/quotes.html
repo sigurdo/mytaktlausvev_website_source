@@ -1,0 +1,15 @@
+{% block content %}
+    <h1>Sitat</h1>
+    {% if quotes %}
+        <ul>
+            {% for quote in quotes %}
+                <li>
+                    <!-- <p><b>{{quote.title}}</b></p> -->
+                    <p>{{quote.text}} - {{quote.timestamp}}</p>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Ingen sitat registert.</p>
+    {% endif %}       
+{% endblock %}
