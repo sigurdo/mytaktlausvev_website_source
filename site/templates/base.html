@@ -5,6 +5,16 @@
 </head>
 <body>
 	<!--TODO-->
-	<p>:)</p>
-	{% block page %}{% endblock %}
+	{% if "login" not in request.path %}
+		{% if user.is_authenticated %}
+			Innlogget som {{user.username}}!
+			<a href="{% url 'logout' %}?next=/">Logg ut</a>
+		{% else %}
+			<p>Du er ikke innlogget.</p>
+			<a href="{% url 'login' %}">Logg inn</a>
+		{% endif %}
+	{% endif %}
+	{% block page %}
+	
+	{% endblock %}
 </body>
