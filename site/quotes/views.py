@@ -1,15 +1,28 @@
 from django.shortcuts import render
 from quotes.models import Quote
 import datetime
+from .forms import QuoteForm
+from django.http import HttpResponseRedirect
 
-def all_quotes(request):
+def quotes(request):
     # lager dummy-sitat til testing
-    # n = Quote(title="Test", text="Test text 123", timestamp=datetime.datetime.now())
-    # n.save()
+    if request.user.is_authenticated and request.method == "POST":
+        form = QuoteForm(request.POST)
+        if form.is_valid():
+            quote = form.save(commit=False)
+            quote.timestamp = datetime.datetime.now()
+            quote.save()
+            return HttpResponseRedirect("/sitat/")
+    elif request.method == "GET":
+        form = QuoteForm()
+    else:
+        return HttpResponseRedirect("/")
+    
     return render(
         request,
         "quotes/quotes.html",
         {
-            "quotes": Quote.objects.all()
+            "quotes": Quote.objects.all(),
+            "form": form
         }
     )

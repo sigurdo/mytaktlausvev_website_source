@@ -12,5 +12,12 @@
         </ul>
     {% else %}
         <p>Ingen sitat registert.</p>
-    {% endif %}       
+    {% endif %}
+    {% if user.is_authenticated %}
+        <form action="{% url 'quotes' %}" method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input value="lagre" type="submit">
+        </form>
+    {% endif %}
 {% endblock %}
