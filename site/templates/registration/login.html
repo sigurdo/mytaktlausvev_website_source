@@ -2,23 +2,23 @@
 
 {% block page %}
 
-	{% if form.errors %}
-		<p>Feil brukernavn og/eller passord.</p>
-	{% endif %}
-  
-	{% if next %}
-		{% if user.is_authenticated %}
-			<p>Kontoen din har ikke tilgang til denne siden.</p>
-		{% else %}
-			<p>Logg inn for å se denne siden.</p>
-		{% endif %}
-	{% endif %}
-  
-	<form method="post" action="{% url 'login' %}">
-		{% csrf_token %}
-		{% load crispy_forms_tags %}
-		{% crispy form %}
-		<input type="hidden" name="next" value="{{next}}" />
-	</form>
-  
+{% if form.errors %}
+<p>Feil brukernavn og/eller passord.</p>
+{% endif %}
+
+{% if next %}
+{% if user.is_authenticated %}
+<p>Kontoen din har ikke tilgang til denne siden.</p>
+{% else %}
+<p>Logg inn for å se denne siden.</p>
+{% endif %}
+{% endif %}
+
+<form method="post" action="{% url 'login' %}">
+	{% csrf_token %}
+	{% load crispy_forms_tags %}
+	{% crispy form %}
+	<input type="hidden" name="next" value="{{next}}" />
+</form>
+
 {% endblock %}

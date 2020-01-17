@@ -5,10 +5,9 @@ from crispy_forms.layout import Submit
 class LoginForm(AuthenticationForm):
     helper = FormHelper()
     helper.form_id = "login_form"
-    helper.form_class = "form"
     helper.form_method = "post"
     helper.form_action = "login"
     helper.form_class = "form-horizontal"
     helper.label_class = "col-lg-12 form-label"
-    helper.field_class = "col-lg-6 form-field"
+    helper.field_class = "col-lg-8 form-field"
     helper.add_input(Submit("submit", "Logg inn"))

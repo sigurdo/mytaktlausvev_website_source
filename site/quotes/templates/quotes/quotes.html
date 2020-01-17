@@ -1,23 +1,23 @@
 {% extends "./base.html" %}
 
 {% block content %}
-    {% if quotes %}
-        <ul>
-            {% for quote in quotes %}
-                <li>
-                    <!-- <p><b>{{quote.title}}</b></p> -->
-                    <p>{{quote.text}} - {{quote.timestamp}}</p>
-                </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>Ingen sitat registert.</p>
-    {% endif %}
-    {% if user.is_authenticated %}
-        <form action="{% url 'quotes' %}" method="POST">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <input value="lagre" type="submit">
-        </form>
-    {% endif %}
+{% if quotes %}
+<ul>
+    {% for quote in quotes %}
+    <li>
+        <!-- <p><b>{{quote.title}}</b></p> -->
+        <p>{{quote.text}} - {{quote.timestamp}}</p>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>Ingen sitat registert.</p>
+{% endif %}
+{% if user.is_authenticated %}
+<form action="{% url 'quotes' %}" method="POST">
+    {% csrf_token %}
+    {% load crispy_forms_tags %}
+    {% crispy form %}
+</form>
+{% endif %}
 {% endblock %}
