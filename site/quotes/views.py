@@ -29,7 +29,6 @@ def quotes(request):
         request,
         "quotes/quotes.html",
         {
-            "quotes": page,
-            "form": form
+            "quotes": page
         }
     )
