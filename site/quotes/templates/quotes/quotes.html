@@ -1,23 +1,31 @@
 {% extends "./base.html" %}
+{% load show_quote %}
 
 {% block content %}
 {% if quotes %}
-<ul>
-    {% for quote in quotes %}
-    <li>
-        <!-- <p><b>{{quote.title}}</b></p> -->
-        <p>{{quote.text}} - {{quote.timestamp}}</p>
-    </li>
-    {% endfor %}
-</ul>
+
+{% for q in quotes %}
+<div class="row">
+    <div class="col-lg-6">
+        {% show_quote q %}
+    </div>
+</div>
+{% endfor %}
+
+<div class="row">
+    <div class="col-lg-6">
+        <p>
+            {% if quotes.has_previous %}
+                <a class="float-left" href="?page={{quotes.previous_page_number}}">Forrige</a>
+            {% endif %}
+
+            {% if quotes.has_next %}
+                <a class="float-right" href="?page={{quotes.next_page_number}}">Neste</a>
+            {% endif %}
+        </p>
+    </div>
+</div>
 {% else %}
 <p>Ingen sitat registert.</p>
-{% endif %}
-{% if user.is_authenticated %}
-<form action="{% url 'quotes' %}" method="POST">
-    {% csrf_token %}
-    {% load crispy_forms_tags %}
-    {% crispy form %}
-</form>
 {% endif %}
 {% endblock %}

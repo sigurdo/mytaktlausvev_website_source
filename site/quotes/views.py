@@ -3,10 +3,13 @@ from quotes.models import Quote
 import datetime
 from .forms import QuoteForm
 from django.http import HttpResponseRedirect
+from django.core.paginator import Paginator
 
-def quotes(request):
-    # lager dummy-sitat til testing
-    if request.user.is_authenticated and request.method == "POST":
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def new_quote(request):
+    if request.method == "POST":
         form = QuoteForm(request.POST)
         if form.is_valid():
             quote = form.save(commit=False)
@@ -15,14 +18,18 @@ def quotes(request):
             return HttpResponseRedirect("/sitat/")
     elif request.method == "GET":
         form = QuoteForm()
-    else:
-        return HttpResponseRedirect("/")
-    
+        return render(request, "quotes/new_quote.html", {"form": form})
+
+
+def quotes(request):
+    paginator = Paginator(Quote.objects.all(), 2)
+    page_number = request.GET.get("page")
+    page = paginator.get_page(page_number)
     return render(
         request,
         "quotes/quotes.html",
         {
-            "quotes": Quote.objects.all(),
+            "quotes": page,
             "form": form
         }
     )

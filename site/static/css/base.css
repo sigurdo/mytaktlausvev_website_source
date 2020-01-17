@@ -1,6 +1,10 @@
 body { 
     /* overlappende navbar */
     padding-top: 90px;
+    background-color: white;
+}
+
+.container {
 }
 
 .navbar-logo {
