@@ -2,43 +2,43 @@
 {% load show_quote %}
 
 {% block page %}
-	<div class="row">
-		<div class="col-md">
-			<div class="card p-3 mb-5 shadow-sm">
-				<div class="card-body">
-					<h3>This is some text within a card body.</h3>
-				</div>
-			  </div>
-		</div>
-		<div class="col-md">
-			<div class="card p-3 mb-5 shadow-sm">
-				<div class="card-body">
-					This is some text within a card body.
-				</div>
+<div class="row">
+	<div class="col-md">
+		<div class="card p-3 mb-5 shadow-sm">
+			<div class="card-body">
+				<h3>This is some text within a card body.</h3>
 			</div>
 		</div>
 	</div>
-	<div class="row">
-		<div class="col-md">
-			<div class="card p-3 mb-5 shadow-sm">
-				<div class="card-body">
-					This is some text within a card body.
-				</div>
+	<div class="col-md">
+		<div class="card p-3 mb-5 shadow-sm">
+			<div class="card-body">
+				This is some text within a card body.
 			</div>
 		</div>
-		<div class="col-md">
-			<div class="card p-3 mb-5 shadow-sm">
-				<div class="card-body">
-					<h4>Gullkorn</h4>
-					{% for q in quotes %}
-					<div class="row">
-						<div class="col-lg-6">
-							{% show_quote q %}
-						</div>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md">
+		<div class="card p-3 mb-5 shadow-sm">
+			<div class="card-body">
+				This is some text within a card body.
+			</div>
+		</div>
+	</div>
+	<div class="col-md">
+		<div class="card p-3 mb-5 shadow-sm">
+			<div class="card-body">
+				<h4>Gullkorn</h4>
+				{% for q in quotes %}
+				<div class="row">
+					<div class="col-lg-6">
+						{% show_quote q %}
 					</div>
-					{% endfor %}
 				</div>
+				{% endfor %}
 			</div>
 		</div>
 	</div>
+</div>
 {% endblock %}

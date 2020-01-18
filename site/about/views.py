@@ -1,8 +1,10 @@
+"""Views for the 'about'-app"""
 import random
 from django.shortcuts import render
-from django.http import HttpResponse
+
 
 def about_us(request):
+    """Main view for the "about-us"-page"""
     return render(
         request,
         "about/about_us.html",

@@ -1,5 +1,7 @@
+"""Configuration-file for the 'about'-app"""
 from django.apps import AppConfig
 
 
 class AboutConfig(AppConfig):
-    name = 'about'
+    """Configuration-class for the 'about'-app"""
+    name = "about"

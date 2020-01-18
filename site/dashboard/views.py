@@ -1,10 +1,12 @@
+"""Views for the 'dashboard'-module"""
 import random
 
 from django.shortcuts import render
 from quotes.models import Quote
-# Create your views here.
+
 
 def dashboard(request):
+    """View for the main dashboard"""
     return render(
         request,
         "dashboard/dashboard.html",

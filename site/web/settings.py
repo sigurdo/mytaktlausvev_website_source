@@ -81,7 +81,7 @@ WSGI_APPLICATION = 'web.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql', 
+        'ENGINE': 'django.db.backends.mysql',
         'OPTIONS': {
             # lag denne selv med infoen som ble brukt til å sette opp MySQL
             'read_default_file': "web/settings.cnf"

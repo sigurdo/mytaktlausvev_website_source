@@ -1,14 +1,18 @@
-from django.shortcuts import render
-from quotes.models import Quote
+"""Views for quotes-app"""
 import datetime
-from .forms import QuoteForm
+
+from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.core.paginator import Paginator
-
 from django.contrib.auth.decorators import login_required
+
+from quotes.models import Quote
+from .forms import QuoteForm
+
 
 @login_required
 def new_quote(request):
+    """View-function for new-quote-form"""
     if request.method == "POST":
         form = QuoteForm(request.POST)
         if form.is_valid():
@@ -22,6 +26,7 @@ def new_quote(request):
 
 
 def quotes(request):
+    """View-function for displaying all quotes"""
     paginator = Paginator(Quote.objects.all(), 2)
     page_number = request.GET.get("page")
     page = paginator.get_page(page_number)

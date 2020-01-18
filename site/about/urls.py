@@ -1,3 +1,4 @@
+"""Urls for the 'about'-app"""
 from django.urls import path
 from about import views
 
