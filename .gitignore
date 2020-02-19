@@ -28,6 +28,8 @@ Temporary Items
 
 
 .vscode
+*.sublime-workspace
+*.sublime-project
 
 # Python
 __pycache__/
