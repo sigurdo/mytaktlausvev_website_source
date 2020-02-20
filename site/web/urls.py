@@ -28,6 +28,7 @@ urlpatterns = [
     path("kommentarar/", include("comments.urls")),
     path("kontakt/", include("contact.urls")),
     path("skiltmerke/", include("buttons.urls")),
+    path("julekalender/", include("julekalender.urls")),
     path(
         "buttons/", RedirectView.as_view(pattern_name="buttons:buttons", permanent=True)
     ),
