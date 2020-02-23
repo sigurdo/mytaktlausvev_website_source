@@ -5,7 +5,7 @@ from julekalender.models import Julekalender
 from julekalender.forms import NewJulekalenderForm
 
 # Create your views here.
-def julekalender(request):
+def julekalenders(request):
     """View function for displaying created julekalenders"""
 
     calendars = Julekalender.objects.all()
