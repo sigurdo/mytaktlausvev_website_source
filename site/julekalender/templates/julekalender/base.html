@@ -9,4 +9,20 @@
 
 <body>
   <h1>Julekalender</h1>
+
+  {% if calendars %}
+  {% for calendar in calendars %}
+    <div> 
+        {{calendar.year}}
+    </div>
+  {% endfor %}
+  {% else %}
+    <div>No calendars created.</div>
+  {% endif %}
+
+  <form action="{% url 'newJulekalender' %}" method="POST">
+    {% csrf_token %}
+    {% load crispy_forms_tags %}
+    {% crispy form %}
+  </form>
 </body>
