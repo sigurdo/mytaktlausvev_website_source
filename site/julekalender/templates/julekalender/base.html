@@ -22,7 +22,7 @@
 
   <form action="{% url 'newJulekalender' %}" method="POST">
     {% csrf_token %}
-    {% load crispy_forms_tags %}
-    {% crispy form %}
+    {{ form }}
+    <input type="submit" value="Ny julekalender">
   </form>
 </body>
