@@ -5,4 +5,5 @@ from . import views
 urlpatterns = [
     path("", views.julekalenders, name="julekalenders"),
     path("new", views.newJulekalender, name="newJulekalender"),
+    path("<int:year>", views.julekalender),
 ]

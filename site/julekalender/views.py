@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseRedirect
 
 from julekalender.models import Julekalender
@@ -25,3 +25,9 @@ def newJulekalender(request):
         julekalender.save()
     return HttpResponseRedirect("/julekalender")
 
+
+def julekalender(request, year):
+    """"View function for displaying the windows of a julekalender"""
+
+    calendar = get_object_or_404(Julekalender, year=year)
+    return render(request, "julekalender/julekalender.html", {"calendar": calendar},)
