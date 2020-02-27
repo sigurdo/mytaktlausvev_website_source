@@ -13,7 +13,7 @@
   {% if calendars %}
   {% for calendar in calendars %}
     <div> 
-        {{calendar.year}}
+        <a href="{% url 'julekalender' calendar.year %}">{{calendar.year}}</a>
     </div>
   {% endfor %}
   {% else %}
