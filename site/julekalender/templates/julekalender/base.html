@@ -20,7 +20,7 @@
     <div>No calendars created.</div>
   {% endif %}
 
-  <form action="{% url 'newJulekalender' %}" method="POST">
+  <form action="{% url 'julekalenders' %}" method="POST">
     {% csrf_token %}
     {{ form }}
     <input type="submit" value="Ny julekalender">
