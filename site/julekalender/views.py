@@ -1,10 +1,12 @@
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseRedirect, JsonResponse
+from django.contrib.auth.decorators import login_required
 
 from julekalender.models import Julekalender, Window
 from julekalender.forms import NewJulekalenderForm, NewWindowForm
 
-# Create your views here.
+
+@login_required
 def julekalenders(request):
     """View function for displaying created julekalenders"""
 
@@ -22,6 +24,7 @@ def julekalenders(request):
     )
 
 
+@login_required
 def julekalender(request, year):
     """"View function for displaying the windows of a julekalender"""
 
@@ -33,12 +36,19 @@ def julekalender(request, year):
     )
 
 
+@login_required
 def window(request, year, windowNumber):
     """View function for returning the content of and creating windows in a julekalender"""
 
     if request.method == "GET":
         window = get_object_or_404(Window, calendar=year, windowNumber=windowNumber)
-        return JsonResponse({"title": window.title, "post": window.post})
+        return JsonResponse(
+            {
+                "title": window.title,
+                "post": window.post,
+                "author": window.author.username,
+            }
+        )
 
     form = NewWindowForm(request.POST)
     if (
@@ -50,6 +60,7 @@ def window(request, year, windowNumber):
         window = Window(
             title=form.data["title"],
             post=form.data["post"],
+            author=request.user,
             calendar=calendar,
             windowNumber=windowNumber,
         )

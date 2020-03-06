@@ -1,4 +1,10 @@
 from django.db import models
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import User
+
+
+def getDefaultDeletedUser():
+    return get_user_model().objects.get_or_create(username="deleted")[0]
 
 
 class Julekalender(models.Model):
@@ -15,6 +21,7 @@ class Window(models.Model):
 
     title = models.CharField(max_length=255)
     post = models.TextField()
+    author = models.ForeignKey(User, on_delete=models.SET(getDefaultDeletedUser))
     calendar = models.ForeignKey(Julekalender, on_delete=models.CASCADE)
     windowNumber = models.IntegerField()
 
