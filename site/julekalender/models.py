@@ -1,13 +1,6 @@
 from django.db import models
 
 
-class Window(models.Model):
-    """Model representing a window in a julekalender"""
-
-    title = models.CharField(max_length=255)
-    post = models.TextField()
-
-
 class Julekalender(models.Model):
     """Model representing a year's julekalender"""
 
@@ -17,16 +10,20 @@ class Julekalender(models.Model):
         ordering = ["-year"]
 
 
-class Windows(models.Model):
-    """Model holding the relationship between a year's julekalender and its windows"""
+class Window(models.Model):
+    """Model representing a window in a julekalender"""
 
-    year = models.ForeignKey(Julekalender, on_delete=models.CASCADE)
-    window = models.ForeignKey(Window, on_delete=models.CASCADE)
+    title = models.CharField(max_length=255)
+    post = models.TextField()
+    calendar = models.ForeignKey(Julekalender, on_delete=models.CASCADE)
     windowNumber = models.IntegerField()
+
+    def windowExists(year, number):
+        return Window.objects.filter(calendar=year, windowNumber=number).exists()
 
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=["year", "windowNumber"], name="uniqueWindow"
+                fields=["calendar", "windowNumber"], name="uniqueWindow"
             )
         ]
