@@ -1,13 +1,6 @@
-<!DOCTYPE html>
-<html lang="no-nb">
+{% extends "./base.html" %}
 
-<head>
-	<title>Julekalender</title>
-  {% load static %}
-  <link rel="stylesheet" type="text/css" href="{% static 'css/julekalender/base.css' %}">
-</head>
-
-<body>
+{% block page %}
   <h1>Julekalender {{calendar.year}}</h1>
 
   {% for i in calendarRange %}
@@ -18,5 +11,4 @@
       <input type="submit" value="Legg ut">
     </form>  
   {% endfor %}
-
-</body>
+{% endblock page %}

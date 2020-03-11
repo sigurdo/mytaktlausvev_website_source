@@ -8,21 +8,11 @@
 </head>
 
 <body>
-  <h1>Julekalender</h1>
+  <nav>
+    Innlogget som {{user.username}}!
+    <a href="{% url 'logout' %}?next=/">Logg ut</a>
+  </nav>
 
-  {% if calendars %}
-  {% for calendar in calendars %}
-    <div> 
-        <a href="{% url 'julekalender' calendar.year %}">{{calendar.year}}</a>
-    </div>
-  {% endfor %}
-  {% else %}
-    <div>No calendars created.</div>
-  {% endif %}
-
-  <form action="{% url 'julekalenders' %}" method="POST">
-    {% csrf_token %}
-    {{ form }}
-    <input type="submit" value="Ny julekalender">
-  </form>
+  {% block page %}
+  {% endblock %}
 </body>

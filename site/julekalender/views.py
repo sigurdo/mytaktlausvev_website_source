@@ -19,7 +19,7 @@ def julekalenders(request):
     calendars = Julekalender.objects.all()
     return render(
         request,
-        "julekalender/base.html",
+        "julekalender/calendars.html",
         {"calendars": calendars, "form": NewJulekalenderForm},
     )
 
@@ -31,7 +31,7 @@ def julekalender(request, year):
     calendar = get_object_or_404(Julekalender, year=year)
     return render(
         request,
-        "julekalender/julekalender.html",
+        "julekalender/calendar.html",
         {"calendar": calendar, "form": NewWindowForm, "calendarRange": range(1, 25),},
     )
 
