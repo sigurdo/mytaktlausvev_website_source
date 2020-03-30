@@ -1,3 +1,5 @@
+>anbefaler å lese README.md, trur den skal være forståelig og brukbar nå, i alle fall med debian-basert Linux
+
 Her er en liste over alt som gikk gærent da jeg (Sigurd) satte opp skikkelig database:
 
 # MySQL
