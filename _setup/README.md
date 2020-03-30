@@ -16,41 +16,41 @@ source venv/bin/activate
 ## Oppsett av postgresql server (debian)
 1. last ned postgressql og sånt:
 
->`sudo apt-get update`
+`sudo apt-get update`
 
->`sudo apt-get install python-pip python-dev libpq-dev postgresql postgresql-contrib`
+`sudo apt-get install python-pip python-dev libpq-dev postgresql postgresql-contrib`
 
 2. Det ble laget en egen postgres-bruker under installasjonen, logg inn der 
 
->`sudo su - postgres`
+`sudo su - postgres`
 
 og gå inn i databasesesjonen
 
->`psql`
+`psql`
 
 3. lag database og bruker
 
->`CREATE DATABASE taktlaus_db;`
+`CREATE DATABASE taktlaus_db;`
 
->`CREATE USER taktlaus WITH PASSWORD 'taktlaus';`
+`CREATE USER taktlaus WITH PASSWORD 'taktlaus';`
 
 så endre til utf8 
 
->`ALTER ROLE taktlaus SET client_encoding TO 'utf8';`
+`ALTER ROLE taktlaus SET client_encoding TO 'utf8';`
 
->`ALTER ROLE taktlaus SET default_transaction_isolation TO 'read committed';`
+`ALTER ROLE taktlaus SET default_transaction_isolation TO 'read committed';`
 
->`ALTER ROLE taktlaus SET timezone TO 'UTC';`
+`ALTER ROLE taktlaus SET timezone TO 'UTC';`
 
 og gi alle rettigheter til brukeren 
 
->`GRANT ALL PRIVILEGES ON DATABASE taktlaus_db TO taktlaus;`
+`GRANT ALL PRIVILEGES ON DATABASE taktlaus_db TO taktlaus;`
 
 gå ut av brukeren med 
 
->`\q`
+`\q`
 
->`exit`
+`exit`
 
 
 4. installér requirements.txt hvis du ikke har gjort det (se lenger oppe)
