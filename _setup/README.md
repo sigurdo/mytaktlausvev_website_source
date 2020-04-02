@@ -20,7 +20,7 @@ source venv/bin/activate
 
 `sudo apt-get install python3-pip python3-dev libpq-dev postgresql postgresql-contrib`
 
-eller windows: [https://www.postgresql.org/download/windows/](postgres.org/download)
+eller windows: [postgres.org/download](https://www.postgresql.org/download/windows/)
 
 2. Det ble laget en egen postgres-bruker under installasjonen, logg inn der 
 
