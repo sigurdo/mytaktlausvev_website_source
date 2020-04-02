@@ -13,12 +13,14 @@ source venv/bin/activate
 
 2. Installer pakkene spesifisert i requirements.txt (ved å kjøre `pip install -r requirements.txt`)
 
-## Oppsett av postgresql server (debian)
+## Oppsett av postgresql server
 1. last ned postgressql og sånt:
 
 `sudo apt-get update`
 
-`sudo apt-get install python-pip python-dev libpq-dev postgresql postgresql-contrib`
+`sudo apt-get install python3-pip python3-dev libpq-dev postgresql postgresql-contrib`
+
+eller windows: [https://www.postgresql.org/download/windows/](postgres.org/download)
 
 2. Det ble laget en egen postgres-bruker under installasjonen, logg inn der 
 
