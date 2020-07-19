@@ -4,6 +4,8 @@ import numpy as np
 import pdf2image
 import time
 from imutils.object_detection import non_max_suppression
+import pytesseract
+from PIL import Image
 
 # print("Hello sheet music")
 
@@ -109,6 +111,7 @@ def textDetector(imagePath):
 	# apply non-maxima suppression to suppress weak, overlapping bounding
 	# boxes
 	boxes = non_max_suppression(np.array(rects), probs=confidences)
+	resizedBoxes = []
 	# loop over the bounding boxes
 	for (startX, startY, endX, endY) in boxes:
 		# scale the bounding box coordinates based on the respective
@@ -117,12 +120,55 @@ def textDetector(imagePath):
 		startY = int(startY * rH)
 		endX = int(endX * rW)
 		endY = int(endY * rH)
+		resizedBoxes.append((startX, startY, endX, endY))
 		# draw the bounding box on the image
 		cv2.rectangle(orig, (startX, startY), (endX, endY), (0, 255, 0), 2)
 	# show the output image
 	cv2.imshow("Text Detection", orig)
 	cv2.waitKey(0)
+	return resizedBoxes
+
+def textRecognizer(imagePath):
+	img = cv2.imread(imagePath)
+	"""
+	# Prøver å øke kontrast:
+	alpha = 4
+	beta = -700
+	for y in range(img.shape[0]):
+		for x in range(img.shape[1]):
+			for c in range(img.shape[2]):
+				img[y, x, c] = np.clip(alpha * img[y, x, c] + beta, 0, 255)
+	"""
+	imgWithBoxes = img.copy()
+	res = pytesseract.image_to_data(img, output_type=pytesseract.Output.DICT)
+	filtered = {}
+	for key in res:
+		filtered[key] = []
+	for i in range(len(res["text"])):
+		if int(res["conf"][i]) > 10 and res["text"][i].strip(" ") != "":
+			for key in res:
+				filtered[key].append(res[key][i])
+			x1 = res["left"][i]
+			y1 = res["top"][i]
+			x2 = x1 + res["width"][i]
+			y2 = y1 + res["height"][i]
+			print(x1, y1, x2, y2)
+			cv2.rectangle(imgWithBoxes, (x1, y1), (x2, y2), (0, 0, 255), thickness=2) # (, res["top"]), (res["left"] + , res["top"] + res["width"]), (0, 0, 255))
+	for key in filtered:
+		print("{:>10}".format(key), end=": ")
+		for i in range(len(filtered[key])):
+			print("{:>10}".format(filtered[key][i]), end=" ")
+		print()
+	print(pytesseract.image_to_string(img))
+	cv2.imshow("Text recognition", imgWithBoxes)
+	cv2.waitKey(0)
+
 
 sheetName = "Alle 12th street rag"
+sheetName = "76_Trombones - Alle, minus trompet"
+sheetName = "James Bond Medley - full big band - betta_0"
+sheetName = "Alle A string of pearls"
 imagePaths = generateImagesFromPdf(f"sheetmusicUploader/input_pdfs/{sheetName}.pdf", f"sheetmusicUploader/generated_images/{sheetName}")
-textDetector(imagePaths[13])
+boundingBoxes = textDetector(imagePaths[0])
+# print(boundingBoxes)
+textRecognizer(imagePaths[0])
