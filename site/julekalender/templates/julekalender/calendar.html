@@ -3,6 +3,13 @@
 {% block page %}
   <h1>Julekalender {{calendar.year}}</h1>
 
+  {% for window in windows %}
+    <section>
+      <h2>{{ window.title }}</h2>
+      <div>{{ window.post }}</div>
+    </section>
+  {% endfor %}
+
   {% for i in calendarRange %}
     <h2>#{{i}}</h2>
     <form action="{% url 'julekalenderWindow' calendar.year i %}" method="POST">

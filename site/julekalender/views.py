@@ -32,7 +32,12 @@ def julekalender(request, year):
     return render(
         request,
         "julekalender/calendar.html",
-        {"calendar": calendar, "form": NewWindowForm, "calendarRange": range(1, 25),},
+        {
+            "calendar": calendar,
+            "form": NewWindowForm,
+            "calendarRange": range(1, 25),
+            "windows": Window.objects.filter(calendar=year).order_by("windowNumber"),
+        },
     )
 
 
