@@ -10,12 +10,9 @@
     </section>
   {% endfor %}
 
-  {% for i in calendarRange %}
-    <h2>#{{i}}</h2>
-    <form action="{% url 'julekalenderWindow' calendar.year i %}" method="POST">
-      {% csrf_token %}
-      {{ form }}
-      <input type="submit" value="Legg ut">
-    </form>  
-  {% endfor %}
+  <form action="{% url 'julekalender' calendar.year %}" method="POST">
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" value="Legg ut">
+  </form>
 {% endblock page %}

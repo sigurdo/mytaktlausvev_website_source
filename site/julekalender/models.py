@@ -23,14 +23,12 @@ class Window(models.Model):
     post = models.TextField()
     author = models.ForeignKey(User, on_delete=models.SET(getDefaultDeletedUser))
     calendar = models.ForeignKey(Julekalender, on_delete=models.CASCADE)
-    windowNumber = models.IntegerField()
+    index = models.IntegerField()
 
-    def windowExists(year, number):
-        return Window.objects.filter(calendar=year, windowNumber=number).exists()
+    def windowExists(year, index):
+        return Window.objects.filter(calendar=year, index=index).exists()
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(
-                fields=["calendar", "windowNumber"], name="uniqueWindow"
-            )
+            models.UniqueConstraint(fields=["calendar", "index"], name="uniqueWindow")
         ]

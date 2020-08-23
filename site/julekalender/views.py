@@ -29,6 +29,23 @@ def julekalender(request, year):
     """"View function for displaying the windows of a julekalender"""
 
     calendar = get_object_or_404(Julekalender, year=year)
+
+    if request.method == "POST":
+        form = NewWindowForm(request.POST)
+        if (
+            form.is_valid()
+            and not Window.windowExists(year, form.cleaned_data["index"])
+            and 1 <= form.cleaned_data["index"] <= 24
+        ):
+            window = Window(
+                title=form.cleaned_data["title"],
+                post=form.cleaned_data["post"],
+                author=request.user,
+                calendar=calendar,
+                index=form.cleaned_data["index"],
+            )
+            window.save()
+
     return render(
         request,
         "julekalender/calendar.html",
@@ -36,39 +53,6 @@ def julekalender(request, year):
             "calendar": calendar,
             "form": NewWindowForm,
             "calendarRange": range(1, 25),
-            "windows": Window.objects.filter(calendar=year).order_by("windowNumber"),
+            "windows": Window.objects.filter(calendar=year).order_by("index"),
         },
     )
-
-
-@login_required
-def window(request, year, windowNumber):
-    """View function for returning the content of and creating windows in a julekalender"""
-
-    if request.method == "GET":
-        window = get_object_or_404(Window, calendar=year, windowNumber=windowNumber)
-        return JsonResponse(
-            {
-                "title": window.title,
-                "post": window.post,
-                "author": window.author.username,
-            }
-        )
-
-    form = NewWindowForm(request.POST)
-    if (
-        form.is_valid()
-        and not Window.windowExists(year, windowNumber)
-        and 1 <= windowNumber <= 24
-    ):
-        calendar = get_object_or_404(Julekalender, year=year)
-        window = Window(
-            title=form.data["title"],
-            post=form.data["post"],
-            author=request.user,
-            calendar=calendar,
-            windowNumber=windowNumber,
-        )
-        window.save()
-    return HttpResponseRedirect(f"/julekalender/{year}")
-
