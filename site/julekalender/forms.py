@@ -17,7 +17,9 @@ class NewWindowForm(forms.ModelForm):
 
     title = forms.CharField(label="Tittel", max_length=255)
     post = forms.CharField(label="Post", widget=forms.Textarea)
-    index = forms.IntegerField(label="Lukenummer", min_value=1, max_value=24)
+    index = forms.IntegerField(
+        label="Lukenummer", min_value=1, max_value=24, widget=forms.HiddenInput()
+    )
 
     class Meta:
         model = Window
