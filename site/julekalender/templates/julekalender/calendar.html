@@ -4,40 +4,43 @@
   <h1>Julekalender {{calendar.year}}</h1>
 
   {% for window in windows %}
-    <section>
-      <h2>{{ window.title }}</h2>
-      <div>{{ window.post }}</div>
-    </section>
-  {% endfor %}
+    <button
+      data-toggle="modal"
+      data-target="#window{{ forloop.counter }}"
+    >
+      {{ forloop.counter }}
+    </button>
 
-  {% for i in calendarRange %}
-    <button data-toggle="modal" data-target="#newWindow" data-index="{{ i }}">{{ i }}</button>
-  {% endfor %}
+    <div id="window{{ forloop.counter }}" class="modal fade" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered">
+        <section class="modal-content">
+          <div class="modal-header">
+            <h2 class="modal-title">
+              {% if window %}
+                {{ window.title }}
+              {% else %}
+                Ny luke
+              {% endif %}
+            </h2>
 
-  <div id="newWindow" class="modal fade" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-      <section class="modal-content">
-        <div class="modal-header">
-          <h2 class="modal-title">Ny luke</h2>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
 
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-
-        <div class="modal-body">
-          <form action="{% url 'julekalender' calendar.year %}" method="POST">
-            {% csrf_token %}
-            {{ form }}
-            <input type="submit" value="Legg ut">
-          </form>
-        </div>
-      </section>
+          <div class="modal-body">
+            {% if window %}
+              {{ window.post }}
+            {% else %}
+              <form action="{% url 'julekalenderWindow' calendar.year forloop.counter %}" method="POST">
+                {% csrf_token %}
+                {{ form }}
+                <input type="submit" value="Legg ut">
+              </form>
+            {% endif %}
+          </div>
+        </section>
+      </div>
     </div>
-  </div>
+  {% endfor %}
 {% endblock page %}
-
-{% block js %}
-  {% load static %}
-  <script src="{% static "julekalender/julekalender.js" %}"></script>
-{% endblock js %}
