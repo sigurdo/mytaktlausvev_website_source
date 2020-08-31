@@ -17,6 +17,24 @@ body {
   grid-template-columns: repeat(6, 120px);
   grid-gap: 25px;
 }
+@media only screen and (max-width: 920px) {
+  .windows {
+    grid-template-rows: repeat(6, 120px);
+    grid-template-columns: repeat(4, 120px);    
+  }
+}
+@media only screen and (max-width: 625px) {
+  .windows {
+    grid-template-rows: repeat(8, 120px);
+    grid-template-columns: repeat(3, 120px);    
+  }
+}
+@media only screen and (max-width: 480px) {
+  .windows {
+    grid-template-rows: repeat(12, 120px);
+    grid-template-columns: repeat(2, 120px);    
+  }
+}
 
 .window {
   background-color: white;
