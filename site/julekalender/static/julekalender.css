@@ -20,19 +20,19 @@ body {
 @media only screen and (max-width: 920px) {
   .windows {
     grid-template-rows: repeat(6, 120px);
-    grid-template-columns: repeat(4, 120px);    
+    grid-template-columns: repeat(4, 120px);
   }
 }
 @media only screen and (max-width: 625px) {
   .windows {
     grid-template-rows: repeat(8, 120px);
-    grid-template-columns: repeat(3, 120px);    
+    grid-template-columns: repeat(3, 120px);
   }
 }
 @media only screen and (max-width: 480px) {
   .windows {
     grid-template-rows: repeat(12, 120px);
-    grid-template-columns: repeat(2, 120px);    
+    grid-template-columns: repeat(2, 120px);
   }
 }
 
@@ -49,12 +49,11 @@ body {
   color: white;
   font-size: 56px;
   box-shadow: 0 15px 15px rgba(64, 93, 50, 0.03),
-      5px 10px 15px rgba(0, 0, 0, 0.1);
+    5px 10px 15px rgba(0, 0, 0, 0.1);
   transition: transform 0.7s ease;
   transform-origin: right;
 }
 .window > button:hover,
-.window > button:focus
-{
+.window > button:focus {
   transform: perspective(1000px) rotate3d(0, 1, 0, 27deg);
 }
