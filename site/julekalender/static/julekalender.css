@@ -53,8 +53,7 @@ body {
   transition: transform 0.7s ease;
   transform-origin: right;
 }
-.window > button:hover,
-.window > button:focus {
+.window > button:hover {
   transform: perspective(1000px) rotate3d(0, 1, 0, 27deg);
 }
 .window.opened > button {
