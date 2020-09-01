@@ -50,3 +50,8 @@
     </div>
   </div>
 {% endblock page %}
+
+{% block js %}
+  {% load static %}
+  <script src="{% static 'julekalender/julekalender.js' %}"></script>
+{% endblock js %}

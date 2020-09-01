@@ -57,3 +57,6 @@ body {
 .window > button:focus {
   transform: perspective(1000px) rotate3d(0, 1, 0, 27deg);
 }
+.window.opened > button {
+  transform: perspective(1000px) rotate3d(0, 1, 0, 140deg);
+}
