@@ -84,8 +84,8 @@ body {
   height: 9px;
   position: fixed;
   top: 0;
-  background: url("/static/julekalender/snowflake.svg");
-  background-size: cover;
+  color: white;
+  font-size: 10px;
   animation-duration: 10s, 1.5s;
   animation-name: topToBottom, wiggle;
   animation-iteration-count: infinite;
