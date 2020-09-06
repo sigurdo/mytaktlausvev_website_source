@@ -6,7 +6,7 @@
 
     <div class="windows">
       {% for window in windows %}
-        <div class="window">
+        <div class="window {% if window %}written{% endif %}">
           <button
             data-toggle="modal"
             data-target="#window{{ forloop.counter }}"
