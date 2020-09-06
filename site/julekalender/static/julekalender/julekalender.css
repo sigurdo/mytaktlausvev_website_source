@@ -2,6 +2,13 @@ body {
   background: url("/static/julekalender/nightsky.png");
   background-size: cover;
 }
+@media only screen and (max-width: 600px) {
+  body {
+    background: no-repeat url("/static/julekalender/nightskymobilecrop.png"),
+      black;
+    background-position: top center;
+  }
+}
 
 .calendar {
   display: flex;
