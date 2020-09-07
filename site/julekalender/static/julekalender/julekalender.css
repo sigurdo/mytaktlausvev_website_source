@@ -12,11 +12,13 @@ body {
 }
 
 .calendar {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  justify-items: center;
+  min-height: 100vh;
 }
 .calendar-title {
-  margin-bottom: 1.5rem;
+  align-self: end;
+  margin: 1.5rem 0;
   text-align: center;
   color: #fffe;
   font-family: "Dancing Script", var(--font-family-sans-serif);
@@ -30,10 +32,10 @@ body {
 
 .windows {
   display: grid;
-  margin: auto;
   grid-template-rows: repeat(4, 120px);
   grid-template-columns: repeat(6, 120px);
   grid-gap: 25px;
+  margin-bottom: 1.5rem;
 }
 @media only screen and (max-width: 920px) {
   .windows {
