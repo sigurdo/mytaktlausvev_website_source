@@ -2,6 +2,7 @@ body {
   background: url("/static/julekalender/nightsky.png");
   background-size: cover;
   background-position: top center;
+  padding-top: 0;
 }
 @media only screen and (max-width: 600px) {
   body {

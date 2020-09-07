@@ -22,11 +22,6 @@
   </head>
 
   <body>
-    <nav>
-      Innlogget som {{user.username}}!
-      <a href="{% url 'logout' %}?next=/">Logg ut</a>
-    </nav>
-
     {% block page %} {% endblock %}
 
     <script
