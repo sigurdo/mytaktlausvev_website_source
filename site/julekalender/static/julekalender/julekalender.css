@@ -1,13 +1,13 @@
 body {
-  background: url("/static/julekalender/nightsky.png");
+  padding-top: 0;
+  background-image: url("/static/julekalender/nightsky.png");
   background-size: cover;
   background-position: top center;
-  padding-top: 0;
+  background-attachment: fixed;
 }
 @media only screen and (max-width: 600px) {
   body {
-    background: no-repeat url("/static/julekalender/nightskymobilecrop.png"),
-      black;
+    background-image: url("/static/julekalender/nightskymobilecrop.png");
   }
 }
 
@@ -83,6 +83,10 @@ body {
 }
 .window.written > button {
   background-color: #5d4f8a;
+}
+
+.modal-content {
+  background-color: #fefefe;
 }
 
 @keyframes topToBottom {
