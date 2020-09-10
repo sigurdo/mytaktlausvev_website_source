@@ -52,13 +52,6 @@
     {% comment %} Extra div required to center the calendar windows {% endcomment %}
     <div></div>
   </div>
-
-  <div class="snowflakes" aria-hidden="true">
-    {% load get_range %}
-    {% for i in 14|get_range %}
-      <div class="snowflake">❆</div>
-    {% endfor %}
-  </div>
 {% endblock page %}
 
 {% block js %}
