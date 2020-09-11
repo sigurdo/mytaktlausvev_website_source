@@ -36,9 +36,8 @@
                     {{ window.post }}
                   {% else %}
                     <form action="{% url 'julekalenderWindow' calendar.year forloop.counter %}" method="POST">
-                      {% csrf_token %}
-                      {{ form }}
-                      <input type="submit" value="Legg ut">
+                      {% load crispy_forms_tags %}
+                      {% crispy form %}
                     </form>
                   {% endif %}
                 </div>
