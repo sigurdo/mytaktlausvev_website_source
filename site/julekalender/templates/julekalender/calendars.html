@@ -1,7 +1,8 @@
 {% extends "./base.html" %}
 
 {% block page %}
-  <h1>Julekalender</h1>
+  <section class="calendars">
+    <h1>Julekalender</h1>
 
   {% if calendars %}
   {% for calendar in calendars %}
@@ -13,9 +14,29 @@
     <div>No calendars created.</div>
   {% endif %}
 
-  <form action="{% url 'julekalenders' %}" method="POST">
-    {% csrf_token %}
-    {{ form }}
-    <input type="submit" value="Ny julekalender">
-  </form>
+    <button data-toggle="modal" data-target="#newJulekalender" class="btn btn-primary">Lag ny julekalender</button>
+
+    <div id="newJulekalender" class="modal fade" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered">
+        <section class="modal-content">
+          <div class="modal-header">
+            <h2 class="modal-title">
+              Ny julekalender
+            </h2>
+
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+
+          <div class="modal-body">
+            <form action="{% url 'julekalenders' %}" method="POST">
+              {% load crispy_forms_tags %}
+              {% crispy form %}
+            </form>
+          </div>
+        </section>
+      </div>
+    </div>
+  </section>
 {% endblock %}

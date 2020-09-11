@@ -8,6 +8,10 @@ from julekalender.models import Window
 class NewJulekalenderForm(forms.ModelForm):
     """Form for creating a new julekalender"""
 
+    helper = FormHelper()
+    helper.label_class = "form-label"
+    helper.add_input(Submit("submit", "Legg ut"))
+
     class Meta:
         model = Julekalender
         fields = ["year"]
