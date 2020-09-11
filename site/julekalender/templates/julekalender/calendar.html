@@ -33,7 +33,7 @@
 
                 <div class="modal-body">
                   {% if window %}
-                    {{ window.post }}
+                    {{ window.content }}
                   {% else %}
                     <form action="{% url 'julekalenderWindow' calendar.year forloop.counter %}" method="POST">
                       {% load crispy_forms_tags %}

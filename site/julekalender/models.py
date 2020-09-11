@@ -20,7 +20,7 @@ class Window(models.Model):
     """Model representing a window in a julekalender"""
 
     title = models.CharField(max_length=255)
-    post = models.TextField()
+    content = models.TextField()
     author = models.ForeignKey(User, on_delete=models.SET(getDefaultDeletedUser))
     calendar = models.ForeignKey(Julekalender, on_delete=models.CASCADE)
     index = models.IntegerField()

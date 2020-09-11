@@ -55,7 +55,7 @@ def window(request, year, windowIndex):
         ):
             window = Window(
                 title=form.cleaned_data["title"],
-                post=form.cleaned_data["post"],
+                content=form.cleaned_data["content"],
                 author=request.user,
                 calendar=calendar,
                 index=windowIndex,
