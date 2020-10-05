@@ -10,6 +10,18 @@ body {
     background-image: url("/static/julekalender/nightskymobilecrop.png");
   }
 }
+h1 {
+  margin: 1.5rem 0;
+  text-align: center;
+  color: #fffe;
+  font-family: "Dancing Script", var(--font-family-sans-serif);
+  font-size: 3rem;
+}
+@media only screen and (max-width: 600px) {
+  h1 {
+    font-size: 2.5rem;
+  }
+}
 
 .btn-julekalender {
   padding: 0.7rem 1rem;
@@ -28,6 +40,26 @@ body {
   box-shadow: 0 0 0 0.2rem #413861;
 }
 
+.calendars {
+  display: grid;
+  justify-items: center;
+  min-height: 100vh;
+  padding: 1rem;
+  align-content: center;
+}
+.calendars h1 {
+  color: #fffe;
+  font-family: "Dancing Script", var(--font-family-sans-serif);
+}
+.calendars ul {
+  list-style-type: none;
+  padding: 0;
+  width: 15rem;
+}
+.calendars ul li {
+  margin: 1rem;
+}
+
 .calendar {
   display: grid;
   justify-items: center;
@@ -35,16 +67,6 @@ body {
 }
 .calendar-title {
   align-self: end;
-  margin: 1.5rem 0;
-  text-align: center;
-  color: #fffe;
-  font-family: "Dancing Script", var(--font-family-sans-serif);
-  font-size: 3rem;
-}
-@media only screen and (max-width: 600px) {
-  .calendar-title {
-    font-size: 2.5rem;
-  }
 }
 
 .windows {

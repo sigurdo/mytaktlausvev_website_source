@@ -2,19 +2,26 @@
 
 {% block page %}
   <section class="calendars">
-    <h1>Julekalender</h1>
+    <h1>Taktlaus Julekalender</h1>
 
-  {% if calendars %}
-  {% for calendar in calendars %}
-    <div> 
-        <a href="{% url 'julekalender' calendar.year %}">{{calendar.year}}</a>
-    </div>
-  {% endfor %}
-  {% else %}
-    <div>No calendars created.</div>
-  {% endif %}
+    {% if calendars %}
+      <ul>
+        {% for calendar in calendars %}
+          <li> 
+              <a
+                class="btn btn-lg btn-block btn-julekalender"
+                href="{% url 'julekalender' calendar.year %}"
+              >
+                {{ calendar.year }}
+              </a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <div>No calendars created.</div>
+    {% endif %}
 
-    <button data-toggle="modal" data-target="#newJulekalender" class="btn btn-primary">Lag ny julekalender</button>
+    <button data-toggle="modal" data-target="#newJulekalender" class="btn btn-lg btn-julekalender">Lag ny julekalender</button>
 
     <div id="newJulekalender" class="modal fade" tabindex="-1">
       <div class="modal-dialog modal-dialog-centered">
