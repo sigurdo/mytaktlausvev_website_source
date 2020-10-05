@@ -11,6 +11,23 @@ body {
   }
 }
 
+.btn-julekalender {
+  padding: 0.7rem 1rem;
+  border: none;
+  border-radius: 3px;
+  color: #fffe;
+  background-color: #5d4f8a;
+  transition: background-color 0.2s;
+}
+.btn-julekalender:hover {
+  background-color: #4a3f6e;
+  color: #fffe;
+  text-decoration: none;
+}
+.btn-julekalender:focus {
+  box-shadow: 0 0 0 0.2rem #413861;
+}
+
 .calendar {
   display: grid;
   justify-items: center;
