@@ -30,36 +30,28 @@ def julekalender(request, year):
 
     calendar = get_object_or_404(Julekalender, year=year)
 
-    windows = [
-        Window.objects.filter(calendar=year, index=i).first() for i in range(1, 25)
-    ]
-    return render(
-        request,
-        "julekalender/calendar.html",
-        {"calendar": calendar, "form": NewWindowForm, "windows": windows,},
-    )
-
-
-@login_required
-def window(request, year, windowIndex):
-    """View function for creating julekalender windows"""
-
-    calendar = get_object_or_404(Julekalender, year=year)
-
     if request.method == "POST":
         form = NewWindowForm(request.POST)
         if (
             form.is_valid()
-            and not Window.windowExists(year, windowIndex)
-            and 1 <= windowIndex <= 24
+            and not Window.windowExists(year, form.cleaned_data["index"])
+            and 1 <= form.cleaned_data["index"] <= 24
         ):
             window = Window(
                 title=form.cleaned_data["title"],
                 content=form.cleaned_data["content"],
                 author=request.user,
                 calendar=calendar,
-                index=windowIndex,
+                index=form.cleaned_data["index"],
             )
             window.save()
 
-    return HttpResponseRedirect(f"/julekalender/{year}")
+    windows = [
+        {"title": window.title, "content": window.content, "index": window.index}
+        for window in Window.objects.filter(calendar=year)
+    ]
+    return render(
+        request,
+        "julekalender/calendar.html",
+        {"calendar": calendar, "form": NewWindowForm, "windows": windows},
+    )

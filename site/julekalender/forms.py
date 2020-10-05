@@ -27,6 +27,6 @@ class NewWindowForm(forms.ModelForm):
 
     class Meta:
         model = Window
-        fields = ["title", "content"]
-        widgets = {"post": forms.Textarea()}
+        fields = ["title", "content", "index"]
+        widgets = {"post": forms.Textarea(), "index": forms.HiddenInput()}
         labels = {"title": "Tittel", "content": "Innhold"}
