@@ -2,10 +2,12 @@ const windowContent = document.getElementById("window-content");
 const newWindowContent = document.getElementById("new-window-content");
 
 const windowTitle = windowContent.querySelector(".modal-title");
-const windowBody = windowContent.querySelector(".modal-body");
+const windowAuthor = windowContent.querySelector(".modal-author");
+const windowText = windowContent.querySelector(".modal-text");
 function showWindow(window) {
   windowTitle.textContent = window.title;
-  windowBody.textContent = window.content;
+  windowAuthor.textContent = window.author;
+  windowText.textContent = window.content;
 
   windowContent.style.display = "block";
   newWindowContent.style.display = "none";

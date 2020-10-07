@@ -47,7 +47,12 @@ def julekalender(request, year):
             window.save()
 
     windows = [
-        {"title": window.title, "content": window.content, "index": window.index}
+        {
+            "title": window.title,
+            "content": window.content,
+            "index": window.index,
+            "author": window.author.username,
+        }
         for window in Window.objects.filter(calendar=year)
     ]
     return render(

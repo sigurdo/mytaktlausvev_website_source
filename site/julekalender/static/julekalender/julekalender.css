@@ -127,6 +127,12 @@ h1 {
 .modal-content {
   background-color: #fefefe;
 }
+.modal-author-container {
+  font-size: 14px;
+}
+.modal-author {
+  font-style: italic;
+}
 
 @keyframes topToBottom {
   from {
