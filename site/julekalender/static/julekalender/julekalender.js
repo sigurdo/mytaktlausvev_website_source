@@ -1,26 +1,22 @@
-const windowTitle = document.getElementById("window-title");
-const windowBody = document.getElementById("window-body");
-const newWindowTitle = document.getElementById("new-window-title");
-const newWindowBody = document.getElementById("new-window-body");
+const windowContent = document.getElementById("window-content");
+const newWindowContent = document.getElementById("new-window-content");
 
+const windowTitle = windowContent.querySelector(".modal-title");
+const windowBody = windowContent.querySelector(".modal-body");
 function showWindow(window) {
   windowTitle.textContent = window.title;
   windowBody.textContent = window.content;
 
-  windowTitle.style.display = "block";
-  windowBody.style.display = "block";
-  newWindowTitle.style.display = "none";
-  newWindowBody.style.display = "none";
+  windowContent.style.display = "block";
+  newWindowContent.style.display = "none";
 }
 
 const indexField = document.getElementById("id_index");
 function showNewWindow(index) {
   indexField.value = index;
 
-  newWindowTitle.style.display = "block";
-  newWindowBody.style.display = "block";
-  windowTitle.style.display = "none";
-  windowBody.style.display = "none";
+  windowContent.style.display = "none";
+  newWindowContent.style.display = "block";
 }
 
 const windows = JSON.parse(document.getElementById("windows").textContent);
