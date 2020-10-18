@@ -2,7 +2,7 @@
 {% block content %}
 
 {% if user.is_authenticated %}
-<form action="{% url 'quotes' %}" method="POST">
+<form action="{% url 'new_quote' %}" method="POST">
     {% csrf_token %}
     {% load crispy_forms_tags %}
     {% crispy form %}
