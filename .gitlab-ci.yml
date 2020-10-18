@@ -1,0 +1,13 @@
+stages:
+  - test
+
+test:
+  stage: test
+  script:
+    - export DATABASE_URL=postgres://taktlaus:$taktlaus@postgres:5432/taktlaus_db
+    - apt-get update -qy
+    - apt-get install -y python-dev python-pip
+    - pip install -r site/requirements.txt
+    - python site/manage.py test
+  only:
+    - develop
