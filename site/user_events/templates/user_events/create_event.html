@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block page %}
+<h2>Lag ny hending!</h2>
+<!--TODO: bedre datetime-velger-->
+<p>Bruk datoer på formatet '2006-10-25 14:30:59'. Skal legge inn en datetime-velger senere ;) ;) ;) ;)</p>
+<form action="{% url 'new_event' %}" method="POST">
+    {% csrf_token %}
+    {% load crispy_forms_tags %}
+    {% crispy form %}
+</form>
+{% endblock %}

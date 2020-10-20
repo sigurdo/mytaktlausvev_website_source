@@ -22,7 +22,13 @@
 	<div class="col-md">
 		<div class="card p-3 mb-5 shadow-sm">
 			<div class="card-body">
-				This is some text within a card body.
+				<h4>Hendingar</h4>
+				<ul>
+					{% for event in events %}
+					<li><a href="{% url 'event_details' event.id %}">{{event.title}} -
+							{{event.start_time | date:"d.m.Y H:s"}}</a></li>
+					{% endfor %}
+				</ul>
 			</div>
 		</div>
 	</div>
