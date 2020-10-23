@@ -183,13 +183,9 @@ def clearDir(directory):
 		for filename in filenames:
 			os.remove(os.path.join(directory, filename))
 
-def removeDetection(i, detectionData):
-	for key in detectionData.keys():
-		detectionData[key].pop(i)
-
 def cropImage(img):
 	# return img
-	return img[0:len(img)//4, 0:len(img[0])//3]
+	return img[0:len(img)//2, 0:len(img[0])//2]
 
 def processDetectionData(detectionData, img):
 	imgWithBoxes = img.copy()
@@ -224,11 +220,15 @@ for sheetName in sheetNames:
 
 for pdfPath in pdfPaths:
 	imagePaths = generateImagesFromPdf(pdfPath, TMP_PATH)
+	predictionsTables = ""
 	for i in range(len(imagePaths)):
 		imagePath = imagePaths[i]
 		print("Analyzing ", imagePath, " from ", sheetNames[pdfPaths.index(pdfPath)], ":", sep="")
 		img = cropImage(cv2.imread(imagePath))
 		detectionData = pytesseract.image_to_data(img, output_type=pytesseract.Output.DICT, config="--user-words sheetmusicUploader/instrumentsToLookFor.txt --psm 11 --dpi 96 -l eng")
 		imgWithBoxes, nicePrint = processDetectionData(detectionData, img)
-		print(nicePrint)
 		cv2.imwrite(os.path.join(BOUNDING_BOX_PATH, sheetNames[pdfPaths.index(pdfPath)], f"boxes_{i}.jpg"), imgWithBoxes)
+		print(nicePrint)
+		predictionsTables += f"{sheetNames[pdfPaths.index(pdfPath)]}, {imagePath}:\n{nicePrint}\n"
+	with open(os.path.join(BOUNDING_BOX_PATH, sheetNames[pdfPaths.index(pdfPath)], "predictions.txt"), "w") as file:
+		file.write(predictionsTables)
