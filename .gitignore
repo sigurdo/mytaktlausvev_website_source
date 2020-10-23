@@ -54,3 +54,5 @@ settings.cnf
 
 # Generated items
 sheetmusicUploader/generated_images
+sheetmusicUploader/images_with_bounding_boxes
+sheetmusicUploader/input_pdfs
