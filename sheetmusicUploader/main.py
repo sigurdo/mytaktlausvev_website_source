@@ -11,13 +11,16 @@ import os
 # print("Hello sheet music")
 
 def generateImagesFromPdf(pdfPath, outputDir):
+	print("Generating images from ", pdfPath, "...", sep="")
+	print()
 	images = pdf2image.convert_from_path(pdfPath, dpi=200)
 	generatedImages = []
 	for i in range(len(images)):
 		path = f"{outputDir}/img_{i}.jpg"
-		print("hei", path)
+		print("Generated image from pdf:", path)
 		images[i].save(path)
 		generatedImages.append(path)
+	print()
 	return generatedImages
 
 def textDetector(imagePath):
@@ -170,7 +173,6 @@ def getPdfPaths(directory):
 	for (dirpath, dirnames, filenames) in os.walk(directory):
 		for filename in filenames:
 			name, extension = os.path.splitext(filename)
-			print(name, extension)
 			if (extension.lower() == ".pdf"):
 				pdfPaths.append(os.path.join(dirpath, filename))
 				sheetNames.append(name)
@@ -216,8 +218,7 @@ if not os.path.exists(BOUNDING_BOX_PATH): os.mkdir(BOUNDING_BOX_PATH)
 
 clearDir(TMP_PATH)
 pdfPaths, sheetNames = getPdfPaths(INPUT_PDF_DIR)
-print(pdfPaths)
-print(sheetNames)
+
 for sheetName in sheetNames:
 	if not os.path.exists(os.path.join(BOUNDING_BOX_PATH, sheetName)): os.mkdir(os.path.join(BOUNDING_BOX_PATH, sheetName))
 
@@ -225,7 +226,7 @@ for pdfPath in pdfPaths:
 	imagePaths = generateImagesFromPdf(pdfPath, TMP_PATH)
 	for i in range(len(imagePaths)):
 		imagePath = imagePaths[i]
-		print("Analyzing ", imagePath, ":", sep="")
+		print("Analyzing ", imagePath, " from ", sheetNames[pdfPaths.index(pdfPath)], ":", sep="")
 		img = cropImage(cv2.imread(imagePath))
 		detectionData = pytesseract.image_to_data(img, output_type=pytesseract.Output.DICT, config="--user-words sheetmusicUploader/instrumentsToLookFor.txt --psm 11 --dpi 96 -l eng")
 		imgWithBoxes, nicePrint = processDetectionData(detectionData, img)
