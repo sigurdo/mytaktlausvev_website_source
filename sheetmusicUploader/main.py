@@ -6,11 +6,12 @@ import time
 from imutils.object_detection import non_max_suppression
 import pytesseract
 from PIL import Image
+import os
 
 # print("Hello sheet music")
 
 def generateImagesFromPdf(pdfPath, outputDir):
-	images = pdf2image.convert_from_path(pdfPath, dpi=100)
+	images = pdf2image.convert_from_path(pdfPath, dpi=200)
 	generatedImages = []
 	for i in range(len(images)):
 		path = f"{outputDir}/img_{i}.jpg"
@@ -163,12 +164,70 @@ def textRecognizer(imagePath):
 	cv2.imshow("Text recognition", imgWithBoxes)
 	cv2.waitKey(0)
 
+def getPdfPaths(directory):
+	pdfPaths = []
+	sheetNames = []
+	for (dirpath, dirnames, filenames) in os.walk(directory):
+		for filename in filenames:
+			name, extension = os.path.splitext(filename)
+			print(name, extension)
+			if (extension.lower() == ".pdf"):
+				pdfPaths.append(os.path.join(dirpath, filename))
+				sheetNames.append(name)
+	return pdfPaths, sheetNames
 
-sheetName = "Alle 12th street rag"
-sheetName = "76_Trombones - Alle, minus trompet"
-sheetName = "James Bond Medley - full big band - betta_0"
-sheetName = "Alle A string of pearls"
-imagePaths = generateImagesFromPdf(f"sheetmusicUploader/input_pdfs/{sheetName}.pdf", f"sheetmusicUploader/generated_images/{sheetName}")
-boundingBoxes = textDetector(imagePaths[0])
-# print(boundingBoxes)
-textRecognizer(imagePaths[0])
+def clearDir(directory):
+	for (dirpath, dirnames, filenames) in os.walk(directory):
+		for filename in filenames:
+			os.remove(os.path.join(directory, filename))
+
+def removeDetection(i, detectionData):
+	for key in detectionData.keys():
+		detectionData[key].pop(i)
+
+def cropImage(img):
+	# return img
+	return img[0:len(img)//4, 0:len(img[0])//3]
+
+def processDetectionData(detectionData, img):
+	imgWithBoxes = img.copy()
+	nicePrint  = "+------------------------------+------------+----------+----------+\n"
+	nicePrint += "| text                         | confidence | pos_left | pos_top  |\n"
+	nicePrint += "+------------------------------+------------+----------+----------+\n"
+	for i in range(len(detectionData["text"])):
+		if int(detectionData["conf"][i]) > 10 and detectionData["text"][i].strip(" ") != "":
+			x1 = detectionData["left"][i]
+			y1 = detectionData["top"][i]
+			x2 = x1 + detectionData["width"][i]
+			y2 = y1 + detectionData["height"][i]
+			cv2.rectangle(imgWithBoxes, (x1, y1), (x2, y2), (0, 0, 255), thickness=2)
+			nicePrint += "| {:28} | {:>10} | {:>8} | {:>8} |\n".format(detectionData["text"][i],
+				detectionData["conf"][i], detectionData["left"][i], detectionData["top"][i])
+	nicePrint += "+------------------------------+------------+----------+----------+\n"
+	return imgWithBoxes, nicePrint
+
+INPUT_PDF_DIR = "sheetmusicUploader/input_pdfs"
+TMP_PATH = "sheetmusicUploader/tmp"
+BOUNDING_BOX_PATH = "sheetmusicUploader/images_with_bounding_boxes"
+
+if not os.path.exists(INPUT_PDF_DIR): os.mkdir(INPUT_PDF_DIR)
+if not os.path.exists(TMP_PATH): os.mkdir(TMP_PATH)
+if not os.path.exists(BOUNDING_BOX_PATH): os.mkdir(BOUNDING_BOX_PATH)
+
+clearDir(TMP_PATH)
+pdfPaths, sheetNames = getPdfPaths(INPUT_PDF_DIR)
+print(pdfPaths)
+print(sheetNames)
+for sheetName in sheetNames:
+	if not os.path.exists(os.path.join(BOUNDING_BOX_PATH, sheetName)): os.mkdir(os.path.join(BOUNDING_BOX_PATH, sheetName))
+
+for pdfPath in pdfPaths:
+	imagePaths = generateImagesFromPdf(pdfPath, TMP_PATH)
+	for i in range(len(imagePaths)):
+		imagePath = imagePaths[i]
+		print("Analyzing ", imagePath, ":", sep="")
+		img = cropImage(cv2.imread(imagePath))
+		detectionData = pytesseract.image_to_data(img, output_type=pytesseract.Output.DICT, config="--user-words sheetmusicUploader/instrumentsToLookFor.txt --psm 11 --dpi 96 -l eng")
+		imgWithBoxes, nicePrint = processDetectionData(detectionData, img)
+		print(nicePrint)
+		cv2.imwrite(os.path.join(BOUNDING_BOX_PATH, sheetNames[pdfPaths.index(pdfPath)], f"boxes_{i}.jpg"), imgWithBoxes)

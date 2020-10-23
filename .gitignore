@@ -56,3 +56,4 @@ settings.cnf
 sheetmusicUploader/generated_images
 sheetmusicUploader/images_with_bounding_boxes
 sheetmusicUploader/input_pdfs
+sheetmusicUploader/tmp
