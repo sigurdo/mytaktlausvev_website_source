@@ -124,6 +124,10 @@ h1 {
   background-color: #5d4f8a;
 }
 
+#window-content .modal-text {
+  white-space: pre-wrap;
+}
+
 .modal-content {
   background-color: #fefefe;
 }
