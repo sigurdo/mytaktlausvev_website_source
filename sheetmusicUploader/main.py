@@ -7,6 +7,8 @@ from imutils.object_detection import non_max_suppression
 import pytesseract
 from PIL import Image
 import os
+import yaml
+import difflib
 
 # print("Hello sheet music")
 
@@ -184,7 +186,7 @@ def clearDir(directory):
 			os.remove(os.path.join(directory, filename))
 
 def cropImage(img):
-	# return img
+	return img
 	return img[0:len(img)//2, 0:len(img[0])//2]
 
 def processDetectionData(detectionData, img):
@@ -193,7 +195,7 @@ def processDetectionData(detectionData, img):
 	nicePrint += "| text                         | confidence | pos_left | pos_top  |\n"
 	nicePrint += "+------------------------------+------------+----------+----------+\n"
 	for i in range(len(detectionData["text"])):
-		if int(detectionData["conf"][i]) > 10 and detectionData["text"][i].strip(" ") != "":
+		if int(detectionData["level"][i]) == 5:
 			x1 = detectionData["left"][i]
 			y1 = detectionData["top"][i]
 			x2 = x1 + detectionData["width"][i]
@@ -204,9 +206,128 @@ def processDetectionData(detectionData, img):
 	nicePrint += "+------------------------------+------------+----------+----------+\n"
 	return imgWithBoxes, nicePrint
 
+class Detection:
+	# This class describes a single text detection from tesseract
+	# Meaning of variables is same as the raw tesseract output, an explanation can be found here:
+	# https://www.tomrochette.com/tesseract-tsv-format
+
+	__level = 1
+	__page_num = 1
+	__block_num = 0
+	__par_num = 0
+	__line_num = 0
+	__word_num = 0
+	__left = 0
+	__top = 0
+	__width = 0
+	__height = 0
+	__conf = 0
+	__text = ""
+
+	def __init__(self, detectionData, i):
+		self.__level = detectionData["level"][i]
+		self.__page_num = detectionData["page_num"][i]
+		self.__block_num = detectionData["block_num"][i]
+		self.__par_num = detectionData["par_num"][i]
+		self.__line_num = detectionData["line_num"][i]
+		self.__word_num = detectionData["word_num"][i]
+		self.__left = detectionData["left"][i]
+		self.__top = detectionData["top"][i]
+		self.__width = detectionData["width"][i]
+		self.__height = detectionData["height"][i]
+		self.__conf = detectionData["conf"][i]
+		self.__text = detectionData["text"][i]
+	
+	# Straightforward get functions
+	def level(self): return self.__level
+	def page_num(self): return self.__page_num
+	def block_num(self): return self.__block_num
+	def par_num(self): return self.__par_num
+	def line_num(self): return self.__line_num
+	def word_num(self): return self.__word_num
+	def left(self): return self.__left
+	def top(self): return self.__top
+	def width(self): return self.__width
+	def height(self): return self.__height
+	def conf(self): return self.__conf
+	def text(self): return self.__text
+
+	# Useful other get functions:
+	def right(self): return self.__left + self.__width
+	def bot(self): return self.__top + self.__height
+
+
+
+def isSimilarEnough(detectedText, keyword):
+	return difflib.SequenceMatcher(None, detectedText.lower(), keyword.lower()).ratio() > 0.9 or \
+	       difflib.SequenceMatcher(None, detectedText.lower()+"s", keyword.lower()).ratio() > 0.9 or \
+	       difflib.SequenceMatcher(None, detectedText.lower()+"es", keyword.lower()).ratio() > 0.9 or \
+	       difflib.SequenceMatcher(None, detectedText.lower()+"r", keyword.lower()).ratio() > 0.9 or \
+	       difflib.SequenceMatcher(None, detectedText.lower()+"er", keyword.lower()).ratio() > 0.9 or \
+	       difflib.SequenceMatcher(None, detectedText.lower()+"as", keyword.lower()).ratio() > 0.9
+	return detectedText.lower() == keyword.lower()
+
+def predictParts(detectionData, instruments, imageWidth, imageHeight):
+	# return partNames, instrumentses
+	# Here, input instruments should be a dict where the keyes are instrument names and values are lists of keywords
+	# The instrument names could also be the instruments id in the database, it is only used as an identifier
+
+	# Firstly, convert detectionData to handy Detection objects
+	detections = []
+	for i in range(len(detectionData["text"])):
+		detections.append(Detection(detectionData, i))
+
+	# Secondly, gather a list of all matches between detected texts and instruments
+	matches = []
+	for i in range(len(detections)):
+		detectedText = detections[i].text()
+		for instrument in instruments:
+			for j in range(len(instruments[instrument])):
+				keyword = instruments[instrument][j]
+				if isSimilarEnough(detectedText, keyword):
+					matches.append({"i": i, "instrument": instrument, "keyword": keyword})
+
+	# Lastly, predict how many, what names, and for what instruments the parts are
+	if len(matches) == 0:
+		return [], []
+	else:
+		blocksWithMatches = set()
+		instrumentsWithMatches = set()
+		for match in matches:
+			blocksWithMatches.add(detections[match["i"]].block_num())
+			instrumentsWithMatches.add(match["instrument"])
+		nrOfBlocksWithMatches = len(blocksWithMatches)
+		nrOfInstrumentsWithMatches = len(instrumentsWithMatches)
+		if nrOfBlocksWithMatches <= 2:
+			partNames = []
+			instrumentses = []
+			for blockNr in blocksWithMatches:
+				partName = []
+				instrumentsWithMatchesInBlock = set()
+				for i in range(len(detections)):
+					if detections[i].level() == 5 and detections[i].block_num() == blockNr:
+						partName.append(detections[i].text())
+						for match in matches:
+							if match["i"] == i:
+								instrumentsWithMatchesInBlock.add(match["instrument"])
+				partName = " ".join(partName)
+				partNames.append(partName)
+				instrumentses.append(list(instrumentsWithMatchesInBlock))
+			return partNames, instrumentses
+		else:
+			# Its probably a full score
+			return ["full score"], [["full score"]]
+			
+
+
 INPUT_PDF_DIR = "sheetmusicUploader/input_pdfs"
 TMP_PATH = "sheetmusicUploader/tmp"
 BOUNDING_BOX_PATH = "sheetmusicUploader/images_with_bounding_boxes"
+INSTRUMENTS_YAML_PATH = "sheetmusicUploader/instruments.yaml"
+with open(INSTRUMENTS_YAML_PATH, "r") as file:
+	INSTRUMENTS = yaml.safe_load(file)
+
+print("INSTRUMENTS:", INSTRUMENTS)
 
 if not os.path.exists(INPUT_PDF_DIR): os.mkdir(INPUT_PDF_DIR)
 if not os.path.exists(TMP_PATH): os.mkdir(TMP_PATH)
@@ -230,5 +351,9 @@ for pdfPath in pdfPaths:
 		cv2.imwrite(os.path.join(BOUNDING_BOX_PATH, sheetNames[pdfPaths.index(pdfPath)], f"boxes_{i}.jpg"), imgWithBoxes)
 		print(nicePrint)
 		predictionsTables += f"{sheetNames[pdfPaths.index(pdfPath)]}, {imagePath}:\n{nicePrint}\n"
+		partNames, instrumentses = predictParts(detectionData, INSTRUMENTS, img.shape[1], img.shape[0])
+		nicePrint = f"partNames: {partNames}, instrumentses: {instrumentses}\n"
+		print(nicePrint)
+		predictionsTables += f"{nicePrint}\n\n"
 	with open(os.path.join(BOUNDING_BOX_PATH, sheetNames[pdfPaths.index(pdfPath)], "predictions.txt"), "w") as file:
 		file.write(predictionsTables)

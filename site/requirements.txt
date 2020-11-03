@@ -21,4 +21,5 @@ pdf2image==1.13.1
 # pdf2image also requires poppler: sudo apt install poppler-utils, or windows: http://blog.alivate.com.au/poppler-windows/
 imutils==0.5.3
 pytesseract==0.3.4
+pyyaml==5.3.1
 # pytesseract also requires tesseract: https://github.com/tesseract-ocr/tesseract/wiki
