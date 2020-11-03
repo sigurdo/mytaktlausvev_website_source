@@ -292,12 +292,9 @@ def predictParts(detectionData, instruments, imageWidth, imageHeight):
 		return [], []
 	else:
 		blocksWithMatches = set()
-		instrumentsWithMatches = set()
 		for match in matches:
 			blocksWithMatches.add(detections[match["i"]].block_num())
-			instrumentsWithMatches.add(match["instrument"])
 		nrOfBlocksWithMatches = len(blocksWithMatches)
-		nrOfInstrumentsWithMatches = len(instrumentsWithMatches)
 		if nrOfBlocksWithMatches <= 2:
 			partNames = []
 			instrumentses = []
