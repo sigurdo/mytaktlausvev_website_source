@@ -9,13 +9,14 @@ from PIL import Image
 import os
 import yaml
 import difflib
+import argparse
 
 # print("Hello sheet music")
 
-def generateImagesFromPdf(pdfPath, outputDir):
+def generateImagesFromPdf(pdfPath, outputDir, startPage, endPage):
 	print("Generating images from ", pdfPath, "...", sep="")
 	print()
-	images = pdf2image.convert_from_path(pdfPath, dpi=200)
+	images = pdf2image.convert_from_path(pdfPath, dpi=200)[startPage-1:endPage]
 	generatedImages = []
 	for i in range(len(images)):
 		path = f"{outputDir}/img_{i}.jpg"
@@ -314,8 +315,15 @@ def predictParts(detectionData, instruments, imageWidth, imageHeight):
 		else:
 			# Its probably a full score
 			return ["full score"], [["full score"]]
-			
 
+
+
+formatter = lambda prog: argparse.ArgumentDefaultsHelpFormatter(prog, max_help_position=50)
+parser = argparse.ArgumentParser(description="Develop and test sheetmusicUploader", formatter_class=formatter)
+parser.add_argument("-p", "--pdf", type=str, default="all", metavar="PDF_PATH", help="Select a pdf to analyze")
+parser.add_argument("-s", "--start-page", type=int, default=1, help="Select a page in the sheet pdf to start from")
+parser.add_argument("-e", "--end-page", type=int, default=None, help="Select a page in the sheet pdf to end with")
+args = parser.parse_args()
 
 INPUT_PDF_DIR = "sheetmusicUploader/input_pdfs"
 TMP_PATH = "sheetmusicUploader/tmp"
@@ -331,13 +339,14 @@ if not os.path.exists(TMP_PATH): os.mkdir(TMP_PATH)
 if not os.path.exists(BOUNDING_BOX_PATH): os.mkdir(BOUNDING_BOX_PATH)
 
 clearDir(TMP_PATH)
-pdfPaths, sheetNames = getPdfPaths(INPUT_PDF_DIR)
+pdfPaths, sheetNames = getPdfPaths(INPUT_PDF_DIR) if args.pdf == "all" else \
+	([args.pdf], [os.path.splitext(os.path.basename(args.pdf))[0]])
 
 for sheetName in sheetNames:
 	if not os.path.exists(os.path.join(BOUNDING_BOX_PATH, sheetName)): os.mkdir(os.path.join(BOUNDING_BOX_PATH, sheetName))
 
 for pdfPath in pdfPaths:
-	imagePaths = generateImagesFromPdf(pdfPath, TMP_PATH)
+	imagePaths = generateImagesFromPdf(pdfPath, TMP_PATH, args.start_page, args.end_page)
 	predictionsTables = ""
 	for i in range(len(imagePaths)):
 		imagePath = imagePaths[i]
