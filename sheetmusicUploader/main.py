@@ -10,6 +10,7 @@ import os
 import yaml
 import difflib
 import argparse
+import unidecode
 
 # print("Hello sheet music")
 
@@ -260,12 +261,14 @@ class Detection:
 
 
 def isSimilarEnough(detectedText, keyword):
-	return difflib.SequenceMatcher(None, detectedText.lower(), keyword.lower()).ratio() > 0.9 or \
-	       difflib.SequenceMatcher(None, detectedText.lower()+"s", keyword.lower()).ratio() > 0.9 or \
-	       difflib.SequenceMatcher(None, detectedText.lower()+"es", keyword.lower()).ratio() > 0.9 or \
-	       difflib.SequenceMatcher(None, detectedText.lower()+"r", keyword.lower()).ratio() > 0.9 or \
-	       difflib.SequenceMatcher(None, detectedText.lower()+"er", keyword.lower()).ratio() > 0.9 or \
-	       difflib.SequenceMatcher(None, detectedText.lower()+"as", keyword.lower()).ratio() > 0.9
+	return difflib.SequenceMatcher(None, unidecode.unidecode_expect_ascii(detectedText.lower()),
+		unidecode.unidecode_expect_ascii(keyword.lower())).ratio() > 0.9
+	# or \
+	#        difflib.SequenceMatcher(None, detectedText.lower()+"s", keyword.lower()).ratio() > 0.9 or \
+	#        difflib.SequenceMatcher(None, detectedText.lower()+"es", keyword.lower()).ratio() > 0.9 or \
+	#        difflib.SequenceMatcher(None, detectedText.lower()+"r", keyword.lower()).ratio() > 0.9 or \
+	#        difflib.SequenceMatcher(None, detectedText.lower()+"er", keyword.lower()).ratio() > 0.9 or \
+	#        difflib.SequenceMatcher(None, detectedText.lower()+"as", keyword.lower()).ratio() > 0.9
 	return detectedText.lower() == keyword.lower()
 
 def predictParts(detectionData, instruments, imageWidth, imageHeight):
@@ -280,13 +283,25 @@ def predictParts(detectionData, instruments, imageWidth, imageHeight):
 
 	# Secondly, gather a list of all matches between detected texts and instruments
 	matches = []
-	for i in range(len(detections)):
-		detectedText = detections[i].text()
-		for instrument in instruments:
-			for j in range(len(instruments[instrument])):
-				keyword = instruments[instrument][j]
-				if isSimilarEnough(detectedText, keyword):
-					matches.append({"i": i, "instrument": instrument, "keyword": keyword})
+	for instrument in instruments:
+		for j in range(len(instruments[instrument])):
+			keyword = instruments[instrument][j]
+			N = len(keyword.split(" "))
+			for i in range(len(detections)-(N-1)):
+				if detections[i].level() != 5: continue;
+				blockNr = detections[i].block_num()
+				sameBlock = True
+				for k in range(1, N):
+					if detections[i+k].block_num() != blockNr:
+						sameBlock = False;
+						break;
+				if sameBlock:
+					temp = detections[i:i+N]
+					for k in range(len(temp)):
+						temp[k] = temp[k].text()
+					detectedText = " ".join(temp)
+					if isSimilarEnough(detectedText, keyword):
+						matches.append({"i": i, "instrument": instrument, "keyword": keyword})
 
 	# Lastly, predict how many, what names, and for what instruments the parts are
 	if len(matches) == 0:
@@ -321,9 +336,14 @@ def predictParts(detectionData, instruments, imageWidth, imageHeight):
 formatter = lambda prog: argparse.ArgumentDefaultsHelpFormatter(prog, max_help_position=50)
 parser = argparse.ArgumentParser(description="Develop and test sheetmusicUploader", formatter_class=formatter)
 parser.add_argument("-p", "--pdf", type=str, default="all", metavar="PDF_PATH", help="Select a pdf to analyze")
-parser.add_argument("-s", "--start-page", type=int, default=1, help="Select a page in the sheet pdf to start from")
-parser.add_argument("-e", "--end-page", type=int, default=None, help="Select a page in the sheet pdf to end with")
+parser.add_argument("-s", "--start-page", type=int, default=1, metavar="PAGE_NR", help="Select a page in the sheet pdf to start from")
+parser.add_argument("-e", "--end-page", type=int, default=None, metavar="PAGE_NR", help="Select a page in the sheet pdf to end with")
+parser.add_argument("--single-page", type=int, default=None, metavar="PAGE_NR", help="Select a single page in the sheet pdf to analyze. Overrides any specified start-page and end-page")
 args = parser.parse_args()
+
+if args.single_page:
+	args.start_page = args.single_page
+	args.end_page = args.single_page
 
 INPUT_PDF_DIR = "sheetmusicUploader/input_pdfs"
 TMP_PATH = "sheetmusicUploader/tmp"
