@@ -263,12 +263,12 @@ class Detection:
 def isSimilarEnough(detectedText, keyword):
 	return difflib.SequenceMatcher(None, unidecode.unidecode_expect_ascii(detectedText.lower()),
 		unidecode.unidecode_expect_ascii(keyword.lower())).ratio() > 0.9
-	# or \
-	#        difflib.SequenceMatcher(None, detectedText.lower()+"s", keyword.lower()).ratio() > 0.9 or \
-	#        difflib.SequenceMatcher(None, detectedText.lower()+"es", keyword.lower()).ratio() > 0.9 or \
-	#        difflib.SequenceMatcher(None, detectedText.lower()+"r", keyword.lower()).ratio() > 0.9 or \
-	#        difflib.SequenceMatcher(None, detectedText.lower()+"er", keyword.lower()).ratio() > 0.9 or \
-	#        difflib.SequenceMatcher(None, detectedText.lower()+"as", keyword.lower()).ratio() > 0.9
+		# or \
+	    #        difflib.SequenceMatcher(None, detectedText.lower()+"s", keyword.lower()).ratio() > 0.9 or \
+	    #        difflib.SequenceMatcher(None, detectedText.lower()+"es", keyword.lower()).ratio() > 0.9 or \
+	    #        difflib.SequenceMatcher(None, detectedText.lower()+"r", keyword.lower()).ratio() > 0.9 or \
+	    #        difflib.SequenceMatcher(None, detectedText.lower()+"er", keyword.lower()).ratio() > 0.9 or \
+	    #        difflib.SequenceMatcher(None, detectedText.lower()+"as", keyword.lower()).ratio() > 0.9
 	return detectedText.lower() == keyword.lower()
 
 def predictParts(detectionData, instruments, imageWidth, imageHeight):
@@ -283,9 +283,10 @@ def predictParts(detectionData, instruments, imageWidth, imageHeight):
 
 	# Secondly, gather a list of all matches between detected texts and instruments
 	matches = []
+	exceptionMatches = []
 	for instrument in instruments:
-		for j in range(len(instruments[instrument])):
-			keyword = instruments[instrument][j]
+		for j in range(len(instruments[instrument]["include"])):
+			keyword = instruments[instrument]["include"][j]
 			N = len(keyword.split(" "))
 			for i in range(len(detections)-(N-1)):
 				if detections[i].level() != 5: continue;
@@ -296,12 +297,32 @@ def predictParts(detectionData, instruments, imageWidth, imageHeight):
 						sameBlock = False;
 						break;
 				if sameBlock:
-					temp = detections[i:i+N]
-					for k in range(len(temp)):
-						temp[k] = temp[k].text()
-					detectedText = " ".join(temp)
+					detectedWords = detections[i:i+N]
+					for k in range(len(detectedWords)):
+						detectedWords[k] = detectedWords[k].text()
+					detectedText = " ".join(detectedWords)
 					if isSimilarEnough(detectedText, keyword):
 						matches.append({"i": i, "instrument": instrument, "keyword": keyword})
+						break
+
+		for j in range(len(instruments[instrument]["exceptions"])):
+			keyword = instruments[instrument]["exceptions"][j]
+			N = len(keyword.split(" "))
+			for i in range(len(detections)-(N-1)):
+				if detections[i].level() != 5: continue;
+				blockNr = detections[i].block_num()
+				sameBlock = True
+				for k in range(1, N):
+					if detections[i+k].block_num() != blockNr:
+						sameBlock = False;
+						break;
+				if sameBlock:
+					detectedWords = detections[i:i+N]
+					for k in range(len(detectedWords)):
+						detectedWords[k] = detectedWords[k].text()
+					detectedText = " ".join(detectedWords)
+					if isSimilarEnough(detectedText, keyword):
+						exceptionMatches.append({"i": i, "instrument": instrument, "keyword": keyword})
 
 	# Lastly, predict how many, what names, and for what instruments the parts are
 	if len(matches) == 0:
@@ -322,7 +343,13 @@ def predictParts(detectionData, instruments, imageWidth, imageHeight):
 						partName.append(detections[i].text())
 						for match in matches:
 							if match["i"] == i:
-								instrumentsWithMatchesInBlock.add(match["instrument"])
+								excepted = False
+								for exception in exceptionMatches:
+									if exception["instrument"] == match["instrument"] and \
+										detections[exception["i"]].block_num() == detections[i].block_num():
+										excepted = True; break
+								if not excepted:
+									instrumentsWithMatchesInBlock.add(match["instrument"])
 				partName = " ".join(partName)
 				partNames.append(partName)
 				instrumentses.append(list(instrumentsWithMatchesInBlock))
