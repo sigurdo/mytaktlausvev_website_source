@@ -1,5 +1,5 @@
 althorn:
-    include: ["althorn"]
+    include: ["althorn", "althom"]
     exceptions: []
 altsax:
     include: ["altsaxofon", "alto saxophone", "saxo alto"]
@@ -20,13 +20,13 @@ floyte:
     include: ["flute", "fløyte", "piccolo", "flauta"]
     exceptions: []
 horn:
-    include: ["horn", "f horn", "trompa"]
+    include: ["horn", "hom", "trompa"]
     exceptions: []
 klarinett:
     include: ["klarinett", "clarinet", "clarinete"]
     exceptions: ["bass clarinet", "bassklarinett"]
 kornett:
-    include: ["kornett", "trumpet", "trompet", "cornet", "trompeta", "fliscorno"]
+    include: ["kornett", "komett", "trumpet", "trompet", "cornet", "comet", "trompeta", "fliscorno", "fliscomo"]
     exceptions: []
 piccolo:
     include: ["flute", "fløyte", "piccolo"]
@@ -41,11 +41,11 @@ trombone:
     include: ["trombone", "bass trombone", "basses", "trombón"]
     exceptions: ["bass clarinet", "bassklarinett", "bass guitar"]
 trompet:
-    include: ["kornett", "trumpet", "trompet", "cornet", "trompeta", "fliscorno"]
+    include: ["kornett", "komett", "trumpet", "trompet", "cornet", "comet", "trompeta", "fliscorno", "fliscomo"]
     exceptions: []
 tuba:
     include: ["tuba", "tubas", "bass", "basses"]
     exceptions: ["bass trombone", "bass clarinet", "bassklarinett", "bass guitar"]
 other:
-    include: ["oboe", "obo", "flugelhorn", "guitar", "bass guitar", "bassoon"]
+    include: ["oboe", "obo", "flugelhorn", "flugelhom", "guitar", "bass guitar", "bassoon"]
     exceptions: []

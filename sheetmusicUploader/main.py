@@ -298,12 +298,11 @@ def predictParts(detectionData, instruments, imageWidth, imageHeight):
 						break;
 				if sameBlock:
 					detectedWords = detections[i:i+N]
-					for k in range(len(detectedWords)):
-						detectedWords[k] = detectedWords[k].text()
+					for l in range(len(detectedWords)):
+						detectedWords[l] = detectedWords[l].text()
 					detectedText = " ".join(detectedWords)
 					if isSimilarEnough(detectedText, keyword):
 						matches.append({"i": i, "instrument": instrument, "keyword": keyword})
-						break
 
 		for j in range(len(instruments[instrument]["exceptions"])):
 			keyword = instruments[instrument]["exceptions"][j]
@@ -330,7 +329,14 @@ def predictParts(detectionData, instruments, imageWidth, imageHeight):
 	else:
 		blocksWithMatches = set()
 		for match in matches:
-			blocksWithMatches.add(detections[match["i"]].block_num())
+			excepted = False
+			for exception in exceptionMatches:
+				if match["instrument"] == exception["instrument"] and \
+					detections[match["i"]].block_num() == detections[exception["i"]].block_num():
+					excepted = True; break
+			if not excepted:
+				blocksWithMatches.add(detections[match["i"]].block_num())
+			
 		nrOfBlocksWithMatches = len(blocksWithMatches)
 		if nrOfBlocksWithMatches <= 2:
 			partNames = []
@@ -346,7 +352,7 @@ def predictParts(detectionData, instruments, imageWidth, imageHeight):
 								excepted = False
 								for exception in exceptionMatches:
 									if exception["instrument"] == match["instrument"] and \
-										detections[exception["i"]].block_num() == detections[i].block_num():
+										detections[exception["i"]].block_num() == blockNr:
 										excepted = True; break
 								if not excepted:
 									instrumentsWithMatchesInBlock.add(match["instrument"])
