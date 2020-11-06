@@ -17,7 +17,7 @@ import unidecode
 def generateImagesFromPdf(pdfPath, outputDir, startPage, endPage):
 	print("Generating images from ", pdfPath, "...", sep="")
 	print()
-	images = pdf2image.convert_from_path(pdfPath, dpi=200)[startPage-1:endPage]
+	images = pdf2image.convert_from_path(pdfPath, dpi=200, first_page=startPage, last_page=endPage)
 	generatedImages = []
 	for i in range(len(images)):
 		path = f"{outputDir}/img_{i}.jpg"
