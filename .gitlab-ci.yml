@@ -1,0 +1,15 @@
+stages:
+  - test
+
+test:
+  stage: test
+  script:
+    - export DATABASE_URL=postgres://taktlaus:$taktlaus@postgres:5432/taktlaus_db
+    - apt update -qy
+    - apt install python3 python3-pip virtualenvwrapper -qy
+    - virtualenv --python=python3 venv/
+    - source venv/bin/activate
+    - pip install -r site/requirements.txt
+    - python site/manage.py test 
+  only:
+    - develop
