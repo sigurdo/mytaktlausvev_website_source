@@ -2,6 +2,7 @@
 
 from django.db import models
 from django.contrib.auth.models import User
+from upload_validator import FileTypeValidator
 
 class Score(models.Model):
     """ Model representing a score """
@@ -18,7 +19,9 @@ class Score(models.Model):
 class Pdf(models.Model):
     """ Model representing an uploaded pdf """
     score = models.ForeignKey(Score, on_delete=models.CASCADE)
-    file = models.FileField(upload_to='sheetmusic/original_pdfs/', default=None)
+    file = models.FileField(upload_to='sheetmusic/original_pdfs/', default=None, validators=[FileTypeValidator(
+        allowed_types=["application/pdf", "application/x-pdf", "application/x-bzpdf", "application/x-gzpdf"],
+        allowed_extensions=[".pdf", ".PDF"])])
     timestamp = models.DateTimeField()
 
 class Part(models.Model):

@@ -1,6 +1,7 @@
 """ Views for sheetmusic """
 
 import django
+import os
 from django.shortcuts import render
 from django.http import HttpResponseRedirect, HttpRequest
 from django.core.paginator import Paginator
@@ -11,6 +12,14 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from sheetmusic.models import Score, Pdf
 from sheetmusic.forms import CreateScoreForm, UploadPdfForm
+
+@login_required
+def viewScore(request: HttpRequest, score_id=None):
+    score = Score.objects.get(pk=score_id)
+    pdfs = Pdf.objects.filter(score=score)
+    for pdf in pdfs:
+        pdf.file.displayname = os.path.basename(pdf.file.name)
+    return render(request, "sheetmusic/viewScore.html", { "score": score, "pdfs": pdfs })
 
 @login_required
 def createScore(request: HttpRequest):

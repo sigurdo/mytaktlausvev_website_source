@@ -1,0 +1,14 @@
+{% extends './base.html' %}
+{% block content %}
+
+<h1> {{ score.title }} </h1>
+
+<h2> Opplastede pdfer </h2>
+
+<ul>
+{% for pdf in pdfs %}
+<li> <a href="{{pdf.file.url}}"> {{ pdf.file.displayname }} </a> </li>
+{% endfor %}
+</ul>
+
+{% endblock %}

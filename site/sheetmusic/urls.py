@@ -5,6 +5,7 @@ from sheetmusic import rest_apis
 
 urlpatterns = [
     path("", views.sheetmusic, name="sheetmusic"),
+    path("score/view/<int:score_id>", views.viewScore, name="viewScore"),
     path("score/create/", views.createScore, name="createScore"),
     path("score/delete/<int:score_id>", views.deleteScore, name="deleteScore"),
     path("pdf/upload/<int:score_id>/", views.uploadPdf, name="uploadPdf"),
