@@ -18,6 +18,7 @@ class Score(models.Model):
 class Pdf(models.Model):
     """ Model representing an uploaded pdf """
     score = models.ForeignKey(Score, on_delete=models.CASCADE)
+    file = models.FileField(upload_to='sheetmusic/original_pdfs/', default=None)
     timestamp = models.DateTimeField()
 
 class Part(models.Model):

@@ -9,8 +9,8 @@ from django.urls import reverse
 from django.utils import timezone
 
 from django.contrib.auth.models import User
-from sheetmusic.models import Score
-from sheetmusic.forms import CreateScoreForm
+from sheetmusic.models import Score, Pdf
+from sheetmusic.forms import CreateScoreForm, UploadPdfForm
 
 @login_required
 def createScore(request: HttpRequest):
@@ -48,3 +48,27 @@ def deleteScore(request, score_id=0):
     if request.method == "POST":
         Score.objects.filter(id=score_id).delete()
         return HttpResponseRedirect(reverse("sheetmusic"))
+
+def uploadPdf(request: HttpRequest, score_id=None):
+    if request.method == "POST":
+        print("hey ho")
+        if not request.user.has_perm("sheetmusic.add_pdf"):
+            return django.http.HttpResponseForbidden("Du har ikke retigheter til å laste opp pdfer")
+        print("yo")
+        print("files:", request.FILES)
+        form = UploadPdfForm(request.POST, request.FILES)
+        print("formfields:", form.fields)
+        print("valid?")
+        if form.is_valid():
+            print("valid")
+            pdf: Pdf = form.save(commit=False)
+            pdf.score = Score.objects.get(pk=score_id)
+            pdf.timestamp = timezone.now()
+            pdf.save()
+            print("return")
+            return HttpResponseRedirect(reverse("sheetmusic"))
+        else:
+            print("errors:", form.errors)
+            return django.http.HttpResponse(form.errors)
+    else:
+        return render(request, "sheetmusic/uploadPdfForm.html", { "form": UploadPdfForm() })

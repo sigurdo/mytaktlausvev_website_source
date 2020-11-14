@@ -6,6 +6,7 @@
 {% for score in scores %}
 <p class="score">
     {{ score.title }} ble opprettet {{ score.timestamp }}
+    <a href="{% url 'uploadPdf' score.pk %}"> Last opp pdf </a>
     <button class="delete-score", data-id="{{ score.id }}"> X </button>
 </p>
 {% endfor %}
