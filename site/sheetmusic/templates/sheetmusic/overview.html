@@ -1,0 +1,22 @@
+{% extends './base.html' %}
+{% block content %}
+
+<h1> Her er det test-tekst </h1>
+
+{% for score in scores %}
+<p class="score">
+    {{ score.title }} ble opprettet {{ score.timestamp }}
+    <button class="delete-score", data-id="{{ score.id }}"> X </button>
+</p>
+{% endfor %}
+
+<button id="test-fetch"> Test fetch </button>
+
+{% block js %}
+    {% load static %}
+    <script src="{% static 'notar/overview.js' %}"></script>
+{% endblock%}
+
+<a href="{% url 'createScore' %}"> Ny note </a>
+
+{% endblock %}
