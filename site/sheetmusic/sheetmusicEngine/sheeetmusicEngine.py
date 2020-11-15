@@ -225,11 +225,12 @@ def predictParts(detectionData, instruments, imageWidth, imageHeight):
 			return ["full score"], [["full score"]]
 
 def processUploadedPdf(pdfPath, imagesDirPath, instruments):
-	instrumentsDefaultParts = {}
-	for instrument in instruments:
-		instrumentsDefaultParts[instrument] = 0
+	parts = []
+	instrumentsDefaultParts = { instrument: None for instrument in instruments }
 	imagePaths = generateImagesFromPdf(pdfPath, imagesDirPath, 1, None)
-	allPartNames = []
+	lastPartName = ""
+	lastPartNamePage = 0
+	lastInstruments = []
 	for i in range(len(imagePaths)):
 		print("side", i+1, "av", len(imagePaths))
 		print("cropper...")
@@ -238,7 +239,29 @@ def processUploadedPdf(pdfPath, imagesDirPath, instruments):
 		detectionData = pytesseract.image_to_data(img, output_type=pytesseract.Output.DICT, config="--user-words sheetmusicUploader/instrumentsToLookFor.txt --psm 11 --dpi 96 -l eng")
 		print("predicter...")
 		partNames, instrumentses = predictParts(detectionData, instruments, img.shape[1], img.shape[0])
-		allPartNames.extend(partNames)
-	
-	return allPartNames, instrumentsDefaultParts
+		print("partNames:", partNames, "instrumentses:", instrumentses)
+		for j in range(len(partNames)):
+			print(j, lastPartName)
+			if lastPartName:
+				parts.append({
+					"name": lastPartName,
+					"fromPage": lastPartNamePage,
+					"toPage": i+1
+				})
+				for k in range(len(lastInstruments)):
+					if instrumentsDefaultParts[lastInstruments[k]] == None:
+						instrumentsDefaultParts[lastInstruments[k]] = len(parts)-1
+			lastPartName = partNames[j]
+			lastPartNamePage = i+1
+			lastInstruments = instrumentses[j]
+	if lastPartName:
+		parts.append({
+			"name": lastPartName,
+			"fromPage": lastPartNamePage,
+			"toPage": len(imagePaths)
+		})
+		for k in range(len(lastInstruments)):
+			if instrumentsDefaultParts[lastInstruments[k]] == None:
+				instrumentsDefaultParts[lastInstruments[k]] = len(parts)-1
+	return parts, instrumentsDefaultParts
 

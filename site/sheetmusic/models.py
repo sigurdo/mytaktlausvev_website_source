@@ -26,8 +26,10 @@ class Pdf(models.Model):
 
 class Part(models.Model):
     """ Model representing a part """
-    pdf = models.ForeignKey(Pdf, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
+    pdf = models.ForeignKey(Pdf, on_delete=models.CASCADE)
+    fromPage = models.IntegerField(default=None)
+    toPage = models.IntegerField(default=None)
     timestamp = models.DateTimeField()
 
 class Instrument(models.Model):

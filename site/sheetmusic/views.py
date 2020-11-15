@@ -11,7 +11,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from django.contrib.auth.models import User
-from sheetmusic.models import Score, Pdf
+from sheetmusic.models import Score, Pdf, Part
 from sheetmusic.forms import CreateScoreForm, UploadPdfForm
 
 from sheetmusic.sheetmusicEngine.sheeetmusicEngine import processUploadedPdf
@@ -84,6 +84,10 @@ def uploadPdf(request: HttpRequest, score_id=None):
                 instruments = yaml.safe_load(file)
             
             print("skal prøve:", pdf.file.path, imagesDirPath)
-            processUploadedPdf(pdf.file.path, imagesDirPath, instruments)
+            parts, instrumentsDefaultParts = processUploadedPdf(pdf.file.path, imagesDirPath, instruments)
+            print("Result:", parts, instrumentsDefaultParts)
+            for part in parts:
+                part = Part(name=part["name"], pdf=pdf, fromPage=part["fromPage"], toPage=part["toPage"], timestamp=timezone.now())
+                part.save()
             return HttpResponseRedirect(reverse("sheetmusic"))
     return render(request, "sheetmusic/uploadPdfForm.html", { "form": form })
