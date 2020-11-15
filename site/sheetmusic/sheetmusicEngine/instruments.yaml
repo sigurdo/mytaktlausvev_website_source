@@ -2,13 +2,13 @@ althorn:
     include: ["althorn", "althom"]
     exceptions: []
 altsax:
-    include: ["altsaxofon", "alto saxophone", "saxo alto"]
+    include: ["altsaxofon", "alto saxophone", "alto sax", "saxo alto"]
     exceptions: []
 baryton:
     include: ["baryton", "eufonium", "baritone", "euphonium", "bombardínos"]
     exceptions: ["barytonsaxofon", "baritone saxophone"]
 barysax:
-    include: ["barytonsaxofon", "barytonsaksofon", "barysax", "saxo barítono", "baritone saxophone"]
+    include: ["barytonsaxofon", "barytonsaksofon", "barysax", "saxo barítono", "baritone saxophone", "baritone sax"]
     exceptions: []
 bassklarinett:
     include: ["bassklarinett", "bass clarinet"]
@@ -17,7 +17,7 @@ juff:
     include: ["baryton", "eufonium", "baritone", "euphonium", "bombardino"]
     exceptions: ["barytonsaxofon", "baritone saxophone"]
 floyte:
-    include: ["flute", "fløyte", "piccolo", "flauta"]
+    include: ["flute", "fløyte", "piccolo", "flauta", "flute/piccolo", "flute/picc."]
     exceptions: []
 horn:
     include: ["horn", "hom", "trompa"]
@@ -35,7 +35,7 @@ slagverk:
     include: ["slagverk", "trommer", "skarptromme", "stortromme", "tromme", "cymbal", "drum", "drums", "snare drum", "bass drum", "triangel", "perkusjon", "percussion", "trommesett", "drum set", "drumset", "mallets", "timpani", "timbales", "pandereta", "caja", "platos y campanas"]
     exceptions: []
 tensax:
-    include: ["tenorsaksofon", "tenorsaxofon", "tenor saxophone", "saxo tenore"]
+    include: ["tenorsaksofon", "tenorsaxofon", "tenor saxophone", "tenor sax", "saxo tenore"]
     exceptions: []
 trombone:
     include: ["trombone", "bass trombone", "basses", "trombón"]

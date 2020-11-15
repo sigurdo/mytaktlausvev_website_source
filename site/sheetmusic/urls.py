@@ -11,4 +11,6 @@ urlpatterns = [
     path("pdf/upload/<int:score_id>/", views.uploadPdf, name="uploadPdf"),
     path("rest/score", rest_apis.score, name="scoreRest"),
     path("rest/score/<int:score_id>", rest_apis.score, name="scoreRestId"),
+    path("rest/pdf/", rest_apis.pdf, name="pdfRest"),
+    path("rest/pdf/<int:pk>", rest_apis.pdf, name="pdfRestPk"),
 ]

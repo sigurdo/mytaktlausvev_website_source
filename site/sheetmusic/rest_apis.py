@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 import json
 
-from sheetmusic.models import Score
+from sheetmusic.models import Score, Pdf
 from django.contrib.auth.models import User
 
 def score(request: django.http.HttpRequest, score_id=None):
@@ -40,4 +40,20 @@ def score(request: django.http.HttpRequest, score_id=None):
         if not user.has_perm("sheetmusic.delete_score"):
             return django.http.HttpResponseForbidden("Du har ikke rettigheter til å slette noter")
         Score.objects.filter(id=score_id).delete()
+        return django.http.HttpResponse("deleted")
+
+def pdf(request: django.http.HttpRequest, pk=None):
+    user = request.user
+    if request.method == "GET":
+        return django.http.HttpResponse("Ikke implementert", status=501)
+    elif request.method == "POST":
+        return django.http.HttpResponse("Ikke implementert", status=501)
+    elif request.method == "PUT":
+        return django.http.HttpResponse("Ikke implementert", status=501)
+    if request.method == "DELETE":
+        if not pk:
+            return django.http.HttpResponseBadRequest("Ingen pdf_pk oppgitt")
+        if not user.has_perm("sheetmusic.delete_pdf"):
+            return django.http.HttpResponseForbidden("Du har ikke rettigheter til å slette pdf")
+        Pdf.objects.filter(pk=pk).delete()
         return django.http.HttpResponse("deleted")

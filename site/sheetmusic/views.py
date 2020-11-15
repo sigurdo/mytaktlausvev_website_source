@@ -20,9 +20,13 @@ from sheetmusic.sheetmusicEngine.sheeetmusicEngine import processUploadedPdf
 def viewScore(request: HttpRequest, score_id=None):
     score = Score.objects.get(pk=score_id)
     pdfs = Pdf.objects.filter(score=score)
+    parts = []
     for pdf in pdfs:
         pdf.file.displayname = os.path.basename(pdf.file.name)
-    return render(request, "sheetmusic/viewScore.html", { "score": score, "pdfs": pdfs })
+        parts.extend(Part.objects.filter(pdf=pdf))
+    for part in parts:
+        part.pdfName = os.path.basename(part.pdf.file.name)
+    return render(request, "sheetmusic/viewScore.html", { "score": score, "pdfs": pdfs, "parts": parts })
 
 @login_required
 def createScore(request: HttpRequest):

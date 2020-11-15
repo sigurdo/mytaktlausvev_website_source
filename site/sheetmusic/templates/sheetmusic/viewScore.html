@@ -7,8 +7,21 @@
 
 <ul>
 {% for pdf in pdfs %}
-<li> <a href="{{pdf.file.url}}"> {{ pdf.file.displayname }} </a> </li>
+<li> <a href="{{pdf.file.url}}"> {{ pdf.file.displayname }} </a> <button class="delete-pdf" data-pk="{{ pdf.pk }}"> X </button> </li>
 {% endfor %}
 </ul>
+
+<h2> Stemmer </h2>
+
+<ul>
+{% for part in parts %}
+    <li> {{ part.name }}, fra side {{ part.fromPage }} til side {{ part.toPage }} i {{ part.pdfName }} </li>
+{% endfor %}
+</ul>
+
+{% block js %}
+    {% load static %}
+    <script src="{% static 'notar/viewScore.js' %}"></script>
+{% endblock%}
 
 {% endblock %}

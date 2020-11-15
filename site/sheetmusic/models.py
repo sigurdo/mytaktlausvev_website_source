@@ -1,5 +1,7 @@
 """ Models for the sheetmusic-app """
 
+import os, shutil
+import django
 from django.db import models
 from django.contrib.auth.models import User
 from upload_validator import FileTypeValidator
@@ -23,6 +25,15 @@ class Pdf(models.Model):
         allowed_types=["application/pdf", "application/x-pdf", "application/x-bzpdf", "application/x-gzpdf"],
         allowed_extensions=[".pdf", ".PDF"])])
     timestamp = models.DateTimeField()
+
+@django.dispatch.receiver(django.db.models.signals.pre_delete, sender=Pdf, dispatch_uid="pdf_delete_images")
+def pdf_pre_delete_receiver(sender, instance: Pdf, using, **kwargs):
+    # Deleting all images related to that pdf
+    if os.path.exists(os.path.join(django.conf.settings.MEDIA_ROOT, 'sheetmusic', 'images', str(instance.pk))):
+        shutil.rmtree(os.path.join(django.conf.settings.MEDIA_ROOT, 'sheetmusic', 'images', str(instance.pk)))
+    # Deleting actual pdf file
+    if os.path.isfile(instance.file.path):
+        os.remove(instance.file.path)
 
 class Part(models.Model):
     """ Model representing a part """
