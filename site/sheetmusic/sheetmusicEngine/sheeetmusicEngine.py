@@ -14,7 +14,7 @@ def generateImagesFromPdf(pdfPath, outputDir, startPage, endPage):
 	images = pdf2image.convert_from_path(pdfPath, dpi=200, first_page=startPage, last_page=endPage)
 	generatedImages = []
 	for i in range(len(images)):
-		path = f"{outputDir}/img_{i}.jpg"
+		path = f"{outputDir}/page_{i+1}.jpg"
 		print("Generated image from pdf:", path)
 		images[i].save(path)
 		generatedImages.append(path)
@@ -224,19 +224,20 @@ def predictParts(detectionData, instruments, imageWidth, imageHeight):
 			# Its probably a full score
 			return ["full score"], [["full score"]]
 
-def processUploadedPdf(pdfPath, imagesDirPath):
-	INSTRUMENTS_YAML_PATH = "sheetmusicUploader/instruments.yaml"
-	with open(INSTRUMENTS_YAML_PATH, "r") as file:
-		INSTRUMENTS = yaml.safe_load(file)
+def processUploadedPdf(pdfPath, imagesDirPath, instruments):
 	instrumentsDefaultParts = {}
-	for instrument in INSTRUMENTS:
+	for instrument in instruments:
 		instrumentsDefaultParts[instrument] = 0
-	imagePaths = generateImagesFromPdf(pdfPath, imagesDirPath)
+	imagePaths = generateImagesFromPdf(pdfPath, imagesDirPath, 1, None)
 	allPartNames = []
 	for i in range(len(imagePaths)):
+		print("side", i+1, "av", len(imagePaths))
+		print("cropper...")
 		img = cropImage(cv2.imread(imagePaths[i]))
+		print("detecter...")
 		detectionData = pytesseract.image_to_data(img, output_type=pytesseract.Output.DICT, config="--user-words sheetmusicUploader/instrumentsToLookFor.txt --psm 11 --dpi 96 -l eng")
-		partNames, instrumentses = predictParts(detectionData, INSTRUMENTS, img.shape[1], img.shape[0])
+		print("predicter...")
+		partNames, instrumentses = predictParts(detectionData, instruments, img.shape[1], img.shape[0])
 		allPartNames.extend(partNames)
 	
 	return allPartNames, instrumentsDefaultParts

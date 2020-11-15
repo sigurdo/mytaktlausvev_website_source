@@ -2,6 +2,7 @@
 
 import django
 import os
+import yaml
 from django.shortcuts import render
 from django.http import HttpResponseRedirect, HttpRequest
 from django.core.paginator import Paginator
@@ -12,6 +13,8 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from sheetmusic.models import Score, Pdf
 from sheetmusic.forms import CreateScoreForm, UploadPdfForm
+
+from sheetmusic.sheetmusicEngine.sheeetmusicEngine import processUploadedPdf
 
 @login_required
 def viewScore(request: HttpRequest, score_id=None):
@@ -59,25 +62,28 @@ def deleteScore(request, score_id=0):
         return HttpResponseRedirect(reverse("sheetmusic"))
 
 def uploadPdf(request: HttpRequest, score_id=None):
+    form = UploadPdfForm()
     if request.method == "POST":
-        print("hey ho")
         if not request.user.has_perm("sheetmusic.add_pdf"):
             return django.http.HttpResponseForbidden("Du har ikke retigheter til å laste opp pdfer")
-        print("yo")
-        print("files:", request.FILES)
         form = UploadPdfForm(request.POST, request.FILES)
-        print("formfields:", form.fields)
-        print("valid?")
         if form.is_valid():
-            print("valid")
             pdf: Pdf = form.save(commit=False)
             pdf.score = Score.objects.get(pk=score_id)
             pdf.timestamp = timezone.now()
             pdf.save()
-            print("return")
+            print(pdf.file.path)
+
+            imagesDirPath = os.path.join(django.conf.settings.MEDIA_ROOT, "sheetmusic", "images")
+            if not os.path.exists(imagesDirPath): os.mkdir(imagesDirPath)
+            imagesDirPath = os.path.join(imagesDirPath, str(pdf.pk))
+            if not os.path.exists(imagesDirPath): os.mkdir(imagesDirPath)
+
+            instrumentsYamlPath = "site/sheetmusic/sheetmusicEngine/instruments.yaml"
+            with open(instrumentsYamlPath, "r") as file:
+                instruments = yaml.safe_load(file)
+            
+            print("skal prøve:", pdf.file.path, imagesDirPath)
+            processUploadedPdf(pdf.file.path, imagesDirPath, instruments)
             return HttpResponseRedirect(reverse("sheetmusic"))
-        else:
-            print("errors:", form.errors)
-            return django.http.HttpResponse(form.errors)
-    else:
-        return render(request, "sheetmusic/uploadPdfForm.html", { "form": UploadPdfForm() })
+    return render(request, "sheetmusic/uploadPdfForm.html", { "form": form })
