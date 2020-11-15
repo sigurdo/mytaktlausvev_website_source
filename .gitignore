@@ -53,8 +53,8 @@ db.sqlite3-journal
 settings.cnf
 
 # Generated items
-sheetmusicUploader/generated_images
-sheetmusicUploader/images_with_bounding_boxes
-sheetmusicUploader/input_pdfs
-sheetmusicUploader/tmp
+site/sheetmusic/sheetmusicEngine/generated_images
+site/sheetmusic/sheetmusicEngine/images_with_bounding_boxes
+site/sheetmusic/sheetmusicEngine/input_pdfs
+site/sheetmusic/sheetmusicEngine/tmp
 site/media

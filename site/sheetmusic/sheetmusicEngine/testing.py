@@ -36,10 +36,10 @@ if args.single_page:
 	args.start_page = args.single_page
 	args.end_page = args.single_page
 
-INPUT_PDF_DIR = "sheetmusicUploader/input_pdfs"
-TMP_PATH = "sheetmusicUploader/tmp"
-BOUNDING_BOX_PATH = "sheetmusicUploader/images_with_bounding_boxes"
-INSTRUMENTS_YAML_PATH = "sheetmusicUploader/instruments.yaml"
+INPUT_PDF_DIR = "input_pdfs"
+TMP_PATH = "tmp"
+BOUNDING_BOX_PATH = "images_with_bounding_boxes"
+INSTRUMENTS_YAML_PATH = "instruments.yaml"
 with open(INSTRUMENTS_YAML_PATH, "r") as file:
 	INSTRUMENTS = yaml.safe_load(file)
 
