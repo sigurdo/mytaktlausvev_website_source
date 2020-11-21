@@ -1,4 +1,5 @@
 from django.db import models
+from django.core import validators
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
 
@@ -23,7 +24,9 @@ class Window(models.Model):
     content = models.TextField()
     author = models.ForeignKey(User, on_delete=models.SET(getDefaultDeletedUser))
     calendar = models.ForeignKey(Julekalender, on_delete=models.CASCADE)
-    index = models.IntegerField()
+    index = models.IntegerField(
+        validators=[validators.MinValueValidator(1), validators.MaxValueValidator(24)]
+    )
 
     def windowExists(year, index):
         return Window.objects.filter(calendar=year, index=index).exists()

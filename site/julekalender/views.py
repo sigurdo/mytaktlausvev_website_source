@@ -32,10 +32,8 @@ def julekalender(request, year):
 
     if request.method == "POST":
         form = NewWindowForm(request.POST)
-        if (
-            form.is_valid()
-            and not Window.windowExists(year, form.cleaned_data["index"])
-            and 1 <= form.cleaned_data["index"] <= 24
+        if form.is_valid() and not Window.windowExists(
+            year, form.cleaned_data["index"]
         ):
             window = Window(
                 title=form.cleaned_data["title"],
