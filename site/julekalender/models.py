@@ -13,6 +13,9 @@ class Julekalender(models.Model):
 
     year = models.IntegerField(primary_key=True)
 
+    def userCanCreate(user):
+        return user.is_staff
+
     class Meta:
         ordering = ["-year"]
 

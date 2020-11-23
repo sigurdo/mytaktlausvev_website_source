@@ -12,7 +12,7 @@ def julekalenders(request):
 
     if request.method == "POST":
         form = NewJulekalenderForm(request.POST)
-        if form.is_valid():
+        if form.is_valid() and Julekalender.userCanCreate(request.user):
             julekalender = form.save(commit=False)
             julekalender.save()
 
@@ -20,7 +20,11 @@ def julekalenders(request):
     return render(
         request,
         "julekalender/calendars.html",
-        {"calendars": calendars, "form": NewJulekalenderForm},
+        {
+            "calendars": calendars,
+            "userCanCreate": Julekalender.userCanCreate(request.user),
+            "form": NewJulekalenderForm,
+        },
     )
 
 
