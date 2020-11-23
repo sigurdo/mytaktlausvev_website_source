@@ -1,41 +1,68 @@
+const writtenWindows = JSON.parse(
+  document.getElementById("windows").textContent
+);
+writtenWindows.forEach((window) =>
+  document.getElementById(`window${window.index}`).classList.add("written")
+);
+
+let selectedIndex = 1;
+
+function selectWindow(index) {
+  selectedIndex = index;
+  if (writtenWindows.some((window) => window.index == selectedIndex))
+    showWindow();
+  else showNewWindow();
+  openModal();
+}
+
+const modal = $(".modal");
+function openModal() {
+  document.getElementById(`window${selectedIndex}`).classList.add("opened");
+  modal.modal("toggle");
+}
+modal.on("hide.bs.modal", () =>
+  document.querySelector(".opened").classList.remove("opened")
+);
+
 const windowContent = document.getElementById("window-content");
 const newWindowContent = document.getElementById("new-window-content");
 
 const windowTitle = windowContent.querySelector(".modal-title");
 const windowAuthor = windowContent.querySelector(".modal-author");
 const windowText = windowContent.querySelector(".modal-text");
-function showWindow(window) {
+const windowChange = windowContent.querySelector(".modal-change");
+function showWindow() {
+  const window = writtenWindows.find((window) => window.index == selectedIndex);
   windowTitle.textContent = window.title;
   windowAuthor.textContent = window.author;
   windowText.textContent = window.content;
+
+  windowChange.style.display = window.canEdit ? "block" : "none";
 
   windowContent.style.display = "block";
   newWindowContent.style.display = "none";
 }
 
-const indexField = document.getElementById("id_index");
-function showNewWindow(index) {
-  indexField.value = index;
+function showEditWindow() {
+  const window = writtenWindows.find((window) => window.index == selectedIndex);
+  setFormValues(window.title, window.content, window.index);
 
   windowContent.style.display = "none";
   newWindowContent.style.display = "block";
 }
 
-const windows = JSON.parse(document.getElementById("windows").textContent);
-windows.forEach((window) =>
-  document.getElementById(`window${window.index}`).classList.add("written")
-);
+function showNewWindow() {
+  setFormValues("", "", selectedIndex);
 
-const modal = $(".modal");
-function openModal(index) {
-  const selectedWindow = windows.find((window) => window.index == index);
-  if (selectedWindow) showWindow(selectedWindow);
-  else showNewWindow(index);
-
-  document.getElementById(`window${index}`).classList.add("opened");
-  modal.modal("toggle");
+  windowContent.style.display = "none";
+  newWindowContent.style.display = "block";
 }
 
-modal.on("hide.bs.modal", () =>
-  document.querySelector(".opened").classList.remove("opened")
-);
+const titleField = document.getElementById("id_title");
+const contentField = document.getElementById("id_content");
+const indexField = document.getElementById("id_index");
+function setFormValues(title, content, index) {
+  titleField.value = title;
+  contentField.value = content;
+  indexField.value = index;
+}

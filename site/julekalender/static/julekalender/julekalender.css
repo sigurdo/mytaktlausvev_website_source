@@ -131,6 +131,14 @@ h1 {
 .modal-content {
   background-color: #fefefe;
 }
+
+.modal-change {
+  margin-left: auto;
+}
+.modal-header .close {
+  margin-left: 0;
+}
+
 .modal-author-container {
   font-size: 14px;
 }

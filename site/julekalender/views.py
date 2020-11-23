@@ -32,8 +32,11 @@ def julekalender(request, year):
 
     if request.method == "POST":
         form = NewWindowForm(request.POST)
-        if form.is_valid() and not Window.windowExists(
-            year, form.cleaned_data["index"]
+        if form.is_valid() and (
+            not Window.windowExists(year, form.cleaned_data["index"])
+            or Window.objects.get(year=year, index=form.cleaned_data["index"]).canEdit(
+                request.user
+            )
         ):
             window = Window(
                 title=form.cleaned_data["title"],
@@ -50,6 +53,7 @@ def julekalender(request, year):
             "content": window.content,
             "index": window.index,
             "author": window.author.username,
+            "canEdit": window.canEdit(request.user),
         }
         for window in Window.objects.filter(calendar=year)
     ]

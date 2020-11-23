@@ -8,7 +8,7 @@
       {% load get_range %}
       {% for i in 24|get_range %}
         <div id="window{{ i }}" class="window">
-          <button onclick="openModal({{ i }})">
+          <button onclick="selectWindow({{ i }})">
             {{ i }}
           </button>
         </div>
@@ -24,6 +24,14 @@
       <section id="window-content" class="modal-content">
         <div class="modal-header">
           <h2 class="modal-title"></h2>
+
+          <button
+            type="button"
+            onclick="showEditWindow()"
+            class="modal-change btn btn-outline-primary"
+          >
+            Endre
+          </button>
 
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
