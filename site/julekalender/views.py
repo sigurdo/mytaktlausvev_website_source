@@ -38,18 +38,19 @@ def julekalender(request, year):
         form = NewWindowForm(request.POST)
         if form.is_valid() and (
             not Window.windowExists(year, form.cleaned_data["index"])
-            or Window.objects.get(year=year, index=form.cleaned_data["index"]).canEdit(
-                request.user
-            )
+            or Window.objects.get(
+                calendar=calendar, index=form.cleaned_data["index"]
+            ).canEdit(request.user)
         ):
-            window = Window(
-                title=form.cleaned_data["title"],
-                content=form.cleaned_data["content"],
-                author=request.user,
+            Window.objects.update_or_create(
                 calendar=calendar,
                 index=form.cleaned_data["index"],
+                author=request.user,
+                defaults={
+                    "title": form.cleaned_data["title"],
+                    "content": form.cleaned_data["content"],
+                },
             )
-            window.save()
 
     windows = [
         {
