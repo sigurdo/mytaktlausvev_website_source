@@ -124,26 +124,24 @@ h1 {
   background-color: #5d4f8a;
 }
 
-#window-content .modal-text {
-  white-space: pre-wrap;
-}
-
 .modal-content {
   background-color: #fefefe;
 }
-
-.modal-change {
+.modal-edit {
   margin-left: auto;
 }
 .modal-header .close {
   margin-left: 0;
 }
 
-.modal-author-container {
+.window-author-container {
   font-size: 14px;
 }
-.modal-author {
+.window-author {
   font-style: italic;
+}
+.window-text {
+  white-space: pre-wrap;
 }
 
 @keyframes topToBottom {

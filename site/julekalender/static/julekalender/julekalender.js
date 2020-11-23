@@ -25,44 +25,49 @@ modal.on("hide.bs.modal", () =>
 );
 
 const windowContent = document.getElementById("window-content");
-const newWindowContent = document.getElementById("new-window-content");
+const windowForm = document.getElementById("window-form");
+const modalTitle = document.querySelector(".modal-title");
+const modalEdit = document.querySelector(".modal-edit");
 
-const windowTitle = windowContent.querySelector(".modal-title");
-const windowAuthor = windowContent.querySelector(".modal-author");
-const windowText = windowContent.querySelector(".modal-text");
-const windowChange = windowContent.querySelector(".modal-change");
+const windowAuthor = windowContent.querySelector(".window-author");
+const windowText = windowContent.querySelector(".window-text");
 function showWindow() {
   const window = writtenWindows.find((window) => window.index == selectedIndex);
-  windowTitle.textContent = window.title;
+  modalTitle.textContent = window.title;
   windowAuthor.textContent = window.author;
   windowText.textContent = window.content;
-
-  windowChange.style.display = window.canEdit ? "block" : "none";
+  modalEdit.style.display = window.canEdit ? "block" : "none";
 
   windowContent.style.display = "block";
-  newWindowContent.style.display = "none";
+  windowForm.style.display = "none";
 }
 
 function showEditWindow() {
   const window = writtenWindows.find((window) => window.index == selectedIndex);
-  setFormValues(window.title, window.content, window.index);
+  setFormValues(window.title, window.content, window.index, "Endre luke");
+  modalTitle.textContent = "Endre luke";
+  modalEdit.style.display = "none";
 
   windowContent.style.display = "none";
-  newWindowContent.style.display = "block";
+  windowForm.style.display = "block";
 }
 
 function showNewWindow() {
-  setFormValues("", "", selectedIndex);
+  setFormValues("", "", selectedIndex, "Legg ut");
+  modalTitle.textContent = "Ny luke";
+  modalEdit.style.display = "none";
 
   windowContent.style.display = "none";
-  newWindowContent.style.display = "block";
+  windowForm.style.display = "block";
 }
 
 const titleField = document.getElementById("id_title");
 const contentField = document.getElementById("id_content");
 const indexField = document.getElementById("id_index");
-function setFormValues(title, content, index) {
+const submitButton = document.getElementById("submit-id-submit");
+function setFormValues(title, content, index, buttonText) {
   titleField.value = title;
   contentField.value = content;
   indexField.value = index;
+  submitButton.value = buttonText;
 }

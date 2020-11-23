@@ -21,14 +21,14 @@
 
   <div id="windowModal" class="modal fade" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
-      <section id="window-content" class="modal-content">
+      <section class="modal-content">
         <div class="modal-header">
           <h2 class="modal-title"></h2>
 
           <button
             type="button"
             onclick="showEditWindow()"
-            class="modal-change btn btn-outline-primary"
+            class="modal-edit btn btn-outline-primary"
           >
             Endre
           </button>
@@ -39,27 +39,20 @@
         </div>
 
         <div class="modal-body">
-          <p class="modal-author-container">
-            Skrevet av <span class="modal-author"></span>
-          </p>
-          <p class="modal-text"></p>
+          <div id="window-content">
+            <p class="window-author-container">
+              Skrevet av <span class="window-author"></span>
+            </p>
+            <p class="window-text"></p>
+          </div>
+
+          <div id="window-form">
+            <form action="{% url 'julekalender' calendar.year %}" method="POST">
+              {% load crispy_forms_tags %}
+              {% crispy form %}
+            </form>
+          </div>
         </div>
-      </section>
-
-      <section id="new-window-content" class="modal-content">
-        <div class="modal-header">
-          <h2 class="modal-title">Ny luke</h2>
-
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-
-        <div class="modal-body">
-          <form action="{% url 'julekalender' calendar.year %}" method="POST">
-            {% load crispy_forms_tags %}
-            {% crispy form %}
-          </form>
       </section>
     </div>
   </div>
