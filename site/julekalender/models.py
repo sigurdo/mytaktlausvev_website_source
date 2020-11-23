@@ -34,7 +34,7 @@ class Window(models.Model):
     def windowExists(year, index):
         return Window.objects.filter(calendar=year, index=index).exists()
 
-    def canEdit(self, user):
+    def userCanEdit(self, user):
         return self.author == user
 
     class Meta:

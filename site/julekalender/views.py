@@ -40,7 +40,7 @@ def julekalender(request, year):
             not Window.windowExists(year, form.cleaned_data["index"])
             or Window.objects.get(
                 calendar=calendar, index=form.cleaned_data["index"]
-            ).canEdit(request.user)
+            ).userCanEdit(request.user)
         ):
             Window.objects.update_or_create(
                 calendar=calendar,
@@ -58,7 +58,7 @@ def julekalender(request, year):
             "content": window.content,
             "index": window.index,
             "author": window.author.username,
-            "canEdit": window.canEdit(request.user),
+            "canEdit": window.userCanEdit(request.user),
         }
         for window in Window.objects.filter(calendar=year)
     ]
