@@ -124,6 +124,9 @@ h1 {
   background-color: #5d4f8a;
 }
 
+.modal-title {
+  overflow: auto;
+}
 .modal-content {
   background-color: #fefefe;
 }
