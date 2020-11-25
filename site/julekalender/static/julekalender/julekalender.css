@@ -1,5 +1,6 @@
 body {
   padding-top: 0;
+  background-color: #0d192b;
   background-image: url("/static/julekalender/nightsky.png");
   background-size: cover;
   background-position: top center;
