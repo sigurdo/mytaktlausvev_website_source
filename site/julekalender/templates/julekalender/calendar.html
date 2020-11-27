@@ -6,7 +6,7 @@
 
     <div class="windows">
       {% load get_range %}
-      {% for i in 24|get_range %}
+      {% for i in permutation %}
         <div id="window{{ i }}" class="window">
           <button onclick="selectWindow({{ i }})">
             {{ i }}

@@ -1,3 +1,5 @@
+import random
+
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
@@ -52,6 +54,9 @@ def julekalender(request, year):
                 },
             )
 
+    random.seed(year)
+    permutation = random.sample(range(1, 25), 24)
+
     windows = [
         {
             "title": window.title,
@@ -62,8 +67,14 @@ def julekalender(request, year):
         }
         for window in Window.objects.filter(calendar=year)
     ]
+
     return render(
         request,
         "julekalender/calendar.html",
-        {"calendar": calendar, "form": NewWindowForm, "windows": windows},
+        {
+            "calendar": calendar,
+            "form": NewWindowForm,
+            "permutation": permutation,
+            "windows": windows,
+        },
     )
