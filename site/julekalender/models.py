@@ -16,6 +16,9 @@ class Julekalender(models.Model):
     def userCanCreate(user):
         return user.is_staff
 
+    def __str__(self):
+        return str(self.year)
+
     class Meta:
         ordering = ["-year"]
 
@@ -37,7 +40,11 @@ class Window(models.Model):
     def userCanEdit(self, user):
         return self.author == user
 
+    def __str__(self):
+        return f"{self.calendar.year}, luke {self.index}"
+
     class Meta:
+        ordering = ["calendar", "-index"]
         constraints = [
             models.UniqueConstraint(fields=["calendar", "index"], name="uniqueWindow")
         ]
