@@ -44,7 +44,6 @@ class Window(models.Model):
         return f"{self.calendar.year}, luke {self.index}"
 
     class Meta:
-        ordering = ["calendar", "-index"]
         constraints = [
             models.UniqueConstraint(fields=["calendar", "index"], name="uniqueWindow")
         ]

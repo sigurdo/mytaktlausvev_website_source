@@ -10,4 +10,4 @@ class JulekalenderAdmin(admin.ModelAdmin):
 
 @admin.register(Window)
 class WindowAdmin(admin.ModelAdmin):
-    pass
+    ordering = ["calendar", "-index"]
