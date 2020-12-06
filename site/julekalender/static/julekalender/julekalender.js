@@ -53,7 +53,13 @@ function showEditWindow() {
 }
 
 function showNewWindow() {
-  setFormValues("", "", selectedIndex, "Legg ut");
+  setFormValues(
+    localStorage.getItem(`julekalender-autosave-title-${selectedIndex}`) || "",
+    localStorage.getItem(`julekalender-autosave-content-${selectedIndex}`) ||
+      "",
+    selectedIndex,
+    "Legg ut"
+  );
   modalTitle.textContent = "Ny luke";
   modalEdit.style.display = "none";
 
@@ -71,3 +77,17 @@ function setFormValues(title, content, index, buttonText) {
   indexField.value = index;
   submitButton.value = buttonText;
 }
+
+// Autosave drafts:
+titleField.addEventListener("input", () =>
+  localStorage.setItem(
+    `julekalender-autosave-title-${indexField.value}`,
+    titleField.value
+  )
+);
+contentField.addEventListener("input", () =>
+  localStorage.setItem(
+    `julekalender-autosave-content-${indexField.value}`,
+    contentField.value
+  )
+);
