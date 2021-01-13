@@ -14,6 +14,7 @@ urlpatterns = [
     path("rest/score/<int:score_id>", rest_apis.score, name="scoreRestId"),
     path("rest/pdf/", rest_apis.pdf, name="pdfRest"),
     path("rest/pdf/<int:pk>", rest_apis.pdf, name="pdfRestPk"),
+    path("rest/pdf/processingstatus/<int:pk>", rest_apis.pdfProcessingStatus, name="pdfProcessingStatus"),
     path("rest/part/", rest_apis.part, name="partRest"),
     path("rest/part/<int:pk>", rest_apis.part, name="partRestPk"),
 ]

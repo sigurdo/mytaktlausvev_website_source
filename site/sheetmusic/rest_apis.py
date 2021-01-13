@@ -58,6 +58,16 @@ def pdf(request: django.http.HttpRequest, pk=None):
         Pdf.objects.filter(pk=pk).delete()
         return django.http.HttpResponse("deleted")
 
+def pdfProcessingStatus(request: django.http.HttpRequest, pk):
+    user = request.user
+    if request.method == "GET":
+        if not pk:
+            return django.http.HttpResponseBadRequest("Ingen pdf_pk oppgitt")
+        if not user.has_perm("sheetmusic.get_pdf"):
+            return django.http.HttpResponseForbidden("Du har ikke rettigheter til å hente pdf-prosesserings-status")
+        pdf = Pdf.objects.get(pk=pk)
+        return django.http.JsonResponse({ "processing": pdf.processing })
+
 def part(request: django.http.HttpRequest, pk=None):
     user = request.user
     if request.method == "GET":

@@ -3,6 +3,9 @@
 import django
 import os
 import yaml
+import threading
+import multiprocessing
+
 from django.shortcuts import render
 from django.http import HttpResponseRedirect, HttpRequest
 from django.core.paginator import Paginator
@@ -77,11 +80,35 @@ def deleteScore(request, score_id=0):
         Score.objects.filter(id=score_id).delete()
         return HttpResponseRedirect(reverse("sheetmusic"))
 
+def processPdf(pdf: Pdf):
+    pdf.processing = True
+    pdf.save()
+    try:
+        imagesDirPath = os.path.join(django.conf.settings.MEDIA_ROOT, "sheetmusic", "images")
+        if not os.path.exists(imagesDirPath): os.mkdir(imagesDirPath)
+        imagesDirPath = os.path.join(imagesDirPath, str(pdf.pk))
+        if not os.path.exists(imagesDirPath): os.mkdir(imagesDirPath)
+
+        instrumentsYamlPath = "site/sheetmusic/sheetmusicEngine/instruments.yaml"
+        with open(instrumentsYamlPath, "r") as file:
+            instruments = yaml.safe_load(file)
+        
+        print("skal prøve:", pdf.file.path, imagesDirPath)
+        # Gjør dette i en egen prosess for å ikke påvirke responstida på andre requests som må besvares i mellomtida:
+        parts, instrumentsDefaultParts = multiprocessing.Pool().apply(processUploadedPdf, (pdf.file.path, imagesDirPath, instruments))
+        print("Result:", parts, instrumentsDefaultParts)
+        for part in parts:
+            part = Part(name=part["name"], pdf=pdf, fromPage=part["fromPage"], toPage=part["toPage"], timestamp=timezone.now())
+            part.save()
+    finally:
+        pdf.processing = False
+        pdf.save()
+
 def uploadPdf(request: HttpRequest, score_id=None):
     form = UploadPdfForm()
     if request.method == "POST":
         if not request.user.has_perm("sheetmusic.add_pdf"):
-            return django.http.HttpResponseForbidden("Du har ikke retigheter til å laste opp pdfer")
+            return django.http.HttpResponseForbidden("Du har ikke rettigheter til å laste opp pdfer")
         form = UploadPdfForm(request.POST, request.FILES)
         if form.is_valid():
             pdf: Pdf = form.save(commit=False)
@@ -90,20 +117,10 @@ def uploadPdf(request: HttpRequest, score_id=None):
             pdf.save()
             print(pdf.file.path)
 
-            imagesDirPath = os.path.join(django.conf.settings.MEDIA_ROOT, "sheetmusic", "images")
-            if not os.path.exists(imagesDirPath): os.mkdir(imagesDirPath)
-            imagesDirPath = os.path.join(imagesDirPath, str(pdf.pk))
-            if not os.path.exists(imagesDirPath): os.mkdir(imagesDirPath)
-
-            instrumentsYamlPath = "site/sheetmusic/sheetmusicEngine/instruments.yaml"
-            with open(instrumentsYamlPath, "r") as file:
-                instruments = yaml.safe_load(file)
+            pdf.processing = True
+            pdf.save()
+            processPdfThread = threading.Thread(target=processPdf, args=[pdf])
+            processPdfThread.start()
             
-            print("skal prøve:", pdf.file.path, imagesDirPath)
-            parts, instrumentsDefaultParts = processUploadedPdf(pdf.file.path, imagesDirPath, instruments)
-            print("Result:", parts, instrumentsDefaultParts)
-            for part in parts:
-                part = Part(name=part["name"], pdf=pdf, fromPage=part["fromPage"], toPage=part["toPage"], timestamp=timezone.now())
-                part.save()
-            return HttpResponseRedirect(reverse("sheetmusic"))
+            return HttpResponseRedirect(reverse("editScore", args=[score_id]))
     return render(request, "sheetmusic/uploadPdfForm.html", { "form": form })

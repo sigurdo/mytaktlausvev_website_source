@@ -24,6 +24,7 @@ class Pdf(models.Model):
     file = models.FileField(upload_to='sheetmusic/original_pdfs/', default=None, validators=[FileTypeValidator(
         allowed_types=["application/pdf", "application/x-pdf", "application/x-bzpdf", "application/x-gzpdf"],
         allowed_extensions=[".pdf", ".PDF"])])
+    processing = models.BooleanField(default=False)
     timestamp = models.DateTimeField()
 
 @django.dispatch.receiver(django.db.models.signals.pre_delete, sender=Pdf, dispatch_uid="pdf_delete_images")

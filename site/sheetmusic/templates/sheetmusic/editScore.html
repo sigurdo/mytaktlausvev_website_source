@@ -15,7 +15,7 @@
 <p>
     <ul>
     {% for pdf in pdfs %}
-    <li> <a href="{{pdf.file.url}}"> {{ pdf.file.displayname }} </a> <button class="delete-pdf" data-pk="{{ pdf.pk }}" data-displayname="{{ pdf.file.displayname }}"> X </button> </li>
+    <li> <a href="{{pdf.file.url}}"> {{ pdf.file.displayname }} </a> {% if pdf.processing %} <span class="pdf-processing-status" data-pk="{{ pdf.pk }}" data-displayname="{{ pdf.file.displayname }}"> (prosessering pågår) </span> {% endif %} <button class="delete-pdf" data-pk="{{ pdf.pk }}" data-displayname="{{ pdf.file.displayname }}"> X </button> </li>
     {% endfor %}
     </ul>
 </p>
@@ -30,7 +30,7 @@
         <th> Slett </th>
     </tr>
 {% for part in parts %}
-    <tr>
+    <tr class="part-tr" data-pdf-pk="{{ part.pdf.pk }}">
         <td> {{ part.name }} </td>
         <td> <a href="{{ part.pdf.file.url }}#page={{ part.fromPage }}"> {{ part.pdfName }} </a> </td>
         <td>
