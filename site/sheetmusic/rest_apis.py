@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 import json
 
-from sheetmusic.models import Score, Pdf
+from sheetmusic.models import Score, Pdf, Part
 from django.contrib.auth.models import User
 
 def score(request: django.http.HttpRequest, score_id=None):
@@ -56,4 +56,24 @@ def pdf(request: django.http.HttpRequest, pk=None):
         if not user.has_perm("sheetmusic.delete_pdf"):
             return django.http.HttpResponseForbidden("Du har ikke rettigheter til å slette pdf")
         Pdf.objects.filter(pk=pk).delete()
+        return django.http.HttpResponse("deleted")
+
+def part(request: django.http.HttpRequest, pk=None):
+    user = request.user
+    if request.method == "GET":
+        return django.http.HttpResponse("Ikke implementert", status=501)
+    elif request.method == "POST":
+        return django.http.HttpResponse("Ikke implementert", status=501)
+    elif request.method == "PUT":
+        return django.http.HttpResponse("Ikke implementert", status=501)
+    if request.method == "DELETE":
+        if not pk:
+            return django.http.HttpResponseBadRequest("Ingen part_pk oppgitt")
+        if not user.has_perm("sheetmusic.delete_part"):
+            return django.http.HttpResponse
+            Forbidden("Du har ikke rettigheter til å slette stemmer")
+        toDelete = Part.objects.filter(pk=pk)
+        if len(toDelete) == 0:
+            return django.http.HttpResponseBadRequest(f"Finner ingen stemmer med pk lik {pk}")
+        toDelete.delete()
         return django.http.HttpResponse("deleted")

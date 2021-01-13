@@ -1,27 +1,29 @@
 {% extends './base.html' %}
 {% block content %}
 
-<h1> {{ score.title }} </h1>
+<h1> {{ score.title }} <a href="{% url 'editScore' score.pk %}" class="float-right h6"> rediger </a></h1>
 
-<h2> Opplastede pdfer </h2>
+<h2> Stemmeoversikt </h2>
 
-<ul>
-{% for pdf in pdfs %}
-<li> <a href="{{pdf.file.url}}"> {{ pdf.file.displayname }} </a> <button class="delete-pdf" data-pk="{{ pdf.pk }}"> X </button> </li>
-{% endfor %}
-</ul>
-
-<h2> Stemmer </h2>
-
-<ul>
+<table class="table table-bordered">
+    <tr>
+        <th> Navn på stemme </th>
+        <th> Kilde </th>
+        <th> Sidenummer </th>
+    </tr>
 {% for part in parts %}
-    <li> {{ part.name }}, fra side {{ part.fromPage }} til side {{ part.toPage }} i {{ part.pdfName }} </li>
+    <tr>
+        <td> {{ part.name }} </td>
+        <td> <a href="{{ part.pdf.file.url }}#page={{ part.fromPage }}"> {{ part.pdfName }} </a> </td>
+        <td>
+            {% if part.fromPage == part.toPage %}
+                {{ part.fromPage }}
+            {% else %}
+                {{ part.fromPage }}-{{ part.toPage }}
+            {% endif %}
+        </td>
+    </tr>
 {% endfor %}
-</ul>
-
-{% block js %}
-    {% load static %}
-    <script src="{% static 'notar/viewScore.js' %}"></script>
-{% endblock%}
+</table>
 
 {% endblock %}
