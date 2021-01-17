@@ -246,7 +246,7 @@ def processUploadedPdf(pdfPath, imagesDirPath, instruments):
 				parts.append({
 					"name": lastPartName,
 					"fromPage": lastPartNamePage,
-					"toPage": i+1
+					"toPage": i if j == 0 else i+1
 				})
 				for k in range(len(lastInstruments)):
 					if instrumentsDefaultParts[lastInstruments[k]] == None:

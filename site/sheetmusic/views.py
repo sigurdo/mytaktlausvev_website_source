@@ -38,7 +38,7 @@ def editScore(request: HttpRequest, score_id=None):
     parts = []
     for pdf in pdfs:
         pdf.file.displayname = os.path.basename(pdf.file.name)
-        parts.extend(Part.objects.filter(pdf=pdf))
+        parts.extend(Part.objects.filter(pdf=pdf).order_by('fromPage', 'toPage', 'name'))
     for part in parts:
         part.pdfName = os.path.basename(part.pdf.file.name)
     return render(request, "sheetmusic/editScore.html", { "score": score, "pdfs": pdfs, "parts": parts })

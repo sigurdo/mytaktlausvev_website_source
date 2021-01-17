@@ -1,6 +1,13 @@
 {% extends './base.html' %}
 {% block content %}
 
+<style>
+    .error-feedback {
+        color: red;
+        font-size: 14px;
+    }
+</style>
+
 <h1> {{ score.title }} <a href="{% url 'viewScore' score.pk %}" class="float-right h6"> se på </a> </h1>
 
 <h2> Handlinger </h2>
@@ -22,6 +29,10 @@
 
 <h2> Stemmeoversikt </h2>
 
+<p>
+    <i> (endringer lagres automatisk) </i>
+</p>
+
 <table class="table table-bordered">
     <tr>
         <th> Navn på stemme </th>
@@ -31,14 +42,14 @@
     </tr>
 {% for part in parts %}
     <tr class="part-tr" data-pdf-pk="{{ part.pdf.pk }}">
-        <td> {{ part.name }} </td>
+        <td>
+            <input type="text" autocomplete="off"  class="part-name w-100" data-pk="{{ part.pk }}" value="{{ part.name }}">
+            <p class="error-feedback" hidden> Det skjedde en feil ved lagring av dette feltet: <span id="error-feedback-msg-{{ part.pk }}"></span> </p>
+        </td>
         <td> <a href="{{ part.pdf.file.url }}#page={{ part.fromPage }}"> {{ part.pdfName }} </a> </td>
         <td>
-            {% if part.fromPage == part.toPage %}
-                {{ part.fromPage }}
-            {% else %}
-                {{ part.fromPage }}-{{ part.toPage }}
-            {% endif %}
+            <input type="text" autocomplete="off" class="part-pagenumbers" style="width: 60px;" data-pk="{{ part.pk }}" value="{% if part.fromPage == part.toPage %}{{ part.fromPage }}{% else %}{{ part.fromPage }}-{{ part.toPage }}{% endif %}">
+            <p class="error-feedback" hidden> Det skjedde en feil ved lagring av dette feltet: <span id="error-feedback-msg-part-pagenumbers-{{ part.pk }}"></span> </p>
         </td>
         <td>
             <button class="delete-part" title="Slett {{ part.name }}" data-pk="{{ part.pk }}" data-name="{{ part.name }}"> X </button>
@@ -50,6 +61,6 @@
 {% block js %}
     {% load static %}
     <script src="{% static 'notar/editScore.js' %}"></script>
-{% endblock%}
+{% endblock %}
 
 {% endblock %}

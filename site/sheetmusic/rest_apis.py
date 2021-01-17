@@ -65,7 +65,10 @@ def pdfProcessingStatus(request: django.http.HttpRequest, pk):
             return django.http.HttpResponseBadRequest("Ingen pdf_pk oppgitt")
         if not user.has_perm("sheetmusic.get_pdf"):
             return django.http.HttpResponseForbidden("Du har ikke rettigheter til å hente pdf-prosesserings-status")
-        pdf = Pdf.objects.get(pk=pk)
+        try:
+            pdf = Pdf.objects.get(pk=pk)
+        except Pdf.DoesNotExist:
+            return django.http.HttpResponseBadRequest(f"Ingen pdf med pk={pk}")
         return django.http.JsonResponse({ "processing": pdf.processing })
 
 def part(request: django.http.HttpRequest, pk=None):
@@ -75,15 +78,31 @@ def part(request: django.http.HttpRequest, pk=None):
     elif request.method == "POST":
         return django.http.HttpResponse("Ikke implementert", status=501)
     elif request.method == "PUT":
+        if not pk:
+            return django.http.HttpResponseBadRequest("Ingen part_pk oppgitt")
+        if not user.has_perm("sheetmusic.change_part"):
+            return django.http.HttpResponseForbidden("Du har ikke rettigheter til å endre stemmer")
+        try:
+            part = Part.objects.get(pk=pk)
+        except Part.DoesNotExist:
+            return django.http.HttpResponseBadRequest(f"Ingen stemme med pk={pk}")
+        data = json.loads(request.body)
+        for key in data:
+            if key == "name": part.name = data[key]
+            elif key == "fromPage": part.fromPage = data[key]
+            elif key == "toPage": part.toPage = data[key]
+            else: return django.http.HttpResponseBadRequest("Ikke implementert", status=501)
+        part.save()
+        return django.http.HttpResponse("updated")
         return django.http.HttpResponse("Ikke implementert", status=501)
     if request.method == "DELETE":
         if not pk:
             return django.http.HttpResponseBadRequest("Ingen part_pk oppgitt")
         if not user.has_perm("sheetmusic.delete_part"):
-            return django.http.HttpResponse
-            Forbidden("Du har ikke rettigheter til å slette stemmer")
-        toDelete = Part.objects.filter(pk=pk)
-        if len(toDelete) == 0:
-            return django.http.HttpResponseBadRequest(f"Finner ingen stemmer med pk lik {pk}")
-        toDelete.delete()
+            return django.http.HttpResponseForbidden("Du har ikke rettigheter til å slette stemmer")
+        try:
+            part = Part.objects.get(pk=pk)
+        except Part.DoesNotExist:
+            return django.http.HttpResponseBadRequest(f"Finner ingen stemme med pk lik {pk}")
+        part.delete()
         return django.http.HttpResponse("deleted")
