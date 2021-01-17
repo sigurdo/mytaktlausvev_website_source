@@ -1,29 +1,4 @@
-// Getting CSRF token:
-function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            // Does this cookie string begin with the name we want?
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
-const csrfToken = getCookie('csrftoken');
 
-// data er optional altså
-async function fetchWithCsrf(method, url, data) {
-    const body = data ? JSON.stringify(data) : undefined;
-    return fetch(new Request(url, { method, body,
-        headers: { 'X-CSRFToken': csrfToken },
-        mode: 'same-origin'
-    }));
-}
 
 
 // Registering all event listeners:
@@ -37,11 +12,7 @@ for (let i = 0; i < deletePdfButtons.length; i++) {
         let displayname = button.getAttribute('data-displayname');
         let p = button.parentNode;
         if (!confirm(`Er du sikker på at du vil slette ${displayname}?`)) return;
-        fetch(new Request(`/notar/rest/pdf/${pk}`, {
-            headers: { 'X-CSRFToken': csrfToken },
-            method: 'DELETE',
-            mode: 'same-origin'
-        })).then(response => {
+        fetchWithCsrf('DELETE', `/notar/rest/pdf/${pk}`).then(response => {
             if (response.ok) {
                 trsToDelete = document.querySelectorAll(`.part-tr[data-pdf-pk="${pk}"]`);
                 for (let j = 0; j < trsToDelete.length; j++) {
@@ -60,11 +31,7 @@ for (let i = 0; i < deletePartButtons.length; i++) {
         let button = ev.target;
         let tr = button.parentNode.parentNode;
         if (!confirm(`Er du sikker på at du vil slette ${button.getAttribute('data-name')}?`)) return;
-        fetch(new Request(`/notar/rest/part/${button.getAttribute('data-pk')}`, {
-            headers: { 'X-CSRFToken': csrfToken },
-            method: 'DELETE',
-            mode: 'same-origin'
-        })).then(response => {
+        fetchWithCsrf('DELETE', `/notar/rest/part/${button.getAttribute('data-pk')}`).then(response => {
             if (response.ok) tr.parentNode.removeChild(tr);
         });
     });
@@ -73,21 +40,22 @@ for (let i = 0; i < deletePartButtons.length; i++) {
 // Inputs for changing part names:
 let partNameInputs = document.querySelectorAll('input.part-name');
 for (let i = 0; i < partNameInputs.length; i++) {
-    partNameInputs[i].addEventListener('input', ev => {
-        let input = ev.target;
-        let pk = input.getAttribute('data-pk')
-        fetchWithCsrf('PUT', `/notar/rest/part/${pk}`, { name: input.value }).then(response => {
-            let feedbackMsgSpan = document.querySelector(`#error-feedback-msg-${pk}`);
-            let p = feedbackMsgSpan.parentNode;
-            if (!response.ok) {
-                response.text().then(reason => {
-                    feedbackMsgSpan.innerHTML = reason;
-                    p.removeAttribute('hidden');
-                });
-            }
-            else {
-                p.setAttribute('hidden', '');
-            }
+    let input = partNameInputs[i];
+    let pk = input.getAttribute('data-pk');
+    let feedbackSpan = document.querySelector(`#error-feedback-msg-${pk}`);
+    let feedbackP = feedbackSpan.parentNode;
+    let giveFeedback = msg => {
+        feedbackSpan.innerHTML = msg;
+        feedbackP.removeAttribute('hidden');
+    }
+    let clearFeedback = () => {
+        feedbackP.setAttribute('hidden', '');
+        feedbackSpan.innerHTML = '';
+    }
+    input.addEventListener('input', ev => {
+        fetchWithCsrf('PUT', `/notar/rest/part/${pk}`, { name: input.value }).then(async response => {
+            if (response.ok) clearFeedback();
+            else giveFeedback(await response.text());
         })
     })
 }
@@ -125,8 +93,8 @@ for (let i = 0; i < partPagenumbersInputs.length; i++) {
             return giveFeedback(wrongFormatMessage);
         }
         fetchWithCsrf('PUT', `/notar/rest/part/${pk}`, { fromPage, toPage }).then( async response => {
-            if (!response.ok) giveFeedback(await response.text());
-            else clearFeedback();
+            if (response.ok) clearFeedback();
+            else giveFeedback(await response.text());
         });
     });
 }
@@ -136,16 +104,15 @@ for (let i = 0; i < partPagenumbersInputs.length; i++) {
 // Fetch pdf processing statuses:
 let pdfProcessingStatusSpans = document.querySelectorAll('.pdf-processing-status');
 for (let i = 0; i < pdfProcessingStatusSpans.length; i++) {
+    let span = pdfProcessingStatusSpans[i];
     let fetchFunction = () => {
-        let span = pdfProcessingStatusSpans[i];
-        fetch(new Request(`/notar/rest/pdf/processingstatus/${span.getAttribute('data-pk')}`, {
-            headers: { 'X-CSRFToken': csrfToken },
-            method: 'GET',
-            mode: 'same-origin'
-        })).then(response => response.json()).then(({ processing }) => {
-            if (processing) return setTimeout(fetchFunction, 1000);
-            if (confirm(`Prosessering av ${span.getAttribute('data-displayname')} er ferdig, vil du laste siden på nytt?`)) location.reload();
-            span.parentNode.removeChild(span);
+        fetchWithCsrf('GET', `/notar/rest/pdf/processingstatus/${span.getAttribute('data-pk')}`).then(async response => {
+            if (response.ok) {
+                let { processing } = await response.json();
+                if (processing) return setTimeout(fetchFunction, 1000);
+                if (confirm(`Prosessering av ${span.getAttribute('data-displayname')} er ferdig, vil du laste siden på nytt?`)) location.reload();
+                span.parentNode.removeChild(span);
+            }
         });
     }
     setTimeout(fetchFunction, 1000);
