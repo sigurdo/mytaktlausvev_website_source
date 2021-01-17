@@ -1,7 +1,7 @@
 """Urls for the 'sheetmusic'-app"""
 from django.urls import path
 from sheetmusic import views
-from sheetmusic import rest_apis
+from sheetmusic import fetchEndpoints
 
 urlpatterns = [
     path("", views.sheetmusic, name="sheetmusic"),
@@ -10,11 +10,11 @@ urlpatterns = [
     path("score/create/", views.createScore, name="createScore"),
     path("score/delete/<int:score_id>", views.deleteScore, name="deleteScore"),
     path("pdf/upload/<int:score_id>/", views.uploadPdf, name="uploadPdf"),
-    path("rest/score", rest_apis.score, name="scoreRest"),
-    path("rest/score/<int:score_id>", rest_apis.score, name="scoreRestId"),
-    path("rest/pdf/", rest_apis.pdf, name="pdfRest"),
-    path("rest/pdf/<int:pk>", rest_apis.pdf, name="pdfRestPk"),
-    path("rest/pdf/processingstatus/<int:pk>", rest_apis.pdfProcessingStatus, name="pdfProcessingStatus"),
-    path("rest/part/", rest_apis.part, name="partRest"),
-    path("rest/part/<int:pk>", rest_apis.part, name="partRestPk"),
+    path("fetch/score", fetchEndpoints.score, name="fetchScore"),
+    path("fetch/score/<int:score_id>", fetchEndpoints.score, name="fetchScoreId"),
+    path("fetch/pdf/", fetchEndpoints.pdf, name="fetchPdf"),
+    path("fetch/pdf/<int:pk>", fetchEndpoints.pdf, name="fetchPdfPk"),
+    path("fetch/pdf/processingstatus/<int:pk>", fetchEndpoints.pdfProcessingStatus, name="fetchPdfProcessingStatus"),
+    path("fetch/part/", fetchEndpoints.part, name="fetchPart"),
+    path("fetch/part/<int:pk>", fetchEndpoints.part, name="fetchPartPk"),
 ]

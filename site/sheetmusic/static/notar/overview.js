@@ -26,7 +26,7 @@ for (let i = 0; i < deleteButtons.length; i++) {
     deleteButtons[i].addEventListener('click', ev => {
         let button = ev.target;
         let p = button.parentNode;
-        fetch(new Request(`/notar/rest/score/${button.getAttribute('data-id')}`, {
+        fetch(new Request(`/notar/fetch/score/${button.getAttribute('data-id')}`, {
             headers: { 'X-CSRFToken': csrfToken },
             method: 'DELETE',
             mode: 'same-origin'
@@ -38,7 +38,7 @@ for (let i = 0; i < deleteButtons.length; i++) {
 
 document.querySelector('#test-fetch').addEventListener('click', () => {
     console.log('Klikka');
-    fetch(new Request('/notar/rest/score/25', {
+    fetch(new Request('/notar/fetch/score/25', {
         headers: { 'X-CSRFToken': csrfToken },
         method: 'DELETE',
         mode: 'same-origin',

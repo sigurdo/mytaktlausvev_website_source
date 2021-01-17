@@ -12,7 +12,7 @@ for (let i = 0; i < deletePdfButtons.length; i++) {
         let displayname = button.getAttribute('data-displayname');
         let p = button.parentNode;
         if (!confirm(`Er du sikker på at du vil slette ${displayname}?`)) return;
-        fetchWithCsrf('DELETE', `/notar/rest/pdf/${pk}`).then(response => {
+        fetchWithCsrf('DELETE', `/notar/fetch/pdf/${pk}`).then(response => {
             if (response.ok) {
                 trsToDelete = document.querySelectorAll(`.part-tr[data-pdf-pk="${pk}"]`);
                 for (let j = 0; j < trsToDelete.length; j++) {
@@ -31,7 +31,7 @@ for (let i = 0; i < deletePartButtons.length; i++) {
         let button = ev.target;
         let tr = button.parentNode.parentNode;
         if (!confirm(`Er du sikker på at du vil slette ${button.getAttribute('data-name')}?`)) return;
-        fetchWithCsrf('DELETE', `/notar/rest/part/${button.getAttribute('data-pk')}`).then(response => {
+        fetchWithCsrf('DELETE', `/notar/fetch/part/${button.getAttribute('data-pk')}`).then(response => {
             if (response.ok) tr.parentNode.removeChild(tr);
         });
     });
@@ -53,7 +53,7 @@ for (let i = 0; i < partNameInputs.length; i++) {
         feedbackSpan.innerHTML = '';
     }
     input.addEventListener('input', ev => {
-        fetchWithCsrf('PUT', `/notar/rest/part/${pk}`, { name: input.value }).then(async response => {
+        fetchWithCsrf('PUT', `/notar/fetch/part/${pk}`, { name: input.value }).then(async response => {
             if (response.ok) clearFeedback();
             else giveFeedback(await response.text());
         })
@@ -92,7 +92,7 @@ for (let i = 0; i < partPagenumbersInputs.length; i++) {
         if (isNaN(fromPage) ||  isNaN(toPage) || fromPage <= 0 || toPage <= 0 || fromPage % 1 != 0 || toPage % 1 != 0 || toPage < fromPage) {
             return giveFeedback(wrongFormatMessage);
         }
-        fetchWithCsrf('PUT', `/notar/rest/part/${pk}`, { fromPage, toPage }).then( async response => {
+        fetchWithCsrf('PUT', `/notar/fetch/part/${pk}`, { fromPage, toPage }).then( async response => {
             if (response.ok) clearFeedback();
             else giveFeedback(await response.text());
         });
@@ -106,7 +106,7 @@ let pdfProcessingStatusSpans = document.querySelectorAll('.pdf-processing-status
 for (let i = 0; i < pdfProcessingStatusSpans.length; i++) {
     let span = pdfProcessingStatusSpans[i];
     let fetchFunction = () => {
-        fetchWithCsrf('GET', `/notar/rest/pdf/processingstatus/${span.getAttribute('data-pk')}`).then(async response => {
+        fetchWithCsrf('GET', `/notar/fetch/pdf/processingstatus/${span.getAttribute('data-pk')}`).then(async response => {
             if (response.ok) {
                 let { processing } = await response.json();
                 if (processing) return setTimeout(fetchFunction, 1000);
