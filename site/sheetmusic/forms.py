@@ -1,8 +1,9 @@
 """Forms for the 'sheetmusic'-app"""
 from django import forms
+from django.forms import modelformset_factory
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
-from sheetmusic.models import Score, Pdf
+from sheetmusic.models import Score, Pdf, Part
 
 
 class CreateScoreForm(forms.ModelForm):
@@ -22,6 +23,26 @@ class CreateScoreForm(forms.ModelForm):
         labels = {
             "title": "Tittel"
         }
+
+class EditPartForm(forms.ModelForm):
+    """ Form for editing a score """
+    helper = FormHelper()
+    helper.form_id = "sheetmusic_edit_part_form"
+    helper.form_method = "post"
+    helper.form_action = "login"
+    helper.form_class = "form-horizontal"
+    helper.label_class = "col-lg-12 form-label"
+    helper.field_class = "col-lg-6 form-field"
+    # helper.add_input(Submit("submit", "Lagre"))
+
+    class Meta:
+        model = Part
+        fields = ["name", "fromPage", "toPage"]
+
+EditScoreForm = modelformset_factory(Part, fields=("name", "fromPage", "toPage",))
+EditScoreForm_helper = FormHelper()
+EditScoreForm_helper.add_input(Submit("submit", "Lagre"))
+EditScoreForm_helper.template = 'bootstrap/table_inline_formset.html'
 
 class UploadPdfForm(forms.ModelForm):
     helper = FormHelper()

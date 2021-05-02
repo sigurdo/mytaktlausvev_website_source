@@ -227,6 +227,7 @@ def predictParts(detectionData, instruments, imageWidth, imageHeight):
 def processUploadedPdf(pdfPath, imagesDirPath, instruments):
 	parts = []
 	instrumentsDefaultParts = { instrument: None for instrument in instruments }
+	instrumentsDefaultParts["full score"] = None
 	imagePaths = generateImagesFromPdf(pdfPath, imagesDirPath, 1, None)
 	lastPartName = ""
 	lastPartNamePage = 0

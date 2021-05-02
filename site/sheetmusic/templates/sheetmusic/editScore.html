@@ -30,9 +30,24 @@
 <h2> Stemmeoversikt </h2>
 
 <p>
-    <i> (endringer lagres automatisk) </i>
+    <i> (endringer lagres ikke automatisk) </i>
 </p>
 
+{% comment %}
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {% for subform in EditScoreForm %}
+        {{ subform.as_table }}
+    {% endfor %}
+    <input type="submit" value="Lagre">
+</form>
+{% endcomment %}
+
+{% csrf_token %}
+{% load crispy_forms_tags %}
+{% crispy EditScoreForm EditScoreForm_helper %}
+
+{% comment %}
 <table class="table table-bordered">
     <tr>
         <th> Navn på stemme </th>
@@ -57,6 +72,7 @@
     </tr>
 {% endfor %}
 </table>
+{% endcomment %}
 
 {% block js %}
     {% load static %}

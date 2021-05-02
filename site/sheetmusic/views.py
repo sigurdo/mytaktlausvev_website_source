@@ -13,9 +13,12 @@ from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.utils import timezone
 
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic.edit import CreateView, UpdateView
+
 from django.contrib.auth.models import User
 from sheetmusic.models import Score, Pdf, Part
-from sheetmusic.forms import CreateScoreForm, UploadPdfForm
+from sheetmusic.forms import CreateScoreForm, UploadPdfForm, EditScoreForm, EditScoreForm_helper
 
 from sheetmusic.sheetmusicEngine.sheeetmusicEngine import processUploadedPdf
 
@@ -41,7 +44,12 @@ def editScore(request: HttpRequest, score_id=None):
         parts.extend(Part.objects.filter(pdf=pdf).order_by('fromPage', 'toPage', 'name'))
     for part in parts:
         part.pdfName = os.path.basename(part.pdf.file.name)
-    return render(request, "sheetmusic/editScore.html", { "score": score, "pdfs": pdfs, "parts": parts })
+    return render(request, "sheetmusic/editScore.html", { "score": score, "pdfs": pdfs, "parts": parts, "EditScoreForm": EditScoreForm, "EditScoreForm_helper": EditScoreForm_helper })
+
+# class EditScore(LoginRequiredMixin, UpdateView):
+#     """ View for editing a score """
+#     model = Score
+#     form_class = 
 
 @login_required
 def createScore(request: HttpRequest):
