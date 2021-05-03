@@ -18,7 +18,7 @@ from django.views.generic.edit import CreateView, UpdateView
 
 from django.contrib.auth.models import User
 from sheetmusic.models import Score, Pdf, Part
-from sheetmusic.forms import CreateScoreForm, UploadPdfForm, EditScoreForm, EditScoreForm_helper
+from sheetmusic.forms import CreateScoreForm, UploadPdfForm, EditScoreForm, EditScoreForm_helper, EditPartForm
 
 from sheetmusic.sheetmusicEngine.sheeetmusicEngine import processUploadedPdf
 
@@ -44,7 +44,7 @@ def editScore(request: HttpRequest, score_id=None):
         parts.extend(Part.objects.filter(pdf=pdf).order_by('fromPage', 'toPage', 'name'))
     for part in parts:
         part.pdfName = os.path.basename(part.pdf.file.name)
-    return render(request, "sheetmusic/editScore.html", { "score": score, "pdfs": pdfs, "parts": parts, "EditScoreForm": EditScoreForm, "EditScoreForm_helper": EditScoreForm_helper })
+    return render(request, "sheetmusic/editScore.html", { "score": score, "pdfs": pdfs, "parts": parts, "EditScoreForm": EditScoreForm(), "EditScoreForm_helper": EditScoreForm_helper(), "EditPartForm": EditPartForm })
 
 # class EditScore(LoginRequiredMixin, UpdateView):
 #     """ View for editing a score """
