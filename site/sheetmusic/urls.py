@@ -5,8 +5,8 @@ from sheetmusic import fetchEndpoints
 
 urlpatterns = [
     path("", views.sheetmusic, name="sheetmusic"),
-    path("score/view/<int:score_id>", views.viewScore, name="viewScore"),
-    path("score/edit/<int:score_id>", views.editScore, name="editScore"),
+    path("score/view/<slug:pk>", views.ScoreView.as_view(), name="viewScore"),
+    path("score/edit/<slug:pk>", views.ScoreUpdate.as_view(), name="editScore"),
     path("score/create/", views.createScore, name="createScore"),
     path("score/delete/<int:score_id>", views.deleteScore, name="deleteScore"),
     path("pdf/upload/<int:score_id>/", views.uploadPdf, name="uploadPdf"),

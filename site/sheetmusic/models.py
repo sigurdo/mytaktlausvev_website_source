@@ -10,7 +10,7 @@ class Score(models.Model):
     """ Model representing a score """
     title = models.CharField(max_length=255)
     # description = models.CharField(max_length=2000)
-    timestamp = models.DateTimeField()
+    timestamp = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ["-timestamp"]
@@ -25,7 +25,7 @@ class Pdf(models.Model):
         allowed_types=["application/pdf", "application/x-pdf", "application/x-bzpdf", "application/x-gzpdf"],
         allowed_extensions=[".pdf", ".PDF"])])
     processing = models.BooleanField(default=False)
-    timestamp = models.DateTimeField()
+    timestamp = models.DateTimeField(auto_now_add=True)
 
 @django.dispatch.receiver(django.db.models.signals.pre_delete, sender=Pdf, dispatch_uid="pdf_delete_images")
 def pdf_pre_delete_receiver(sender, instance: Pdf, using, **kwargs):
@@ -42,7 +42,7 @@ class Part(models.Model):
     pdf = models.ForeignKey(Pdf, on_delete=models.CASCADE)
     fromPage = models.IntegerField(default=None)
     toPage = models.IntegerField(default=None)
-    timestamp = models.DateTimeField()
+    timestamp = models.DateTimeField(auto_now_add=True)
 
 class Instrument(models.Model):
     """ Model representing an instrument """

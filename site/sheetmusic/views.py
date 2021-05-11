@@ -5,6 +5,7 @@ import os
 import yaml
 import threading
 import multiprocessing
+from typing import Any, Dict
 
 from django.shortcuts import render
 from django.http import HttpResponseRedirect, HttpRequest
@@ -14,42 +15,54 @@ from django.urls import reverse
 from django.utils import timezone
 
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import View, DetailView
 from django.views.generic.edit import CreateView, UpdateView
 
 from django.contrib.auth.models import User
 from sheetmusic.models import Score, Pdf, Part
-from sheetmusic.forms import CreateScoreForm, UploadPdfForm, EditScoreForm, EditScoreForm_helper, EditPartForm
+from sheetmusic.forms import CreateScoreForm, UploadPdfForm, EditScoreForm, EditPartForm, EditPartFormSet, EditPartFormSetHelper
+from sheetmusic.utils import convertPagesToInputFormat, convertInputFormatToPages
 
 from sheetmusic.sheetmusicEngine.sheeetmusicEngine import processUploadedPdf
 
-@login_required
-def viewScore(request: HttpRequest, score_id=None):
-    score = Score.objects.get(pk=score_id)
-    pdfs = Pdf.objects.filter(score=score)
-    parts = []
-    for pdf in pdfs:
-        pdf.file.displayname = os.path.basename(pdf.file.name)
-        parts.extend(Part.objects.filter(pdf=pdf))
-    for part in parts:
-        part.pdfName = os.path.basename(part.pdf.file.name)
-    return render(request, "sheetmusic/viewScore.html", { "score": score, "pdfs": pdfs, "parts": parts })
+class ScoreView(LoginRequiredMixin, DetailView):
+    model = Score
 
-@login_required
-def editScore(request: HttpRequest, score_id=None):
-    score = Score.objects.get(pk=score_id)
-    pdfs = Pdf.objects.filter(score=score)
-    parts = []
-    for pdf in pdfs:
-        pdf.file.displayname = os.path.basename(pdf.file.name)
-        parts.extend(Part.objects.filter(pdf=pdf).order_by('fromPage', 'toPage', 'name'))
-    for part in parts:
-        part.pdfName = os.path.basename(part.pdf.file.name)
-    return render(request, "sheetmusic/editScore.html", { "score": score, "pdfs": pdfs, "parts": parts, "EditScoreForm": EditScoreForm(), "EditScoreForm_helper": EditScoreForm_helper(), "EditPartForm": EditPartForm })
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        pdfs = Pdf.objects.filter(score=self.get_object())
+        for pdf in pdfs:
+            pdf.file.displayname = os.path.basename(pdf.file.name)
 
-# class EditScore(LoginRequiredMixin, UpdateView):
-#     """ View for editing a score """
-#     model = Score
-#     form_class = 
+        parts = Part.objects.filter(pdf__in=pdfs)
+        for part in parts:
+            part.pdfName = os.path.basename(part.pdf.file.name)
+        
+        context = super().get_context_data(**kwargs)
+        context["pdfs"] = pdfs
+        context["parts"] = parts
+        return context
+
+class ScoreUpdate(LoginRequiredMixin, UpdateView):
+    model = Score
+    form_class = EditScoreForm
+
+    def get_success_url(self) -> str:
+        return reverse("sheetmusic")
+
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        pdfs = Pdf.objects.filter(score=self.get_object())
+        parts = []
+        for pdf in pdfs:
+            pdf.file.displayname = os.path.basename(pdf.file.name)
+            parts.extend(Part.objects.filter(pdf=pdf).order_by('fromPage', 'toPage', 'name'))
+        print("parts:", parts)
+        formset = EditPartFormSet(queryset=Part.objects.filter(pdf__in=pdfs).order_by('fromPage', 'toPage', 'name'))
+        context = super().get_context_data(**kwargs)
+        context["formset"] = formset
+        context["helper"] = EditPartFormSetHelper
+        context["pdfInfoForTable"] = [{ "url": part.pdf.file.url, "name": os.path.basename(part.pdf.file.name), "page": part.fromPage } for part in parts]
+        context["pdfs"] = pdfs
+        return context
 
 @login_required
 def createScore(request: HttpRequest):
@@ -60,9 +73,7 @@ def createScore(request: HttpRequest):
         if not user.has_perm("sheetmusic.add_score"):
             return django.http.HttpResponseForbidden("Du har ikke rettigheter til å opprette note")
         if form.is_valid():
-            score = form.save(commit=False)
-            score.timestamp = timezone.now()
-            score.save()
+            form.save()
             return HttpResponseRedirect(reverse("sheetmusic"))
     elif request.method == "GET":
         form = CreateScoreForm()

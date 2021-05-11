@@ -1,0 +1,66 @@
+{% extends './base.html' %}
+{% block content %}
+
+<style>
+    .error-feedback {
+        color: red;
+        font-size: 14px;
+    }
+</style>
+
+<h1> {{ score.title }} <a href="{% url 'viewScore' score.pk %}" class="float-right h6"> se på </a> </h1>
+
+<h2> Handlinger </h2>
+
+<ul>
+    <li> <a href="{% url 'uploadPdf' score.pk %}"> Last opp en ny pdf </a> </li>
+    <li> <a href="{% url 'uploadPdf' score.pk %}"> Registrer en ny stemme </a> </li>
+    <li> <a href="{% url 'uploadPdf' score.pk %}" onclick="return confirm('Er du sikker på at du vil slette {{ score.title }}? Dette vil slette alle relaterte pdfer og informasjon om instrumentstemmer.')"> Slett note </a> </li>
+</ul>
+
+<h2> Opplastede pdfer </h2>
+<p>
+    <ul>
+    {% for pdf in pdfs %}
+    <li> <a href="{{pdf.file.url}}"> {{ pdf.file.displayname }} </a> {% if pdf.processing %} <span class="pdf-processing-status" data-pk="{{ pdf.pk }}" data-displayname="{{ pdf.file.displayname }}"> (prosessering pågår) </span> {% endif %} <button class="delete-pdf" data-pk="{{ pdf.pk }}" data-displayname="{{ pdf.file.displayname }}"> X </button> </li>
+    {% endfor %}
+    </ul>
+</p>
+
+<h2> Stemmeoversikt </h2>
+
+<p>
+    <i> (endringer lagres ikke automatisk) </i>
+</p>
+
+{% comment %}
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {% for subform in EditScoreForm %}
+        {{ subform.as_table }}
+    {% endfor %}
+    <input type="submit" value="Lagre">
+</form>
+{% endcomment %}
+
+
+
+{% csrf_token %}
+{% load crispy_forms_tags %}
+{% crispy form %}
+
+
+
+{% csrf_token %}
+{% load crispy_forms_tags %}
+{% crispy formset helper %}
+
+
+
+{% block js %}
+    {% load static %}
+    <script src="{% static 'notar/fetching.js' %}"></script>
+    <script src="{% static 'notar/editScore.js' %}"></script>
+{% endblock %}
+
+{% endblock %}

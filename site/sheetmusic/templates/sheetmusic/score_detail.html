@@ -1,0 +1,29 @@
+{% extends './base.html' %}
+{% block content %}
+
+<h1> {{ object.title }} <a href="{% url 'editScore' object.pk %}" class="float-right h6"> rediger </a></h1>
+
+<h2> Stemmeoversikt </h2>
+
+<table class="table table-bordered">
+    <tr>
+        <th> Navn på stemme </th>
+        <th> Kilde </th>
+        <th> Sidenummer </th>
+    </tr>
+{% for part in parts %}
+    <tr>
+        <td> {{ part.name }} </td>
+        <td> <a href="{{ part.pdf.file.url }}#page={{ part.fromPage }}"> {{ part.pdfName }} </a> </td>
+        <td>
+            {% if part.fromPage == part.toPage %}
+                {{ part.fromPage }}
+            {% else %}
+                {{ part.fromPage }}-{{ part.toPage }}
+            {% endif %}
+        </td>
+    </tr>
+{% endfor %}
+</table>
+
+{% endblock %}

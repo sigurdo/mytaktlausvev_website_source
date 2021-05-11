@@ -43,36 +43,57 @@
 </form>
 {% endcomment %}
 
+
+
 {% csrf_token %}
 {% load crispy_forms_tags %}
 {% crispy EditScoreForm EditScoreForm_helper %}
 
-{% comment %}
-<table class="table table-bordered">
-    <tr>
-        <th> Navn på stemme </th>
-        <th> Kilde </th>
-        <th> Sidenummer </th>
-        <th> Slett </th>
-    </tr>
-{% for part in parts %}
-    <tr class="part-tr" data-pdf-pk="{{ part.pdf.pk }}">
-        <td>
-            <input type="text" autocomplete="off"  class="part-name w-100" data-pk="{{ part.pk }}" value="{{ part.name }}">
-            <p class="error-feedback" hidden> Det skjedde en feil ved lagring av dette feltet: <span id="error-feedback-msg-{{ part.pk }}"></span> </p>
-        </td>
-        <td> <a href="{{ part.pdf.file.url }}#page={{ part.fromPage }}"> {{ part.pdfName }} </a> </td>
-        <td>
-            <input type="text" autocomplete="off" class="part-pagenumbers" style="width: 60px;" data-pk="{{ part.pk }}" value="{% if part.fromPage == part.toPage %}{{ part.fromPage }}{% else %}{{ part.fromPage }}-{{ part.toPage }}{% endif %}">
-            <p class="error-feedback" hidden> Det skjedde en feil ved lagring av dette feltet: <span id="error-feedback-msg-part-pagenumbers-{{ part.pk }}"></span> </p>
-        </td>
-        <td>
-            <button class="delete-part" title="Slett {{ part.name }}" data-pk="{{ part.pk }}" data-name="{{ part.name }}"> X </button>
-        </td>
-    </tr>
-{% endfor %}
-</table>
-{% endcomment %}
+
+
+{% comment %} 
+<form action="{% url 'editScore' score.pk %}" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ EditScoreForm.management_form }}
+    {% for form in EditScoreForm %}
+        {% for field in form.hidden_fields %}
+            Yoyoyo <br>
+            {{ field }}
+        {% endfor %}
+        {% for field in form.visible_fields %}
+            Yoyoyo <br>
+            {{ field }}
+        {% endfor %}
+    {% endfor %}
+    <table class="table table-bordered">
+        <tr>
+            <th> Navn på stemme </th>
+            <th> Kilde </th>
+            <th> Sidenummer </th>
+            <th> Slett </th>
+        </tr>
+    {% for part in parts %}
+        <tr class="part-tr" data-pdf-pk="{{ part.pdf.pk }}">
+            <input type="hidden" name="form-{{ forloop.counter0 }}-pk" value="{{ part.pk }}">
+            <td>
+                <input type="text" name="form-{{ forloop.counter0 }}-name" autocomplete="off"  class="part-name w-100" data-pk="{{ part.pk }}" value="{{ part.name }}">
+                <p class="error-feedback" hidden> Det skjedde en feil ved lagring av dette feltet: <span id="error-feedback-msg-{{ part.pk }}"></span> </p>
+            </td>
+            <td> <a href="{{ part.pdf.file.url }}#page={{ part.fromPage }}"> {{ part.pdfName }} </a> </td>
+            <td>
+                <input type="text" name="form-{{ forloop.counter0 }}-pages" autocomplete="off" class="part-pagenumbers" style="width: 60px;" data-pk="{{ part.pk }}" value="{% if part.fromPage == part.toPage %}{{ part.fromPage }}{% else %}{{ part.fromPage }}-{{ part.toPage }}{% endif %}">
+                <p class="error-feedback" hidden> Det skjedde en feil ved lagring av dette feltet: <span id="error-feedback-msg-part-pagenumbers-{{ part.pk }}"></span> </p>
+            </td>
+            <td>
+                <button class="delete-part" title="Slett {{ part.name }}" data-pk="{{ part.pk }}" data-name="{{ part.name }}"> X </button>
+            </td>
+        </tr>
+    {% endfor %}
+    </table>
+
+    <input type="submit" name="submit" value="Lagre" class="btn btn-primary" id="submit-id-submit">
+</form> {% endcomment %}
+
 
 {% block js %}
     {% load static %}
