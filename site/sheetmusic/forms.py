@@ -5,19 +5,15 @@ from django.forms import formset_factory, modelformset_factory, widgets
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Fieldset, Field, HTML
 from crispy_forms.bootstrap import Alert
-from sheetmusic.models import Score, Pdf, Part
-from sheetmusic.utils import convertPagesToInputFormat, convertInputFormatToPages
+from .models import Score, Pdf, Part
+from .utils import convertPagesToInputFormat, convertInputFormatToPages
 
 
-class CreateScoreForm(forms.ModelForm):
+class ScoreCreateForm(forms.ModelForm):
     """Form for uploading a new score"""
     helper = FormHelper()
-    helper.form_id = "sheetmusic_upload_form"
     helper.form_method = "post"
-    helper.form_action = "login"
-    helper.form_class = "form-horizontal"
-    helper.label_class = "col-lg-12 form-label"
-    helper.field_class = "col-lg-6 form-field"
+    helper.label_class = "form-label"
     helper.add_input(Submit("submit", "Lagre"))
 
     class Meta:
@@ -37,35 +33,16 @@ def validatePagesField(value):
         raise ValidationError("Pages is not valid: %(value)s", params={ "value": value })
 
 class EditPartForm(forms.ModelForm):
-    """ Form for editing a score """
+    """ Form for editing a part """
     helper = FormHelper()
-    helper.form_id = "sheetmusic_edit_part_form"
     helper.form_method = "post"
-    helper.form_action = "login"
-    helper.form_class = "form-horizontal"
-    helper.label_class = "col-lg-12 form-label"
-    helper.field_class = "col-lg-6 form-field"
-    # helper.add_input(Submit("submit", "Lagre"))
-    # helper.layout = Layout(
-    #     Field("name"),
-    #     HTML("<a href='./'> link </a>"),
-    #     Field("pages"),
-    # )
-    pages = forms.CharField(
-        label="Sider",
-        max_length=0xff,
-        required=True,
-        validators=[validatePagesField],
-    )
-    # pk = forms.HiddenInput()
+    helper.label_class = "form-label"
 
     class Meta:
         model = Part
-        widgets = {
-            # "name": forms.Textarea(attrs={'cols': 80, 'rows': 20}),
-            "id": forms.HiddenInput()
-        }
-        fields = ["name", "pages", "id"]
+        fields=["name", "fromPage", "toPage", "pdf"]
+        labels={ "name": "Navn", "fromPage": "Første side", "toPage": "Siste side" }
+        widgets={ "fromPage": forms.NumberInput(attrs={ "size": 1 }), "toPage": forms.NumberInput(attrs={ "size": 1 }), "pdf": forms.HiddenInput() }
 
 # class EditPartForm(forms.Form):
 #     name = forms.CharField(
@@ -92,17 +69,30 @@ class EditPartFormSetHelper(FormHelper):
         self.add_input(Submit("submit", "Lagre"))
         self.template = 'sheetmusic/table_inline_formset_for_edit_score_form.html'
 
-EditPartFormSet = modelformset_factory(Part, fields=["name", "fromPage", "toPage"], extra=0)
+EditPartFormSet = modelformset_factory(Part,
+    # fields=["name", "fromPage", "toPage"],
+    # labels={ "name": "Navn", "fromPage": "Første side", "toPage": "Siste side" },
+    # widgets={ "fromPage": forms.NumberInput(attrs={ "size": 1 }), "toPage": forms.NumberInput(attrs={ "size": 1 }) },
+    form=EditPartForm,
+    extra=0)
+
+# class EditPdfForm(forms.ModelForm):
+#     """ Form for editing a part """
+#     helper = FormHelper()
+#     helper.form_method = "post"
+#     helper.label_class = "form-label"
+
+#     class Meta:
+#         model = Pdf
+#         fields=["name", "fromPage", "toPage", "pdf"]
+#         labels={ "name": "Navn", "fromPage": "Første side", "toPage": "Siste side" }
+#         widgets={ "fromPage": forms.NumberInput(attrs={ "size": 1 }), "toPage": forms.NumberInput(attrs={ "size": 1 }), "pdf": forms.HiddenInput() }
 
 class EditScoreForm(forms.ModelForm):
     """ Form for editing a score """
     helper = FormHelper()
-    helper.form_id = "sheetmusic_edit_part_form"
     helper.form_method = "post"
-    helper.form_action = "login"
-    helper.form_class = "form-horizontal"
-    helper.label_class = "col-lg-12 form-label"
-    helper.field_class = "col-lg-6 form-field"
+    helper.label_class = "form-label"
     helper.add_input(Submit("submit", "Lagre"))
 
     class Meta:
@@ -114,12 +104,8 @@ class EditScoreForm(forms.ModelForm):
 
 class UploadPdfForm(forms.ModelForm):
     helper = FormHelper()
-    helper.form_id = "sheetmusic_upload_pdf_form"
     helper.form_method = "post"
-    helper.form_action = "login"
-    helper.form_class = "form-horizontal"
-    helper.label_class = "col-lg-12 form-label"
-    helper.field_class = "col-lg-6 form-field"
+    helper.label_class = "form-label"
     helper.add_input(Submit("submit", "Last opp"))
 
     class Meta:

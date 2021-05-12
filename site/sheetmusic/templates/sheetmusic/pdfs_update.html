@@ -1,0 +1,18 @@
+{% extends './score_form_base.html' %}
+
+{% block activePdfsUpdate %}
+    active
+{% endblock %}
+
+
+
+{% block form %}
+
+
+{% csrf_token %}
+{% load crispy_forms_tags %}
+{% crispy form %}
+
+
+
+{% endblock %}

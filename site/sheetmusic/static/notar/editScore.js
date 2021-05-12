@@ -28,6 +28,7 @@ for (let i = 0; i < deletePdfButtons.length; i++) {
 let deletePartButtons = document.querySelectorAll('.delete-part');
 for (let i = 0; i < deletePartButtons.length; i++) {
     deletePartButtons[i].addEventListener('click', ev => {
+        ev.preventDefault();
         let button = ev.target;
         let tr = button.parentNode.parentNode;
         if (!confirm(`Er du sikker på at du vil slette ${button.getAttribute('data-name')}?`)) return;

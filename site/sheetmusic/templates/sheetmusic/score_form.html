@@ -1,22 +1,12 @@
-{% extends './base.html' %}
-{% block content %}
+{% extends './score_form_base.html' %}
 
-<style>
-    .error-feedback {
-        color: red;
-        font-size: 14px;
-    }
-</style>
+{% block activeScoreUpdate %}
+    active
+{% endblock %}
 
-<h1> {{ score.title }} <a href="{% url 'viewScore' score.pk %}" class="float-right h6"> se på </a> </h1>
 
-<h2> Handlinger </h2>
 
-<ul>
-    <li> <a href="{% url 'uploadPdf' score.pk %}"> Last opp en ny pdf </a> </li>
-    <li> <a href="{% url 'uploadPdf' score.pk %}"> Registrer en ny stemme </a> </li>
-    <li> <a href="{% url 'uploadPdf' score.pk %}" onclick="return confirm('Er du sikker på at du vil slette {{ score.title }}? Dette vil slette alle relaterte pdfer og informasjon om instrumentstemmer.')"> Slett note </a> </li>
-</ul>
+{% block form %}
 
 <h2> Opplastede pdfer </h2>
 <p>
@@ -50,17 +40,5 @@
 {% crispy form %}
 
 
-
-{% csrf_token %}
-{% load crispy_forms_tags %}
-{% crispy formset helper %}
-
-
-
-{% block js %}
-    {% load static %}
-    <script src="{% static 'notar/fetching.js' %}"></script>
-    <script src="{% static 'notar/editScore.js' %}"></script>
-{% endblock %}
 
 {% endblock %}

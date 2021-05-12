@@ -1,6 +1,7 @@
 {% load crispy_forms_tags %}
 {% load crispy_forms_utils %}
 {% load crispy_forms_field %}
+{% load index %}
 
 {% specialspaceless %}
 {% if formset_tag %}
@@ -26,6 +27,14 @@
                             </th>
                         {% endif %}
                     {% endfor %}
+
+                    <th class="col-form-label">
+                        PDF
+                    </th>
+
+                    <th class="col-form-label">
+                        Slett
+                    </th>
                 </tr>
             {% endif %}
         </thead>
@@ -56,20 +65,21 @@
                         {% include 'bootstrap4/field.html' with tag="td" form_show_labels=False %}
                     {% endfor %}
 
-                    <td>
-                        {% load index %}
-                        <a href="{% with pdf=pdfInfoForTable|index:forloop.counter0 %}{{ pdf.url }}#page={{ pdf.page }}{% endwith %}">
-                            {% with pdf=pdfInfoForTable|index:forloop.counter0 %}
-                                {{ pdf.name }}
-                            {% endwith %}
-                        </a>
-                    </td>
-                    
-                    <td> {{ form.ting }} </td>
+                    {% with extra=extraData|index:forloop.counter0 %}
+                        <td>
+                            <a href="{{ extra.pdf.url }}#page={{ extra.pdf.page }}" target="_blank">
+                                {{ extra.pdf.name }}
+                            </a>
+                        </td>
+                        
+                        <td>
+                            <button class="delete-part" data-pk="{{ extra.part.pk }}" data-displayname="{{ extra.part.displayname }}"> X </button>
+                        </td>
+                    {% endwith %}
 
-                    <td> <a href="{{ part.pdf.file.url }}#page={{ part.fromPage }}"> {{ part.pdfName }} </a> </td>
-                    {% comment %}
-                    {% endcomment %}
+                    <td>
+                        {{ form.pdf.part }}
+                    </td>
                 </tr>
             {% endfor %}
         </tbody>

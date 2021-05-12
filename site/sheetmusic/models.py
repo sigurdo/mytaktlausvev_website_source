@@ -20,7 +20,7 @@ class Score(models.Model):
 
 class Pdf(models.Model):
     """ Model representing an uploaded pdf """
-    score = models.ForeignKey(Score, on_delete=models.CASCADE)
+    score = models.ForeignKey(Score, on_delete=models.CASCADE, related_name="pdfs")
     file = models.FileField(upload_to='sheetmusic/original_pdfs/', default=None, validators=[FileTypeValidator(
         allowed_types=["application/pdf", "application/x-pdf", "application/x-bzpdf", "application/x-gzpdf"],
         allowed_extensions=[".pdf", ".PDF"])])
