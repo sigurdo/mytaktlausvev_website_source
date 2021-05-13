@@ -8,11 +8,48 @@
 
 {% block form %}
 
+{% comment %} <h2> Opplastede pdfer </h2> {% endcomment %}
+<table class="table table-striped table-sm">
+    <thead>
+        <tr>
+            <th class="col-form-label">
+                PDF
+            </th>
+
+            <th class="col-form-label">
+                Slett
+            </th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for pdf in pdfs %}
+            <tr>
+                <td>
+                    <a href="{{ pdf.file.url }}" target="_blank"> {{ pdf.file.displayname }} </a> 
+                    {% if pdf.processing %}
+                        <span class="pdf-processing-status" data-pk="{{ pdf.pk }}" data-displayname="{{ pdf.file.displayname }}"> (prosessering pågår) </span>
+                    {% endif %}
+                </td>
+
+                <td>
+                    <button class="delete-pdf" data-pk="{{ pdf.pk }}" data-displayname="{{ pdf.file.displayname }}"> X </button>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h2> Last opp ny </h2>
 
 {% csrf_token %}
 {% load crispy_forms_tags %}
 {% crispy form %}
 
-
+{% block js %}
+    {{ block.super }}
+    {% load static %}
+    <script src="{% static 'notar/pdfs_update.js' %}"></script>
+{% endblock %}
 
 {% endblock %}

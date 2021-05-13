@@ -44,7 +44,7 @@ trompet:
     include: ["kornett", "komett", "trumpet", "trompet", "cornet", "comet", "trompeta", "fliscorno", "fliscomo"]
     exceptions: []
 tuba:
-    include: ["tuba", "tubas", "bass", "basses"]
+    include: ["tuba", "tubas", "bass", "basses", "eb-tuba", "bb-tuba"]
     exceptions: ["bass trombone", "bass clarinet", "bassklarinett", "bass guitar"]
 other:
     include: ["oboe", "obo", "flugelhorn", "flugelhom", "guitar", "bass guitar", "bassoon"]

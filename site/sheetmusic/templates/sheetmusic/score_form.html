@@ -8,20 +8,7 @@
 
 {% block form %}
 
-<h2> Opplastede pdfer </h2>
-<p>
-    <ul>
-    {% for pdf in pdfs %}
-    <li> <a href="{{pdf.file.url}}"> {{ pdf.file.displayname }} </a> {% if pdf.processing %} <span class="pdf-processing-status" data-pk="{{ pdf.pk }}" data-displayname="{{ pdf.file.displayname }}"> (prosessering pågår) </span> {% endif %} <button class="delete-pdf" data-pk="{{ pdf.pk }}" data-displayname="{{ pdf.file.displayname }}"> X </button> </li>
-    {% endfor %}
-    </ul>
-</p>
-
-<h2> Stemmeoversikt </h2>
-
-<p>
-    <i> (endringer lagres ikke automatisk) </i>
-</p>
+{% comment %} <h2> Generelt </h2> {% endcomment %}
 
 {% comment %}
 <form method="POST" enctype="multipart/form-data">

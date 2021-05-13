@@ -1,18 +1,53 @@
 {% extends './base.html' %}
 {% block content %}
 
-<h1> Her er det test-tekst </h1>
+<h1> Alle noter </h1>
 
-{% for score in score_list %}
-<p class="score">
-    {{ score.title }} ble opprettet {{ score.timestamp }}
-    <a href="{% url 'viewScore' score.pk %}"> Se på </a>
-    <a href="{% url 'editScore' score.pk %}"> Rediger </a>
-    <button class="delete-score", data-id="{{ score.id }}"> X </button>
-</p>
-{% endfor %}
+<table class="table table-striped table-sm">
+    <thead>
+        <tr>
+            <th class="col-form-label">
+                Namn
+            </th>
 
-<button id="test-fetch"> Test fetch </button>
+            <th class="col-form-label">
+                Dato opprettet
+            </th>
+
+            <th class="col-form-label">
+                Rediger
+            </th>
+
+            <th class="col-form-label">
+                Slett
+            </th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for score in scores %}
+            <tr>
+                <td>
+                    <a href="{% url 'viewScore' score.pk %}"> {{ score.title }} </a>
+                </td>
+
+                <td>
+                    {{ score.timestamp }}
+                </td>
+
+                <td>
+                    <a href="{% url 'editScore' score.pk %}"> Rediger </a>
+                </td>
+
+                <td>
+                    <button class="delete-score", data-pk="{{ score.pk }}" data-displayname="{{ score.title }}"> X </button>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% comment %} <button id="test-fetch"> Test fetch </button> {% endcomment %}
 
 {% block js %}
     {% load static %}

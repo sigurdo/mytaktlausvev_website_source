@@ -8,6 +8,11 @@
 
 {% block form %}
 
+{% comment %} <h2> Stemmer </h2> {% endcomment %}
+
+{% comment %} <p>
+    <i> (endringer lagres ikke automatisk) </i>
+</p> {% endcomment %}
 
 {% csrf_token %}
 {% load crispy_forms_tags %}
@@ -15,4 +20,10 @@
 
 
 
+{% endblock %}
+
+{% block js %}
+    {{ block.super }}
+    {% load static %}
+    <script src="{% static 'notar/parts_update.js' %}"></script>
 {% endblock %}
