@@ -27,6 +27,9 @@ class Pdf(models.Model):
     processing = models.BooleanField(default=False)
     timestamp = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return os.path.basename(self.file.path)
+
 @django.dispatch.receiver(django.db.models.signals.pre_delete, sender=Pdf, dispatch_uid="pdf_delete_images")
 def pdf_pre_delete_receiver(sender, instance: Pdf, using, **kwargs):
     # Deleting all images related to that pdf
@@ -39,10 +42,13 @@ def pdf_pre_delete_receiver(sender, instance: Pdf, using, **kwargs):
 class Part(models.Model):
     """ Model representing a part """
     name = models.CharField(max_length=255)
-    pdf = models.ForeignKey(Pdf, on_delete=models.CASCADE)
+    pdf = models.ForeignKey(Pdf, on_delete=models.CASCADE, related_name="parts")
     fromPage = models.IntegerField(default=None)
     toPage = models.IntegerField(default=None)
     timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
 
 class Instrument(models.Model):
     """ Model representing an instrument """

@@ -44,6 +44,18 @@ class EditPartForm(forms.ModelForm):
         labels={ "name": "Navn", "fromPage": "Første side", "toPage": "Siste side" }
         widgets={ "fromPage": forms.NumberInput(attrs={ "size": 1 }), "toPage": forms.NumberInput(attrs={ "size": 1 }), "pdf": forms.HiddenInput() }
 
+class PartCreateForm(forms.ModelForm):
+    # Form for creating a part
+    helper = FormHelper()
+    helper.form_method = "post"
+    helper.label_class = "form-label"
+    helper.add_input(Submit("submit", "Legg til"))
+
+    class Meta:
+        model = Part
+        fields=["name", "fromPage", "toPage", "pdf"]
+        labels={ "name": "Navn", "fromPage": "Første side", "toPage": "Siste side", "pdf": "PDF" }
+
 # class EditPartForm(forms.Form):
 #     name = forms.CharField(
 #         label="Navn",

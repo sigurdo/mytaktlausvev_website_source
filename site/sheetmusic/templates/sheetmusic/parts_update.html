@@ -19,6 +19,11 @@
 {% crispy form helper %}
 
 
+<h2> Legg til stemme </h2>
+{% csrf_token %}
+{% load crispy_forms_tags %}
+{% crispy createForm %}
+
 
 {% endblock %}
 

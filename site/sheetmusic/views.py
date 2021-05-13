@@ -23,7 +23,7 @@ from django.utils.decorators import classonlymethod
 
 from django.contrib.auth.models import User
 from .models import Score, Pdf, Part
-from .forms import ScoreCreateForm, UploadPdfForm, EditScoreForm, EditPartForm, EditPartFormSet, EditPartFormSetHelper
+from .forms import ScoreCreateForm, UploadPdfForm, EditScoreForm, EditPartForm, EditPartFormSet, EditPartFormSetHelper, PartCreateForm
 from .utils import convertPagesToInputFormat, convertInputFormatToPages
 
 from .sheetmusicEngine.sheeetmusicEngine import processUploadedPdf
@@ -102,6 +102,10 @@ class PartsUpdate(LoginRequiredMixin, UpdateView):
                 "pdf": { "url": part.pdf.file.url, "name": os.path.basename(part.pdf.file.name), "page": part.fromPage },
                 "part": { "pk": part.pk, "displayname": part.name }
             } for part in parts]
+        form = PartCreateForm()
+        form.helper.form_action = reverse("createScorePart", args=[self.get_object().pk])
+        form.fields["pdf"].queryset = Pdf.objects.filter(score=self.get_object().pk)
+        context.update(createForm=form)
         return context
 
 
@@ -126,7 +130,7 @@ class PdfsUpdate(LoginRequiredMixin, CreateView):
     
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
         pdf: Pdf = form.save(commit=False)
-        pdf.score = Score.objects.get(pk=2)
+        pdf.score = Score.objects.get(pk=self.get_object().pk)
         pdf.timestamp = timezone.now()
         pdf.save()
         print(pdf.file.path)
@@ -179,6 +183,15 @@ class ScoreCreate(LoginRequiredMixin, CreateView):
 class ScoreList(ListView):
     model = Score
     context_object_name = "scores"
+
+
+
+class PartCreate(LoginRequiredMixin, CreateView):
+    model = Part
+    form_class = PartCreateForm
+
+    def get_success_url(self) -> str:
+        return reverse("editScoreParts", args=[self.object.pdf.score.pk])
 
 
 
