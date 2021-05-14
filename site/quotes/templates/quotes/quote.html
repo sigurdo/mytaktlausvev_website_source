@@ -1,4 +1,8 @@
-<blockquote class="blockquote">
-    <p class="mb-0">{{quote.text}}</p>
-    <footer class="blockquote-footer">{{quote.owner}} <cite title="Source Title">{{quote.timestamp|date}}</cite></footer>
-</blockquote>
+<figure>
+    <blockquote class="blockquote">
+        <p>{{ quote.text }}</p>
+    </blockquote>
+    <figcaption class="blockquote-footer">
+        {{ quote.owner }} <span class="fst-italic">{{ quote.timestamp|date }}</span>
+    </figcaption>
+</figure>
