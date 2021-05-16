@@ -14,3 +14,5 @@ sqlparse==0.3.0
 typed-ast==1.4.1
 wrapt==1.11.2
 psycopg2-binary==2.8.4
+libsass==0.20.1 
+django-sass-processor==1.0.1 

@@ -9,12 +9,16 @@
 		crossorigin="anonymous"
 	>
 	{% block title %}<title>Vev 2.0</title>{% endblock %}
+
 	{% load static %}
 	<link rel="stylesheet" type="text/css" href="{% static 'css/base.css' %}">
 	<link rel="stylesheet" type="text/css" href="{% static 'css/forms.css' %}">
+
+	{% load sass_tags %}
+	<link href="{% sass_src 'scss/example.scss' %}" rel="stylesheet" type="text/css">
 </head>
 
-<body>
+<body class="sass-example-class">
 	<nav class="navbar navbar-expand fixed-top navbar-dark">
 		<div class="container-fluid">
 			{% if user.is_authenticated %}

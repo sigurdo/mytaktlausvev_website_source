@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "crispy_forms",
     "crispy_bootstrap5",
+    'sass_processor',
     "about",
     "quotes",
     "dashboard",
@@ -135,8 +136,23 @@ STATICFILES_DIRS = [
     "/static/",
 ]
 
+STATICFILES_FINDERS = [
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'sass_processor.finders.CssFinder',
+]
+
 LOGIN_REDIRECT_URL = "/"
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 
 CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+
+#Sass config
+
+SASS_PRECISION = 8 # Default is 5, while 8 is required by bootsrap
+
+SASS_OUTPUT_STYLE = "expanded" if DEBUG else "compressed" # Default for DEBUG is nested, while I think expanded is better
+
+SASS_PROCESSOR_ROOT = os.path.join(BASE_DIR, "compiled_scss") # Defines a root directory to output compiled scss files
