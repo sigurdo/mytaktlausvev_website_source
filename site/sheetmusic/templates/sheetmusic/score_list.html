@@ -51,7 +51,8 @@
 
 {% block js %}
     {% load static %}
-    <script src="{% static 'notar/overview.js' %}"></script>
+    <script src="{% static 'notar/fetching.js' %}"></script>
+    <script src="{% static 'notar/score_list.js' %}"></script>
 {% endblock%}
 
 <a href="{% url 'createScore' %}"> Ny note </a>

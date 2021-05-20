@@ -46,10 +46,10 @@
 {% load crispy_forms_tags %}
 {% crispy form %}
 
+{% endblock form %}
+
 {% block js %}
     {{ block.super }}
     {% load static %}
     <script src="{% static 'notar/pdfs_update.js' %}"></script>
-{% endblock %}
-
 {% endblock %}
