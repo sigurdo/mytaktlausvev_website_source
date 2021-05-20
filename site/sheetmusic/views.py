@@ -195,6 +195,19 @@ class PartCreate(LoginRequiredMixin, CreateView):
 
 
 
+class ScoreRead(LoginRequiredMixin, DetailView):
+    model = Part
+    template_name = "sheetmusic/score_read.html"
+
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+
+        print("ting:", Part.objects.get(pk=98).pdf.parts.all())
+        print("ting:", Pdf.objects.get(pk=4).parts)
+        return context
+
+
+
 def deleteScore(request, score_id=0):
     if request.method == "POST":
         Score.objects.filter(id=score_id).delete()
