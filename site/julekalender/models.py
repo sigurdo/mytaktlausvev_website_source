@@ -1,3 +1,4 @@
+from django.urls import reverse
 from django.db import models
 from django.core import validators
 from django.contrib.auth import get_user_model
@@ -18,6 +19,9 @@ class Julekalender(models.Model):
 
     def __str__(self):
         return str(self.year)
+
+    def get_absolute_url(self):
+        return reverse("calendar", kwargs={"year": self.year})
 
     class Meta:
         ordering = ["-year"]

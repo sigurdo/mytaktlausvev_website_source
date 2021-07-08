@@ -47,7 +47,7 @@
           </div>
 
           <div id="window-form">
-            <form action="{% url 'julekalender' calendar.year %}" method="POST">
+            <form action="{% url 'calendar' calendar.year %}" method="POST">
               {% load crispy_forms_tags %}
               {% crispy form %}
             </form>
