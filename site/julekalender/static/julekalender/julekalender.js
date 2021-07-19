@@ -15,12 +15,13 @@ function selectWindow(index) {
   openModal();
 }
 
-const modal = $(".modal");
+const modalElement = document.getElementById("window-modal");
+const modal = new bootstrap.Modal(modalElement);
 function openModal() {
   document.getElementById(`window${selectedIndex}`).classList.add("opened");
-  modal.modal("toggle");
+  modal.toggle();
 }
-modal.on("hide.bs.modal", () =>
+modalElement.addEventListener("hide.bs.modal", () =>
   document.querySelector(".opened").classList.remove("opened")
 );
 
