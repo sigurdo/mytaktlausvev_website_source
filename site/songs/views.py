@@ -1,3 +1,8 @@
-from django.shortcuts import render
+from django.views.generic.list import ListView
+from .models import Song
 
-# Create your views here.
+
+class SongList(ListView):
+    """View for viewing all songs."""
+
+    model = Song

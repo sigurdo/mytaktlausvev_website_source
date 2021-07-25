@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}Songar{% endblock title %}
+
+{% block page %}
+<h1>Songar</h1>
+
+<ul>
+    {% for song in song_list %}
+    <li>{{ song.title }}</li>
+    {% endfor %}
+</ul>
+{% endblock page %}
