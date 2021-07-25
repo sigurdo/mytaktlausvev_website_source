@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {% if song %}
+        Rediger {{ song.title }}
+    {% else %}
+        Ny  sang
+    {% endif %}
+{% endblock %}
+
+{% block page %}
+    <h2>
+        {% if song %}
+            Rediger {{ song.title }}
+        {% else %}
+            Ny sang
+        {% endif %}
+    </h2>
+
+    {% load crispy_forms_tags %}
+    {% crispy form %}
+{% endblock %}
