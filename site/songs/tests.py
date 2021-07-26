@@ -1,6 +1,7 @@
 from http import HTTPStatus
 from django.test import TestCase
 from django.urls import reverse
+from django.utils import timezone
 from .models import Song
 
 
@@ -9,6 +10,11 @@ class SongTestCase(TestCase):
         self.song = Song.objects.create(
             title="Song of Tests", lyrics="Test, test, test"
         )
+
+    def test_sets_submitted_to_current_datetime_on_create(self):
+        """`submitted` should be set to the current date and time on creation."""
+        now = timezone.now()
+        self.assertLess((now - self.song.submitted).total_seconds(), 5)
 
     def test_song_to_string_equals_title(self):
         """Song's to string method should return the song's title."""

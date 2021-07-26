@@ -4,6 +4,7 @@
 
 {% block page %}
 <h1>{{ song.title }}</h1>
+<p>Lagt ut {{ song.submitted }}</p>
 
 {% load markdown %}
 {{ song.lyrics | markdown }}
