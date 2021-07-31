@@ -3,17 +3,25 @@
 {% block title %}Songar{% endblock title %}
 
 {% block page %}
-<h1>Songar</h1>
+<article>
+    <header>
+        <h1>Songar</h1>
+    </header>
 
-<ul>
-    {% for song in song_list %}
-    <li>
-        <a href="{% url 'song_detail' song.pk %}">{{ song.title }}</a>
-    </li>
-    {% endfor %}
-</ul>
+    <nav>
+        <ul>
+            {% for song in song_list %}
+            <li>
+                <a href="{% url 'song_detail' song.pk %}">{{ song.title }}</a>
+            </li>
+            {% endfor %}
+        </ul>
+    </nav>
 
-<a href="{% url 'song_create' %}" class="btn btn-primary">
-    Ny sang
-</a>
+    <footer>
+        <a href="{% url 'song_create' %}" class="btn btn-primary">
+            Ny sang
+        </a>
+    </footer>
+</article>
 {% endblock page %}
