@@ -3,13 +3,19 @@
 {% block title %}{{ song.title }}{% endblock title %}
 
 {% block page %}
-<h1>{{ song.title }}</h1>
-<p>Lagt ut {{ song.submitted }}</p>
+<article>
+    <header>
+        <h1>{{ song.title }}</h1>
+        <p>Lagt ut <time datetime="{{ song.submitted | date:"c" }}">{{ song.submitted }}</time></p>
+    </header>
 
-{% load markdown %}
-{{ song.lyrics | markdown }}
+    {% load markdown %}
+    {{ song.lyrics | markdown }}
 
-<a href="{% url 'song_update' song.pk %}" class="btn btn-primary">
-    Rediger sang
-</a>
+    <footer>    
+        <a href="{% url 'song_update' song.pk %}" class="btn btn-primary">
+            Rediger sang
+        </a>
+    </footer>
+</article>
 {% endblock page %}
