@@ -10,7 +10,7 @@
     </header>
 
     {% load markdown %}
-    {{ song.lyrics | markdown }}
+    {{ song.description | markdown }}
 
     <footer>    
         <a href="{% url 'song_update' song.pk %}" class="btn btn-primary">
