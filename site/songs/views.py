@@ -23,6 +23,7 @@ class SongCreate(LoginRequiredMixin, CreateView):
 
     model = Song
     form_class = SongForm
+    template_name = "common/form.html"
 
     def form_valid(self, form):
         form.instance.created_by = self.request.user
@@ -34,3 +35,4 @@ class SongUpdate(LoginRequiredMixin, UpdateView):
 
     model = Song
     form_class = SongForm
+    template_name = "common/form.html"

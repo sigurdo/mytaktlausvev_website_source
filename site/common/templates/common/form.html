@@ -1,19 +1,19 @@
 {% extends "base.html" %}
 
 {% block title %}
-    {% if song %}
-        Rediger {{ song.title }}
+    {% if object %}
+        Rediger {{ object }}
     {% else %}
-        Ny  sang
+        Lag Ny
     {% endif %}
 {% endblock %}
 
 {% block page %}
     <h2>
-        {% if song %}
-            Rediger {{ song.title }}
+        {% if object %}
+            Rediger {{ object }}
         {% else %}
-            Ny sang
+            Lag Ny
         {% endif %}
     </h2>
 
