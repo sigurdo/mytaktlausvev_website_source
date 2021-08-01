@@ -25,4 +25,5 @@ urlpatterns = [
     path("accounts/", include('django.contrib.auth.urls')),
     path("", include("dashboard.urls")),
     path("omoss/", include("about.urls")),
+    path("songar/", include("songs.urls")),
 ]
