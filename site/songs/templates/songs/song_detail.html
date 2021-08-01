@@ -1,0 +1,9 @@
+{% extends 'common/page.html' %}
+
+{% block extra %}
+<footer>
+    <a href="{% url 'song_update' song.pk %}" class="btn btn-primary">
+        Rediger sang
+    </a>
+</footer>
+{% endblock extra %}

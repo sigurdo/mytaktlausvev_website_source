@@ -29,6 +29,7 @@ urlpatterns = [
     path("", include("dashboard.urls")),
     path("omoss/", include("about.urls")),
     path("notar/", include("sheetmusic.urls")),
+    path("songar/", include("songs.urls")),
 ]
 
 if settings.DEBUG:

@@ -59,3 +59,6 @@ site/sheetmusic/sheetmusicEngine/input_pdfs
 site/sheetmusic/sheetmusicEngine/output_pdfs
 site/sheetmusic/sheetmusicEngine/tmp
 site/media
+
+# Compiled scss files
+site/compiled_scss

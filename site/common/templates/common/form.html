@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {% if object %}
+        Rediger {{ object }}
+    {% else %}
+        Lag Ny
+    {% endif %}
+{% endblock %}
+
+{% block page %}
+    <h2>
+        {% if object %}
+            Rediger {{ object }}
+        {% else %}
+            Lag Ny
+        {% endif %}
+    </h2>
+
+    {% load crispy_forms_tags %}
+    {% crispy form %}
+{% endblock %}
