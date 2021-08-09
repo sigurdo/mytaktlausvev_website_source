@@ -1,0 +1,11 @@
+<section>
+    <h2>Kommentarar</h2>
+
+    <ul>
+    {% for comment in comments %}
+        <li>
+            {{ comment.comment }}
+        </li>
+    {% endfor %}
+    </ul>
+</section>
