@@ -4,7 +4,11 @@
     <ul>
     {% for comment in comments %}
         <li>
-            {{ comment.comment }}
+            <ul>
+                <li>{{ comment.comment }}</li>
+                <li>{{ comment.submitted }}</li>
+                <li>{{ comment.created_by }}</li>
+            </ul>
         </li>
     {% endfor %}
     </ul>
