@@ -1,3 +1,4 @@
+from http import HTTPStatus
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth import get_user_model
@@ -29,3 +30,10 @@ class CommentTestCase(TestCase):
             comment.get_absolute_url(),
             f"{reverse('song_detail', kwargs={'pk': song.pk})}#comment-{comment.pk}",
         )
+
+
+class CommentCreateTestCase(TestCase):
+    def test_get_not_allowed(self):
+        """Should not allow GET requests."""
+        response = self.client.get(reverse("comment_create"))
+        self.assertEqual(response.status_code, HTTPStatus.METHOD_NOT_ALLOWED)
