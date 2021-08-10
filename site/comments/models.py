@@ -17,3 +17,6 @@ class Comment(models.Model):
         related_name="comments",
         verbose_name="laga av",
     )
+
+    def get_absolute_url(self):
+        return f"{self.content_object.get_absolute_url()}#comment-{self.pk}"

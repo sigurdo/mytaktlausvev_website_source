@@ -3,7 +3,7 @@
 
     <ul>
     {% for comment in comments %}
-        <li>
+        <li id="comment-{{ comment.pk }}">
             <ul>
                 <li>{{ comment.comment }}</li>
                 <li>{{ comment.submitted }}</li>
