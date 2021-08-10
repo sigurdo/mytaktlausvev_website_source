@@ -9,27 +9,27 @@ from .models import Comment
 
 class CommentTestCase(TestCase):
     def setUp(self):
-        self.user = get_user_model().objects.create_user(username="bob", password="bob")
-
-    def comment_create(self, model):
-        return Comment.objects.create(
-            content_type=ContentType.objects.get_for_model(model),
-            object_pk=model.pk,
+        user = get_user_model().objects.create_user(username="bob", password="bob")
+        self.song = Song.objects.create(
+            title="Test", description="Test", created_by=user
+        )
+        self.comment = Comment.objects.create(
+            content_type=ContentType.objects.get_for_model(self.song),
+            object_pk=self.song.pk,
             comment="Test comment",
-            created_by=self.user,
+            created_by=user,
         )
 
     def test_get_absolute_url(self):
         """Should link to the comment on the model's page."""
-        song = Song.objects.create(
-            title="Test", description="Test", created_by=self.user
-        )
-        comment = self.comment_create(song)
-
         self.assertEqual(
-            comment.get_absolute_url(),
-            f"{reverse('song_detail', kwargs={'pk': song.pk})}#comment-{comment.pk}",
+            self.comment.get_absolute_url(),
+            f"{reverse('song_detail', kwargs={'pk': self.song.pk})}#comment-{self.comment.pk}",
         )
+
+    def test_to_str(self):
+        """Correct"""
+        self.assertEqual(str(self.comment), f"Kommentar #{self.comment.pk}")
 
 
 class CommentCreateTestCase(TestCase):

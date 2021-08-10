@@ -20,3 +20,6 @@ class Comment(models.Model):
 
     def get_absolute_url(self):
         return f"{self.content_object.get_absolute_url()}#comment-{self.pk}"
+
+    def __str__(self):
+        return f"Kommentar #{self.pk}"
