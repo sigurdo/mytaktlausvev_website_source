@@ -7,12 +7,13 @@ from ..forms import CommentCreateForm
 register = template.Library()
 
 
-@register.inclusion_tag("comments/comment_list.html")
-def comment_list(model):
+@register.inclusion_tag("comments/comment_list.html", takes_context=True)
+def comment_list(context, model):
     return {
         "comments": Comment.objects.filter(
             content_type=ContentType.objects.get_for_model(model), object_pk=model.pk
-        )
+        ),
+        "authenticated": context.request.user.is_authenticated,
     }
 
 

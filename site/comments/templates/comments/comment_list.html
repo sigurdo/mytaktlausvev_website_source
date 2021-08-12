@@ -1,3 +1,4 @@
+{% if authenticated %}
 <section class="mt-4">
     <h2>Kommentarar ({{comments | length }})</h2>
 
@@ -35,3 +36,4 @@
     {% endfor %}
     </ol>
 </section>
+{% endif %}
