@@ -1,6 +1,6 @@
 from django.shortcuts import redirect
 from django.views import View
-from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Comment
 from .forms import CommentCreateForm, CommentUpdateForm
@@ -23,3 +23,13 @@ class CommentUpdate(LoginRequiredMixin, UpdateView):
     model = Comment
     form_class = CommentUpdateForm
     template_name = "common/form.html"
+
+
+class CommentDelete(LoginRequiredMixin, DeleteView):
+    """View for deleting a comment."""
+
+    model = Comment
+    template_name = "common/confirm_delete.html"
+
+    def get_success_url(self):
+        return self.object.content_object.get_absolute_url()

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Slett {{ object }}
+{% endblock %}
+
+{% block page %}
+    <h2>Slett {{ object }}</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        <p>Er du sikker på at du vil slette "{{ object }}"?</p>
+        <input type="submit" value="Slett {{object}}" class="btn btn-danger">
+    </form>
+{% endblock %}
