@@ -1,0 +1,33 @@
+{% extends "./base.html" %}
+
+{% block content %}
+  <section class="d-flex flex-column p-2">
+    <h1 class="text-light">Taktlaus Julekalender</h1>
+
+    {% if julekalender_list %}
+    <nav>
+      <ul class="d-flex flex-column list-unstyled align-items-center">
+        {% for calendar in julekalender_list %}
+        <li class="my-2"> 
+            <a
+              class="btn btn-lg btn-julekalender text-light"
+              href="{% url 'calendar' calendar.year %}"
+            >
+              {{ calendar.year }}
+            </a>
+        </li>
+        {% endfor %}
+      </ul>
+    </nav>
+    {% endif %}
+
+    {% if perms.julekalender.add_julekalender %}
+    <a
+      class="btn btn-lg btn-julekalender text-light"
+      href="{% url 'julekalender_create' %}"
+    >
+      Lag ny julekalender
+    </a>
+    {% endif %}
+  </section>
+{% endblock %}

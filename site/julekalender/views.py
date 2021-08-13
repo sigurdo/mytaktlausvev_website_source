@@ -3,9 +3,16 @@ import random
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
+from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView
 from .models import Julekalender, Window
 from .forms import NewJulekalenderForm, NewWindowForm, CalendarForm
+
+
+class JulekalenderList(ListView):
+    """View for viewing all julekalenders."""
+
+    model = Julekalender
 
 
 class JulekalenderCreate(CreateView):
@@ -13,28 +20,6 @@ class JulekalenderCreate(CreateView):
 
     model = Julekalender
     form_class = CalendarForm
-
-
-@login_required
-def julekalenders(request):
-    """View function for displaying created julekalenders"""
-
-    if request.method == "POST":
-        form = NewJulekalenderForm(request.POST)
-        if form.is_valid() and Julekalender.userCanCreate(request.user):
-            julekalender = form.save(commit=False)
-            julekalender.save()
-
-    calendars = Julekalender.objects.all()
-    return render(
-        request,
-        "julekalender/calendars.html",
-        {
-            "calendars": calendars,
-            "userCanCreate": Julekalender.userCanCreate(request.user),
-            "form": NewJulekalenderForm,
-        },
-    )
 
 
 @login_required
