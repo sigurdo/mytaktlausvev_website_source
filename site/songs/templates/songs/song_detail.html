@@ -1,9 +1,11 @@
 {% extends 'common/page.html' %}
 
 {% block extra %}
-<footer>
-    <a href="{% url 'song_update' song.pk %}" class="btn btn-primary">
-        Rediger sang
-    </a>
-</footer>
+{% if perms.songs.change_song %}
+    <footer>
+        <a href="{% url 'song_update' song.pk %}" class="btn btn-primary">
+            Rediger sang
+        </a>
+    </footer>
+{% endif %}
 {% endblock extra %}

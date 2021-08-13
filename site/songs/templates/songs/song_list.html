@@ -18,10 +18,12 @@
         </ul>
     </nav>
 
-    <footer>
-        <a href="{% url 'song_create' %}" class="btn btn-primary">
-            Ny sang
-        </a>
-    </footer>
+    {% if perms.songs.add_song %}
+        <footer>
+            <a href="{% url 'song_create' %}" class="btn btn-primary">
+                Ny sang
+            </a>
+        </footer>
+    {% endif %}
 </article>
 {% endblock page %}
