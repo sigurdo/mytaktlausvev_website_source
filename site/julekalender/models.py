@@ -12,7 +12,7 @@ def getDefaultDeletedUser():
 class Julekalender(models.Model):
     """Model representing a year's julekalender"""
 
-    year = models.IntegerField(primary_key=True)
+    year = models.IntegerField("år", primary_key=True)
 
     def userCanCreate(user):
         return user.is_staff

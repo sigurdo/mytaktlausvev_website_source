@@ -18,6 +18,18 @@ class NewJulekalenderForm(forms.ModelForm):
         labels = {"year": "År"}
 
 
+class CalendarForm(forms.ModelForm):
+    """Form for creating a calendar."""
+
+    helper = FormHelper()
+    helper.label_class = "form-label"
+    helper.add_input(Submit("submit", "Lag julekalender"))
+
+    class Meta:
+        model = Julekalender
+        fields = ["year"]
+
+
 class NewWindowForm(forms.ModelForm):
     """Form for posting a new window"""
 

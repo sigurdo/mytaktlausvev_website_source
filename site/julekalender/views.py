@@ -3,9 +3,16 @@ import random
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
+from django.views.generic.edit import CreateView
+from .models import Julekalender, Window
+from .forms import NewJulekalenderForm, NewWindowForm, CalendarForm
 
-from julekalender.models import Julekalender, Window
-from julekalender.forms import NewJulekalenderForm, NewWindowForm
+
+class JulekalenderCreate(CreateView):
+    """View for creating julekalenders."""
+
+    model = Julekalender
+    form_class = CalendarForm
 
 
 @login_required
