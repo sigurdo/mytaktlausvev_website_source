@@ -184,15 +184,14 @@ MEDIA_URL = "/media/"
 
 # Sass config
 
-SASS_PRECISION = 8  # Default is 5, while 8 is required by bootsrap
+# Default is 5, while 8 is required by bootsrap
+SASS_PRECISION = 8
 
-SASS_OUTPUT_STYLE = (
-    "expanded" if DEBUG else "compressed"
-)  # Default for DEBUG is nested, while I think expanded is better
+# Default for DEBUG is nested, while I think expanded is better
+SASS_OUTPUT_STYLE = "expanded" if DEBUG else "compressed"
 
-SASS_PROCESSOR_ROOT = os.path.join(
-    BASE_DIR, "compiled_scss"
-)  # Defines a root directory to output compiled scss files
+# Defines a root directory to output compiled scss files
+SASS_PROCESSOR_ROOT = os.path.join(BASE_DIR, "compiled_scss")
 
 # Directories that act as a base to include from
 SASS_PROCESSOR_INCLUDE_DIRS = [
