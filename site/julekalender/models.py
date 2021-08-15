@@ -10,7 +10,7 @@ def getDefaultDeletedUser():
 
 
 class Julekalender(models.Model):
-    """Model representing a year's julekalender"""
+    """Model representing a year's julekalender."""
 
     year = models.IntegerField("år", primary_key=True)
 
@@ -28,14 +28,22 @@ class Julekalender(models.Model):
 
 
 class Window(models.Model):
-    """Model representing a window in a julekalender"""
+    """Model representing a window in a julekalender."""
 
-    title = models.CharField(max_length=255)
-    content = models.TextField()
-    author = models.ForeignKey(User, on_delete=models.SET(getDefaultDeletedUser))
-    calendar = models.ForeignKey(Julekalender, on_delete=models.CASCADE)
+    title = models.CharField("tittel", max_length=255)
+    content = models.TextField("innhold")
+    author = models.ForeignKey(
+        User, on_delete=models.SET(getDefaultDeletedUser), verbose_name="forfatter"
+    )
+    calendar = models.ForeignKey(
+        Julekalender,
+        on_delete=models.CASCADE,
+        related_name="windows",
+        verbose_name="kalender",
+    )
     index = models.IntegerField(
-        validators=[validators.MinValueValidator(1), validators.MaxValueValidator(24)]
+        "index",
+        validators=[validators.MinValueValidator(1), validators.MaxValueValidator(24)],
     )
 
     def windowExists(year, index):
