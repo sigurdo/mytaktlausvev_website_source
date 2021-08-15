@@ -7,11 +7,11 @@
     href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500&display=swap&text=TaktlusJendr0123456789"
     rel="stylesheet"
   />
-  {% load static %}
+  {% load sass_tags %}
   <link
     rel="stylesheet"
     type="text/css"
-    href="{% static 'julekalender/julekalender.css' %}"
+    href="{% sass_src 'julekalender/julekalender.scss' %}"
   />
 {% endblock css %}
 
@@ -23,7 +23,7 @@
     {% endfor %}
   </div>
 
-  <div class="d-flex justify-content-center align-items-center min-vh-100">
+  <div class="d-flex flex-column justify-content-center align-items-center min-vh-100">
     {% block content %}{% endblock content %}
   </div>
 {% endblock page %}

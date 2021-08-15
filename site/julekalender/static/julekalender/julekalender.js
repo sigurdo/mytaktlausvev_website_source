@@ -1,94 +1,34 @@
-const writtenWindows = JSON.parse(
-  document.getElementById("windows").textContent
-);
-writtenWindows.forEach((window) =>
-  document.getElementById(`window${window.index}`).classList.add("written")
-);
-
-let selectedIndex = 1;
-
-function selectWindow(index) {
-  selectedIndex = index;
-  if (writtenWindows.some((window) => window.index == selectedIndex))
-    showWindow();
-  else showNewWindow();
-  openModal();
-}
-
-const modalElement = document.getElementById("window-modal");
+const modalElement = document.getElementById("modal");
 const modal = new bootstrap.Modal(modalElement);
-function openModal() {
-  document.getElementById(`window${selectedIndex}`).classList.add("opened");
-  modal.toggle();
-}
-modalElement.addEventListener("hide.bs.modal", () =>
-  document.querySelector(".opened").classList.remove("opened")
-);
+const form = document.getElementById("form");
+const inputIndex = document.getElementById("id_index");
 
-const windowContent = document.getElementById("window-content");
-const windowForm = document.getElementById("window-form");
-const modalTitle = document.querySelector(".modal-title");
-const modalEdit = document.querySelector(".modal-edit");
-
-const windowAuthor = windowContent.querySelector(".window-author");
-const windowText = windowContent.querySelector(".window-text");
-function showWindow() {
-  const window = writtenWindows.find((window) => window.index == selectedIndex);
-  modalTitle.textContent = window.title;
-  windowAuthor.textContent = window.author;
-  windowText.textContent = window.content;
-  modalEdit.style.display = window.canEdit ? "block" : "none";
-
-  windowContent.style.display = "block";
-  windowForm.style.display = "none";
-}
-
-function showEditWindow() {
-  const window = writtenWindows.find((window) => window.index == selectedIndex);
-  setFormValues(window.title, window.content, window.index, "Endre luke");
-  modalTitle.textContent = "Endre luke";
-  modalEdit.style.display = "none";
-
-  windowContent.style.display = "none";
-  windowForm.style.display = "block";
-}
-
-function showNewWindow() {
-  setFormValues(
-    localStorage.getItem(`julekalender-autosave-title-${selectedIndex}`) || "",
-    localStorage.getItem(`julekalender-autosave-content-${selectedIndex}`) ||
-      "",
-    selectedIndex,
-    "Legg ut"
+document
+  .querySelectorAll(".window-test")
+  .forEach((test) =>
+    document
+      .querySelector(`.button-window[data-index="${test.dataset.index}"]`)
+      .classList.add("written")
   );
-  modalTitle.textContent = "Ny luke";
-  modalEdit.style.display = "none";
 
-  windowContent.style.display = "none";
-  windowForm.style.display = "block";
-}
+document.querySelectorAll(".button-window").forEach((button) =>
+  button.addEventListener("click", () => {
+    modal.show();
+    button.classList.add("opened");
+    inputIndex.value = button.dataset.index;
 
-const titleField = document.getElementById("id_title");
-const contentField = document.getElementById("id_content");
-const indexField = document.getElementById("id_index");
-const submitButton = document.getElementById("submit-id-submit");
-function setFormValues(title, content, index, buttonText) {
-  titleField.value = title;
-  contentField.value = content;
-  indexField.value = index;
-  submitButton.value = buttonText;
-}
+    const window = modalElement.querySelector(
+      `[data-index="${button.dataset.index}"`
+    );
+    const element = window || form;
 
-// Autosave drafts:
-titleField.addEventListener("input", () =>
-  localStorage.setItem(
-    `julekalender-autosave-title-${indexField.value}`,
-    titleField.value
-  )
+    element.classList.remove("d-none");
+  })
 );
-contentField.addEventListener("input", () =>
-  localStorage.setItem(
-    `julekalender-autosave-content-${indexField.value}`,
-    contentField.value
-  )
-);
+
+modalElement.addEventListener("hide.bs.modal", () => {
+  modalElement
+    .querySelector(".modal-content:not(.d-none)")
+    .classList.add("d-none");
+  document.querySelector(".opened").classList.remove("opened");
+});

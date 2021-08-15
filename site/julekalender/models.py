@@ -21,7 +21,7 @@ class Julekalender(models.Model):
         return str(self.year)
 
     def get_absolute_url(self):
-        return reverse("calendar", kwargs={"year": self.year})
+        return reverse("julekalender_detail", args=[self.pk])
 
     class Meta:
         ordering = ["-year"]
