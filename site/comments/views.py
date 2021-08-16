@@ -15,12 +15,18 @@ class CommentCreate(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class CommentUpdate(LoginRequiredMixin, UpdateView):
+class CommentUpdate(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     """View for updating a comment."""
 
     model = Comment
     form_class = CommentUpdateForm
     template_name = "common/form.html"
+
+    def test_func(self):
+        user = self.request.user
+        return self.get_object().created_by == user or user.has_perm(
+            "comments.change_comment"
+        )
 
 
 class CommentDelete(LoginRequiredMixin, UserPassesTestMixin, DeleteView):

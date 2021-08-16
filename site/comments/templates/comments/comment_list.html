@@ -23,9 +23,11 @@
                                 {{ comment.submitted | naturaltime }}
                             </time>
                         </li>
-                        <li class="list-inline-item">
-                            <a href="{% url 'comment_update' comment.pk %}">Rediger</a>
-                        </li>
+                        {% if user == comment.created_by or perms.comments.change_comment %}
+                            <li class="list-inline-item">
+                                <a href="{% url 'comment_update' comment.pk %}">Rediger</a>
+                            </li>
+                        {% endif %}
                         {% if user == comment.created_by or perms.comments.delete_comment %}
                             <li class="list-inline-item">
                                 <a href="{% url 'comment_delete' comment.pk %}">Slett</a>
