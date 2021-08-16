@@ -1,7 +1,5 @@
-from django.shortcuts import redirect
-from django.views import View
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from .models import Comment
 from .forms import CommentCreateForm, CommentUpdateForm
 
@@ -25,11 +23,17 @@ class CommentUpdate(LoginRequiredMixin, UpdateView):
     template_name = "common/form.html"
 
 
-class CommentDelete(LoginRequiredMixin, DeleteView):
+class CommentDelete(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     """View for deleting a comment."""
 
     model = Comment
     template_name = "common/confirm_delete.html"
+
+    def test_func(self):
+        user = self.request.user
+        return self.get_object().created_by == user or user.has_perm(
+            "comments.delete_comment"
+        )
 
     def get_success_url(self):
         return self.object.content_object.get_absolute_url()

@@ -1,4 +1,4 @@
-{% if authenticated %}
+{% if user.is_authenticated %}
 <section class="mt-4">
     <h2>Kommentarar ({{comments | length }})</h2>
 
@@ -26,9 +26,11 @@
                         <li class="list-inline-item">
                             <a href="{% url 'comment_update' comment.pk %}">Rediger</a>
                         </li>
-                        <li class="list-inline-item">
-                            <a href="{% url 'comment_delete' comment.pk %}">Slett</a>
-                        </li>
+                        {% if user == comment.created_by or perms.comments.delete_comment %}
+                            <li class="list-inline-item">
+                                <a href="{% url 'comment_delete' comment.pk %}">Slett</a>
+                            </li>
+                        {% endif %}
                     </ul>
                 </footer>
             </article>

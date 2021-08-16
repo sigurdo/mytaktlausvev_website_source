@@ -13,7 +13,8 @@ def comment_list(context, model):
         "comments": Comment.objects.filter(
             content_type=ContentType.objects.get_for_model(model), object_pk=model.pk
         ),
-        "authenticated": context.request.user.is_authenticated,
+        "user": context.request.user,
+        "perms": context.get("perms"),
     }
 
 
