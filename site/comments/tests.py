@@ -1,24 +1,15 @@
 from http import HTTPStatus
 from django.test import TestCase
 from django.urls import reverse
-from django.contrib.auth import get_user_model
-from django.contrib.contenttypes.models import ContentType
-from songs.models import Song
-from .models import Comment
+from common.factories import UserFactory
+from songs.factories import SongFactory
+from .factories import CommentFactory
 
 
 class CommentTestCase(TestCase):
     def setUp(self):
-        user = get_user_model().objects.create_user(username="bob", password="bob")
-        self.song = Song.objects.create(
-            title="Test", description="Test", created_by=user
-        )
-        self.comment = Comment.objects.create(
-            content_type=ContentType.objects.get_for_model(self.song),
-            object_pk=self.song.pk,
-            comment="Test comment",
-            created_by=user,
-        )
+        self.song = SongFactory()
+        self.comment = CommentFactory(content_object=self.song)
 
     def test_get_absolute_url(self):
         """Should link to the comment on the model's page."""
@@ -28,14 +19,13 @@ class CommentTestCase(TestCase):
         )
 
     def test_to_str(self):
-        """Correct"""
+        """Should have the correct string representation."""
         self.assertEqual(str(self.comment), f"Kommentar #{self.comment.pk}")
 
 
 class CommentCreateTestCase(TestCase):
     def setUp(self):
-        user = get_user_model().objects.create_user(username="bob", password="bob")
-        self.client.login(username="bob", password="bob")
+        self.client.force_login(UserFactory())
 
     def test_get_not_allowed(self):
         """Should not allow GET requests."""
@@ -45,17 +35,9 @@ class CommentCreateTestCase(TestCase):
 
 class CommentDeleteTestCase(TestCase):
     def setUp(self):
-        user = get_user_model().objects.create_user(username="bob", password="bob")
-        self.client.login(username="bob", password="bob")
-        self.song = Song.objects.create(
-            title="Test", description="Test", created_by=user
-        )
-        self.comment = Comment.objects.create(
-            content_type=ContentType.objects.get_for_model(self.song),
-            object_pk=self.song.pk,
-            comment="Test comment",
-            created_by=user,
-        )
+        self.client.force_login(UserFactory())
+        self.song = SongFactory()
+        self.comment = CommentFactory(content_object=self.song)
 
     def test_should_redirect_to_content_object_on_success(self):
         """Should redirect to the model the comment is associated with on success."""
@@ -63,5 +45,5 @@ class CommentDeleteTestCase(TestCase):
             reverse("comment_delete", kwargs={"pk": self.comment.pk})
         )
         self.assertEqual(
-            response.url, reverse("song_detail", kwargs={"pk": self.comment.pk})
+            response.url, reverse("song_detail", kwargs={"pk": self.song.pk})
         )
