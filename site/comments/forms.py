@@ -9,14 +9,14 @@ class CommentCreateForm(forms.ModelForm):
     """Form for creating comments."""
 
     helper = FormHelper()
-    helper.label_class = "form-label"
-    helper.add_input(Submit("submit", "Lag/endre kommentar"))
+    helper.add_input(Submit("submit", "Legg ut kommentar"))
     helper.form_action = reverse_lazy("comment_create")
 
     class Meta:
         model = Comment
         fields = ["comment", "content_type", "object_pk"]
         widgets = {
+            "comment": forms.Textarea(attrs={"rows": 3}),
             "content_type": forms.HiddenInput(),
             "object_pk": forms.HiddenInput(),
         }
@@ -26,7 +26,6 @@ class CommentUpdateForm(forms.ModelForm):
     """Form for updating comments."""
 
     helper = FormHelper()
-    helper.label_class = "form-label"
     helper.add_input(Submit("submit", "Rediger kommentar"))
 
     class Meta:

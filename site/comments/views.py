@@ -15,7 +15,7 @@ class CommentCreate(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class CommentUpdate(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+class CommentUpdate(UserPassesTestMixin, UpdateView):
     """View for updating a comment."""
 
     model = Comment
@@ -29,7 +29,7 @@ class CommentUpdate(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         )
 
 
-class CommentDelete(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+class CommentDelete(UserPassesTestMixin, DeleteView):
     """View for deleting a comment."""
 
     model = Comment

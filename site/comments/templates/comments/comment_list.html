@@ -6,7 +6,7 @@
     {% for comment in comments %}
         <li id="comment-{{ comment.pk }}" class="mb-4">
             <article class="p-margin-last-0">
-                <header class="fw-bold">{{ comment.created_by  }}</header>
+                <h3 class="fw-bold h6 m-0">{{ comment.created_by }}</h3>
 
                 {% load markdown %}
                 {{ comment.comment | markdown }}
@@ -39,5 +39,11 @@
         </li>
     {% endfor %}
     </ol>
+
+    <section>
+        <h3>Skriv ny kommentar</h3>
+        {% load crispy_forms_tags %}
+        {% crispy form %}
+    </section>
 </section>
 {% endif %}
