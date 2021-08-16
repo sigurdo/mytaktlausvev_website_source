@@ -6,9 +6,8 @@ from django.contrib.auth.models import Permission
 class UserFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = settings.AUTH_USER_MODEL
-        django_get_or_create = ("username",)
 
-    username = "user"
+    username = factory.sequence(lambda n: f"User #{n}")
 
     @factory.post_generation
     def permissions(self, create, permission_list):
