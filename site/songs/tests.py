@@ -1,7 +1,7 @@
 from http import HTTPStatus
 from django.test import TestCase
 from django.urls import reverse
-from common.factories import UserFactory, SuperUserFactory
+from accounts.factories import UserFactory, SuperUserFactory
 from .models import Song
 from .factories import SongFactory
 

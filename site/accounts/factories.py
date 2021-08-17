@@ -9,7 +9,6 @@ class UserFactory(factory.django.DjangoModelFactory):
         django_get_or_create = ("username",)
 
     username = "user"
-    password = "password"
 
     @factory.post_generation
     def permissions(self, create, permission_list):
@@ -25,11 +24,7 @@ class UserFactory(factory.django.DjangoModelFactory):
             )
 
 
-class SuperUserFactory(factory.django.DjangoModelFactory):
-    class Meta:
-        model = settings.AUTH_USER_MODEL
-
+class SuperUserFactory(UserFactory):
     username = "root"
-    password = "password"
     is_staff = True
     is_superuser = True

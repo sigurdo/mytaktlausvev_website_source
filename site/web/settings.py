@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "crispy_forms",
     "crispy_bootstrap5",
     "sass_processor",
+    "accounts",
     "common",
     "about",
     "quotes",
@@ -94,6 +95,8 @@ DATABASES = {
     }
 }
 
+
+AUTH_USER_MODEL = "accounts.UserCustom"
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
