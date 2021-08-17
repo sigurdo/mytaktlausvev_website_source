@@ -1,5 +1,5 @@
 import factory
-from common.factories import UserFactory
+from accounts.factories import UserFactory
 from .models import Song
 
 
