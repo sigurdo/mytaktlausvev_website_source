@@ -6,7 +6,7 @@
 <article>
     <header>
         <h1>{{ object.title }}</h1>
-        <p>Lagt ut av {{ object.created_by }} den <time datetime="{{ song.submitted | date:"c" }}">{{ object.submitted }}</time></p>
+        <p>Lagt ut av {{ object.created_by }} den <time datetime="{{ object.submitted | date:"c" }}">{{ object.submitted }}</time></p>
     </header>
 
     {% load markdown %}
