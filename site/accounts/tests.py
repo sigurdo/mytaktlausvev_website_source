@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.contrib.auth import authenticate
-from accounts.models import UserCustom
+from .models import UserCustom
 
 
 class UserCustomTest(TestCase):
