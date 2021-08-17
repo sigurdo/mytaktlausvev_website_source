@@ -237,7 +237,7 @@ def processUploadedPdf(pdfPath, imagesDirPath, instruments):
 		print("cropper...")
 		img = cropImage(cv2.imread(imagePaths[i]))
 		print("detecter...")
-		detectionData = pytesseract.image_to_data(img, output_type=pytesseract.Output.DICT, config="--user-words sheetmusicUploader/instrumentsToLookFor.txt --psm 11 --dpi 96 -l eng")
+		detectionData = pytesseract.image_to_data(img, output_type=pytesseract.Output.DICT, config="--user-words sheetmusicUploader/instrumentsToLookFor.txt --oem 1 --psm 11 --dpi 96 -l eng")
 		print("predicter...")
 		partNames, instrumentses = predictParts(detectionData, instruments, img.shape[1], img.shape[0])
 		print("partNames:", partNames, "instrumentses:", instrumentses)
