@@ -1,5 +1,4 @@
 from django import forms
-from django.urls import reverse_lazy
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 from .models import Comment
@@ -10,7 +9,7 @@ class CommentCreateForm(forms.ModelForm):
 
     helper = FormHelper()
     helper.add_input(Submit("submit", "Legg ut kommentar"))
-    helper.form_action = reverse_lazy("comment_create")
+    helper.form_action = "comment_create"
 
     class Meta:
         model = Comment
