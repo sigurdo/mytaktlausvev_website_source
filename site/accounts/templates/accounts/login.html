@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block page %}
+
+{% if next %}
+	{% if user.is_authenticated %}
+		<p>Kontoen din har ikke tilgang til denne siden.</p>
+	{% else %}
+		<p>Logg inn for å se denne siden.</p>
+	{% endif %}
+{% endif %}
+
+{% load crispy_forms_tags %}
+{% crispy form %}
+
+{% endblock %}

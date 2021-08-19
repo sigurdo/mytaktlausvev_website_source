@@ -1,11 +1,11 @@
-"""Globally registered forms"""
 from django.contrib.auth.forms import AuthenticationForm
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 
 
 class LoginForm(AuthenticationForm):
-    """Form used for logging in"""
+    """Form used for logging in."""
+
     helper = FormHelper()
     helper.form_id = "login_form"
     helper.form_method = "post"
