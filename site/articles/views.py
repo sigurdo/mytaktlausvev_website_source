@@ -1,14 +1,17 @@
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
-from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.contrib.auth.mixins import PermissionRequiredMixin, UserPassesTestMixin
 from .models import Article
 from .forms import ArticleForm
 
 
-class ArticleDetail(DetailView):
+class ArticleDetail(UserPassesTestMixin, DetailView):
     """View for viewing an article."""
 
     model = Article
+
+    def test_func(self):
+        return self.get_object().public or self.request.user.is_authenticated
 
 
 class ArticleCreate(PermissionRequiredMixin, CreateView):

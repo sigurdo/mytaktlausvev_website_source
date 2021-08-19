@@ -42,6 +42,28 @@ class ArticleTestCase(TestCase):
         )
         self.assertEqual(article.slug, slug)
 
+    def test_public_false_by_default(self):
+        """Should set `public` to false by default."""
+        article = Article.objects.create(
+            title="Article", description="Article", created_by=UserFactory()
+        )
+        self.assertFalse(article.public)
+
+
+class ArticleDetailTestCase(TestCase):
+    def test_public_articles_do_not_require_login(self):
+        """Should be able to view public articles without logging in."""
+        article = ArticleFactory(public=True)
+        response = self.client.get(reverse("article_detail", args=[article.slug]))
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+    def test_not_public_articles_require_login(self):
+        """Articles that aren't public should require logging in."""
+        article = ArticleFactory(public=False)
+        response = self.client.get(reverse("article_detail", args=[article.slug]))
+        self.assertEqual(response.status_code, HTTPStatus.FOUND)
+        self.assertTrue(response.url.startswith(reverse("login")))
+
 
 class ArticleCreateTestCase(TestCase):
     def test_created_by_set_to_current_user(self):
