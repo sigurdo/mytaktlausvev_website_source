@@ -10,7 +10,10 @@
 	{% endif %}
 {% endif %}
 
-{% load crispy_forms_tags %}
-{% crispy form %}
+<form method="post" action="{% url 'login' %}">
+	{% load crispy_forms_tags %}
+	{% crispy form %}
+	<input type="hidden" name="next" value="{{ next }}" />
+</form>
 
 {% endblock %}
