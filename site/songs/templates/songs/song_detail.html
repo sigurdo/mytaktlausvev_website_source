@@ -3,7 +3,7 @@
 {% block extra %}
 {% if perms.songs.change_song %}
     <footer>
-        <a href="{% url 'song_update' song.pk %}" class="btn btn-primary">
+        <a href="{% url 'song_update' song.slug %}" class="btn btn-primary">
             Rediger sang
         </a>
     </footer>

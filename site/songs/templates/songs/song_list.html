@@ -12,7 +12,7 @@
         <ul>
             {% for song in song_list %}
             <li>
-                <a href="{% url 'song_detail' song.pk %}">{{ song.title }}</a>
+                <a href="{% url 'song_detail' song.slug %}">{{ song.title }}</a>
             </li>
             {% endfor %}
         </ul>
