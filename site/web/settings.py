@@ -45,7 +45,6 @@ INSTALLED_APPS = [
     "common",
     "articles",
     "comments",
-    "about",
     "quotes",
     "dashboard",
     "songs",
