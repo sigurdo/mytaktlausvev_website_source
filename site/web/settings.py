@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "sass_processor",
     "accounts",
     "common",
+    "articles",
     "comments",
     "about",
     "quotes",

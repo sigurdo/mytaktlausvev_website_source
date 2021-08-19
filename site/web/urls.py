@@ -24,4 +24,5 @@ urlpatterns = [
     path("omoss/", include("about.urls")),
     path("songar/", include("songs.urls")),
     path("kommentarar/", include("comments.urls")),
+    path("", include("articles.urls")),
 ]
