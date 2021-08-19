@@ -10,6 +10,10 @@ class Article(Page):
         help_text="Om artikkelen er open for ålmente.",
         default=False,
     )
+    comments_allowed = models.BooleanField(
+        "open for kommentarar",
+        default=True,
+    )
     slug = AutoSlugField(
         verbose_name="slug", populate_from="title", unique=True, editable=True
     )

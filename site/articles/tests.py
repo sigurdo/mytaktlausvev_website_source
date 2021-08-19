@@ -49,6 +49,13 @@ class ArticleTestCase(TestCase):
         )
         self.assertFalse(article.public)
 
+    def test_comments_allowed_by_default(self):
+        """Should allow comments by default."""
+        article = Article.objects.create(
+            title="Article", description="Article", created_by=UserFactory()
+        )
+        self.assertTrue(article.comments_allowed)
+
 
 class ArticleDetailTestCase(TestCase):
     def test_public_articles_do_not_require_login(self):

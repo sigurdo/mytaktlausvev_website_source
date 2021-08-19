@@ -8,4 +8,9 @@
         </a>
     </footer>
 {% endif %}
+
+{% if article.comments_allowed %}
+    {% load comments %}
+    {% comment_list article %}
+{% endif %}
 {% endblock extra %}
