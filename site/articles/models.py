@@ -1,10 +1,10 @@
 from django.db import models
 from django.urls import reverse
 from autoslug import AutoSlugField
-from common.models import Page
+from common.models import BaseArticle
 
 
-class Article(Page):
+class Article(BaseArticle):
     public = models.BooleanField(
         "offentleg",
         help_text="Om artikkelen er open for ålmente.",

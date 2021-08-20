@@ -2,7 +2,7 @@ from django.db import models
 from django.conf import settings
 
 
-class Page(models.Model):
+class BaseArticle(models.Model):
     title = models.CharField("tittel", max_length=255)
     description = models.TextField("beskrivelse")
     submitted = models.DateTimeField("lagt ut", auto_now_add=True)
