@@ -11,6 +11,7 @@ test:
     - virtualenv --python=python3 venv/
     - source venv/bin/activate
     - pip install -r site/requirements.txt
+    - cd site
     - python site/manage.py test 
   only:
     - develop
