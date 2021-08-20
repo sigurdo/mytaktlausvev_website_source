@@ -20,4 +20,4 @@ deploy:
   script:
     - ssh -i $ID_RSA -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "~/deploy_scripts/deploy.sh"
   only:
-    -master
+    - master
