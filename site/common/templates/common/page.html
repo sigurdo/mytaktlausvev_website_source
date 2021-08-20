@@ -6,7 +6,12 @@
 <article>
     <header>
         <h1>{{ object.title }}</h1>
-        <p>Lagt ut av {{ object.created_by }} den <time datetime="{{ object.submitted | date:"c" }}">{{ object.submitted }}</time></p>
+        {% if user.is_authenticated %}
+            <p>
+                Lagt ut av {{ object.created_by }} den
+                <time datetime="{{ object.submitted | date:"c" }}">{{ object.submitted }}</time>
+            </p>
+        {% endif %}
     </header>
 
     {% load markdown %}
