@@ -12,7 +12,7 @@ test:
     - source venv/bin/activate
     - pip install -r site/requirements.txt
     - cd site
-    - python site/manage.py test 
+    - python manage.py test 
   only:
     - develop
 
