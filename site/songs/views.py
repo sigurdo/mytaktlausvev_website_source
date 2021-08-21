@@ -28,6 +28,7 @@ class SongCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.created_by = self.request.user
+        form.instance.modified_by = self.request.user
         return super().form_valid(form)
 
 
@@ -38,3 +39,7 @@ class SongUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     form_class = SongForm
     template_name = "common/form.html"
     permission_required = "songs.change_song"
+
+    def form_valid(self, form):
+        form.instance.modified_by = self.request.user
+        return super().form_valid(form)

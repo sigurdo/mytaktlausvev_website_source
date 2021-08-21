@@ -24,6 +24,7 @@ class ArticleCreate(PermissionRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.created_by = self.request.user
+        form.instance.modified_by = self.request.user
         return super().form_valid(form)
 
 
@@ -34,3 +35,7 @@ class ArticleUpdate(PermissionRequiredMixin, UpdateView):
     form_class = ArticleForm
     template_name = "common/form.html"
     permission_required = "articles.change_article"
+
+    def form_valid(self, form):
+        form.instance.modified_by = self.request.user
+        return super().form_valid(form)

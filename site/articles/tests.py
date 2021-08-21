@@ -10,6 +10,12 @@ from .factories import ArticleFactory
 class ArticleTestCase(TestCase):
     def setUp(self):
         self.article = ArticleFactory()
+        self.article_data = {
+            "title": "Article",
+            "description": "Article",
+            "created_by": UserFactory(),
+            "modified_by": UserFactory(),
+        }
 
     def test_get_absolute_url(self):
         """Should link to the article's detail page."""
@@ -44,16 +50,12 @@ class ArticleTestCase(TestCase):
 
     def test_public_false_by_default(self):
         """Should set `public` to false by default."""
-        article = Article.objects.create(
-            title="Article", description="Article", created_by=UserFactory()
-        )
+        article = Article.objects.create(**self.article_data)
         self.assertFalse(article.public)
 
     def test_comments_allowed_by_default(self):
         """Should allow comments by default."""
-        article = Article.objects.create(
-            title="Article", description="Article", created_by=UserFactory()
-        )
+        article = Article.objects.create(**self.article_data)
         self.assertTrue(article.comments_allowed)
 
 
@@ -73,8 +75,8 @@ class ArticleDetailTestCase(TestCase):
 
 
 class ArticleCreateTestCase(TestCase):
-    def test_created_by_set_to_current_user(self):
-        """Should set `created_by` to the current user on creation."""
+    def test_created_by_modified_by_set_to_current_user(self):
+        """Should set `created_by` and `modified_by` to the current user on creation."""
         user = SuperUserFactory()
         self.client.force_login(user)
         self.client.post(
@@ -85,6 +87,7 @@ class ArticleCreateTestCase(TestCase):
         self.assertEqual(Article.objects.count(), 1)
         article = Article.objects.last()
         self.assertEqual(article.created_by, user)
+        self.assertEqual(article.modified_by, user)
 
     def test_requires_login(self):
         """Should redirect to login page if user is not logged in."""
@@ -96,14 +99,14 @@ class ArticleCreateTestCase(TestCase):
         """Should fail if missing add permission."""
         self.user = UserFactory()
         self.client.force_login(self.user)
-        response = self.client.post(reverse("article_create"))
+        response = self.client.get(reverse("article_create"))
         self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
 
     def test_succeeds_if_has_permission(self):
         """Should succeed if user has add permission."""
         self.user = UserFactory(permissions=("articles.add_article",))
         self.client.force_login(self.user)
-        response = self.client.post(reverse("article_create"))
+        response = self.client.get(reverse("article_create"))
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
 
@@ -121,12 +124,37 @@ class ArticleUpdateTestCase(TestCase):
         """Should fail if missing change permission."""
         self.user = UserFactory()
         self.client.force_login(self.user)
-        response = self.client.post(reverse("article_update", args=[self.article.slug]))
+        response = self.client.get(reverse("article_update", args=[self.article.slug]))
         self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
 
     def test_succeeds_if_has_permission(self):
         """Should succeed if user has change permission."""
         self.user = UserFactory(permissions=("articles.change_article",))
         self.client.force_login(self.user)
-        response = self.client.post(reverse("article_update", args=[self.article.slug]))
+        response = self.client.get(reverse("article_update", args=[self.article.slug]))
         self.assertEqual(response.status_code, HTTPStatus.OK)
+
+    def test_created_by_not_changed(self):
+        """Should not change `created_by` when updating article."""
+        user = SuperUserFactory()
+        self.client.force_login(user)
+        self.client.post(
+            reverse("article_update", args=[self.article.slug]),
+            {"title": "A Title", "description": "Article text"},
+        )
+
+        created_by_previous = self.article.created_by
+        self.article.refresh_from_db()
+        self.assertEqual(self.article.created_by, created_by_previous)
+
+    def test_modified_by_set_to_current_user(self):
+        """Should set `modified_by` to the current user on update."""
+        user = SuperUserFactory()
+        self.client.force_login(user)
+        response = self.client.post(
+            reverse("article_update", args=[self.article.slug]),
+            {"title": "A Title", "description": "Article text"},
+        )
+
+        self.article.refresh_from_db()
+        self.assertEqual(self.article.modified_by, user)

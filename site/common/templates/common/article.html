@@ -10,6 +10,9 @@
             <p>
                 Lagt ut av {{ object.created_by }} den
                 <time datetime="{{ object.submitted | date:"c" }}">{{ object.submitted }}</time>
+                <br />
+                Redigert av {{ object.modified_by }} den
+                <time datetime="{{ object.modified | date:"c" }}">{{ object.modified }}</time>                
             </p>
         {% endif %}
     </header>

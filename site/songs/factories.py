@@ -10,3 +10,4 @@ class SongFactory(factory.django.DjangoModelFactory):
     title = "Song"
     description = "Lyrics"
     created_by = factory.SubFactory(UserFactory)
+    modified_by = factory.SubFactory(UserFactory)

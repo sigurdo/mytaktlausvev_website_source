@@ -10,3 +10,4 @@ class ArticleFactory(factory.django.DjangoModelFactory):
     title = "Article"
     description = "This is an article."
     created_by = factory.SubFactory(UserFactory)
+    modified_by = factory.SubFactory(UserFactory)
