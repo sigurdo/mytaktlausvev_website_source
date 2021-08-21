@@ -48,7 +48,7 @@ ALLOWED_TAGS = [
     "cite",
 ]
 
-ALLOWED_ATTRIBUTES = ["src", "alt"]
+ALLOWED_ATTRIBUTES = ["src", "alt", "width", "height"]
 
 
 @register.filter(is_safe=True)
