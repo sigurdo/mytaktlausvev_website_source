@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     "repertoire",
     "advent_calendar",
     "easter_eggs",
+    "pwa",
 ]
 
 MIDDLEWARE = [
@@ -204,3 +205,6 @@ SASS_PROCESSOR_ROOT = os.path.join(BASE_DIR, "compiled_scss")
 SASS_PROCESSOR_INCLUDE_DIRS = [
     os.path.join(BASE_DIR, "static/scss/"),
 ]
+
+from .pwa_settings import *
+PWA_APP_DEBUG_MODE = DEBUG
