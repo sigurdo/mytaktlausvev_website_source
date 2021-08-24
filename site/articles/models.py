@@ -25,4 +25,4 @@ class Article(BaseArticle, TreeNode):
         return "/".join(slugs)
 
     def get_absolute_url(self):
-        return reverse("articles:detail", args=[self.slug])
+        return reverse("articles:detail", args=[self.path()])

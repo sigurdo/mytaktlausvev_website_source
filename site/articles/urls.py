@@ -1,13 +1,13 @@
-from django.urls import include, path
+from django.urls import include, path, re_path
 from . import views
 
 app_name = "articles"
 
 articles_patterns = [
     path("ny/", views.ArticleCreate.as_view(), name="create"),
-    path("<slug:slug>/rediger/", views.ArticleUpdate.as_view(), name="update"),
+    re_path(r"(?P<path>.*)/rediger/", views.ArticleUpdate.as_view(), name="update"),
 ]
 urlpatterns = [
-    path("<slug:slug>/", views.ArticleDetail.as_view(), name="detail"),
     path("artiklar/", include(articles_patterns)),
+    re_path(r"(?P<path>.*)/", views.ArticleDetail.as_view(), name="detail"),
 ]
