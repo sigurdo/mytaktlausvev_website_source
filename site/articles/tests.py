@@ -12,7 +12,7 @@ class ArticleTestCase(TestCase):
         self.article = ArticleFactory()
         self.article_data = {
             "title": "Article",
-            "description": "Article",
+            "content": "Article",
             "created_by": UserFactory(),
             "modified_by": UserFactory(),
         }
@@ -81,7 +81,7 @@ class ArticleCreateTestCase(TestCase):
         self.client.force_login(user)
         self.client.post(
             reverse("articles:create"),
-            {"title": "A Title", "description": "Article text"},
+            {"title": "A Title", "content": "Article text"},
         )
 
         self.assertEqual(Article.objects.count(), 1)
@@ -140,7 +140,7 @@ class ArticleUpdateTestCase(TestCase):
         self.client.force_login(user)
         self.client.post(
             reverse("articles:update", args=[self.article.slug]),
-            {"title": "A Title", "description": "Article text"},
+            {"title": "A Title", "content": "Article text"},
         )
 
         created_by_previous = self.article.created_by
@@ -153,7 +153,7 @@ class ArticleUpdateTestCase(TestCase):
         self.client.force_login(user)
         response = self.client.post(
             reverse("articles:update", args=[self.article.slug]),
-            {"title": "A Title", "description": "Article text"},
+            {"title": "A Title", "content": "Article text"},
         )
 
         self.article.refresh_from_db()

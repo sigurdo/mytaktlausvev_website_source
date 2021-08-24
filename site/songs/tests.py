@@ -41,7 +41,7 @@ class SongCreateTestCase(TestCase):
         user = SuperUserFactory()
         self.client.force_login(user)
         self.client.post(
-            reverse("song_create"), {"title": "A Title", "description": "Some lyrics"}
+            reverse("song_create"), {"title": "A Title", "content": "Some lyrics"}
         )
 
         self.assertEqual(Song.objects.count(), 1)

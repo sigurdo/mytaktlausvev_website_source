@@ -18,7 +18,7 @@
     </header>
 
     {% load markdown %}
-    {{ object.description | markdown }}
+    {{ object.content | markdown }}
 
     {% block extra %}{% endblock extra %}
 </article>

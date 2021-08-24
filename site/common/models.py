@@ -4,7 +4,7 @@ from django.conf import settings
 
 class BaseArticle(models.Model):
     title = models.CharField("tittel", max_length=255)
-    description = models.TextField("beskrivelse")
+    content = models.TextField("innhold")
     submitted = models.DateTimeField("lagt ut", auto_now_add=True)
     modified = models.DateTimeField("redigert", auto_now=True)
     created_by = models.ForeignKey(

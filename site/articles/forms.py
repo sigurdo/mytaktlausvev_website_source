@@ -12,4 +12,4 @@ class ArticleForm(forms.ModelForm):
 
     class Meta:
         model = Article
-        fields = ["title", "description", "public", "comments_allowed"]
+        fields = ["title", "content", "public", "comments_allowed"]
