@@ -1,0 +1,23 @@
+version: '3'
+
+services:
+  db:
+    image: postgres
+    volumes:
+      - /scratch/taktlaus_db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=taktlaus_db
+      - POSTGRES_USER=taktlaus
+      - POSTGRES_PASSWORD=taktlaus
+    restart: always
+
+  web:
+    build: .
+    environment:
+      - DEBUG=1
+    command: python manage.py runserver 0.0.0.0:8000
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    restart: always
