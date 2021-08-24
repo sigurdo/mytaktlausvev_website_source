@@ -75,13 +75,22 @@ DATABASES = {
 
 . . .
 ```
-6. gjør endringene, lag bruker og test
+
+6. utfør endringene på databasen
 ```
 python manage.py makemigrations
 python manage.py migrate
+```
 
-python manage.py createsuperuser
+7. importer testdata for utvikling
 
+```
+python manage.py create_dev_data
+```
+
+8. start server
+
+```
 python manage.py runserver
 ```
 
