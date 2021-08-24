@@ -10,8 +10,9 @@ const OFFLINE_URL = '/offline';
 
 const urls_to_cache = [
     "/",
-    "/omoss",
-    "/static/**"
+    "/omoss/",
+    "/manifest.json",
+    new RegExp("/static/.*")
 ]
 
 for (let i = 0; i < urls_to_cache.length; i++) {

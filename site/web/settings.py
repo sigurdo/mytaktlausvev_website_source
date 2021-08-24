@@ -87,6 +87,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "common.context_processors.pwa_app_enabled"
             ],
         },
     },
@@ -208,3 +209,4 @@ SASS_PROCESSOR_INCLUDE_DIRS = [
 
 from .pwa_settings import *
 PWA_APP_DEBUG_MODE = DEBUG
+PWA_APP_ENABLED = not DEBUG
