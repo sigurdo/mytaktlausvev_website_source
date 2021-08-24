@@ -47,7 +47,6 @@ INSTALLED_APPS = [
     "comments",
     "quotes",
     "dashboard",
-    "songs",
 ]
 
 MIDDLEWARE = [

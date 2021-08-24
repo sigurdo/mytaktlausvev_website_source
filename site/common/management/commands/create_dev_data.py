@@ -16,3 +16,11 @@ class Command(BaseCommand):
             created_by=superuser,
             modified_by=superuser,
         ).save()
+        ArticleFactory(
+            title="Songar",
+            content="Eit knippe songar.",
+            public=True,
+            comments_allowed=True,
+            created_by=superuser,
+            modified_by=superuser,
+        ).save()
