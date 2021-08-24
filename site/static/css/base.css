@@ -1,6 +1,21 @@
-body {
-  /* overlappende navbar */
-  padding-top: 90px;
+body { 
+    /* overlappende navbar */
+    padding-top: 100px;
+}
+@media screen and (max-width: 576px) {
+    body { 
+        /* overlappende navbar */
+        padding-top: 120px;
+    }
+}
+@media screen and (max-width: 400px) {
+    body { 
+        /* overlappende navbar */
+        padding-top: 160px;
+    }
+}
+
+.container {
 }
 
 .navbar-logo {

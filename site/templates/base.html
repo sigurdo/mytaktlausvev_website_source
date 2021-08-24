@@ -1,15 +1,17 @@
 {% extends 'base_base.html' %}
 {% block navbar %}
-	<nav class="navbar navbar-expand fixed-top navbar-dark">
+	<nav class="navbar navbar-expand-xl fixed-top navbar-dark">
 		<div class="container-fluid">
-
-			<a class="navbar-brand" href="{% if user.is_authenticated %} {% url 'dashboard:dashboard' %} {% else %} {% url 'articles:ArticleDetail' 'om-oss' %} {% endif %}">
+			<a class="navbar-brand" href="{% if user.is_authenticated %} {% url 'dashboard' %} {% else %} {% url 'articles:detail' 'om-oss' %} {% endif %}">
 				{% load static %}
-				<img class="navbar-logo" src="{% static 'images/logo.svg' %}" />
-				Studentorchesteret Dei Taktlause
+				<div class="d-flex align-items-center justify-content-center">
+					<img class="navbar-logo ms-1 me-3" src="{% static 'images/logo.svg' %}">
+					<span class="d-none d-sm-block"> Studentorchesteret Dei Taktlause </span>
+					<span class="d-block d-sm-none"> Studentorchesteret <br> Dei Taktlause </span>
+				</div>
 			</a>
 
-			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsable"
+			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapsable"
 				aria-controls="collapsable" aria-expanded="false" aria-label="Toggle navigation">
 				<span class="navbar-toggler-icon"></span>
 			</button>

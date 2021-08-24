@@ -20,7 +20,10 @@
 	<link rel="stylesheet" type="text/css" href="{% static 'css/base.css' %}">
 	<link rel="stylesheet" type="text/css" href="{% static 'css/forms.css' %}">
 
+	{% if PWA_APP_ENABLED %}
+	{% load pwa %}
 	{% progressive_web_app_meta %}
+	{% endif %}
 	
 	{% block css %}{% endblock css %}
 </head>
