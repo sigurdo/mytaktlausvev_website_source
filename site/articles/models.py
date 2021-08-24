@@ -1,10 +1,11 @@
 from django.db import models
 from django.urls import reverse
+from tree_queries.models import TreeNode
 from autoslug import AutoSlugField
 from common.models import BaseArticle
 
 
-class Article(BaseArticle):
+class Article(BaseArticle, TreeNode):
     public = models.BooleanField(
         "offentleg",
         help_text="Om artikkelen er open for ålmente.",
