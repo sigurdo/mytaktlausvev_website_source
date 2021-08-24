@@ -19,5 +19,10 @@ class Article(BaseArticle, TreeNode):
         verbose_name="slug", populate_from="title", unique=True, editable=True
     )
 
+    def path(self):
+        """Returns a /-separated list of ancestor slugs, including self."""
+        slugs = [ancestor.slug for ancestor in self.ancestors(include_self=True)]
+        return "/".join(slugs)
+
     def get_absolute_url(self):
         return reverse("articles:detail", args=[self.slug])

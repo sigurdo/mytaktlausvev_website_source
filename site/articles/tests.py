@@ -10,6 +10,8 @@ from .factories import ArticleFactory
 class ArticleTestCase(TestCase):
     def setUp(self):
         self.article = ArticleFactory()
+        self.child = ArticleFactory(parent=self.article)
+        self.grandchild = ArticleFactory(parent=self.child)
         self.article_data = {
             "title": "Article",
             "content": "Article",
@@ -17,11 +19,20 @@ class ArticleTestCase(TestCase):
             "modified_by": UserFactory(),
         }
 
+    def test_path(self):
+        """Should return a /-separated list of ancestor slugs, including self."""
+        self.assertEqual(self.article.path(), self.article.slug)
+        self.assertEqual(self.child.path(), f"{self.article.slug}/{self.child.slug}")
+        self.assertEqual(
+            self.grandchild.path(),
+            f"{self.article.slug}/{self.child.slug}/{self.grandchild.slug}",
+        )
+
     def test_get_absolute_url(self):
         """Should link to the article's detail page."""
         self.assertEqual(
             self.article.get_absolute_url(),
-            reverse("articles:detail", args=[self.article.slug]),
+            reverse("articles:detail", args=[self.article.path()]),
         )
 
     def test_creates_slug_from_title_automatically(self):
