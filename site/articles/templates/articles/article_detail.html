@@ -3,7 +3,7 @@
 {% block extra %}
 {% if perms.articles.change_article %}
     <footer>
-        <a href="{% url 'article_update' article.slug %}" class="btn btn-primary">
+        <a href="{% url 'articles:update' article.slug %}" class="btn btn-primary">
             Rediger artikkel
         </a>
     </footer>

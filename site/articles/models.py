@@ -19,4 +19,4 @@ class Article(BaseArticle):
     )
 
     def get_absolute_url(self):
-        return reverse("article_detail", args=[self.slug])
+        return reverse("articles:detail", args=[self.slug])

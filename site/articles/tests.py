@@ -21,7 +21,7 @@ class ArticleTestCase(TestCase):
         """Should link to the article's detail page."""
         self.assertEqual(
             self.article.get_absolute_url(),
-            reverse("article_detail", args=[self.article.slug]),
+            reverse("articles:detail", args=[self.article.slug]),
         )
 
     def test_creates_slug_from_title_automatically(self):
@@ -63,13 +63,13 @@ class ArticleDetailTestCase(TestCase):
     def test_public_articles_do_not_require_login(self):
         """Should be able to view public articles without logging in."""
         article = ArticleFactory(public=True)
-        response = self.client.get(reverse("article_detail", args=[article.slug]))
+        response = self.client.get(reverse("articles:detail", args=[article.slug]))
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_not_public_articles_require_login(self):
         """Articles that aren't public should require logging in."""
         article = ArticleFactory(public=False)
-        response = self.client.get(reverse("article_detail", args=[article.slug]))
+        response = self.client.get(reverse("articles:detail", args=[article.slug]))
         self.assertEqual(response.status_code, HTTPStatus.FOUND)
         self.assertTrue(response.url.startswith(reverse("login")))
 
@@ -80,7 +80,7 @@ class ArticleCreateTestCase(TestCase):
         user = SuperUserFactory()
         self.client.force_login(user)
         self.client.post(
-            reverse("article_create"),
+            reverse("articles:create"),
             {"title": "A Title", "description": "Article text"},
         )
 
@@ -91,7 +91,7 @@ class ArticleCreateTestCase(TestCase):
 
     def test_requires_login(self):
         """Should redirect to login page if user is not logged in."""
-        response = self.client.get(reverse("article_create"))
+        response = self.client.get(reverse("articles:create"))
         self.assertEqual(response.status_code, HTTPStatus.FOUND)
         self.assertTrue(response.url.startswith(reverse("login")))
 
@@ -99,14 +99,14 @@ class ArticleCreateTestCase(TestCase):
         """Should fail if missing add permission."""
         self.user = UserFactory()
         self.client.force_login(self.user)
-        response = self.client.get(reverse("article_create"))
+        response = self.client.get(reverse("articles:create"))
         self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
 
     def test_succeeds_if_has_permission(self):
         """Should succeed if user has add permission."""
         self.user = UserFactory(permissions=("articles.add_article",))
         self.client.force_login(self.user)
-        response = self.client.get(reverse("article_create"))
+        response = self.client.get(reverse("articles:create"))
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
 
@@ -116,7 +116,7 @@ class ArticleUpdateTestCase(TestCase):
 
     def test_requires_login(self):
         """Should redirect to login page if user is not logged in."""
-        response = self.client.get(reverse("article_update", args=[self.article.slug]))
+        response = self.client.get(reverse("articles:update", args=[self.article.slug]))
         self.assertEqual(response.status_code, HTTPStatus.FOUND)
         self.assertTrue(response.url.startswith(reverse("login")))
 
@@ -124,14 +124,14 @@ class ArticleUpdateTestCase(TestCase):
         """Should fail if missing change permission."""
         self.user = UserFactory()
         self.client.force_login(self.user)
-        response = self.client.get(reverse("article_update", args=[self.article.slug]))
+        response = self.client.get(reverse("articles:update", args=[self.article.slug]))
         self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
 
     def test_succeeds_if_has_permission(self):
         """Should succeed if user has change permission."""
         self.user = UserFactory(permissions=("articles.change_article",))
         self.client.force_login(self.user)
-        response = self.client.get(reverse("article_update", args=[self.article.slug]))
+        response = self.client.get(reverse("articles:update", args=[self.article.slug]))
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_created_by_not_changed(self):
@@ -139,7 +139,7 @@ class ArticleUpdateTestCase(TestCase):
         user = SuperUserFactory()
         self.client.force_login(user)
         self.client.post(
-            reverse("article_update", args=[self.article.slug]),
+            reverse("articles:update", args=[self.article.slug]),
             {"title": "A Title", "description": "Article text"},
         )
 
@@ -152,7 +152,7 @@ class ArticleUpdateTestCase(TestCase):
         user = SuperUserFactory()
         self.client.force_login(user)
         response = self.client.post(
-            reverse("article_update", args=[self.article.slug]),
+            reverse("articles:update", args=[self.article.slug]),
             {"title": "A Title", "description": "Article text"},
         )
 
