@@ -24,3 +24,11 @@ class Command(BaseCommand):
             created_by=superuser,
             modified_by=superuser,
         ).save()
+        ArticleFactory(
+            title="Wiki",
+            content="Informasjon til Taktlause",
+            public=True,
+            comments_allowed=True,
+            created_by=UserCustom.objects.get(username="leiar"),
+            modified_by=UserCustom.objects.get(username="leiar"),
+        ).save()
