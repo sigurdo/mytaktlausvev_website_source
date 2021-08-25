@@ -4,7 +4,7 @@ services:
   db:
     image: postgres
     volumes:
-      - /scratch/taktlaus_db:/var/lib/postgresql/data
+      - ~/taktlaus_db:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=taktlaus_db
       - POSTGRES_USER=taktlaus
