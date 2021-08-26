@@ -26,7 +26,7 @@ from .models import Score, Pdf, Part
 from .forms import ScoreCreateForm, UploadPdfForm, EditScoreForm, EditPartForm, EditPartFormSet, EditPartFormSetHelper, PartCreateForm
 from .utils import convertPagesToInputFormat, convertInputFormatToPages
 
-from .sheetmusicEngine.sheeetmusicEngine import processUploadedPdf
+from sheatless import processUploadedPdf
 
 
 
@@ -152,14 +152,10 @@ class PdfsUpdate(LoginRequiredMixin, CreateView):
             if not os.path.exists(imagesDirPath): os.mkdir(imagesDirPath)
             imagesDirPath = os.path.join(imagesDirPath, str(pdf.pk))
             if not os.path.exists(imagesDirPath): os.mkdir(imagesDirPath)
-
-            instrumentsYamlPath = "site/sheetmusic/sheetmusicEngine/instruments.yaml"
-            with open(instrumentsYamlPath, "r") as file:
-                instruments = yaml.safe_load(file)
             
             print("skal prøve:", pdf.file.path, imagesDirPath)
             # Gjør dette i en egen prosess for å ikke påvirke responstida på andre requests som må besvares i mellomtida:
-            parts, instrumentsDefaultParts = multiprocessing.Pool().apply(processUploadedPdf, (pdf.file.path, imagesDirPath, instruments))
+            parts, instrumentsDefaultParts = multiprocessing.Pool().apply(processUploadedPdf, (pdf.file.path, imagesDirPath), { "use_lstm": True, "tessdata_dir": os.path.join(os.path.dirname(__file__), "tessdata", "tessdata_best-4.1.0") })
             print("Result:", parts, instrumentsDefaultParts)
             for part in parts:
                 part = Part(name=part["name"], pdf=pdf, fromPage=part["fromPage"], toPage=part["toPage"], timestamp=timezone.now())

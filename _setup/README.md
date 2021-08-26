@@ -113,3 +113,15 @@ user = BRUKERNAVNET_DU_VALGTE
 password = PASSORDET_DU_VALGTE
 default-character-set = utf8
 ```
+
+## Sette opp tools for noteopplasteren
+
+For linux:
+
+```
+sudo apt install poppler-utils tesseract-ocr
+wget -O site/sheetmusic/tessdata/tessdata_best.zip https://github.com/tesseract-ocr/tessdata_best/archive/refs/tags/4.1.0.zip
+unzip site/sheetmusic/tessdata/tessdata_best.zip -d site/sheetmusic/tessdata/
+```
+
+

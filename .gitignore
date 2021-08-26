@@ -53,11 +53,6 @@ db.sqlite3-journal
 settings.cnf
 
 # Generated items
-site/sheetmusic/sheetmusicEngine/generated_images
-site/sheetmusic/sheetmusicEngine/images_with_bounding_boxes
-site/sheetmusic/sheetmusicEngine/input_pdfs
-site/sheetmusic/sheetmusicEngine/output_pdfs
-site/sheetmusic/sheetmusicEngine/tmp
 site/media
 
 # Compiled scss files

@@ -13,20 +13,12 @@ six==1.13.0
 sqlparse==0.3.0
 typed-ast==1.4.1
 wrapt==1.11.2
-psycopg2-binary==2.8.4
+psycopg2-binary==2.8.6
 libsass==0.20.1 
 django-sass-processor==1.0.1 
 markdown==3.3.4
 bleach==3.3.1
-Pillow==7.2.0
-PyPDF2==1.26.0
-opencv-python==4.3.0.38
-# numpy==1.19.0 # Numpy should already be contained in opencv
-pdf2image==1.13.1
-# pdf2image also requires poppler: sudo apt install poppler-utils, or windows: http://blog.alivate.com.au/poppler-windows/
-imutils==0.5.3
-pytesseract==0.3.4
-pyyaml==5.3.1
-unidecode==1.1.1
+pyyaml==5.4.1
 django-upload-validator==1.1.5
 # pytesseract also requires tesseract: https://github.com/tesseract-ocr/tesseract/wiki
+sheatless==0.0.10
