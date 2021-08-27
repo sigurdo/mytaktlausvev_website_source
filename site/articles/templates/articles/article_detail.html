@@ -1,16 +1,36 @@
-{% extends 'common/article.html' %}
+{% extends 'base.html' %}
 
-{% block extra %}
-{% if perms.articles.change_article %}
-    <footer>
-        <a href="{% url 'articles:update' article.path %}" class="btn btn-primary">
-            Rediger artikkel
-        </a>
-    </footer>
-{% endif %}
+{% block title %}{{ article.title }}{% endblock title %}
 
-{% if article.comments_allowed %}
-    {% load comments %}
-    {% comment_list article %}
-{% endif %}
-{% endblock extra %}
+{% block page %}
+<article>
+    <header class="mb-4">
+        <h1>{{ article.title }}</h1>
+        {% if user.is_authenticated %}
+            <p>
+                Lagt ut av {{ article.created_by }} den
+                <time datetime="{{ article.submitted | date:"c" }}">{{ article.submitted }}</time>
+                <br />
+                Redigert av {{ article.modified_by }} den
+                <time datetime="{{ article.modified | date:"c" }}">{{ article.modified }}</time>
+            </p>
+        {% endif %}
+    </header>
+
+    {% load markdown %}
+    {{ article.content | markdown }}
+
+    {% if perms.articles.change_article %}
+        <footer>
+            <a href="{% url 'articles:update' article.path %}" class="btn btn-primary">
+                Rediger artikkel
+            </a>
+        </footer>
+    {% endif %}
+
+    {% if article.comments_allowed %}
+        {% load comments %}
+        {% comment_list article %}
+    {% endif %}
+</article>
+{% endblock page %}
