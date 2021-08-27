@@ -3,16 +3,33 @@
 {% block title %}{{ article.title }}{% endblock title %}
 
 {% block page %}
-<article>
+<article class="mt-4">
     <header class="mb-4">
+        {% if ancestors.count > 1 %}
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                {% for ancestor in article.ancestors %}
+                <li class="breadcrumb-item">
+                    <a href="{% url 'articles:detail' ancestor.path %}">
+                        {{ ancestor.title }}
+                    </a>
+                </li>
+                {% endfor %}
+                <li class="breadcrumb-item active" aria-current="page">
+                    {{ article.title }}
+                </li>
+            </ol>
+        </nav>
+        {% endif %}
+
         <h1>{{ article.title }}</h1>
         {% if user.is_authenticated %}
-            <p>
+            <p class="fs-7">
                 Lagt ut av {{ article.created_by }} den
-                <time datetime="{{ article.submitted | date:"c" }}">{{ article.submitted }}</time>
-                <br />
-                Redigert av {{ article.modified_by }} den
-                <time datetime="{{ article.modified | date:"c" }}">{{ article.modified }}</time>
+                <time datetime="{{ article.submitted | date:"c" }}">{{ article.submitted | date }}</time>.
+
+                Sist redigert av {{ article.modified_by }} den
+                <time datetime="{{ article.modified | date:"c" }}">{{ article.modified | date }}</time>.
             </p>
         {% endif %}
     </header>
