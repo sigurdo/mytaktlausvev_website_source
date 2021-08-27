@@ -178,3 +178,8 @@ SASS_OUTPUT_STYLE = (
 SASS_PROCESSOR_ROOT = os.path.join(
     BASE_DIR, "compiled_scss"
 )  # Defines a root directory to output compiled scss files
+
+# Directories that act as a base to include from
+SASS_PROCESSOR_INCLUDE_DIRS = [
+    os.path.join(BASE_DIR, "static/scss/"),
+]
