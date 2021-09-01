@@ -1,0 +1,16 @@
+{% extends 'common/article.html' %}
+
+{% block extra %}
+{% if perms.articles.change_article %}
+    <footer>
+        <a href="{% url 'articles:update' article.slug %}" class="btn btn-primary">
+            Rediger artikkel
+        </a>
+    </footer>
+{% endif %}
+
+{% if article.comments_allowed %}
+    {% load comments %}
+    {% comment_list article %}
+{% endif %}
+{% endblock extra %}

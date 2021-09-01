@@ -21,7 +21,7 @@ urlpatterns = [
     path("accounts/", include("accounts.urls")),
     path("sitat/", include("quotes.urls")),
     path("", include("dashboard.urls")),
-    path("omoss/", include("about.urls")),
     path("songar/", include("songs.urls")),
     path("kommentarar/", include("comments.urls")),
+    path("", include("articles.urls")),
 ]
