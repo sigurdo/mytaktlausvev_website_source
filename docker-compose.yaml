@@ -15,7 +15,9 @@ services:
     build: .
     environment:
       - DEBUG=1
-    command: ./manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./site:/app/site
+    command: ./site/manage.py runserver 0.0.0.0:8000
     ports:
       - "8000:8000"
     depends_on:
