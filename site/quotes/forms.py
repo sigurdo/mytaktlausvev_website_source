@@ -7,6 +7,7 @@ from quotes.models import Quote
 
 class QuoteForm(forms.ModelForm):
     """Form for registering a new quote"""
+
     helper = FormHelper()
     helper.form_id = "quote_form"
     helper.form_method = "post"
@@ -19,11 +20,5 @@ class QuoteForm(forms.ModelForm):
     class Meta:
         model = Quote
         fields = ["title", "text", "owner"]
-        widgets = {
-            "text": forms.Textarea(attrs={'cols': 40, 'rows': 5})
-        }
-        labels = {
-            "owner": "Eier",
-            "text": "Tekst",
-            "title": "Tittel"
-        }
+        widgets = {"text": forms.Textarea(attrs={"cols": 40, "rows": 5})}
+        labels = {"owner": "Eier", "text": "Tekst", "title": "Tittel"}
