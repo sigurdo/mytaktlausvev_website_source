@@ -1,7 +1,12 @@
-# Ny taktlausside
+# Taktlausveven
 
-Her er koden til en (eventuell) ny taktlausside!!!
+Studentorchesteret Dei Taktlause's new website.
 
-Den planlegges på trello her: https://trello.com/b/zHiQagm5/ny-nettside
+## Development
 
-les _setup/README.md for hjelp til oppsett
+### Formatting & Linting
+
+The project uses [Black](https://black.readthedocs.io/en/stable/) for formatting and [flake8](https://flake8.pycqa.org/en/latest/) for linting.
+
+- Format all files with `python -m black .`
+- Lint and verify code style with `python -m flake8`
