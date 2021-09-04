@@ -70,7 +70,7 @@ class DrupalPasswordHasher(BasePasswordHasher):
     def _apply_hash(self, password, digest, settings):
         password = force_bytes(password)
         password_hash = digest(force_bytes(settings["salt"]) + password).digest()
-        for _ in range(settings["count"]):
+        for i in range(settings["count"]):
             password_hash = digest(password_hash + password).digest()
         return self._drupal_b64(password_hash)[: self._DRUPAL_HASH_LENGTH - 12]
 
