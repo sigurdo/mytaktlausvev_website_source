@@ -10,8 +10,5 @@ def dashboard(request):
     return render(
         request,
         "dashboard/dashboard.html",
-        {
-            "number": random.randint(0, 10),
-            "quotes": Quote.objects.all()[:2]
-        }
+        {"number": random.randint(0, 10), "quotes": Quote.objects.all()[:2]},
     )

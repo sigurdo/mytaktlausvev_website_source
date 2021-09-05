@@ -151,7 +151,7 @@ class ArticleUpdateTestCase(TestCase):
         """Should set `modified_by` to the current user on update."""
         user = SuperUserFactory()
         self.client.force_login(user)
-        response = self.client.post(
+        self.client.post(
             reverse("articles:update", args=[self.article.slug]),
             {"title": "A Title", "content": "Article text"},
         )
