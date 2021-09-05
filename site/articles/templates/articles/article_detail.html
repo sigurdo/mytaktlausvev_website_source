@@ -5,19 +5,16 @@
 {% block page %}
 <article class="mt-4">
     <header class="mb-4">
-        {% if ancestors.count > 1 %}
+        {% if article.ancestors %}
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 {% for ancestor in article.ancestors %}
                 <li class="breadcrumb-item">
-                    <a href="{% url 'articles:detail' ancestor.path %}">
+                    <a href="{{ ancestor.get_absolute_url }}">
                         {{ ancestor.title }}
                     </a>
                 </li>
                 {% endfor %}
-                <li class="breadcrumb-item active" aria-current="page">
-                    {{ article.title }}
-                </li>
             </ol>
         </nav>
         {% endif %}
