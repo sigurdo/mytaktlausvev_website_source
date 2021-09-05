@@ -1,8 +1,11 @@
 from http import HTTPStatus
+from django.http.response import Http404
 from django.test import TestCase
 from django.urls import reverse
 from django.utils.text import slugify
+from django.views.generic.detail import SingleObjectMixin
 from accounts.factories import UserFactory, SuperUserFactory
+from articles.views import SlugPathMixin
 from .models import Article
 from .factories import ArticleFactory
 
@@ -68,6 +71,41 @@ class ArticleTestCase(TestCase):
         """Should allow comments by default."""
         article = Article.objects.create(**self.article_data)
         self.assertTrue(article.comments_allowed)
+
+
+class SlugPathMixinTest(TestCase):
+    class DummyView(SlugPathMixin, SingleObjectMixin):
+        model = Article
+
+        def __init__(self, path):
+            self.kwargs = {"path": path}
+
+    def test_raises_404_when_article_not_found(self):
+        """
+        Raises a 404 error when an article
+        matching the provided path couldn't be found.
+        """
+        view = self.DummyView("article-not-exist")
+        with self.assertRaises(Http404):
+            view.get_object()
+
+        view = self.DummyView("another/article/not-exist/not")
+        with self.assertRaises(Http404):
+            view.get_object()
+
+    def test_returns_article_when_matching_article_found(self):
+        """
+        Returns the article when an article
+        matching the provided path is found.
+        """
+        article = ArticleFactory()
+        view = self.DummyView(article.path())
+        self.assertEqual(article, view.get_object())
+
+        child = ArticleFactory(parent=article)
+        grandchild = ArticleFactory(parent=child)
+        view = self.DummyView(grandchild.path())
+        self.assertEqual(grandchild, view.get_object())
 
 
 class ArticleDetailTestCase(TestCase):
