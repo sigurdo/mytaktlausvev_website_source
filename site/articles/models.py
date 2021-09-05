@@ -16,7 +16,10 @@ class Article(BaseArticle, TreeNode):
         default=True,
     )
     slug = AutoSlugField(
-        verbose_name="slug", populate_from="title", unique=True, editable=True
+        verbose_name="slug",
+        populate_from="title",
+        unique_with=("title", "parent"),
+        editable=True,
     )
 
     def path(self):
@@ -26,3 +29,8 @@ class Article(BaseArticle, TreeNode):
 
     def get_absolute_url(self):
         return reverse("articles:detail", args=[self.path()])
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["parent", "slug"], name="unique_slug")
+        ]

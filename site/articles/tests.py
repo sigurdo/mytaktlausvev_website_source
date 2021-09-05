@@ -13,8 +13,8 @@ from .factories import ArticleFactory
 class ArticleTestCase(TestCase):
     def setUp(self):
         self.article = ArticleFactory()
-        self.child = ArticleFactory(parent=self.article)
-        self.grandchild = ArticleFactory(parent=self.child)
+        self.child = ArticleFactory(title="child", parent=self.article)
+        self.grandchild = ArticleFactory(title="grandchild", parent=self.child)
         self.article_data = {
             "title": "Article",
             "content": "Article",
@@ -49,10 +49,19 @@ class ArticleTestCase(TestCase):
         self.article.save()
         self.assertEqual(self.article.slug, slug_before)
 
-    def test_creates_unique_slugs(self):
-        """Should create unique slugs even if titles match."""
-        article_same_title = ArticleFactory(title=self.article.title)
-        self.assertNotEqual(self.article.slug, article_same_title.slug)
+    def test_creates_unique_slugs_for_articles_with_same_parent(self):
+        """Should create unique slugs for articles with the same parent."""
+        article_same_title_same_parent = ArticleFactory(
+            title=self.child.title, parent=self.child.parent
+        )
+        self.assertNotEqual(self.child.slug, article_same_title_same_parent.slug)
+
+    def test_articles_with_different_parents_can_have_equal_slugs(self):
+        """Should allow articles with different parents to have equal slugs."""
+        article_same_title_different_parent = ArticleFactory(
+            title=self.child.title, parent=self.grandchild.parent
+        )
+        self.assertEqual(self.child.slug, article_same_title_different_parent.slug)
 
     def test_does_not_override_provided_slug(self):
         """Should not override the slug if provided during creation."""
