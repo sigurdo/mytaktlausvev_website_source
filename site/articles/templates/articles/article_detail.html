@@ -34,6 +34,18 @@
     {% load markdown %}
     {{ article.content | markdown }}
 
+    {% if subarticles %}
+        <nav class="my-4">
+            <ul>
+            {% for subarticle in subarticles %}
+                <li>
+                    <a href="{{ subarticle.get_absolute_url }}">{{ subarticle.title }}</a>
+                </li>
+            {% endfor %}
+            </ul>
+        </nav>
+    {% endif %}
+
     {% if perms.articles.change_article or perms.articles.add_article %}
         <footer class="my-4">
             {% if perms.articles.add_article %}

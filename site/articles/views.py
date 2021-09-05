@@ -33,6 +33,14 @@ class ArticleDetail(UserPassesTestMixin, SlugPathMixin, DetailView):
     def test_func(self):
         return self.get_object().public or self.request.user.is_authenticated
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.user.is_authenticated:
+            context["subarticles"] = self.object.children.all()
+        else:
+            context["subarticles"] = self.object.children.filter(public=True)
+        return context
+
 
 class ArticleCreate(PermissionRequiredMixin, CreateView):
     """View for creating a article."""

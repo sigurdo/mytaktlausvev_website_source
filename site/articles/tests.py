@@ -122,6 +122,38 @@ class ArticleDetailTestCase(TestCase):
         self.assertEqual(response.status_code, HTTPStatus.FOUND)
         self.assertTrue(response.url.startswith(reverse("login")))
 
+    def test_includes_only_public_subarticles_if_not_authenticated(self):
+        """Should include only public subarticles if not authenticated."""
+        article = ArticleFactory(public=True)
+        subarticles_public = []
+        for _ in range(3):
+            subarticles_public.append(ArticleFactory(public=True, parent=article))
+            ArticleFactory(public=False, parent=article)
+
+        response = self.client.get(reverse("articles:detail", args=[article.path()]))
+        self.assertListEqual(
+            list(response.context["subarticles"]),
+            subarticles_public,
+        )
+
+    def test_includes_all_subarticles_if_authenticated(self):
+        """Should include all subarticles if authenticated."""
+        article = ArticleFactory(public=True)
+        subarticles_public = [
+            ArticleFactory(public=True, parent=article) for _ in range(3)
+        ]
+        subarticles_private = [
+            ArticleFactory(public=False, parent=article) for _ in range(3)
+        ]
+
+        user = UserFactory()
+        self.client.force_login(user)
+        response = self.client.get(reverse("articles:detail", args=[article.path()]))
+        self.assertListEqual(
+            list(response.context["subarticles"]),
+            subarticles_public + subarticles_private,
+        )
+
 
 class ArticleCreateTestCase(TestCase):
     def test_created_by_modified_by_set_to_current_user(self):
