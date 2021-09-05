@@ -129,7 +129,7 @@ class ArticleCreateTestCase(TestCase):
         user = SuperUserFactory()
         self.client.force_login(user)
         self.client.post(
-            reverse("articles:create"),
+            reverse("articles:create_article"),
             {"title": "A Title", "content": "Article text"},
         )
 
@@ -140,7 +140,7 @@ class ArticleCreateTestCase(TestCase):
 
     def test_requires_login(self):
         """Should redirect to login page if user is not logged in."""
-        response = self.client.get(reverse("articles:create"))
+        response = self.client.get(reverse("articles:create_article"))
         self.assertEqual(response.status_code, HTTPStatus.FOUND)
         self.assertTrue(response.url.startswith(reverse("login")))
 
@@ -148,15 +148,36 @@ class ArticleCreateTestCase(TestCase):
         """Should fail if missing add permission."""
         self.user = UserFactory()
         self.client.force_login(self.user)
-        response = self.client.get(reverse("articles:create"))
+        response = self.client.get(reverse("articles:create_article"))
         self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
 
     def test_succeeds_if_has_permission(self):
         """Should succeed if user has add permission."""
         self.user = UserFactory(permissions=("articles.add_article",))
         self.client.force_login(self.user)
-        response = self.client.get(reverse("articles:create"))
+        response = self.client.get(reverse("articles:create_article"))
         self.assertEqual(response.status_code, HTTPStatus.OK)
+
+
+class SubarticleCreateTestCase(TestCase):
+    def setUp(self):
+        user = SuperUserFactory()
+        self.client.force_login(user)
+
+    def test_form_initial_data_based_on_parent(self):
+        """Should set the form's initial data based on the parent."""
+        parent = ArticleFactory()
+        response = self.client.get(
+            reverse("articles:create_subarticle", args=[parent.path()])
+        )
+        self.assertDictEqual(
+            response.context["form"].initial,
+            {
+                "parent": parent,
+                "comments_allowed": parent.comments_allowed,
+                "public": parent.public,
+            },
+        )
 
 
 class ArticleUpdateTestCase(TestCase):

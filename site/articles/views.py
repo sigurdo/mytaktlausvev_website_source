@@ -48,6 +48,18 @@ class ArticleCreate(PermissionRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
+class SubarticleCreate(SlugPathMixin, ArticleCreate):
+    """View for creating a subarticle."""
+
+    def get_initial(self):
+        parent = self.get_object()
+        return {
+            "parent": parent,
+            "public": parent.public,
+            "comments_allowed": parent.comments_allowed,
+        }
+
+
 class ArticleUpdate(PermissionRequiredMixin, SlugPathMixin, UpdateView):
     """View for updating a article."""
 

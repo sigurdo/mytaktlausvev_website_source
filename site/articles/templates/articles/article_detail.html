@@ -37,11 +37,18 @@
     {% load markdown %}
     {{ article.content | markdown }}
 
-    {% if perms.articles.change_article %}
-        <footer>
+    {% if perms.articles.change_article or perms.articles.add_article %}
+        <footer class="my-4">
+            {% if perms.articles.add_article %}
+            <a href="{% url 'articles:create_subarticle' article.path %}" class="btn btn-primary">
+                Lag underartikkel
+            </a>
+            {% endif %}
+            {% if perms.articles.change_article %}
             <a href="{% url 'articles:update' article.path %}" class="btn btn-primary">
                 Rediger artikkel
             </a>
+            {% endif %}
         </footer>
     {% endif %}
 
