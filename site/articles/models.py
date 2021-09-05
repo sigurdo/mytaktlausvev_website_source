@@ -34,3 +34,4 @@ class Article(BaseArticle, TreeNode):
         constraints = [
             models.UniqueConstraint(fields=["parent", "slug"], name="unique_slug")
         ]
+        ordering = ["title"]
