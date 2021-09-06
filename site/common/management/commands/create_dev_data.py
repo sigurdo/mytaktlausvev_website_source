@@ -26,7 +26,7 @@ class Command(BaseCommand):
         ).save()
         ArticleFactory(
             title="Wiki",
-            content="Informasjon til Taktlause",
+            content="Informasjon til Taktlause.",
             public=True,
             comments_allowed=True,
             created_by=UserCustom.objects.get(username="leiar"),

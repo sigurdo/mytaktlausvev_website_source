@@ -2,7 +2,7 @@ from django.db import models
 from django.conf import settings
 
 
-class BaseArticle(models.Model):
+class ArticleMixin(models.Model):
     title = models.CharField("tittel", max_length=255)
     content = models.TextField("innhold")
     submitted = models.DateTimeField("lagt ut", auto_now_add=True)
