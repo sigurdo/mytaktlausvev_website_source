@@ -2,21 +2,21 @@ from http import HTTPStatus
 from django.test import TestCase
 from django.urls import reverse
 from accounts.factories import UserFactory
-from songs.factories import SongFactory
+from articles.factories import ArticleFactory
 from .factories import CommentFactory
 from .models import Comment
 
 
 class CommentTestCase(TestCase):
     def setUp(self):
-        self.song = SongFactory()
-        self.comment = CommentFactory(content_object=self.song)
+        self.article = ArticleFactory()
+        self.comment = CommentFactory(content_object=self.article)
 
     def test_get_absolute_url(self):
         """Should link to the comment on the model's page."""
         self.assertEqual(
             self.comment.get_absolute_url(),
-            f"{reverse('song_detail', args=[self.song.slug])}#comment-{self.comment.pk}",
+            f"{reverse('articles:detail', args=[self.article.slug])}#comment-{self.comment.pk}",
         )
 
     def test_to_str(self):
@@ -41,8 +41,10 @@ class CommentCreateTestCase(TestCase):
 class CommentUpdateTestCase(TestCase):
     def setUp(self):
         self.author = UserFactory()
-        self.song = SongFactory()
-        self.comment = CommentFactory(content_object=self.song, created_by=self.author)
+        self.article = ArticleFactory()
+        self.comment = CommentFactory(
+            content_object=self.article, created_by=self.author
+        )
 
     def test_requires_login(self):
         """Should redirect to login page if user is not logged in."""
@@ -88,14 +90,18 @@ class CommentUpdateTestCase(TestCase):
 class CommentDeleteTestCase(TestCase):
     def setUp(self):
         self.author = UserFactory()
-        self.song = SongFactory()
-        self.comment = CommentFactory(content_object=self.song, created_by=self.author)
+        self.article = ArticleFactory()
+        self.comment = CommentFactory(
+            content_object=self.article, created_by=self.author
+        )
 
     def test_should_redirect_to_content_object_on_success(self):
         """Should redirect to the model the comment is associated with on success."""
         self.client.force_login(self.author)
         response = self.client.post(reverse("comment_delete", args=[self.comment.pk]))
-        self.assertRedirects(response, reverse("song_detail", args=[self.song.slug]))
+        self.assertRedirects(
+            response, reverse("articles:detail", args=[self.article.slug])
+        )
 
     def test_requires_login(self):
         """Should redirect to login page if user is not logged in."""

@@ -2,9 +2,9 @@ from django.db import models
 from django.conf import settings
 
 
-class BaseArticle(models.Model):
+class ArticleMixin(models.Model):
     title = models.CharField("tittel", max_length=255)
-    content = models.TextField("innhold")
+    content = models.TextField("innhald")
     submitted = models.DateTimeField("lagt ut", auto_now_add=True)
     modified = models.DateTimeField("redigert", auto_now=True)
     created_by = models.ForeignKey(
