@@ -23,3 +23,10 @@ A superuser with the username "leiar" and the password "password" is created aut
 - Run Django commands in the Docker container with `docker-compose run --service-ports web ./site/manage.py <command>`
 - Run tests with `docker-compose run --service-ports web ./site/manage.py test site/`
 - Run Docker container as interactive shell with `docker-compose run --service-ports web bash`
+
+### Formatting & Linting
+
+The project uses [Black](https://black.readthedocs.io/en/stable/) for formatting and [flake8](https://flake8.pycqa.org/en/latest/) for linting.
+
+- Format all files with `python -m black .`
+- Lint and verify code style with `python -m flake8`
