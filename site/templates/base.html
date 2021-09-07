@@ -18,17 +18,11 @@
 <body class="sass-example-class">
 	<nav class="navbar navbar-expand fixed-top navbar-dark">
 		<div class="container-fluid">
-			{% if user.is_authenticated %}
-			<a class="navbar-brand" href="{% url 'dashboard' %}">
+			
+			<a class="navbar-brand" href="{% if user.is_authenticated %} {% url 'dashboard' %} {% else %} {% url 'articles:detail' 'om-oss' %} {% endif %}">
 				<img class="navbar-logo" src="{% static 'images/logo.png' %}">
 				Studentorchesteret Dei Taktlause
 			</a>
-			{% else %}
-			<a class="navbar-brand" href="{% url 'about_us' %}">
-				<img class="navbar-logo" src="{% static 'images/logo.png' %}">
-				Studentorchesteret Dei Taktlause
-			</a>
-			{% endif %}
 			
 			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsable"
 				aria-controls="collapsable" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,12 +31,20 @@
 
 			<div class="collapse navbar-collapse" id="collapsable">
 				<ul class="navbar-nav me-auto">
-					<li class="nav-item {% if 'omoss' in request.path %} active {% endif %}">
-						<a class="nav-link" href="{% url 'about_us' %}">Om oss</a>
+					<li class="nav-item {% if 'om-oss' in request.path %} active {% endif %}">
+						<a class="nav-link" href="{% url 'articles:detail' 'om-oss' %}">Om oss</a>
 					</li>
 					<li class="nav-item">
 						<a class="nav-link {% if 'sitat' in request.path %} active {% endif %}"
 							href="{% url 'quotes' %}">Sitat</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link {% if 'songar' in request.path %} active {% endif %}"
+							href="{% url 'articles:detail' 'songar' %}">Songar</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link {% if 'wiki' in request.path %} active {% endif %}"
+							href="{% url 'articles:detail' 'wiki' %}">Wiki</a>
 					</li>
 				</ul>
 				<ul class="nav navbar-nav">
