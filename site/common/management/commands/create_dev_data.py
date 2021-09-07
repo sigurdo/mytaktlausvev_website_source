@@ -39,6 +39,6 @@ class Command(BaseCommand):
             content="Informasjon til Taktlause.",
             public=True,
             comments_allowed=True,
-            created_by=UserCustom.objects.get(username="leiar"),
-            modified_by=UserCustom.objects.get(username="leiar"),
+            created_by=superuser,
+            modified_by=superuser,
         ).save()

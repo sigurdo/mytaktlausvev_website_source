@@ -14,9 +14,9 @@ The bug is caused by a race condition between the two Docker images.
 
 ## Run the server
 
-To run the server, build the project with `docker-compose build` and run with `docker-compose up`.
+To run the server, build the project with `docker-compose build` and run with `docker-compose up`. Stop and remove Docker containers with `docker-compose down`.
 
-The site is accessible at localhost:8000, and the database is permanently stored at "~/taktlaus_db" between runs.
+The site is accessible at [localhost:8000](localhost:8000), and the database is permanently stored at "~/taktlaus_db" between runs.
 To clear the database, simply remove it and rerun [`database_init.sh`](./database_init.sh).
 
 Note that `docker-compose up` can be run with the `-d` option (detach) to run the server in the background.
