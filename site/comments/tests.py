@@ -3,8 +3,8 @@ from django.test import TestCase
 from django.urls import reverse
 from accounts.factories import UserFactory
 from articles.factories import ArticleFactory
+from common.mixins import TestMixin
 from .factories import CommentFactory
-from .models import Comment
 
 
 class CommentTestCase(TestCase):
@@ -24,7 +24,7 @@ class CommentTestCase(TestCase):
         self.assertEqual(str(self.comment), f"Kommentar #{self.comment.pk}")
 
 
-class CommentCreateTestCase(TestCase):
+class CommentCreateTestCase(TestMixin, TestCase):
     def test_get_not_allowed(self):
         """Should not allow GET requests."""
         self.client.force_login(UserFactory())
@@ -32,13 +32,11 @@ class CommentCreateTestCase(TestCase):
         self.assertEqual(response.status_code, HTTPStatus.METHOD_NOT_ALLOWED)
 
     def test_requires_login(self):
-        """Should redirect to login page if user is not logged in."""
-        response = self.client.post(reverse("comment_create"))
-        self.assertEqual(response.status_code, HTTPStatus.FOUND)
-        self.assertTrue(response.url.startswith(reverse("login")))
+        """Should require login."""
+        self.assertLoginRequired(reverse("comment_create"))
 
 
-class CommentUpdateTestCase(TestCase):
+class CommentUpdateTestCase(TestMixin, TestCase):
     def setUp(self):
         self.author = UserFactory()
         self.article = ArticleFactory()
@@ -47,47 +45,26 @@ class CommentUpdateTestCase(TestCase):
         )
 
     def test_requires_login(self):
-        """Should redirect to login page if user is not logged in."""
-        response = self.client.post(reverse("comment_update", args=[self.comment.pk]))
-        self.assertEqual(response.status_code, HTTPStatus.FOUND)
-        self.assertTrue(response.url.startswith(reverse("login")))
+        """Should require login."""
+        self.assertLoginRequired(reverse("comment_update", args=[self.comment.pk]))
 
-    def test_fails_if_neither_author_nor_has_permission(self):
-        """Should fail if the user is neither the author nor has permission."""
-        self.client.force_login(UserFactory())
-        response = self.client.post(
-            reverse("comment_update", args=[self.comment.pk]), {"comment": "Different"}
+    def test_requires_permission(self):
+        """Should require the `change_comment` permission."""
+        self.assertPermissionRequired(
+            reverse("comment_update", args=[self.comment.pk]), "comments.change_comment"
         )
 
-        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
-        comment_old = self.comment.comment
-        self.comment.refresh_from_db()
-        self.assertEqual(self.comment.comment, comment_old)
-
-    def test_succeeds_if_author(self):
-        """Should succeed if the user is the author."""
-        comment_new = "New Comment."
+    def test_succeeds_if_not_permission_but_is_author(self):
+        """
+        Should succeed if the user is the author,
+        even if the user doesn't have the `change_comment` permission.
+        """
         self.client.force_login(self.author)
-        self.client.post(
-            reverse("comment_update", args=[self.comment.pk]), {"comment": comment_new}
-        )
-
-        self.comment.refresh_from_db()
-        self.assertEqual(self.comment.comment, comment_new)
-
-    def test_succeeds_if_has_permission(self):
-        """Should succeed if the user has permission to change comments."""
-        comment_new = "New Comment."
-        self.client.force_login(UserFactory(permissions=("comments.change_comment",)))
-        self.client.post(
-            reverse("comment_update", args=[self.comment.pk]), {"comment": comment_new}
-        )
-
-        self.comment.refresh_from_db()
-        self.assertEqual(self.comment.comment, comment_new)
+        response = self.client.get(reverse("comment_update", args=[self.comment.pk]))
+        self.assertEqual(response.status_code, HTTPStatus.OK)
 
 
-class CommentDeleteTestCase(TestCase):
+class CommentDeleteTestCase(TestMixin, TestCase):
     def setUp(self):
         self.author = UserFactory()
         self.article = ArticleFactory()
@@ -104,26 +81,20 @@ class CommentDeleteTestCase(TestCase):
         )
 
     def test_requires_login(self):
-        """Should redirect to login page if user is not logged in."""
-        response = self.client.post(reverse("comment_delete", args=[self.comment.pk]))
-        self.assertEqual(response.status_code, HTTPStatus.FOUND)
-        self.assertTrue(response.url.startswith(reverse("login")))
+        """Should require login."""
+        self.assertLoginRequired(reverse("comment_delete", args=[self.comment.pk]))
 
-    def test_fails_if_neither_author_nor_has_permission(self):
-        """Should fail if the user is neither the author nor has permission."""
-        self.client.force_login(UserFactory())
-        response = self.client.post(reverse("comment_delete", args=[self.comment.pk]))
-        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
-        self.assertTrue(Comment.objects.filter(pk=self.comment.pk).exists())
+    def test_requires_permission(self):
+        """Should require the `delete_comment` permission."""
+        self.assertPermissionRequired(
+            reverse("comment_delete", args=[self.comment.pk]), "comments.delete_comment"
+        )
 
-    def test_succeeds_if_author(self):
-        """Should succeed if the user is the author."""
+    def test_succeeds_if_not_permission_but_is_author(self):
+        """
+        Should succeed if the user is the author,
+        even if the user doesn't have the `delete_comment` permission.
+        """
         self.client.force_login(self.author)
-        self.client.post(reverse("comment_delete", args=[self.comment.pk]))
-        self.assertFalse(Comment.objects.filter(pk=self.comment.pk).exists())
-
-    def test_succeeds_if_has_permission(self):
-        """Should succeed if the user has permission to delete comments."""
-        self.client.force_login(UserFactory(permissions=("comments.delete_comment",)))
-        self.client.post(reverse("comment_delete", args=[self.comment.pk]))
-        self.assertFalse(Comment.objects.filter(pk=self.comment.pk).exists())
+        response = self.client.get(reverse("comment_delete", args=[self.comment.pk]))
+        self.assertEqual(response.status_code, HTTPStatus.OK)

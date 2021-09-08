@@ -6,6 +6,7 @@ from django.utils.text import slugify
 from django.views.generic.detail import SingleObjectMixin
 from accounts.factories import UserFactory, SuperUserFactory
 from articles.views import SlugPathMixin
+from common.mixins import TestMixin
 from .models import Article
 from .factories import ArticleFactory
 
@@ -117,7 +118,7 @@ class SlugPathMixinTest(TestCase):
         self.assertEqual(grandchild, view.get_object())
 
 
-class ArticleDetailTestCase(TestCase):
+class ArticleDetailTestCase(TestMixin, TestCase):
     def test_public_articles_do_not_require_login(self):
         """Should be able to view public articles without logging in."""
         article = ArticleFactory(public=True)
@@ -127,9 +128,7 @@ class ArticleDetailTestCase(TestCase):
     def test_not_public_articles_require_login(self):
         """Articles that aren't public should require logging in."""
         article = ArticleFactory(public=False)
-        response = self.client.get(reverse("articles:detail", args=[article.path()]))
-        self.assertEqual(response.status_code, HTTPStatus.FOUND)
-        self.assertTrue(response.url.startswith(reverse("login")))
+        self.assertLoginRequired(reverse("articles:detail", args=[article.path()]))
 
     def test_includes_only_public_subarticles_if_not_authenticated(self):
         """Should include only public subarticles if not authenticated."""
@@ -163,7 +162,7 @@ class ArticleDetailTestCase(TestCase):
         )
 
 
-class ArticleCreateTestCase(TestCase):
+class ArticleCreateTestCase(TestMixin, TestCase):
     def test_created_by_modified_by_set_to_current_user(self):
         """Should set `created_by` and `modified_by` to the current user on creation."""
         user = SuperUserFactory()
@@ -179,22 +178,14 @@ class ArticleCreateTestCase(TestCase):
         self.assertEqual(article.modified_by, user)
 
     def test_requires_login(self):
-        """Should redirect to login page if user is not logged in."""
-        response = self.client.get(reverse("articles:create_article"))
-        self.assertEqual(response.status_code, HTTPStatus.FOUND)
-        self.assertTrue(response.url.startswith(reverse("login")))
+        """Should require login."""
+        self.assertLoginRequired(reverse("articles:create_article"))
 
-    def test_fails_if_missing_permission(self):
-        """Should fail if missing add permission."""
-        self.client.force_login(UserFactory())
-        response = self.client.get(reverse("articles:create_article"))
-        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
-
-    def test_succeeds_if_has_permission(self):
-        """Should succeed if user has add permission."""
-        self.client.force_login(UserFactory(permissions=("articles.add_article",)))
-        response = self.client.get(reverse("articles:create_article"))
-        self.assertEqual(response.status_code, HTTPStatus.OK)
+    def test_requires_permission(self):
+        """Should require the `create_article` permission."""
+        self.assertPermissionRequired(
+            reverse("articles:create_article"), "articles.add_article"
+        )
 
 
 class SubarticleCreateTestCase(TestCase):
@@ -217,33 +208,20 @@ class SubarticleCreateTestCase(TestCase):
         )
 
 
-class ArticleUpdateTestCase(TestCase):
+class ArticleUpdateTestCase(TestMixin, TestCase):
     def setUp(self):
         self.article = ArticleFactory()
 
     def test_requires_login(self):
-        """Should redirect to login page if user is not logged in."""
-        response = self.client.get(
-            reverse("articles:update", args=[self.article.path()])
-        )
-        self.assertEqual(response.status_code, HTTPStatus.FOUND)
-        self.assertTrue(response.url.startswith(reverse("login")))
+        """Should require login."""
+        self.assertLoginRequired(reverse("articles:update", args=[self.article.path()]))
 
-    def test_fails_if_missing_permission(self):
-        """Should fail if missing change permission."""
-        self.client.force_login(UserFactory())
-        response = self.client.get(
-            reverse("articles:update", args=[self.article.path()])
+    def test_requires_permission(self):
+        """Should require the `change_article` permission."""
+        self.assertPermissionRequired(
+            reverse("articles:update", args=[self.article.path()]),
+            "articles.change_article",
         )
-        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
-
-    def test_succeeds_if_has_permission(self):
-        """Should succeed if user has change permission."""
-        self.client.force_login(UserFactory(permissions=("articles.change_article",)))
-        response = self.client.get(
-            reverse("articles:update", args=[self.article.path()])
-        )
-        self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_created_by_not_changed(self):
         """Should not change `created_by` when updating article."""
