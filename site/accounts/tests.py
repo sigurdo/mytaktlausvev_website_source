@@ -1,6 +1,8 @@
 from django.test import TestCase
 from django.contrib.auth import authenticate
+from django.urls import reverse
 from django.utils.text import slugify
+from common.mixins import TestMixin
 from .hashers import DrupalPasswordHasher
 from .models import UserCustom
 from .factories import UserFactory
@@ -66,3 +68,10 @@ class UserCustomTest(TestCase):
         user_a = UserFactory(username="test")
         user_b = UserFactory(username="te@st")
         self.assertNotEqual(user_a.slug, user_b.slug)
+
+
+class ProfileDetailTest(TestMixin, TestCase):
+    def test_requires_login(self):
+        """Should require login."""
+        user = UserFactory()
+        self.assertLoginRequired(reverse("profile", args=[user.slug]))
