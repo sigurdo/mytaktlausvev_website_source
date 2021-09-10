@@ -1,7 +1,9 @@
 from django.test import TestCase
 from django.contrib.auth import authenticate
+from django.utils.text import slugify
 from .hashers import DrupalPasswordHasher
 from .models import UserCustom
+from .factories import UserFactory
 
 
 class DrupalPasswordHasherTest(TestCase):
@@ -53,3 +55,14 @@ class UserCustomTest(TestCase):
         UserCustom.objects.create_user(username="BOB")
         with self.assertRaises(ValueError):
             UserCustom.objects.create_user(username="bob")
+
+    def test_slug_created_from_username(self):
+        """Should create a slug from the username when creating a user."""
+        user = UserFactory()
+        self.assertEqual(user.slug, slugify(user.username))
+
+    def test_creates_unique_slugs(self):
+        """Should create unique slugs even if usernames match."""
+        user_a = UserFactory(username="test")
+        user_b = UserFactory(username="te@st")
+        self.assertNotEqual(user_a.slug, user_b.slug)

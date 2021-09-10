@@ -1,4 +1,5 @@
 from django.contrib.auth.models import AbstractUser, UserManager
+from autoslug import AutoSlugField
 
 
 class UserManagerCustom(UserManager):
@@ -12,4 +13,6 @@ class UserManagerCustom(UserManager):
 
 
 class UserCustom(AbstractUser):
+    slug = AutoSlugField(verbose_name="slug", populate_from="username", unique=True)
+
     objects = UserManagerCustom()
