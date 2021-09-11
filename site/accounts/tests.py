@@ -25,6 +25,14 @@ class DrupalPasswordHasherTest(TestCase):
 
 
 class UserCustomTest(TestCase):
+    def test_get_absolute_url(self):
+        """Should link to the user's profile page."""
+        user = UserFactory()
+        self.assertEqual(
+            user.get_absolute_url(),
+            reverse("profile", args=[user.slug]),
+        )
+
     def test_can_login_with_newer_drupal_password_hashes(self):
         """Should be able to login with newer, Drupal 7+ password hashes."""
         password = "DifficultPassword123"

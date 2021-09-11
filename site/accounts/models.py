@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser, UserManager
 from autoslug import AutoSlugField
+from django.urls import reverse
 
 
 class UserManagerCustom(UserManager):
@@ -16,3 +17,6 @@ class UserCustom(AbstractUser):
     slug = AutoSlugField(verbose_name="slug", populate_from="username", unique=True)
 
     objects = UserManagerCustom()
+
+    def get_absolute_url(self):
+        return reverse("profile", args=[self.slug])
