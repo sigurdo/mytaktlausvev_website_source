@@ -4,6 +4,7 @@ import os, shutil
 import django
 from django.db import models
 from django.contrib.auth.models import User
+from django.conf import settings
 from upload_validator import FileTypeValidator
 
 class Score(models.Model):
@@ -62,6 +63,6 @@ class InstrumentsPreferredPart(models.Model):
 
 class UsersPreferredPart(models.Model):
     """ Model representing the preferred part of a user """
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     score = models.ForeignKey(Score, on_delete=models.CASCADE)
     part = models.ForeignKey(Part, on_delete=models.CASCADE)
