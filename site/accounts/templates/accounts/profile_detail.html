@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ profile }}{% endblock title %}
+{% block title %}{% firstof profile.get_full_name profile.username %}{% endblock title %}
 
 {% block page %}
 <article class="mt-4">
-    {{ profile }}
+    <h1>{% firstof profile.get_full_name profile.username %}</h1>
 </article>
 {% endblock page %}
