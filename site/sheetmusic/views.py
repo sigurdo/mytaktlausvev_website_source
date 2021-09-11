@@ -111,6 +111,27 @@ class PartsUpdate(LoginRequiredMixin, UpdateView):
         return context
 
 
+# Should normally be run as a separate thread
+def findPartsInPdf(pdf: Pdf):
+    pdf.processing = True
+    pdf.save()
+    try:
+        imagesDirPath = os.path.join(django.conf.settings.MEDIA_ROOT, "sheetmusic", "images")
+        if not os.path.exists(imagesDirPath): os.mkdir(imagesDirPath)
+        imagesDirPath = os.path.join(imagesDirPath, str(pdf.pk))
+        if not os.path.exists(imagesDirPath): os.mkdir(imagesDirPath)
+        
+        print("skal prøve:", pdf.file.path, imagesDirPath)
+        # Gjør dette i en egen prosess for å ikke påvirke responstida på andre requests som må besvares i mellomtida:
+        parts, instrumentsDefaultParts = multiprocessing.Pool().apply(processUploadedPdf, (pdf.file.path, imagesDirPath), { "use_lstm": True, "tessdata_dir": os.path.join("tessdata", "tessdata_best-4.1.0") })
+        print("Result:", parts, instrumentsDefaultParts)
+        for part in parts:
+            part = Part(name=part["name"], pdf=pdf, fromPage=part["fromPage"], toPage=part["toPage"], timestamp=timezone.now())
+            part.save()
+    finally:
+        pdf.processing = False
+        pdf.save()
+
 
 class PdfsUpdate(LoginRequiredMixin, CreateView):
     model = Score
@@ -137,34 +158,12 @@ class PdfsUpdate(LoginRequiredMixin, CreateView):
         pdf.save()
         print(pdf.file.path)
 
-        pdf.processing = True
-        pdf.save()
-        processPdfThread = threading.Thread(target=self.processPdf, args=[pdf])
+        processPdfThread = threading.Thread(target=findPartsInPdf, args=[pdf])
         processPdfThread.start()
         print("form valid:", form)
         # res = form.save()
         print("form saved")
         return super().form_valid(form)
-
-    def processPdf(self, pdf: Pdf):
-        pdf.processing = True
-        pdf.save()
-        try:
-            imagesDirPath = os.path.join(django.conf.settings.MEDIA_ROOT, "sheetmusic", "images")
-            if not os.path.exists(imagesDirPath): os.mkdir(imagesDirPath)
-            imagesDirPath = os.path.join(imagesDirPath, str(pdf.pk))
-            if not os.path.exists(imagesDirPath): os.mkdir(imagesDirPath)
-            
-            print("skal prøve:", pdf.file.path, imagesDirPath)
-            # Gjør dette i en egen prosess for å ikke påvirke responstida på andre requests som må besvares i mellomtida:
-            parts, instrumentsDefaultParts = multiprocessing.Pool().apply(processUploadedPdf, (pdf.file.path, imagesDirPath), { "use_lstm": True, "tessdata_dir": os.path.join("tessdata", "tessdata_best-4.1.0") })
-            print("Result:", parts, instrumentsDefaultParts)
-            for part in parts:
-                part = Part(name=part["name"], pdf=pdf, fromPage=part["fromPage"], toPage=part["toPage"], timestamp=timezone.now())
-                part.save()
-        finally:
-            pdf.processing = False
-            pdf.save()
 
 
 

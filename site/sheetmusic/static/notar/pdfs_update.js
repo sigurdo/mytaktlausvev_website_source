@@ -20,3 +20,18 @@ for (let i = 0; i < deletePdfButtons.length; i++) {
     });
 }
 
+// Buttons for finding parts
+let findPartsButtons = document.querySelectorAll('.find-parts');
+for (let i = 0; i < findPartsButtons.length; i++) {
+    findPartsButtons[i].addEventListener('click', ev => {
+        let button = ev.target;
+        let pk = button.getAttribute('data-pk');
+        let displayname = button.getAttribute('data-displayname');
+        if (!confirm(`Er du sikker på at du vil starte automatisk stemmefinner for ${displayname}? Alle stemmer som blir funnet vil legges til direkte i stemmeoversikten.`)) return;
+        fetchWithCsrf('POST', `/notar/fetch/pdf/${pk}/finn_stemmer`).then(response => {
+            if (response.ok) {
+                location.reload();
+            }
+        });
+    });
+}
