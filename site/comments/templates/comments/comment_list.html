@@ -6,7 +6,12 @@
     {% for comment in comments %}
         <li id="comment-{{ comment.pk }}" class="mb-4">
             <article class="p-margin-last-0">
-                <h3 class="fw-bold h6 m-0">{{ comment.created_by }}</h3>
+                <h3 class="fw-bold h6 m-0">
+                    <a
+                        href="{% url 'profile' comment.created_by.slug %}"
+                        class="text-decoration-none color-unset"
+                    >{{ comment.created_by }}</a>
+                </h3>
 
                 {% load markdown %}
                 {{ comment.comment | markdown }}

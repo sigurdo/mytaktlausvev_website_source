@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ profile.get_name }}{% endblock title %}
+
+{% block page %}
+<article class="mt-4">
+    <h1>{{ profile.get_name }}</h1>
+</article>
+{% endblock page %}
