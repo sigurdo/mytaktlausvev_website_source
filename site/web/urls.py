@@ -15,21 +15,17 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
-from django.contrib.auth import views as auth_views
-from web.forms import LoginForm
 from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("accounts/", include("accounts.urls")),
     path("sitat/", include("quotes.urls")),
-    path("accounts/login/", auth_views.LoginView.as_view(template_name="registration/login.html",
-                                                         authentication_form=LoginForm), name="login"),
-    path("accounts/", include('django.contrib.auth.urls')),
     path("", include("dashboard.urls")),
-    path("omoss/", include("about.urls")),
     path("notar/", include("sheetmusic.urls")),
-    path("songar/", include("songs.urls")),
+    path("kommentarar/", include("comments.urls")),
+    path("", include("articles.urls")),
 ]
 
 if settings.DEBUG:

@@ -1,5 +1,6 @@
 stages:
   - test
+  - deploy
 
 test:
   stage: test
@@ -10,6 +11,14 @@ test:
     - virtualenv --python=python3 venv/
     - source venv/bin/activate
     - pip install -r site/requirements.txt
-    - python site/manage.py test 
+    - cd site
+    - python manage.py test 
   only:
     - develop
+
+deploy:
+  stage: deploy
+  script:
+    - ssh -i $ID_RSA -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "~/deploy_scripts/deploy.sh"
+  only:
+    - master

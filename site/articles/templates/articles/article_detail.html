@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ article.title }}{% endblock title %}
+
+{% block page %}
+<article class="mt-4">
+    <header class="mb-4">
+        {% if article.ancestors %}
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                {% for ancestor in article.ancestors %}
+                <li class="breadcrumb-item">
+                    <a href="{{ ancestor.get_absolute_url }}">
+                        {{ ancestor.title }}
+                    </a>
+                </li>
+                {% endfor %}
+            </ol>
+        </nav>
+        {% endif %}
+
+        <h1>{{ article.title }}</h1>
+        {% if user.is_authenticated %}
+            <p class="fs-7">
+                Lagt ut av {{ article.created_by }} den
+                <time datetime="{{ article.submitted | date:"c" }}">{{ article.submitted | date }}</time>.
+
+                Sist redigert av {{ article.modified_by }} den
+                <time datetime="{{ article.modified | date:"c" }}">{{ article.modified | date }}</time>.
+            </p>
+        {% endif %}
+    </header>
+
+    {% load markdown %}
+    {{ article.content | markdown }}
+
+    {% if subarticles %}
+        <nav class="my-4">
+            <ul>
+            {% for subarticle in subarticles %}
+                <li>
+                    <a href="{{ subarticle.get_absolute_url }}">{{ subarticle.title }}</a>
+                </li>
+            {% endfor %}
+            </ul>
+        </nav>
+    {% endif %}
+
+    {% if perms.articles.change_article or perms.articles.add_article %}
+        <footer class="my-4">
+            {% if perms.articles.add_article %}
+            <a href="{% url 'articles:create_subarticle' article.path %}" class="btn btn-primary">
+                Lag underartikkel
+            </a>
+            {% endif %}
+            {% if perms.articles.change_article %}
+            <a href="{% url 'articles:update' article.path %}" class="btn btn-primary">
+                Rediger artikkel
+            </a>
+            {% endif %}
+        </footer>
+    {% endif %}
+
+    {% if article.comments_allowed %}
+        {% load comments %}
+        {% comment_list article %}
+    {% endif %}
+</article>
+{% endblock page %}

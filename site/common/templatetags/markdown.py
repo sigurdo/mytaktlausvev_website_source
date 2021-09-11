@@ -27,7 +27,8 @@ ALLOWED_TAGS = [
     "tbody",
     "b",
     "i",
-    "u" "strong",
+    "u",
+    "strong",
     "em",
     "small",
     "del",
@@ -47,9 +48,11 @@ ALLOWED_TAGS = [
     "cite",
 ]
 
+ALLOWED_ATTRIBUTES = ["src", "alt", "width", "height"]
+
 
 @register.filter(is_safe=True)
 def markdown(string):
     converted = md.markdown(string, extensions=["nl2br"])
-    bleached = bleach.clean(converted, tags=ALLOWED_TAGS)
+    bleached = bleach.clean(converted, tags=ALLOWED_TAGS, attributes=ALLOWED_ATTRIBUTES)
     return mark_safe(bleached)

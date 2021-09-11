@@ -1,0 +1,49 @@
+{% if user.is_authenticated %}
+<section class="mt-4">
+    <h2>Kommentarar ({{comments | length }})</h2>
+
+    <ol class="list-unstyled">
+    {% for comment in comments %}
+        <li id="comment-{{ comment.pk }}" class="mb-4">
+            <article class="p-margin-last-0">
+                <h3 class="fw-bold h6 m-0">{{ comment.created_by }}</h3>
+
+                {% load markdown %}
+                {{ comment.comment | markdown }}
+
+                <footer>
+                    <ul class="list-inline">
+                        <li class="list-inline-item">
+                            <time
+                                datetime="{{ comment.submitted | date:"c" }}"
+                                title="{{ comment.submitted }}"
+                                class="fw-light"
+                            >
+                                {% load humanize %}
+                                {{ comment.submitted | naturaltime }}
+                            </time>
+                        </li>
+                        {% if user == comment.created_by or perms.comments.change_comment %}
+                            <li class="list-inline-item">
+                                <a href="{% url 'comment_update' comment.pk %}">Rediger</a>
+                            </li>
+                        {% endif %}
+                        {% if user == comment.created_by or perms.comments.delete_comment %}
+                            <li class="list-inline-item">
+                                <a href="{% url 'comment_delete' comment.pk %}">Slett</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </footer>
+            </article>
+        </li>
+    {% endfor %}
+    </ol>
+
+    <section>
+        <h3>Skriv ny kommentar</h3>
+        {% load crispy_forms_tags %}
+        {% crispy form %}
+    </section>
+</section>
+{% endif %}

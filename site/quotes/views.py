@@ -30,10 +30,4 @@ def quotes(request):
     paginator = Paginator(Quote.objects.all(), 2)
     page_number = request.GET.get("page")
     page = paginator.get_page(page_number)
-    return render(
-        request,
-        "quotes/quotes.html",
-        {
-            "quotes": page
-        }
-    )
+    return render(request, "quotes/quotes.html", {"quotes": page})

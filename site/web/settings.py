@@ -37,15 +37,17 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.humanize",
     "crispy_forms",
     "crispy_bootstrap5",
     "sass_processor",
+    "accounts",
     "common",
-    "about",
+    "articles",
+    "comments",
     "quotes",
     "dashboard",
     "sheetmusic",
-    "songs",
 ]
 
 MIDDLEWARE = [
@@ -90,10 +92,24 @@ DATABASES = {
         "NAME": "taktlaus_db",
         "USER": "taktlaus",
         "PASSWORD": "taktlaus",
-        "HOST": "localhost",
-        "PORT": "",
+        "HOST": "db",
+        "PORT": 5432,
     }
 }
+
+
+AUTH_USER_MODEL = "accounts.UserCustom"
+
+# Password hashers
+# https://docs.djangoproject.com/en/3.0/ref/settings/#std:setting-PASSWORD_HASHERS
+
+PASSWORD_HASHERS = [
+    "django.contrib.auth.hashers.PBKDF2PasswordHasher",
+    "django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher",
+    "django.contrib.auth.hashers.Argon2PasswordHasher",
+    "django.contrib.auth.hashers.BCryptSHA256PasswordHasher",
+    "accounts.hashers.DrupalPasswordHasher",
+]
 
 
 # Password validation
@@ -165,3 +181,8 @@ SASS_OUTPUT_STYLE = (
 SASS_PROCESSOR_ROOT = os.path.join(
     BASE_DIR, "compiled_scss"
 )  # Defines a root directory to output compiled scss files
+
+# Directories that act as a base to include from
+SASS_PROCESSOR_INCLUDE_DIRS = [
+    os.path.join(BASE_DIR, "static/scss/"),
+]
