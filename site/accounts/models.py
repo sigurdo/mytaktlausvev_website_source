@@ -1,6 +1,7 @@
+from django.db import models
 from django.contrib.auth.models import AbstractUser, UserManager
-from autoslug import AutoSlugField
 from django.urls import reverse
+from autoslug import AutoSlugField
 
 
 class UserManagerCustom(UserManager):
@@ -15,12 +16,15 @@ class UserManagerCustom(UserManager):
 
 class UserCustom(AbstractUser):
     slug = AutoSlugField(verbose_name="slug", populate_from="username", unique=True)
+    first_name = None
+    last_name = None
+    name = models.CharField("navn", max_length=255, blank=True)
 
     objects = UserManagerCustom()
 
     def get_name(self):
-        """Returns the full name if it exists, else the username."""
-        return self.get_full_name() or self.username
+        """Returns `name` if it isn't blank, else `username`."""
+        return self.name or self.username
 
     def get_absolute_url(self):
         return reverse("profile", args=[self.slug])

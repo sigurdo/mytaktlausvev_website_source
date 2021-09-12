@@ -33,13 +33,13 @@ class UserCustomTest(TestCase):
             reverse("profile", args=[user.slug]),
         )
 
-    def test_get_name_returns_full_name_if_exists(self):
-        """Should return the full name if it exists."""
-        user = UserFactory(first_name="Bob", last_name="Bobbington")
-        self.assertEqual(user.get_name(), user.get_full_name())
+    def test_get_name_returns_name_if_exists(self):
+        """Should return `name` if it isn't blank."""
+        user = UserFactory(name="Bob Bobbington")
+        self.assertEqual(user.get_name(), user.name)
 
     def test_get_name_returns_username_if_full_name_not_exist(self):
-        """Should return the username if the full name does not exist."""
+        """Should return `username` if `name` is blank."""
         user = UserFactory(username="bob68")
         self.assertEqual(user.get_name(), user.username)
 
