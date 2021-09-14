@@ -160,6 +160,8 @@ STATICFILES_FINDERS = [
     "sass_processor.finders.CssFinder",
 ]
 
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
+
 LOGIN_REDIRECT_URL = "/"
 LOGIN_URL = "login"
 
