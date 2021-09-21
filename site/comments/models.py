@@ -23,3 +23,7 @@ class Comment(models.Model):
 
     def __str__(self):
         return f"Kommentar #{self.pk}"
+
+    class Meta:
+        verbose_name = "kommentar"
+        verbose_name_plural = "kommentarar"
