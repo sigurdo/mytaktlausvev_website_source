@@ -1,6 +1,7 @@
 from django.urls import include, path
 from django.contrib.auth import views as auth_views
 from .forms import LoginForm
+from .views import ProfileDetail
 
 urlpatterns = [
     path(
@@ -10,5 +11,6 @@ urlpatterns = [
         ),
         name="login",
     ),
+    path("profil/<slug:slug>/", ProfileDetail.as_view(), name="profile"),
     path("", include("django.contrib.auth.urls")),
 ]

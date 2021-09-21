@@ -35,3 +35,5 @@ class Article(ArticleMixin, TreeNode):
             models.UniqueConstraint(fields=["parent", "slug"], name="unique_slug")
         ]
         ordering = ["title"]
+        verbose_name = "artikkel"
+        verbose_name_plural = "artiklar"

@@ -13,3 +13,4 @@ class ArticleForm(forms.ModelForm):
     class Meta:
         model = Article
         fields = ["title", "content", "parent", "public", "comments_allowed"]
+        labels = {"parent": "Underartikkel av"}

@@ -6,7 +6,6 @@ from django.contrib.auth.hashers import BasePasswordHasher
 from django.utils.crypto import get_random_string
 from collections import OrderedDict
 from django.utils.encoding import force_bytes
-from django.utils.translation import ugettext_noop as _
 import hashlib
 
 
@@ -113,10 +112,10 @@ class DrupalPasswordHasher(BasePasswordHasher):
         settings = self._get_settings(encoded)
         return OrderedDict(
             [
-                (_("algorithm"), self.algorithm),
-                (_("iterations"), settings["count"]),
-                (_("salt"), settings["salt"]),
-                (_("hash"), encoded[12:]),
+                ("algoritme", self.algorithm),
+                ("iterasjonar", settings["count"]),
+                ("salt", settings["salt"]),
+                ("hash", encoded[12:]),
             ]
         )
 

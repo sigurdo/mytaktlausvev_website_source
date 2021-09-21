@@ -134,9 +134,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "nn-no"
 
-TIME_ZONE = "UTC"
+TIME_ZONE = "Europe/Oslo"
 
 USE_I18N = True
 
@@ -161,7 +161,10 @@ STATICFILES_FINDERS = [
     "sass_processor.finders.CssFinder",
 ]
 
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
+
 LOGIN_REDIRECT_URL = "/"
+LOGIN_URL = "login"
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
