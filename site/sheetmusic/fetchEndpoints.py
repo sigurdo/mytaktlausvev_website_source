@@ -5,8 +5,6 @@ from django.contrib.auth.decorators import login_required
 # from django.urls import reversed
 from django.utils import timezone
 import json
-from .views import findPartsInPdf
-import threading
 
 from sheetmusic.models import Score, Pdf, Part
 from django.contrib.auth.models import User
@@ -59,24 +57,6 @@ def pdf(request: django.http.HttpRequest, pk=None):
             return django.http.HttpResponseForbidden("Du har ikke rettigheter til å slette pdf")
         Pdf.objects.filter(pk=pk).delete()
         return django.http.HttpResponse("deleted")
-
-def pdf_find_parts(request: django.http.HttpRequest, pk=None):
-    user = request.user
-    if request.method == "GET":
-        return django.http.HttpResponse("Ikke implementert", status=501)
-    elif request.method == "POST":
-        if not pk:
-            return django.http.HttpResponseBadRequest("Ingen pdf_pk oppgitt")
-        if not user.has_perm("sheetmusic.create_part"):
-            return django.http.HttpResponseForbidden("Du har ikke rettigheter til å opprette stemmer")
-        pdf = Pdf.objects.get(pk=pk)
-        processPdfThread = threading.Thread(target=findPartsInPdf, args=[pdf])
-        processPdfThread.start()
-        return django.http.HttpResponse("Stemmefinner startet")
-    elif request.method == "PUT":
-        return django.http.HttpResponse("Ikke implementert", status=501)
-    if request.method == "DELETE":
-        return django.http.HttpResponse("Ikke implementert", status=501)
 
 def pdfProcessingStatus(request: django.http.HttpRequest, pk):
     user = request.user

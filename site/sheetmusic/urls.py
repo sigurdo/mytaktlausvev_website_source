@@ -17,7 +17,6 @@ urlpatterns = [
     path("fetch/score/<int:score_id>", fetchEndpoints.score, name="fetchScoreId"),
     path("fetch/pdf/", fetchEndpoints.pdf, name="fetchPdf"),
     path("fetch/pdf/<int:pk>", fetchEndpoints.pdf, name="fetchPdfPk"),
-    path("fetch/pdf/<int:pk>/finn_stemmer", fetchEndpoints.pdf_find_parts, name="fetchPdfPk"),
     path("fetch/pdf/processingstatus/<int:pk>", fetchEndpoints.pdfProcessingStatus, name="fetchPdfProcessingStatus"),
     path("fetch/part/", fetchEndpoints.part, name="fetchPart"),
     path("fetch/part/<int:pk>", fetchEndpoints.part, name="fetchPartPk"),

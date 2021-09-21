@@ -17,10 +17,6 @@
             </th>
 
             <th class="col-form-label">
-                Finn stemmer
-            </th>
-
-            <th class="col-form-label">
                 Slett
             </th>
         </tr>
@@ -34,10 +30,6 @@
                     {% if pdf.processing %}
                         <span class="pdf-processing-status" data-pk="{{ pdf.pk }}" data-displayname="{{ pdf.file.displayname }}"> (prosessering pågår) </span>
                     {% endif %}
-                </td>
-
-                <td>
-                    <button class="find-parts" data-pk="{{ pdf.pk }}" data-displayname="{{ pdf.file.displayname }}"> Finn stemmer </button>
                 </td>
 
                 <td>
