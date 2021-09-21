@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="no-nb">
+<html lang="nn-no">
 
 <head>
 	<title>{% block title %}Vev 2.0{% endblock %} | Studentorchesteret Dei Taktlause</title>
@@ -51,10 +51,10 @@
 					<li class="nav-item">
 						<span class="navbar-text">
 							{% if user.is_authenticated %}
-							<span>Innlogget som <a href="{% url 'profile' user.slug %}">{{user.username}}</a>!</span>
+							<span>Innlogga som <a href="{% url 'profile' user.slug %}">{{user.username}}</a>!</span>
 							<a href="{% url 'logout' %}?next=/">Logg ut</a>
 							{% else %}
-							<span>Du er ikke innlogget. <a href="{% url 'login' %}">Logg inn</a></span>
+							<span>Du er ikkje innlogga. <a href="{% url 'login' %}">Logg inn</a></span>
 							{% endif %}
 						</span>
 					</li>

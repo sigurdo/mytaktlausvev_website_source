@@ -13,6 +13,8 @@ class Quote(models.Model):
 
     class Meta:
         ordering = ["-timestamp"]
+        verbose_name = "sitat"
+        verbose_name_plural = "sitat"
 
     def __str__(self):
         return self.text
