@@ -22,5 +22,6 @@ urlpatterns = [
     path("sitat/", include("quotes.urls")),
     path("", include("dashboard.urls")),
     path("kommentarar/", include("comments.urls")),
+    path("kontakt/", include("contact.urls")),
     path("", include("articles.urls")),
 ]
