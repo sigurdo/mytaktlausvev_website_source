@@ -193,15 +193,14 @@ class PartCreate(LoginRequiredMixin, CreateView):
 
 
 
-class ScoreRead(LoginRequiredMixin, DetailView):
+class PartRead(LoginRequiredMixin, DetailView):
     model = Part
-    template_name = "sheetmusic/score_read.html"
+    template_name = "sheetmusic/part_read.html"
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         context = super().get_context_data(**kwargs)
-
-        print("ting:", Part.objects.get(pk=98).pdf.parts.all())
-        print("ting:", Pdf.objects.get(pk=4).parts)
+        obj = self.get_object()
+        context["pageUrls"] = ["/media/sheetmusic/images/{}/page_{}.jpg".format(obj.pdf.pk, pageNum) for pageNum in range(obj.fromPage, obj.toPage + 1)]
         return context
 
 

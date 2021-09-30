@@ -3,7 +3,26 @@
 
 <h1> {{ object.title }} <a href="{% url 'editScore' object.pk %}" class="float-right h6"> rediger </a></h1>
 
-<h2> Stemmeoversikt </h2>
+<h2> Favorittstemmer </h2>
+
+<table class="table table-bordered">
+    <tr>
+        <th> Navn </th>
+        <th> Les </th>
+        <th> PDF </th>
+    </tr>
+{% for part in parts %}
+    <tr>
+        <td> {{ part.name }} </td>
+        <td> <a href="{% url 'readPart' part.pk %}"> Les </a> </td>
+        <td>
+            TODO
+        </td>
+    </tr>
+{% endfor %}
+</table>
+
+<h2> Alle stemmer </h2>
 
 <table class="table table-bordered">
     <tr>
