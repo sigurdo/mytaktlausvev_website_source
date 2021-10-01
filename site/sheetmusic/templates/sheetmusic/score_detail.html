@@ -15,9 +15,7 @@
     <tr>
         <td> {{ part.name }} </td>
         <td> <a href="{% url 'readPart' part.pk %}"> Les </a> </td>
-        <td>
-            TODO
-        </td>
+        <td> <a href="{% url 'pdfPart' part.pk %}"> PDF </a> </td>
     </tr>
 {% endfor %}
 </table>

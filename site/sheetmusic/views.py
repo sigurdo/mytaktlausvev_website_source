@@ -2,6 +2,7 @@
 
 import django
 import os
+import io
 import yaml
 import threading
 import multiprocessing
@@ -27,6 +28,7 @@ from .forms import ScoreCreateForm, UploadPdfForm, EditScoreForm, EditPartForm, 
 from .utils import convertPagesToInputFormat, convertInputFormatToPages
 
 from sheatless import processUploadedPdf
+from PyPDF2 import PdfFileReader, PdfFileWriter
 
 os.umask(0) # Simplifies management stuff like deleting output files from the code editor on the host system.
 
@@ -203,6 +205,26 @@ class PartRead(LoginRequiredMixin, DetailView):
         context["pageUrls"] = ["/media/sheetmusic/images/{}/page_{}.jpg".format(obj.pdf.pk, pageNum) for pageNum in range(obj.fromPage, obj.toPage + 1)]
         return context
 
+class PartPdf(LoginRequiredMixin, DetailView):
+    model = Part
+    content_type = "application/pdf"
+
+    def split_pdf(self, path, from_page, to_page) -> bytes:
+        pdf = PdfFileReader(path)
+        pdf_writer = PdfFileWriter()
+        for page_nr in range(from_page, to_page + 1):
+            pdf_writer.addPage(pdf.getPage(page_nr - 1))
+        output_stream = io.BytesIO()
+        pdf_writer.write(output_stream)
+        return output_stream.getvalue()
+
+    def render_to_response(self, _):
+        obj = self.get_object()
+        content = self.split_pdf(obj.pdf.file, obj.fromPage, obj.toPage)
+        return HttpResponse(
+            content=content,
+            content_type=self.content_type
+        )
 
 
 def deleteScore(request, score_id=0):
