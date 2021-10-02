@@ -11,6 +11,10 @@
             </th>
 
             <th class="col-form-label">
+                Les
+            </th>
+
+            <th class="col-form-label">
                 Dato opprettet
             </th>
 
@@ -30,6 +34,9 @@
                 <td>
                     <a href="{% url 'viewScore' score.pk %}"> {{ score.title }} </a>
                 </td>
+
+                <td>
+                    {% if score.favoritePart %} <a href="{% url 'readPart' score.favoritePart.pk %}"> Les </a> {% endif %}
 
                 <td>
                     {{ score.timestamp }}

@@ -6,6 +6,7 @@ import io
 import yaml
 import threading
 import multiprocessing
+import random
 from typing import Any, Dict, Optional, Type
 
 from django.shortcuts import render
@@ -186,6 +187,14 @@ class ScoreCreate(LoginRequiredMixin, CreateView):
 class ScoreList(ListView):
     model = Score
     context_object_name = "scores"
+
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        for score in context["scores"]:
+            relations = UsersPreferredPart.objects.filter(part__pdf__score=score, user=self.request.user)
+            if len(relations) > 0:
+                score.favoritePart = relations[random.randint(0, len(relations) - 1)].part
+        return context
 
 
 

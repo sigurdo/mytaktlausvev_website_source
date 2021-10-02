@@ -52,7 +52,7 @@
         for (let i = 0; i < favorites.length; i++) {
             favorites[i].addEventListener('click', ev => {
                 ev.preventDefault();
-                fetchWithCsrf('POST', '/notar/fetch/userspreferredpart', { part_pk: ev.target.parentNode.getAttribute('data-pk') }).then(async response => {
+                fetchWithCsrf('POST', '/notar/fetch/userspreferredpart', { part_pk: ev.target.closest('a').getAttribute('data-pk') }).then(async response => {
                     if (response.ok) {
                         location.reload();
                     }
@@ -67,7 +67,7 @@
         for (let i = 0; i < unfavorites.length; i++) {
             unfavorites[i].addEventListener('click', ev => {
                 ev.preventDefault();
-                fetchWithCsrf('DELETE', '/notar/fetch/userspreferredpart', { part_pk: ev.target.parentNode.parentNode.getAttribute('data-pk') }).then(async response => {
+                fetchWithCsrf('DELETE', '/notar/fetch/userspreferredpart', { part_pk: ev.target.closest('a').getAttribute('data-pk') }).then(async response => {
                     if (response.ok) {
                         location.reload();
                     }
