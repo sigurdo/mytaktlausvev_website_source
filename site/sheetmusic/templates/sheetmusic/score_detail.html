@@ -10,13 +10,17 @@
         <th> Navn </th>
         <th> Les </th>
         <th> PDF </th>
+        <th> Favoritt </th>
     </tr>
 {% for part in parts %}
-    <tr>
-        <td> {{ part.name }} </td>
-        <td> <a href="{% url 'readPart' part.pk %}"> Les </a> </td>
-        <td> <a href="{% url 'pdfPart' part.pk %}"> PDF </a> </td>
-    </tr>
+    {% if part.favorite %}
+        <tr>
+            <td> {{ part.name }} </td>
+            <td> <a href="{% url 'readPart' part.pk %}"> Les </a> </td>
+            <td> <a href="{% url 'pdfPart' part.pk part.pdfFilename %}"> PDF </a> </td>
+            <td> <a href="./" class="unfavorite" data-pk="{{part.pk}}"> <i class="fas fa-star"></i> </a> </td>
+        </tr>
+    {% endif %}
 {% endfor %}
 </table>
 
@@ -24,23 +28,56 @@
 
 <table class="table table-bordered">
     <tr>
-        <th> Navn på stemme </th>
-        <th> Kilde </th>
-        <th> Sidenummer </th>
+        <th> Navn </th>
+        <th> Les </th>
+        <th> PDF </th>
+        <th> Favoritt </th>
     </tr>
 {% for part in parts %}
     <tr>
         <td> {{ part.name }} </td>
-        <td> <a href="{{ part.pdf.file.url }}#page={{ part.fromPage }}"> {{ part.pdfName }} </a> </td>
-        <td>
-            {% if part.fromPage == part.toPage %}
-                {{ part.fromPage }}
-            {% else %}
-                {{ part.fromPage }}-{{ part.toPage }}
-            {% endif %}
-        </td>
+        <td> <a href="{% url 'readPart' part.pk %}"> Les </a> </td>
+        <td> <a href="{% url 'pdfPart' part.pk part.pdfFilename %}.pdf"> PDF </a> </td>
+        <td> {% if part.favorite %} <a href="./" class="unfavorite" data-pk="{{part.pk}}"> <i class="fas fa-star"></i> </a> {% else %} <a href="./" class="favorite" data-pk="{{part.pk}}"> <i class="far fa-star"></i> </a> {% endif %} </td>
     </tr>
 {% endfor %}
 </table>
+
+{% block js %}
+    {% load static %}
+    <script src="{% static 'fontawesome_free/js/all.min.js' %}"></script>
+    <script src="{% static 'notar/fetching.js' %}"></script>
+    <script>
+        let favorites = document.querySelectorAll('.favorite');
+        for (let i = 0; i < favorites.length; i++) {
+            favorites[i].addEventListener('click', ev => {
+                ev.preventDefault();
+                fetchWithCsrf('POST', '/notar/fetch/userspreferredpart', { part_pk: ev.target.parentNode.getAttribute('data-pk') }).then(async response => {
+                    if (response.ok) {
+                        location.reload();
+                    }
+                    else {
+                        console.error('Klarte ikke å POSTe favorittstemme')
+                    }
+                });
+            });
+        }
+
+        let unfavorites = document.querySelectorAll('.unfavorite');
+        for (let i = 0; i < unfavorites.length; i++) {
+            unfavorites[i].addEventListener('click', ev => {
+                ev.preventDefault();
+                fetchWithCsrf('DELETE', '/notar/fetch/userspreferredpart', { part_pk: ev.target.parentNode.parentNode.getAttribute('data-pk') }).then(async response => {
+                    if (response.ok) {
+                        location.reload();
+                    }
+                    else {
+                        console.error('Klarte ikke å DELETEe favorittstemme')
+                    }
+                });
+            });
+        }
+    </script>
+{% endblock %}
 
 {% endblock %}

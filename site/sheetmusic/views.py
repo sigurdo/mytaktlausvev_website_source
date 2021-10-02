@@ -23,7 +23,7 @@ from django.views.generic.edit import CreateView, FormView, UpdateView
 from django.utils.decorators import classonlymethod
 
 from django.contrib.auth.models import User
-from .models import Score, Pdf, Part
+from .models import Score, Pdf, Part, UsersPreferredPart
 from .forms import ScoreCreateForm, UploadPdfForm, EditScoreForm, EditPartForm, EditPartFormSet, EditPartFormSetHelper, PartCreateForm
 from .utils import convertPagesToInputFormat, convertInputFormatToPages
 
@@ -45,6 +45,9 @@ class ScoreView(LoginRequiredMixin, DetailView):
         parts = Part.objects.filter(pdf__in=pdfs)
         for part in parts:
             part.pdfName = os.path.basename(part.pdf.file.name)
+            count = UsersPreferredPart.objects.filter(part=part, user=self.request.user).count()
+            part.favorite = True if count > 0 else False
+            part.pdfFilename = "{}_{}.pdf".format(part.pdf.score.title, part.name).replace(" ", "_")
         
         context = super().get_context_data(**kwargs)
         context["pdfs"] = pdfs

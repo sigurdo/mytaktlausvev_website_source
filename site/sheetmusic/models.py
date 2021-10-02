@@ -64,5 +64,4 @@ class InstrumentsPreferredPart(models.Model):
 class UsersPreferredPart(models.Model):
     """ Model representing the preferred part of a user """
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    score = models.ForeignKey(Score, on_delete=models.CASCADE)
     part = models.ForeignKey(Part, on_delete=models.CASCADE)
