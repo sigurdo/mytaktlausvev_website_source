@@ -6,5 +6,5 @@ class ContactCategoryFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = ContactCategory
 
-    name = factory.sequence(lambda n: f"Name #{n}")
+    name = factory.sequence(lambda n: f"Category #{n}")
     email = "styret@taktlaus.no"
