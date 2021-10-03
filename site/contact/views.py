@@ -1,3 +1,4 @@
+from smtplib import SMTPException
 from django.core.mail import send_mail
 from django.views.generic import FormView
 from django.shortcuts import render
@@ -46,13 +47,18 @@ class ContactView(FormView):
         return [mail_category]
 
     def form_valid(self, form):
-        send_mail(
-            self._get_email_subject(form),
-            self._get_email_body(form),
-            form.cleaned_data["email"],
-            self._get_to_mails(form),
-            fail_silently=False,
-        )
+        try:
+            send_mail(
+                self._get_email_subject(form),
+                self._get_email_body(form),
+                form.cleaned_data["email"],
+                self._get_to_mails(form),
+                fail_silently=False,
+            )
+        except SMTPException:
+            form.add_error(None, "Sendinga av meldinga mislykkast. Prøv igjen seinare.")
+            return self.form_invalid(form)
+
         return render(
             self.request,
             self.template_success_name,
