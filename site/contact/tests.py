@@ -13,7 +13,7 @@ class ContactCategoryTestCase(TestCase):
         self.assertEqual(str(category), category.name)
 
     def test_name_is_unique(self):
-        """Should enforce uniqueness of the category name."""
+        """Category name should be unique."""
         name = "This is a name"
         ContactCategoryFactory(name=name)
         with self.assertRaises(IntegrityError):

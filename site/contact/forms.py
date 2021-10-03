@@ -9,6 +9,7 @@ class ContactForm(forms.Form):
     """Form for contacting the board."""
 
     helper = FormHelper()
+    helper.field_class = "col-lg-8"
     helper.add_input(Submit("submit", "Send melding"))
 
     name = forms.CharField(label="Namnet ditt", max_length=255)
