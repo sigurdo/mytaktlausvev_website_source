@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}Kontakt{% endblock title %}
+
+{% block page %}
+<article>
+    <h1>Tusen takk!</h1>
+
+    <p>
+        Me har motteke meldinga di, og vil svare så fort me kan.
+
+        {% if copy_sent_to_self %}
+            Ein kopi av meldinga har blitt sendt til deg sjølv.
+        {% endif %}
+    </p>
+</article>
+{% endblock page %}

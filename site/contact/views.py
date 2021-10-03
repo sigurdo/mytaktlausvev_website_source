@@ -1,10 +1,12 @@
 from django.core.mail import send_mail
 from django.views.generic import FormView
+from django.shortcuts import render
 from contact.forms import ContactForm
 
 
 class ContactView(FormView):
     template_name = "contact/contact.html"
+    template_success_name = "contact/success.html"
     form_class = ContactForm
 
     def get_initial(self):
@@ -51,4 +53,8 @@ class ContactView(FormView):
             self._get_to_mails(form),
             fail_silently=False,
         )
-        return super().form_valid(form)
+        return render(
+            self.request,
+            self.template_success_name,
+            {"copy_sent_to_self": form.cleaned_data["send_to_self"]},
+        )
