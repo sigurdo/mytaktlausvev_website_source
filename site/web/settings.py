@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "common",
     "articles",
     "comments",
+    "contact",
     "quotes",
     "dashboard",
 ]
@@ -129,6 +130,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Email
+# https://docs.djangoproject.com/en/3.2/topics/email/
+
+EMAIL_BACKEND = "django.core.mail.backends.locmem.EmailBackend"
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
