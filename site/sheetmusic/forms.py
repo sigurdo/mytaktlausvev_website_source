@@ -114,15 +114,11 @@ class EditScoreForm(forms.ModelForm):
             "title": "Tittel"
         }
 
-class UploadPdfForm(forms.ModelForm):
+class UploadPdfForm(forms.Form):
     helper = FormHelper()
     helper.form_method = "post"
     helper.label_class = "form-label"
     helper.add_input(Submit("submit", "Last opp"))
-
-    class Meta:
-        model = Pdf
-        fields = ["file"]
-        labels = {
-            "file": "Fil"
-        }
+    files = forms.FileField(widget=forms.ClearableFileInput(attrs={
+        "multiple": True
+    }))

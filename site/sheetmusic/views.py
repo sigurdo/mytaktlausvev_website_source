@@ -3,6 +3,7 @@
 import django
 import os
 import io
+from django.views.generic.detail import SingleObjectMixin
 import yaml
 import threading
 import multiprocessing
@@ -13,10 +14,10 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect, HttpRequest, HttpResponse
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.db import transaction, models
-from django.forms import BaseModelForm
+from django.forms import BaseModelForm, Form
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import View, DetailView, ListView
@@ -118,11 +119,14 @@ class PartsUpdate(LoginRequiredMixin, UpdateView):
 
 
 
-class PdfsUpdate(LoginRequiredMixin, CreateView):
-    model = Score
+class PdfsUpdate(LoginRequiredMixin, FormView):
     form_class = UploadPdfForm
     template_name = "sheetmusic/pdfs_update.html"
+    success_url = reverse_lazy("sheetmusic")
     context_object_name = "score"
+
+    def get_object(self):
+        return Score.objects.get(pk=self.kwargs["pk"])
 
     def get_success_url(self) -> str:
         return reverse("editScorePdfs", args=[self.get_object().pk])
@@ -137,42 +141,37 @@ class PdfsUpdate(LoginRequiredMixin, CreateView):
         return context
     
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
-        pdf: Pdf = form.save(commit=False)
-        pdf.score = Score.objects.get(pk=self.get_object().pk)
-        pdf.timestamp = timezone.now()
-        pdf.save()
-        print(pdf.file.path)
-
-        pdf.processing = True
-        pdf.save()
-        processPdfThread = threading.Thread(target=self.processPdf, args=[pdf])
-        processPdfThread.start()
-        print("form valid:", form)
-        # res = form.save()
-        print("form saved")
-        return super().form_valid(form)
-
-    def processPdf(self, pdf: Pdf):
-        pdf.processing = True
-        pdf.save()
-        try:
-            imagesDirPath = os.path.join(django.conf.settings.MEDIA_ROOT, "sheetmusic", "images")
-            if not os.path.exists(imagesDirPath): os.mkdir(imagesDirPath)
-            imagesDirPath = os.path.join(imagesDirPath, str(pdf.pk))
-            if not os.path.exists(imagesDirPath): os.mkdir(imagesDirPath)
-            
-            print("skal prøve:", pdf.file.path, imagesDirPath)
-            # Gjør dette i en egen prosess for å ikke påvirke responstida på andre requests som må besvares i mellomtida:
-            parts, instrumentsDefaultParts = multiprocessing.Pool().apply(processUploadedPdf, (pdf.file.path, imagesDirPath), { "use_lstm": True, "tessdata_dir": os.path.join("tessdata", "tessdata_best-4.1.0") })
-            print("Result:", parts, instrumentsDefaultParts)
-            for part in parts:
-                part = Part(name=part["name"], pdf=pdf, fromPage=part["fromPage"], toPage=part["toPage"], timestamp=timezone.now())
-                part.save()
-        finally:
-            pdf.processing = False
+        files = self.request.FILES.getlist("files")
+        pdfs = []
+        for file in files:
+            score = Score.objects.get(pk=self.kwargs["pk"])
+            pdf = Pdf.objects.create(score=score, file=file)
             pdf.save()
-
-
+            pdfs.append(pdf)
+        processPdfsThread = threading.Thread(target=self.processPdfs, args=[pdfs])
+        processPdfsThread.start()
+        return super().form_valid(form)
+    
+    def processPdfs(self, pdfs):
+        for pdf in pdfs:
+            pdf.processing = True
+            pdf.save()
+            try:
+                imagesDirPath = os.path.join(django.conf.settings.MEDIA_ROOT, "sheetmusic", "images")
+                if not os.path.exists(imagesDirPath): os.mkdir(imagesDirPath)
+                imagesDirPath = os.path.join(imagesDirPath, str(pdf.pk))
+                if not os.path.exists(imagesDirPath): os.mkdir(imagesDirPath)
+                
+                print("skal prøve:", pdf.file.path, imagesDirPath)
+                # Gjør dette i en egen prosess for å ikke påvirke responstida på andre requests som må besvares i mellomtida:
+                parts, instrumentsDefaultParts = multiprocessing.Pool().apply(processUploadedPdf, (pdf.file.path, imagesDirPath), { "use_lstm": True, "tessdata_dir": os.path.join("tessdata", "tessdata_best-4.1.0") })
+                print("Result:", parts, instrumentsDefaultParts)
+                for part in parts:
+                    part = Part(name=part["name"], pdf=pdf, fromPage=part["fromPage"], toPage=part["toPage"], timestamp=timezone.now())
+                    part.save()
+            finally:
+                pdf.processing = False
+                pdf.save()
 
 class ScoreCreate(LoginRequiredMixin, CreateView):
     model = Score
