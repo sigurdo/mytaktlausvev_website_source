@@ -33,6 +33,9 @@ class UserCustom(AbstractUser):
             "du vil ha tilgang til instrumentlageret. Nummeret er det som startar med EM."
         ),
     )
+    picture = models.ImageField(
+        "profilbilde", upload_to="profile/", null=True, blank=True
+    )
     # rfid - no-one uses this
 
     class MembershipStatus(models.TextChoices):
