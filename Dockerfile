@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM python:3
+FROM python:3.9
 ENV PYTHONUNBUFFERED=1
 ENV DJANGO_SETTINGS_MODULE=web.settings
 WORKDIR /app
