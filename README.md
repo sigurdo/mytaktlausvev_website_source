@@ -13,7 +13,7 @@ Requires [Docker](https://docs.docker.com/get-docker/) and [docker-compose](http
 - Clone the repository
 - Clone submodules with `git submodule update --init --recursive`
 - Initialize the database with the [`database_init.sh`](./_setup/database_init.sh) script
-- Build the project with `docker-compose build`
+- Build the project with `docker-compose build --build-arg SHEETMUSIC=yes`
 
 A superuser with the username "leiar" and the password "password" is created automatically when initializing the database.
 

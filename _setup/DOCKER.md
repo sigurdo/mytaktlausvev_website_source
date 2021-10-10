@@ -21,3 +21,11 @@ To clear the database, simply remove it and rerun [`database_init.sh`](./databas
 
 Note that `docker-compose up` can be run with the `-d` option (detach) to run the server in the background.
 Accessing the live logs is still possible by entering the the live docker containers, though this is a bit more complicated and depends on the exact use case.
+
+## Extra build steps for sheetmusic
+
+Docker build steps required for the sheetmusic uploader are skipped by default. To use the sheetmusic uploader you must build your docker container with `--build-arg SHEETMUSIC=yes`, so
+
+```
+docker-compose build --build-arg SHEETMUSIC=yes
+```
