@@ -48,11 +48,13 @@ ALLOWED_TAGS = [
     "cite",
 ]
 
-ALLOWED_ATTRIBUTES = ["src", "alt", "width", "height"]
+ALLOWED_ATTRIBUTES = ["src", "alt", "width", "height", "class"]
 
 
 @register.filter(is_safe=True)
 def markdown(string):
-    converted = md.markdown(string, extensions=["nl2br"])
+    converted = md.markdown(
+        string, extensions=["nl2br", "fenced_code", "codehilite", "tables"]
+    )
     bleached = bleach.clean(converted, tags=ALLOWED_TAGS, attributes=ALLOWED_ATTRIBUTES)
     return mark_safe(bleached)

@@ -198,7 +198,8 @@ $btn-close-hover-opacity: 1 !default;
 
 $pre-color: inherit !default;
 
-@import "./bootstrap/scss/bootstrap.scss";
+@import "bootstrap/scss/bootstrap.scss";
+@import "codestyle-monokai.scss";
 
 .navbar-dark .navbar-nav .nav-link.active {
   color: $white;
@@ -212,4 +213,8 @@ $pre-color: inherit !default;
 .navbar-dark .navbar-text,
 .navbar-dark .navbar-nav .nav-link {
   color: $white;
+}
+
+tbody tr:nth-child(odd) {
+  background-color: $gray-800;
 }

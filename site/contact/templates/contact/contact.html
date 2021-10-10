@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}Kontakt{% endblock title %}
+
+{% block page %}
+<article>
+    <h1>Kontakt</h1>
+
+    <p>
+        Her kan du kontakta dei i styret, eller tillitsvalde.
+        Om du vil vere med oss å spele, gjerne legg til kva instrument du spelar,
+        og om du vil låne instrument.
+    </p>
+
+    {% load crispy_forms_tags %}
+    {% crispy form %}
+</article>
+{% endblock page %}

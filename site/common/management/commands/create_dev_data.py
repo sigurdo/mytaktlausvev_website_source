@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand
 from accounts.models import UserCustom
 from articles.factories import ArticleFactory
+from contact.factories import ContactCategoryFactory
 
 
 class Command(BaseCommand):
@@ -42,3 +43,6 @@ class Command(BaseCommand):
             created_by=superuser,
             modified_by=superuser,
         ).save()
+
+        ContactCategoryFactory(name="Generelt").save()
+        ContactCategoryFactory(name="Bli med!").save()
