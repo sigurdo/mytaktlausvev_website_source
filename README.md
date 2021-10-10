@@ -6,13 +6,13 @@ Studentorchesteret Dei Taktlause's new website.
 
 ### Installation
 
-(For more details, see [\_setup/DOCKER.md](./_setup/DOCKER.md).)
+(For more details, see [setup/DOCKER.md](./setup/DOCKER.md).)
 
 Requires [Docker](https://docs.docker.com/get-docker/) and [docker-compose](https://docs.docker.com/compose/install/).
 
 - Clone the repository
 - Clone submodules with `git submodule update --init --recursive`
-- Initialize the database with the [`./_setup/init.sh`](./_setup/init.sh) script
+- Initialize the database with the [`./setup/init.sh`](./setup/init.sh) script
 - Build the project with `docker-compose build`
 
 A superuser with the username "leiar" and the password "password" is created automatically when initializing the database.
