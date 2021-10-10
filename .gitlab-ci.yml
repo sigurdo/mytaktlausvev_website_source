@@ -14,7 +14,7 @@ stages:
 test:
   stage: test
   script:
-    - sh _setup/init.sh
+    - sh setup/init.sh
     - docker-compose run web site/manage.py test site/
     - docker-compose run web flake8
     - docker-compose down
