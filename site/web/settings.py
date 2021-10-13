@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     "quotes",
     "dashboard",
     "sheetmusic",
+    "repertoire",
 ]
 
 MIDDLEWARE = [

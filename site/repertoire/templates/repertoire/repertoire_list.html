@@ -1,0 +1,60 @@
+{% extends './base.html' %}
+{% block content %}
+
+<h1> Alle repertoar </h1>
+
+<table class="table table-striped table-sm">
+    <thead>
+        <tr>
+            <th class="col-form-label">
+                Namn
+            </th>
+
+            <th class="col-form-label">
+                Les
+            </th>
+
+            <th class="col-form-label">
+                PDF
+            </th>
+
+            <th class="col-form-label">
+                Dato opprettet
+            </th>
+
+            <th class="col-form-label">
+                Rediger
+            </th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for repertoire in repertoires %}
+            <tr>
+                <td>
+                    <a href="{% url 'repertoire' %}"> {{ repertoire.title }} </a>
+                </td>
+
+                <td>
+                    <a href="{% url 'repertoire' %}"> Les </a>
+                </td>
+                
+                <td>
+                    <a href="{% url 'repertoire' %}"> PDF </a>
+                </td>
+
+                <td>
+                    {{ repertoire.timestamp }}
+                </td>
+
+                <td>
+                    <a href="{% url 'updateRepertoire' repertoire.pk %}"> Rediger </a>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<a href="{% url 'createRepertoire' %}"> Nytt repertoar </a>
+
+{% endblock %}

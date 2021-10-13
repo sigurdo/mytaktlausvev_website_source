@@ -26,6 +26,7 @@ urlpatterns = [
     path("notar/", include("sheetmusic.urls")),
     path("kommentarar/", include("comments.urls")),
     path("kontakt/", include("contact.urls")),
+    path("repertoar/", include("repertoire.urls")),
     path("", include("articles.urls")),
 ]
 
