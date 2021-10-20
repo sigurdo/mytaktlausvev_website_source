@@ -43,6 +43,10 @@
 							href="{% url 'sheetmusic' %}">Notar</a>
 					</li>
 					<li class="nav-item">
+						<a class="nav-link {% if 'repertoar' in request.path %} active {% endif %}"
+							href="{% url 'repertoire' %}">Repertoar</a>
+					</li>
+					<li class="nav-item">
 						<a class="nav-link {% if 'songar' in request.path %} active {% endif %}"
 							href="{% url 'articles:detail' 'songar' %}">Songar</a>
 					</li>
