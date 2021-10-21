@@ -3,7 +3,7 @@ import random
 from datetime import datetime, timedelta
 from django.shortcuts import render
 from quotes.models import Quote
-from user_events.models import Event
+from events.models import Event
 
 
 def dashboard(request):

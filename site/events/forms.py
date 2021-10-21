@@ -1,4 +1,4 @@
-"""Forms for the "user_events"-app"""
+"""Forms for the "events"-app"""
 from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
@@ -21,5 +21,5 @@ class CreateEventForm(forms.ModelForm):
         widgets = {
             "start_time": forms.DateTimeInput(attrs={"type": "datetime"}),
             "end_time": forms.DateTimeInput(attrs={"type": "datetime"}),
-            "description": forms.Textarea()
+            "description": forms.Textarea(),
         }

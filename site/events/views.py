@@ -4,6 +4,7 @@ from django.http import HttpResponseRedirect
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
+
 # Create your views here.
 
 
@@ -22,16 +23,17 @@ def new_event(request):
             return HttpResponseRedirect(reverse("event_details", args=(event.id,)))
     elif request.method == "GET":
         form = CreateEventForm()
-        return render(request, "user_events/create_event.html", {"form": form})
+        return render(request, "events/create_event.html", {"form": form})
 
 
 @login_required
 def event_details(request, event_id):
     event = get_object_or_404(Event, id=event_id)
-    return render(request, "user_events/event_details.html", {
-        "event": event,
-        "is_owner": event.owner.id == request.user.id
-    })
+    return render(
+        request,
+        "events/event_details.html",
+        {"event": event, "is_owner": event.owner.id == request.user.id},
+    )
 
 
 @login_required
@@ -51,13 +53,19 @@ def update_event(request, event_id):
             return HttpResponseRedirect(reverse("event_details", args=(event.id,)))
     elif request.method == "GET":
         form = CreateEventForm(instance=event)
-        return render(request, "user_events/update_event.html", {"event_id": event_id, "form": form})
+        return render(
+            request, "events/update_event.html", {"event_id": event_id, "form": form}
+        )
 
 
 @login_required
 def declare_attendance(request, event_id, attendance_status):
     EventAttendance.objects.filter(
-        event__id=event_id, person__id=request.user.id).delete()
-    EventAttendance.objects.create(person=request.user, event=get_object_or_404(
-        Event, id=event_id), status=attendance_status)
+        event__id=event_id, person__id=request.user.id
+    ).delete()
+    EventAttendance.objects.create(
+        person=request.user,
+        event=get_object_or_404(Event, id=event_id),
+        status=attendance_status,
+    )
     return HttpResponseRedirect(reverse("event_details", args=(event_id,)))

@@ -33,7 +33,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('status', models.CharField(choices=[(0, 'Skal ikke'), (1, 'Skal kanskje'), (2, 'Skal')], max_length=255)),
-                ('event', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='user_events.Event')),
+                ('event', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='events.Event')),
                 ('person', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
         ),
