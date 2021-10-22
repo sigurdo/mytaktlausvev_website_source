@@ -1,6 +1,3 @@
-
-
-
 # Arguments:
 # - fromPage - int
 # - toPage - int
@@ -11,6 +8,7 @@ def convertPagesToInputFormat(fromPage: int, toPage: int):
         return str(fromPage)
     else:
         return f"{fromPage}-{toPage}"
+
 
 # Arguments:
 # - inputFormat - string on the format "fromPage-toPage" or "fromPage" if they are equal
@@ -24,4 +22,3 @@ def convertInputFormatToPages(inputFormat: str):
     if len(pages) == 1:
         return pages[0], pages[0]
     return pages[0], pages[1]
-

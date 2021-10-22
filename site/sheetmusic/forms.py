@@ -11,6 +11,7 @@ from .utils import convertPagesToInputFormat, convertInputFormatToPages
 
 class ScoreCreateForm(forms.ModelForm):
     """Form for uploading a new score"""
+
     helper = FormHelper()
     helper.form_method = "post"
     helper.label_class = "form-label"
@@ -19,9 +20,8 @@ class ScoreCreateForm(forms.ModelForm):
     class Meta:
         model = Score
         fields = ["title"]
-        labels = {
-            "title": "Tittel"
-        }
+        labels = {"title": "Tittel"}
+
 
 def validatePagesField(value):
     # print("validatePagesField")
@@ -30,19 +30,26 @@ def validatePagesField(value):
         if not fromPage <= toPage:
             raise Exception()
     except:
-        raise ValidationError("Pages is not valid: %(value)s", params={ "value": value })
+        raise ValidationError("Pages is not valid: %(value)s", params={"value": value})
+
 
 class EditPartForm(forms.ModelForm):
-    """ Form for editing a part """
+    """Form for editing a part"""
+
     helper = FormHelper()
     helper.form_method = "post"
     helper.label_class = "form-label"
 
     class Meta:
         model = Part
-        fields=["name", "fromPage", "toPage", "pdf"]
-        labels={ "name": "Navn", "fromPage": "Første side", "toPage": "Siste side" }
-        widgets={ "fromPage": forms.NumberInput(attrs={ "size": 1 }), "toPage": forms.NumberInput(attrs={ "size": 1 }), "pdf": forms.HiddenInput() }
+        fields = ["name", "fromPage", "toPage", "pdf"]
+        labels = {"name": "Navn", "fromPage": "Første side", "toPage": "Siste side"}
+        widgets = {
+            "fromPage": forms.NumberInput(attrs={"size": 1}),
+            "toPage": forms.NumberInput(attrs={"size": 1}),
+            "pdf": forms.HiddenInput(),
+        }
+
 
 class PartCreateForm(forms.ModelForm):
     # Form for creating a part
@@ -53,8 +60,14 @@ class PartCreateForm(forms.ModelForm):
 
     class Meta:
         model = Part
-        fields=["name", "fromPage", "toPage", "pdf"]
-        labels={ "name": "Navn", "fromPage": "Første side", "toPage": "Siste side", "pdf": "PDF" }
+        fields = ["name", "fromPage", "toPage", "pdf"]
+        labels = {
+            "name": "Navn",
+            "fromPage": "Første side",
+            "toPage": "Siste side",
+            "pdf": "PDF",
+        }
+
 
 # class EditPartForm(forms.Form):
 #     name = forms.CharField(
@@ -73,20 +86,24 @@ class PartCreateForm(forms.ModelForm):
 # EditScoreForm = modelformset_factory(Part, fields=["name", "pages"])
 # EditScoreForm = formset_factory(EditPartForm)
 
+
 class EditPartFormSetHelper(FormHelper):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.form_method = "post"
         self.render_required_fields = True
         self.add_input(Submit("submit", "Lagre"))
-        self.template = 'sheetmusic/table_inline_formset_for_edit_score_form.html'
+        self.template = "sheetmusic/table_inline_formset_for_edit_score_form.html"
 
-EditPartFormSet = modelformset_factory(Part,
+
+EditPartFormSet = modelformset_factory(
+    Part,
     # fields=["name", "fromPage", "toPage"],
     # labels={ "name": "Navn", "fromPage": "Første side", "toPage": "Siste side" },
     # widgets={ "fromPage": forms.NumberInput(attrs={ "size": 1 }), "toPage": forms.NumberInput(attrs={ "size": 1 }) },
     form=EditPartForm,
-    extra=0)
+    extra=0,
+)
 
 # class EditPdfForm(forms.ModelForm):
 #     """ Form for editing a part """
@@ -100,8 +117,10 @@ EditPartFormSet = modelformset_factory(Part,
 #         labels={ "name": "Navn", "fromPage": "Første side", "toPage": "Siste side" }
 #         widgets={ "fromPage": forms.NumberInput(attrs={ "size": 1 }), "toPage": forms.NumberInput(attrs={ "size": 1 }), "pdf": forms.HiddenInput() }
 
+
 class EditScoreForm(forms.ModelForm):
-    """ Form for editing a score """
+    """Form for editing a score"""
+
     helper = FormHelper()
     helper.form_method = "post"
     helper.label_class = "form-label"
@@ -110,15 +129,12 @@ class EditScoreForm(forms.ModelForm):
     class Meta:
         model = Score
         fields = ["title"]
-        labels = {
-            "title": "Tittel"
-        }
+        labels = {"title": "Tittel"}
+
 
 class UploadPdfForm(forms.Form):
     helper = FormHelper()
     helper.form_method = "post"
     helper.label_class = "form-label"
     helper.add_input(Submit("submit", "Last opp"))
-    files = forms.FileField(widget=forms.ClearableFileInput(attrs={
-        "multiple": True
-    }))
+    files = forms.FileField(widget=forms.ClearableFileInput(attrs={"multiple": True}))

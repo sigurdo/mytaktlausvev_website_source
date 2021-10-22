@@ -4,4 +4,5 @@ from django.apps import AppConfig
 
 class SheetmusicConfig(AppConfig):
     """Configuration-class for the 'quotes'-app"""
-    name = 'sheetmusic'
+
+    name = "sheetmusic"

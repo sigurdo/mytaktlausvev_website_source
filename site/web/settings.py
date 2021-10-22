@@ -30,7 +30,7 @@ ALLOWED_HOSTS = [".localhost", "127.0.0.1", "[::1]", "0.0.0.0"]
 
 
 # Application definition
-sys.modules['fontawesome_free'] = __import__('fontawesome-free')
+sys.modules["fontawesome_free"] = __import__("fontawesome-free")
 
 INSTALLED_APPS = [
     "django.contrib.admin",
