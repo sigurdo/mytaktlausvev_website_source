@@ -1,4 +1,4 @@
-.to_be_deleted select {
+.to_be_deleted :not(input[type="checkbox"]):not(td):not(div.controls) {
     opacity: 15%;
 }
 
