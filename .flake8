@@ -5,6 +5,7 @@ extend-ignore =
     E203,
     # Handled by Black
     E501,
+    W,
 extend-exclude =
     */migrations/,
     venv/,
