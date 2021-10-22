@@ -42,10 +42,10 @@ class FormAndFormsetUpdateView(UpdateView):
           <script src="{% static 'common/js/FormAndFormsetUpdateView.js' %}"></script>
       {% endblock js %}
    
-      {% block scss %}
+      {% block css %}
           {% load sass_tags %}
           <link href="{% sass_src 'common/scss/FormAndFormsetUpdateView.scss' %}" rel="stylesheet" type="text/css">
-      {% endblock scss %}
+      {% endblock css %}
     """
 
     def formset_invalid(self, formset):
