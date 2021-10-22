@@ -9,6 +9,8 @@
 	<link href="{% sass_src 'scss/bootstrap-dark.scss' %}" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
 	<link href="{% sass_src 'scss/utilities.scss' %}" rel="stylesheet" type="text/css">
 
+	{% block css %}{% endblock css %}
+
 
 	{% load static %}
 	<link rel="stylesheet" type="text/css" href="{% static 'css/base.css' %}">
@@ -82,4 +84,6 @@
 		integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
 		crossorigin="anonymous"
 	></script>
+
+	{% block js %}{% endblock js %}
 </body>

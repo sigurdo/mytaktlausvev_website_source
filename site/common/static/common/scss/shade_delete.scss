@@ -1,0 +1,7 @@
+.to_be_deleted :not(input[type="checkbox"]):not(td):not(div.controls) {
+    opacity: 15%;
+}
+
+input[type="checkbox"] {
+    transform: scale(1.8);
+}
