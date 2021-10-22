@@ -17,6 +17,8 @@ class FormAndFormsetUpdateView(UpdateView):
     - Write a form class for the subform of the formset for the B's of A called BUpdateForm
     - Make a formset based on this form class using inlineformset_factory called BUpdateFormset
     - Write a form helper for the BUpdateFormset called BUpdateFormsetHelper
+      - The template of this helper should be common/table_inline_formset_shade_delete.html
+        to improve the UX and fix a weird bug.
 
     - Define the following attributes on the view class:
     - model = A
@@ -34,18 +36,6 @@ class FormAndFormsetUpdateView(UpdateView):
           {% crispy form %}
           {% crispy formset formset_helper %}
       </form>
-
-    - To make formset elements that are to be deleted gray, and fix a weird bug in crispy forms,
-      also add these 2 snippets:
-      {% block js %}
-          {% load static %}
-          <script src="{% static 'common/js/FormAndFormsetUpdateView.js' %}"></script>
-      {% endblock js %}
-
-      {% block css %}
-          {% load sass_tags %}
-          <link href="{% sass_src 'common/scss/FormAndFormsetUpdateView.scss' %}" rel="stylesheet" type="text/css">
-      {% endblock css %}
     """
 
     def formset_invalid(self, formset):
