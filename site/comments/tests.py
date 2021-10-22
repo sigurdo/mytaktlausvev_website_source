@@ -10,7 +10,17 @@ from .factories import CommentFactory
 class CommentTestCase(TestCase):
     def setUp(self):
         self.article = ArticleFactory()
-        self.comment = CommentFactory(content_object=self.article)
+        self.comment = CommentFactory(
+            comment="Great article!", content_object=self.article
+        )
+        self.comment_long = CommentFactory(
+            comment="I think this article was most exquisite, and I sincerely hope to see more in the future.",
+            content_object=self.article,
+        )
+        self.comment_whitespace = CommentFactory(
+            comment="Cool!                                                ",
+            content_object=self.article,
+        )
 
     def test_get_absolute_url(self):
         """Should link to the comment on the model's page."""
@@ -19,9 +29,22 @@ class CommentTestCase(TestCase):
             f"{reverse('articles:detail', args=[self.article.slug])}#comment-{self.comment.pk}",
         )
 
-    def test_to_str(self):
-        """Should have the correct string representation."""
-        self.assertEqual(str(self.comment), f"Kommentar #{self.comment.pk}")
+    def test_to_str_comment_shorter_than_20_characters(self):
+        """`__str__` should be the entire comment when it's shorter than 20 characters."""
+        self.assertEqual(str(self.comment), self.comment.comment)
+
+    def test_to_str_comment_longer_than_20_characters(self):
+        """
+        `__str__` should truncate comment when it has more than 20 characters,
+        and add an ellipsis.
+        """
+        self.assertEqual(str(self.comment_long), self.comment_long.comment[0:19] + "…")
+
+    def test_to_str_strips_whitespace_before_checking(self):
+        """`__str__` should strip whitespace before checking length."""
+        self.assertEqual(
+            str(self.comment_whitespace), self.comment_whitespace.comment.rstrip()
+        )
 
 
 class CommentCreateTestCase(TestMixin, TestCase):

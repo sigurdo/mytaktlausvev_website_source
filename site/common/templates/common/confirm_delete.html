@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block page %}
-    <h2>Slett {{ object | verbose_name }} "{{ object }}"</h2>
+    <h2>Slett {{ object | verbose_name | title }} "{{ object }}"</h2>
 
     <form method="post">
         {% csrf_token %}
