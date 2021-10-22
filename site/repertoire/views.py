@@ -7,6 +7,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.edit import CreateView, FormView, UpdateView
 from django.http import HttpResponse, HttpRequest
 
+from common.views import FormAndFormsetUpdateView
+
 from . import models
 import sheetmusic.models
 from . import forms
@@ -25,21 +27,15 @@ class RepertoireCreate(LoginRequiredMixin, CreateView):
     def get_success_url(self) -> str:
         return reverse("repertoire")
 
-class RepertoireUpdate(LoginRequiredMixin, UpdateView):
+class RepertoireUpdate(LoginRequiredMixin, FormAndFormsetUpdateView):
     model = models.Repertoire
     form_class = forms.RepertoireUpdateForm
+    formset_class = forms.RepertoireEntryUpdateFormset
+    formset_helper = forms.RepertoireEntryUpdateFormsetHelper
     template_name_suffix = "_update_form"
 
     def get_success_url(self) -> str:
-        return reverse("repertoire")
-
-    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-        print("----------------------------------------------------------------------")
-        print("| TODO:")
-        print("| Entries:", self.get_object().entries)
-        print("----------------------------------------------------------------------")
-        return context
+        return reverse("updateRepertoire", kwargs={ "pk": self.get_object().pk })
 
 class RepertoireEntryCreate(LoginRequiredMixin, CreateView):
     model = models.RepertoireEntry

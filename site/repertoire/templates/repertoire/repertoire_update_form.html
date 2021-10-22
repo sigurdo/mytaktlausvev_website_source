@@ -1,10 +1,24 @@
 {% extends "./base.html" %}
+
+{% block scss %}
+    {% load sass_tags %}
+    <link href="{% sass_src 'common/scss/FormAndFormsetUpdateView.scss' %}" rel="stylesheet" type="text/css">
+{% endblock scss %}
+
 {% block content %}
 
 {% if user.is_authenticated %}
     {% csrf_token %}
     {% load crispy_forms_tags %}
-    {% crispy form %}
+    <form method="post">
+        {% crispy form %}
+        {% crispy formset formset_helper %}
+    </form>
 {% endif %}
 
 {% endblock content %}
+
+{% block js %}
+    {% load static %}
+    <script src="{% static 'common/js/FormAndFormsetUpdateView.js' %}"></script>
+{% endblock js %}
