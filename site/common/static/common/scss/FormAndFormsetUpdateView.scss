@@ -1,0 +1,13 @@
+.to_be_deleted select {
+    opacity: 15%;
+}
+
+input[type="checkbox"] {
+    transform: scale(1.8);
+}
+
+/* Not really sure why this should be necessary, but there seems to be a bug in crispy forms
+   inline formset template that generates a hidden tr that is not hidden */
+.hidden {
+    display: none;
+}
