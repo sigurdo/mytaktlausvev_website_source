@@ -47,7 +47,7 @@
                 </td>
 
                 <td>
-                    <button class="delete-score", data-pk="{{ score.pk }}" data-displayname="{{ score.title }}"> X </button>
+                    <a href="{% url 'deleteScore' score.pk %}"> Slett </a>
                 </td>
             </tr>
         {% endfor %}

@@ -21,7 +21,7 @@ from django.forms import BaseModelForm, Form
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import View, DetailView, ListView
-from django.views.generic.edit import CreateView, FormView, UpdateView
+from django.views.generic.edit import CreateView, FormView, UpdateView, DeleteView
 from django.utils.decorators import classonlymethod
 
 from django.contrib.auth.models import User
@@ -40,9 +40,9 @@ from .utils import convertPagesToInputFormat, convertInputFormatToPages
 from sheatless import processUploadedPdf
 from PyPDF2 import PdfFileReader, PdfFileWriter
 
-os.umask(
-    0
-)  # Simplifies management stuff like deleting output files from the code editor on the host system.
+
+# Simplifies management stuff like deleting output files from the code editor on the host system.
+os.umask(0)
 
 
 class ScoreView(LoginRequiredMixin, DetailView):
@@ -107,6 +107,12 @@ class ScoreUpdate(LoginRequiredMixin, UpdateView):
         ]
         context["pdfs"] = pdfs
         return context
+
+
+class ScoreDelete(LoginRequiredMixin, DeleteView):
+    model = Score
+    template_name = "common/confirm_delete.html"
+    success_url = reverse_lazy("sheetmusic")
 
 
 class PartsUpdate(LoginRequiredMixin, UpdateView):

@@ -17,6 +17,7 @@ urlpatterns = [
     ),
     path("score/edit/<slug:pk>/pdfs", views.PdfsUpdate.as_view(), name="editScorePdfs"),
     path("score/create/", views.ScoreCreate.as_view(), name="createScore"),
+    path("score/delete/<slug:pk>", views.ScoreDelete.as_view(), name="deleteScore"),
     path("part/read/<slug:pk>", views.PartRead.as_view(), name="readPart"),
     path(
         "part/pdf/<slug:pk>/<str:filename>", views.PartPdf.as_view(), name="pdfPart"
