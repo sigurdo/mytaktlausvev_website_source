@@ -25,6 +25,10 @@
             <th class="col-form-label">
                 Rediger
             </th>
+
+            <th class="col-form-label">
+                Slett
+            </th>
         </tr>
     </thead>
 
@@ -49,6 +53,10 @@
 
                 <td>
                     <a href="{% url 'updateRepertoire' repertoire.pk %}"> Rediger </a>
+                </td>
+
+                <td>
+                    <a href="{% url 'deleteRepertoire' repertoire.pk %}"> Slett </a>
                 </td>
             </tr>
         {% endfor %}

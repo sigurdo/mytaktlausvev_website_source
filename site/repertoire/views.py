@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.views.generic import ListView
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic.edit import CreateView, FormView, UpdateView
+from django.views.generic.edit import CreateView, DeleteView, FormView, UpdateView
 from django.http import HttpResponse, HttpRequest
 
 from common.views import FormAndFormsetUpdateView
@@ -36,6 +36,11 @@ class RepertoireUpdate(LoginRequiredMixin, FormAndFormsetUpdateView):
 
     def get_success_url(self) -> str:
         return reverse("updateRepertoire", kwargs={ "pk": self.get_object().pk })
+
+class RepertoireDelete(LoginRequiredMixin, DeleteView):
+    model = models.Repertoire
+    template_name = "common/confirm_delete.html"
+    success_url = reverse_lazy("repertoire")
 
 class RepertoireEntryCreate(LoginRequiredMixin, CreateView):
     model = models.RepertoireEntry
