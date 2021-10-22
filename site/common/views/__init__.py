@@ -1,1 +1,1 @@
-from .FormAndFormsetUpdateView import *
+from .FormAndFormsetUpdateView import FormAndFormsetUpdateView

@@ -3,6 +3,7 @@ from typing import Any, Dict
 from django.views.generic.edit import UpdateView
 from django.http import HttpResponse
 
+
 class FormAndFormsetUpdateView(UpdateView):
     # Generic example:
     # Practical view when you have an instance a of a model A with multiple related instances of a model B,
@@ -21,7 +22,7 @@ class FormAndFormsetUpdateView(UpdateView):
     # - formset_class = BUpdateFormset
     # - formset_helper = BUpdateFormsetHelper
     # - template_name_suffix = "_update_form"
-    # 
+    #
     # - Override the following methods:
     # - get_success_url - will typically return reverse("name of view in urls.py", kwargs={...})
     #
@@ -44,8 +45,7 @@ class FormAndFormsetUpdateView(UpdateView):
     #       {% load sass_tags %}
     #       <link href="{% sass_src 'common/scss/FormAndFormsetUpdateView.scss' %}" rel="stylesheet" type="text/css">
     #   {% endblock scss %}
-    
-    
+
     def formset_invalid(self, formset):
         return self.render_to_response(self.get_context_data(formset=formset))
 
@@ -56,19 +56,19 @@ class FormAndFormsetUpdateView(UpdateView):
         else:
             return self.formset_invalid(formset)
         return super().form_valid(form)
-    
+
     def get_formset_class(self):
         return self.formset_class
-    
+
     def get_formset_kwargs(self):
-        kwargs = {
-            "instance": self.get_object()
-        }
-        if self.request.method in ('POST', 'PUT'):
-            kwargs.update({
-                'data': self.request.POST,
-                'files': self.request.FILES,
-            })
+        kwargs = {"instance": self.get_object()}
+        if self.request.method in ("POST", "PUT"):
+            kwargs.update(
+                {
+                    "data": self.request.POST,
+                    "files": self.request.FILES,
+                }
+            )
         return kwargs
 
     def get_formset(self, formset_class=None):
