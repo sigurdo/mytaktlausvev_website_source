@@ -54,7 +54,7 @@ class RepertoireEntryUpdateFormsetHelper(FormHelper):
         self.render_required_fields = True
         self.add_input(Submit("submit", "Lagre"))
         self.form_tag = False
-        self.template = 'bootstrap/table_inline_formset.html'
+        self.template = 'common/table_inline_formset_shade_delete.html'
 
 RepertoireEntryUpdateFormset = forms.inlineformset_factory(
     models.Repertoire,
