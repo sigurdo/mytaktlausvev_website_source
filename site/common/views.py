@@ -29,7 +29,6 @@ class FormAndFormsetUpdateView(UpdateView):
     - get_success_url - will typically return reverse("name of view in urls.py", kwargs={...})
    
     - Write a template called A_update_form.html, and insert this little snippet to insert the form:
-      {% csrf_token %}
       {% load crispy_forms_tags %}
       <form method="post">
           {% crispy form %}
