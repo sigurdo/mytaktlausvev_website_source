@@ -65,6 +65,9 @@ class UserCustom(AbstractUser):
 
     objects = UserManagerCustom()
 
+    def __str__(self):
+        return self.get_name()
+
     def get_name(self):
         """Returns `name` if it isn't blank, else `username`."""
         return self.name or self.username

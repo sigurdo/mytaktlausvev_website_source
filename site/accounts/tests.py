@@ -94,6 +94,16 @@ class UserCustomTest(TestCase):
         user_b = UserFactory(username="te@st")
         self.assertNotEqual(user_a.slug, user_b.slug)
 
+    def test_to_str_name_exists(self):
+        """`__str__` should return name when it exists."""
+        user = UserFactory(name="Bob Bobbington")
+        self.assertEqual(str(user), user.name)
+
+    def test_to_str_name_not_exist(self):
+        """`__str__` should return username when name doesn't exist."""
+        user = UserFactory(name="")
+        self.assertEqual(str(user), user.username)
+
     def test_get_avatar_url_avatar_exists(self):
         """
         `get_avatar_url` should return the URL to
