@@ -2,7 +2,9 @@ from django.test import TestCase
 from django.contrib.auth import authenticate
 from django.urls import reverse
 from django.utils.text import slugify
+from django.templatetags.static import static
 from common.mixins import TestMixin
+from common.utils import test_image
 from .hashers import DrupalPasswordHasher
 from .models import UserCustom
 from .factories import UserFactory
@@ -91,6 +93,22 @@ class UserCustomTest(TestCase):
         user_a = UserFactory(username="test")
         user_b = UserFactory(username="te@st")
         self.assertNotEqual(user_a.slug, user_b.slug)
+
+    def test_get_avatar_url_avatar_exists(self):
+        """
+        `get_avatar_url` should return the URL to
+        the user's avatar when it exists.
+        """
+        user = UserFactory(avatar=test_image())
+        self.assertEqual(user.get_avatar_url(), user.avatar.url)
+
+    def test_get_avatar_url_avatar_not_exist(self):
+        """
+        `get_avatar_url` should return the default avatar
+        when the user's avatar doesn't exist.
+        """
+        user = UserFactory()
+        self.assertEqual(user.get_avatar_url(), static("accounts/default-avatar.svg"))
 
 
 class ProfileDetailTest(TestMixin, TestCase):

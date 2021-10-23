@@ -18,7 +18,7 @@ class UserAdminCustom(UserAdmin):
                     "address",
                     "home_page",
                     "student_card_number",
-                    "picture",
+                    "avatar",
                 )
             },
         ),

@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, UserManager
 from django.urls import reverse
+from django.templatetags.static import static
 from autoslug import AutoSlugField
 
 
@@ -33,7 +34,7 @@ class UserCustom(AbstractUser):
             "du vil ha tilgang til instrumentlageret. Nummeret er det som startar med EM."
         ),
     )
-    picture = models.ImageField(
+    avatar = models.ImageField(
         "profilbilde", upload_to="profile/", null=True, blank=True
     )
     # rfid - no-one uses this
@@ -67,6 +68,16 @@ class UserCustom(AbstractUser):
     def get_name(self):
         """Returns `name` if it isn't blank, else `username`."""
         return self.name or self.username
+
+    def get_avatar_url(self):
+        """
+        Returns a URL to the user's avatar when it exists,
+        else the default avatar.
+        """
+        if self.avatar:
+            return self.avatar.url
+        else:
+            return static("accounts/default-avatar.svg")
 
     def get_absolute_url(self):
         return reverse("profile", args=[self.slug])

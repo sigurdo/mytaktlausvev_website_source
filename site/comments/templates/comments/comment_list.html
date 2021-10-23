@@ -7,17 +7,15 @@
         <li id="comment-{{ comment.pk }}" class="mb-4">
             <article class="d-flex">
                 <div class="mx-2 my-1" style="width: 40px; max-height: 40px;">
-                    {% if comment.created_by.picture %}
-                        <a
-                            href="{% url 'profile' comment.created_by.slug %}"
-                            class="d-flex justify-content-center w-100 h-100"
-                        >
-                            <img
-                                src="{{ comment.created_by.picture.url }}"
-                                class="h-100"
-                            />
-                        </a>
-                    {% endif %}
+                    <a
+                        href="{% url 'profile' comment.created_by.slug %}"
+                        class="d-flex justify-content-center w-100 h-100"
+                    >
+                        <img
+                            src="{{ comment.created_by.get_avatar_url }}"
+                            class="object-fit-cover mw-100 mh-100"
+                        />
+                    </a>
                 </div>
 
                 <div class="p-margin-last-0 mx-1">
