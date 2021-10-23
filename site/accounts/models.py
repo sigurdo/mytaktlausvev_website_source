@@ -30,20 +30,18 @@ class UserCustom(AbstractUser):
         max_length=255,
         blank=True,
         help_text=(
-            "Nummeret på studentkortet ditt. Skriv det inn dersom "
-            "du vil ha tilgang til instrumentlageret. Nummeret er det som startar med EM."
+            "Nummeret på studentkortet ditt. Skriv det inn om "
+            "du vil ha tilgang til lageret. Nummeret er det som byrjar med EM."
         ),
     )
     avatar = models.ImageField(
         "profilbilde", upload_to="profile/", null=True, blank=True
     )
-    # rfid - no-one uses this
 
     class MembershipStatus(models.TextChoices):
         ACTIVE = "ACTIVE", "Aktiv"
         INACTIVE = "INACTIVE", "Inaktiv"
         RETIRED = "RETIRED", "Pensjonist"
-        SUPPORT = "SUPPORT", "Støttemedlem"
         HONORARY = "HONORARY", "Æresmedlem"
 
     membership_status = models.CharField(
@@ -69,12 +67,12 @@ class UserCustom(AbstractUser):
         return self.get_name()
 
     def get_name(self):
-        """Returns `name` if it isn't blank, else `username`."""
+        """Returns `name` if it exists, else `username`."""
         return self.name or self.username
 
     def get_avatar_url(self):
         """
-        Returns a URL to the user's avatar when it exists,
+        Returns a URL to the user's avatar if it exists,
         else the default avatar.
         """
         if self.avatar:

@@ -35,14 +35,24 @@ class UserCustomTest(TestCase):
             reverse("profile", args=[user.slug]),
         )
 
+    def test_to_str_name_exists(self):
+        """`__str__` should return name when it exists."""
+        user = UserFactory(name="Bob Bobbington")
+        self.assertEqual(str(user), user.name)
+
+    def test_to_str_name_not_exist(self):
+        """`__str__` should return username when name doesn't exist."""
+        user = UserFactory(name="")
+        self.assertEqual(str(user), user.username)
+
     def test_get_name_returns_name_if_exists(self):
-        """Should return `name` if it isn't blank."""
+        """Should return `name` if it exists."""
         user = UserFactory(name="Bob Bobbington")
         self.assertEqual(user.get_name(), user.name)
 
-    def test_get_name_returns_username_if_full_name_not_exist(self):
-        """Should return `username` if `name` is blank."""
-        user = UserFactory(username="bob68")
+    def test_get_name_returns_username_if_name_not_exist(self):
+        """Should return `username` if `name` doesn't exist."""
+        user = UserFactory(name="")
         self.assertEqual(user.get_name(), user.username)
 
     def test_default_membership_status_is_active(self):
@@ -93,16 +103,6 @@ class UserCustomTest(TestCase):
         user_a = UserFactory(username="test")
         user_b = UserFactory(username="te@st")
         self.assertNotEqual(user_a.slug, user_b.slug)
-
-    def test_to_str_name_exists(self):
-        """`__str__` should return name when it exists."""
-        user = UserFactory(name="Bob Bobbington")
-        self.assertEqual(str(user), user.name)
-
-    def test_to_str_name_not_exist(self):
-        """`__str__` should return username when name doesn't exist."""
-        user = UserFactory(name="")
-        self.assertEqual(str(user), user.username)
 
     def test_get_avatar_url_avatar_exists(self):
         """
