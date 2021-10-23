@@ -1,8 +1,9 @@
 {% extends "base.html" %}
+{% load utils %}
 
 {% block title %}
     {% if object %}
-        Rediger {{ object }}
+        Rediger {{ object | verbose_name }}
     {% else %}
         Lag Ny
     {% endif %}
@@ -11,7 +12,7 @@
 {% block page %}
     <h2>
         {% if object %}
-            Rediger {{ object }}
+            Rediger {{ object | verbose_name | title }} "{{ object }}"
         {% else %}
             Lag Ny
         {% endif %}
