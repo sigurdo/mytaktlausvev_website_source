@@ -1,42 +1,50 @@
-from django.contrib.auth.models import User
 from django.db import models
-from django.utils.translation import gettext_lazy as _
+from django.conf import settings
+from common.models import ArticleMixin
+from autoslug.fields import AutoSlugField
 
 
-class Event(models.Model):
-    """Model representing an event"""
-    title = models.CharField(max_length=255)
-    description = models.CharField(max_length=5000)
-    start_time = models.DateTimeField()
-    end_time = models.DateTimeField(default=None, blank=True, null=True)
-    owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+class Event(ArticleMixin):
+    """Model representing an event."""
 
-    def attendance_status(self):
-        return EventAttendance.objects.filter(event=self)
-
-    def attending(self):
-        return [a.person for a in self.attendance_status().filter(status=Attendance.ATTENDING)]
-
-    def not_attending(self):
-        return [a.person for a in self.attendance_status().filter(status=Attendance.NOT_ATTENDING)]
-
-    def might_be_attending(self):
-        return [a.person for a in self.attendance_status().filter(status=Attendance.MIGHT_BE_ATTENDING)]
+    slug = AutoSlugField(
+        verbose_name="slug",
+        populate_from="title",
+        unique=True,
+        editable=True,
+    )
+    start_time = models.DateTimeField("starttid")
+    end_time = models.DateTimeField("sluttid", default=None, blank=True, null=True)
 
     class Meta:
         ordering = ["start_time"]
+        verbose_name = "hending"
+        verbose_name_plural = "hendingar"
 
-    def __str__(self):
-        return self.title
 
-
-class Attendance(models.IntegerChoices):
-    NOT_ATTENDING = 0, _("Deltek ikkje")
-    MIGHT_BE_ATTENDING = 1, _("Deltek kanskje")
-    ATTENDING = 2, _("Deltek")
+class Attendance(models.TextChoices):
+    ATTENDING = "ATTENDING", "Deltek"
+    ATTENDING_MAYBE = "ATTENDING_MAYBE", "Deltek kanskje"
+    ATTENDING_NOT = "ATTENDING_NOT", "Deltek ikkje"
 
 
 class EventAttendance(models.Model):
-    person = models.ForeignKey(User, on_delete=models.CASCADE)
-    event = models.ForeignKey(Event, on_delete=models.CASCADE)
-    status = models.CharField(max_length=255, choices=Attendance.choices)
+    """Model representing a registered attendance for an event."""
+
+    person = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        verbose_name="person",
+        related_name="event_attendances",
+    )
+    event = models.ForeignKey(
+        Event,
+        on_delete=models.CASCADE,
+        verbose_name="hending",
+        related_name="attendances",
+    )
+    status = models.CharField("status", max_length=255, choices=Attendance.choices)
+
+    class Meta:
+        verbose_name = "hendingdeltaking"
+        verbose_name_plural = "hendingdeltakingar"
