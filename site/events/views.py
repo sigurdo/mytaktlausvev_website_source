@@ -1,15 +1,24 @@
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.http.response import Http404, HttpResponseForbidden
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
+from django.views.generic.edit import CreateView
+from django.views.generic import DetailView
 
 # Create your views here.
 
 
 from .models import Event, EventAttendance
-from .forms import CreateEventForm
+from .forms import CreateEventForm, EventForm
+
+
+class EventDetail(LoginRequiredMixin, DetailView):
+    """View for viewing an event."""
+
+    model = Event
 
 
 @login_required
@@ -24,16 +33,6 @@ def new_event(request):
     elif request.method == "GET":
         form = CreateEventForm()
         return render(request, "events/create_event.html", {"form": form})
-
-
-@login_required
-def event_details(request, event_id):
-    event = get_object_or_404(Event, id=event_id)
-    return render(
-        request,
-        "events/event_details.html",
-        {"event": event, "is_owner": event.owner.id == request.user.id},
-    )
 
 
 @login_required

@@ -1,0 +1,87 @@
+
+{% extends 'base.html' %}
+
+{% block title %}{{ event.title }}{% endblock title %}
+
+{% block page %}
+<article class="mt-4">
+    <header class="mb-4">
+        <h1>{{ event.title }}</h1>
+
+        <p class="fs-7">
+            Lagt ut av
+            <a href="{% url 'profile' event.created_by.slug %}">{{ event.created_by }}</a>
+            den
+            <time datetime="{{ event.submitted | date:"c" }}">{{ event.submitted | date }}</time>.
+
+            Sist redigert av
+            <a href="{% url 'profile' event.modified_by.slug %}">{{ event.modified_by }}</a>
+            den
+            <time datetime="{{ event.modified | date:"c" }}">{{ event.modified | date }}</time>.
+        </p>
+    </header>
+
+    <p>
+        <time datetime="{{ event.start_time | date:"c" }}">{{event.start_time | date:"l, j. F, Y - H:s"}}</time>
+    </p>
+    {% load markdown %}
+    {{ event.content | markdown }}
+
+{% comment %}
+    {% if perms.events.change_event %}
+        <footer class="my-4">
+            <a href="{% url 'events:update' event.path %}" class="btn btn-primary">
+                Rediger artikkel
+            </a>
+        </footer>
+    {% endif %} {% endcomment %}
+
+    {% load comments %}
+    {% comment_list event %}
+</article>
+{% endblock page %}
+
+{% comment %} {% extends "base.html" %}
+
+{% block page %}
+<h3>Hending: {{event.title}}</h3>
+<p class="text-muted">Laga av: {{event.owner}}</p>
+<p>Begynner: {{event.start_time | date:"d.m.Y H:s"}}</p>
+{% if event.end_time %}
+<p>Ferdig: {{event.end_time | date:"d.m.Y H:s"}}</p>
+{% endif %}
+<!--TODO: rich text editor-->
+<p>{{event.description}}</p>
+<div>
+    <form class="form-inline" action="{% url 'attend' event.id 2 %}" method="PATCH">
+        <button>Jeg vil delta!!</button>
+    </form>
+    <form class="form-inline" action="{% url 'attend' event.id 1 %}" method="PATCH">
+        <button>Jeg vet ikke helt......</button>
+    </form>
+    <form class="form-inline" action="{% url 'attend' event.id 0 %}" method="PATCH">
+        <button>Kanskje neste gang!!</button>
+    </form>
+</div>
+<h4>Deltek</h4>
+<ul>
+    {% for person in event.attending %}
+    <li>{{person}}</li>
+    {% endfor %}
+</ul>
+<h4>Deltek kanskje</h4>
+<ul>
+    {% for person in event.might_be_attending %}
+    <li>{{person}}</li>
+    {% endfor %}
+</ul>
+<h4>Deltek ikkje</h4>
+<ul>
+    {% for person in event.not_attending %}
+    <li>{{person}}</li>
+    {% endfor %}
+</ul>
+{% if is_owner %}
+<a href="{% url 'update_event' event.id %}" class="btn btn-primary">Rediger</a>
+{% endif %}
+{% endblock %} {% endcomment %}

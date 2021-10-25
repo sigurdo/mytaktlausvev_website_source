@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.urls import reverse
 from common.models import ArticleMixin
 from autoslug.fields import AutoSlugField
 
@@ -15,6 +16,9 @@ class Event(ArticleMixin):
     )
     start_time = models.DateTimeField("starttid")
     end_time = models.DateTimeField("sluttid", default=None, blank=True, null=True)
+
+    def get_absolute_url(self):
+        return reverse("events:detail", args=[self.slug])
 
     class Meta:
         ordering = ["start_time"]
