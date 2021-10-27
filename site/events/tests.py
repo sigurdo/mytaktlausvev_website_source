@@ -1,9 +1,13 @@
 from django.test import TestCase
+from django.db import IntegrityError
+from django.urls import reverse
 from django.utils.text import slugify
-from .factories import EventFactory
+from common.mixins import TestMixin
+from events.models import Attendance
+from .factories import EventAttendanceFactory, EventFactory
 
 
-class ArticleTestCase(TestCase):
+class EventTestCase(TestCase):
     def setUp(self):
         self.event = EventFactory()
 
@@ -30,3 +34,22 @@ class ArticleTestCase(TestCase):
             title="Title that is very different from the slug", slug=slug
         )
         self.assertEqual(event.slug, slug)
+
+
+class EventAttendanceTestCase(TestCase):
+    def test_can_only_register_attendance_once(self):
+        """Should only be able to register attendance for an event once."""
+        attendance = EventAttendanceFactory()
+        with self.assertRaises(IntegrityError):
+            EventAttendanceFactory(
+                event=attendance.event,
+                person=attendance.person,
+                status=Attendance.ATTENDING_NOT,
+            )
+
+
+class EventDetailTestCase(TestMixin, TestCase):
+    def test_requires_login(self):
+        """Should require login."""
+        event = EventFactory()
+        self.assertLoginRequired(reverse("events:detail", args=[event.slug]))
