@@ -15,7 +15,7 @@ def dashboard(request):
             "number": random.randint(0, 10),
             "quotes": Quote.objects.all()[:2],
             "events": Event.objects.filter(
-                start_time__gte=(datetime.now() - timedelta(1)).date()
+                start_time__gte=(datetime.now() - timedelta(1))
             )[:10],
         },
     )

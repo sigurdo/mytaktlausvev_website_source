@@ -6,27 +6,17 @@
 	<div class="col-md">
 		<div class="card p-3 mb-5 shadow-sm">
 			<div class="card-body">
-				<h3>This is some text within a card body.</h3>
-			</div>
-		</div>
-	</div>
-	<div class="col-md">
-		<div class="card p-3 mb-5 shadow-sm">
-			<div class="card-body">
-				This is some text within a card body.
-			</div>
-		</div>
-	</div>
-</div>
-<div class="row">
-	<div class="col-md">
-		<div class="card p-3 mb-5 shadow-sm">
-			<div class="card-body">
-				<h4>Hendingar</h4>
+				<h2>Hendingar</h2>
 				<ul>
 					{% for event in events %}
-					<li><a href="{% url 'event_details' event.id %}">{{event.title}} -
-							{{event.start_time | date:"d.m.Y H:s"}}</a></li>
+					<li>
+						<a href="{% url 'events:detail' event.slug %}">
+							{{event.title}}
+						</a>
+						<div>
+							{{event.start_time | date:"d.m.Y - H:s"}}
+						</div>
+					</li>
 					{% endfor %}
 				</ul>
 			</div>
@@ -35,7 +25,7 @@
 	<div class="col-md">
 		<div class="card p-3 mb-5 shadow-sm">
 			<div class="card-body">
-				<h4>Gullkorn</h4>
+				<h2>Gullkorn</h2>
 				{% for q in quotes %}
 				<div class="row">
 					<div class="col-lg-6">
@@ -43,6 +33,24 @@
 					</div>
 				</div>
 				{% endfor %}
+			</div>
+		</div>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md">
+		<div class="card p-3 mb-5 shadow-sm">
+			<div class="card-body">
+				<h2>Title</h2>
+				<p>This is some text within a card body.</p>
+			</div>
+		</div>
+	</div>
+	<div class="col-md">
+		<div class="card p-3 mb-5 shadow-sm">
+			<div class="card-body">
+				<h2>Title</h2>
+				<p>This is some text within a card body.</p>
 			</div>
 		</div>
 	</div>
