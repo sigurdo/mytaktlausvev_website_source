@@ -5,7 +5,7 @@ from django.http import HttpResponseRedirect
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
-from django.views.generic.edit import CreateView
+from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic import DetailView
 
 # Create your views here.
@@ -22,7 +22,7 @@ class EventDetail(LoginRequiredMixin, DetailView):
 
 
 class EventCreate(PermissionRequiredMixin, CreateView):
-    """View for creating a article."""
+    """View for creating an event."""
 
     model = Event
     form_class = EventForm
@@ -31,6 +31,19 @@ class EventCreate(PermissionRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.created_by = self.request.user
+        form.instance.modified_by = self.request.user
+        return super().form_valid(form)
+
+
+class EventUpdate(PermissionRequiredMixin, UpdateView):
+    """View for updating an event."""
+
+    model = Event
+    form_class = EventForm
+    template_name = "common/form.html"
+    permission_required = "events.change_event"
+
+    def form_valid(self, form):
         form.instance.modified_by = self.request.user
         return super().form_valid(form)
 

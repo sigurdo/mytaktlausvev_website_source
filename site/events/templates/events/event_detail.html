@@ -31,14 +31,13 @@
     {% load markdown %}
     {{ event.content | markdown }}
 
-{% comment %}
     {% if perms.events.change_event %}
         <footer class="my-4">
-            <a href="{% url 'events:update' event.path %}" class="btn btn-primary">
+            <a href="{% url 'events:update' event.slug %}" class="btn btn-primary">
                 Rediger artikkel
             </a>
         </footer>
-    {% endif %} {% endcomment %}
+    {% endif %}
 
     {% load comments %}
     {% comment_list event %}
