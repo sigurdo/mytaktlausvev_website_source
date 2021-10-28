@@ -83,6 +83,9 @@ class Part(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta():
+        ordering = ["pdf", "fromPage", "toPage", "name"]
+
 
 class Instrument(models.Model):
     """Model representing an instrument"""

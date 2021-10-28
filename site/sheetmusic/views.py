@@ -1,15 +1,20 @@
 """ Views for sheetmusic """
 
+# Other python packages
 import django
 import os
 import io
-from django.views.generic.detail import SingleObjectMixin
+from django.views.generic.base import TemplateResponseMixin
 import yaml
 import threading
 import multiprocessing
 import random
 from typing import Any, Dict, Optional, Type
+from sheatless import processUploadedPdf
+from PyPDF2 import PdfFileReader, PdfFileWriter
 
+# Django packages
+from django.views.generic.detail import SingleObjectMixin
 from django.shortcuts import render
 from django.http import HttpResponseRedirect, HttpRequest, HttpResponse
 from django.core.paginator import Paginator
@@ -18,13 +23,16 @@ from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.db import transaction, models
 from django.forms import BaseModelForm, Form
-
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import View, DetailView, ListView
-from django.views.generic.edit import CreateView, FormView, UpdateView, DeleteView
+from django.views.generic.edit import CreateView, FormView, ProcessFormView, UpdateView, DeleteView, FormMixin
 from django.utils.decorators import classonlymethod
-
 from django.contrib.auth.models import User
+
+# Modules from other apps
+
+
+# Modules from this app
 from .models import Score, Pdf, Part, UsersPreferredPart
 from .forms import (
     ScoreCreateForm,
@@ -35,10 +43,8 @@ from .forms import (
     EditPartFormSetHelper,
     PartCreateForm,
 )
+from . import forms
 from .utils import convertPagesToInputFormat, convertInputFormatToPages
-
-from sheatless import processUploadedPdf
-from PyPDF2 import PdfFileReader, PdfFileWriter
 
 
 # Simplifies management stuff like deleting output files from the code editor on the host system.
@@ -115,50 +121,44 @@ class ScoreDelete(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy("sheetmusic")
 
 
-class PartsUpdate(LoginRequiredMixin, UpdateView):
+class PartsUpdate(LoginRequiredMixin, FormMixin, SingleObjectMixin, TemplateResponseMixin, ProcessFormView):
     model = Score
     form_class = EditPartFormSet
     template_name = "sheetmusic/parts_update.html"
 
     def get_success_url(self) -> str:
-        return reverse("sheetmusic")
+        return reverse("editScoreParts", args=[self.get_object().pk])
 
     def get_form_kwargs(self) -> Dict[str, Any]:
-        # We have to override get_form_kwargs() to make UpdateView work with our formset.
-        # self.get_form_kwargs() is called by self.get_form(), which is called by self.post().
-        # All these methods are inherited by several parent classes, please read the django source code for details.
+        # We have to override get_form_kwargs() to restrict the queryset of the formset to only
+        # the parts that are related to the current score.
         kwargs = super().get_form_kwargs()
-        kwargs.pop("instance")
         kwargs["queryset"] = Part.objects.filter(
-            pdf__in=self.get_object().pdfs.all()
-        ).order_by("pdf", "fromPage", "toPage", "name")
+            pdf__score=self.get_object()
+        )
         return kwargs
+    
+    def get_form(self, **kwargs) -> BaseModelForm:
+        # Here we have to modify the queryset of each subform of the formset
+        formset = super().get_form(**kwargs)
+        for form in formset.forms:
+            form.fields["pdf"].queryset = self.get_object().pdfs
+        return formset
+    
+    def form_valid(self, form):
+        # We must explicitly save the form because it is not done automatically by any ancestors
+        form.save()
+        return super().form_valid(form)
+
+    def get(self, *args, **kwargs):
+        # We must set self.object here to be compatible with SingleObjectMixin
+        self.object = self.get_object()
+        return super().get(*args, **kwargs)
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
-        # We have to override get_context_data() to inject some custom data for our rendering.
-        parts = Part.objects.filter(pdf__in=self.get_object().pdfs.all()).order_by(
-            "pdf", "fromPage", "toPage", "name"
-        )
-        context = super().get_context_data(**kwargs)
-        context["helper"] = EditPartFormSetHelper
-        context["extraData"] = [
-            {
-                "pdf": {
-                    "url": part.pdf.file.url,
-                    "name": os.path.basename(part.pdf.file.name),
-                    "page": part.fromPage,
-                },
-                "part": {"pk": part.pk, "displayname": part.name},
-            }
-            for part in parts
-        ]
-        form = PartCreateForm()
-        form.helper.form_action = reverse(
-            "createScorePart", args=[self.get_object().pk]
-        )
-        form.fields["pdf"].queryset = Pdf.objects.filter(score=self.get_object().pk)
-        context.update(createForm=form)
-        return context
+        # Here we have to inject the formset helper
+        kwargs["helper"] = EditPartFormSetHelper
+        return super().get_context_data(**kwargs)
 
 
 class PdfsUpdate(LoginRequiredMixin, FormView):
