@@ -22,7 +22,11 @@
     </header>
 
     <p>
-        <time datetime="{{ event.start_time | date:"c" }}">{{event.start_time | date:"l, j. F, Y - H:s"}}</time>
+        <time datetime="{{ event.start_time | date:"c" }}">{{event.start_time | date:"l, j. F, Y - H:i"}}</time>
+        {% if event.end_time %}
+        til
+        <time datetime="{{ event.end_time | date:"c" }}">{{event.end_time | date:"l, j. F, Y - H:i"}}</time>
+        {% endif %}
     </p>
     {% load markdown %}
     {{ event.content | markdown }}
