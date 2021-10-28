@@ -21,6 +21,20 @@ class EventDetail(LoginRequiredMixin, DetailView):
     model = Event
 
 
+class EventCreate(PermissionRequiredMixin, CreateView):
+    """View for creating a article."""
+
+    model = Event
+    form_class = EventForm
+    template_name = "common/form.html"
+    permission_required = "events.add_event"
+
+    def form_valid(self, form):
+        form.instance.created_by = self.request.user
+        form.instance.modified_by = self.request.user
+        return super().form_valid(form)
+
+
 @login_required
 def new_event(request):
     if request.method == "POST":

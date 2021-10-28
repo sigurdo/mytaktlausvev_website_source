@@ -23,3 +23,14 @@ class CreateEventForm(forms.ModelForm):
             "end_time": forms.DateTimeInput(attrs={"type": "datetime"}),
             "description": forms.Textarea(),
         }
+
+
+class EventForm(forms.ModelForm):
+    """Form for creating and editing events."""
+
+    helper = FormHelper()
+    helper.add_input(Submit("submit", "Lag/rediger hending"))
+
+    class Meta:
+        model = Event
+        fields = ["title", "start_time", "end_time", "content"]
