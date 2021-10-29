@@ -67,7 +67,9 @@ class FormAndFormsetUpdateView(UpdateView):
             kwargs["formset_helper"] = self.formset_helper
         return super().get_context_data(**kwargs)
 
-    def post(self, request: http.HttpRequest, *args: str, **kwargs: Any) -> http.HttpResponse:
+    def post(
+        self, request: http.HttpRequest, *args: str, **kwargs: Any
+    ) -> http.HttpResponse:
         self.object = self.get_object()
         form = self.get_form()
         if form.is_valid():

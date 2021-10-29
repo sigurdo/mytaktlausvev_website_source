@@ -25,7 +25,14 @@ from django.db import transaction, models
 from django.forms import BaseModelForm, Form
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import View, DetailView, ListView
-from django.views.generic.edit import CreateView, FormView, ProcessFormView, UpdateView, DeleteView, FormMixin
+from django.views.generic.edit import (
+    CreateView,
+    FormView,
+    ProcessFormView,
+    UpdateView,
+    DeleteView,
+    FormMixin,
+)
 from django.utils.decorators import classonlymethod
 from django.contrib.auth.models import User
 
@@ -41,6 +48,9 @@ from .forms import (
     EditPartForm,
     EditPartFormSet,
     EditPartFormSetHelper,
+    EditPdfForm,
+    EditPdfFormset,
+    EditPdfFormsetHelper,
     PartCreateForm,
 )
 from . import forms
@@ -81,38 +91,7 @@ class ScoreUpdate(LoginRequiredMixin, UpdateView):
     form_class = EditScoreForm
 
     def get_success_url(self) -> str:
-        return reverse("sheetmusic")
-
-    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
-        pdfs = Pdf.objects.filter(score=self.get_object())
-        parts = []
-        for pdf in pdfs:
-            pdf.file.displayname = os.path.basename(pdf.file.name)
-            parts.extend(
-                Part.objects.filter(pdf=pdf).order_by("fromPage", "toPage", "name")
-            )
-        print("parts:", parts)
-        formset = EditPartFormSet(
-            queryset=Part.objects.filter(pdf__in=pdfs).order_by(
-                "fromPage", "toPage", "name"
-            )
-        )
-        context = super().get_context_data(**kwargs)
-        context["formset"] = formset
-        context["helper"] = EditPartFormSetHelper
-        context["extraData"] = [
-            {
-                "pdf": {
-                    "url": part.pdf.file.url,
-                    "name": os.path.basename(part.pdf.file.name),
-                    "page": part.fromPage,
-                },
-                "part": {"pk": part.pk, "displayname": part.name},
-            }
-            for part in parts
-        ]
-        context["pdfs"] = pdfs
-        return context
+        return reverse("editScore", args=[self.get_object().pk])
 
 
 class ScoreDelete(LoginRequiredMixin, DeleteView):
@@ -121,7 +100,13 @@ class ScoreDelete(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy("sheetmusic")
 
 
-class PartsUpdate(LoginRequiredMixin, FormMixin, SingleObjectMixin, TemplateResponseMixin, ProcessFormView):
+class PartsUpdate(
+    LoginRequiredMixin,
+    FormMixin,
+    SingleObjectMixin,
+    TemplateResponseMixin,
+    ProcessFormView,
+):
     model = Score
     form_class = EditPartFormSet
     template_name = "sheetmusic/parts_update.html"
@@ -133,18 +118,16 @@ class PartsUpdate(LoginRequiredMixin, FormMixin, SingleObjectMixin, TemplateResp
         # We have to override get_form_kwargs() to restrict the queryset of the formset to only
         # the parts that are related to the current score.
         kwargs = super().get_form_kwargs()
-        kwargs["queryset"] = Part.objects.filter(
-            pdf__score=self.get_object()
-        )
+        kwargs["queryset"] = Part.objects.filter(pdf__score=self.get_object())
         return kwargs
-    
+
     def get_form(self, **kwargs) -> BaseModelForm:
         # Here we have to modify the queryset of each subform of the formset
         formset = super().get_form(**kwargs)
         for form in formset.forms:
             form.fields["pdf"].queryset = self.get_object().pdfs
         return formset
-    
+
     def form_valid(self, form):
         # We must explicitly save the form because it is not done automatically by any ancestors
         form.save()
@@ -161,26 +144,57 @@ class PartsUpdate(LoginRequiredMixin, FormMixin, SingleObjectMixin, TemplateResp
         return super().get_context_data(**kwargs)
 
 
-class PdfsUpdate(LoginRequiredMixin, FormView):
-    form_class = UploadPdfForm
+class PdfsUpdate(
+    LoginRequiredMixin,
+    FormMixin,
+    SingleObjectMixin,
+    TemplateResponseMixin,
+    ProcessFormView,
+):
+    model = Score
+    form_class = EditPdfFormset
     template_name = "sheetmusic/pdfs_update.html"
-    success_url = reverse_lazy("sheetmusic")
+    context_object_name = "score"
+
+    def get_success_url(self) -> str:
+        return reverse("editScorePdfs", args=[self.get_object().pk])
+
+    def get_form_kwargs(self) -> Dict[str, Any]:
+        # We have to override get_form_kwargs() to restrict the queryset of the formset to only
+        # the parts that are related to the current score.
+        kwargs = super().get_form_kwargs()
+        kwargs["queryset"] = self.get_object().pdfs.all()
+        return kwargs
+
+    def form_valid(self, form):
+        # We must explicitly save the form because it is not done automatically by any ancestors
+        form.save()
+        return super().form_valid(form)
+
+    def get(self, *args, **kwargs):
+        # We must set self.object here to be compatible with SingleObjectMixin
+        self.object = self.get_object()
+        return super().get(*args, **kwargs)
+
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        kwargs["helper"] = EditPdfFormsetHelper()
+        return super().get_context_data(**kwargs)
+
+
+class PdfsUpload(LoginRequiredMixin, FormView):
+    form_class = UploadPdfForm
+    template_name = "sheetmusic/pdfs_upload.html"
     context_object_name = "score"
 
     def get_object(self):
         return Score.objects.get(pk=self.kwargs["pk"])
 
     def get_success_url(self) -> str:
-        return reverse("editScorePdfs", args=[self.get_object().pk])
+        return reverse("PdfsUpload", args=[self.get_object().pk])
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-        context[self.context_object_name] = self.get_object()
-        pdfs = Pdf.objects.filter(score=self.get_object())
-        for pdf in pdfs:
-            pdf.file.displayname = os.path.basename(pdf.file.name)
-        context["pdfs"] = pdfs
-        return context
+        kwargs[self.context_object_name] = self.get_object()
+        return super().get_context_data(**kwargs)
 
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
         files = self.request.FILES.getlist("files")

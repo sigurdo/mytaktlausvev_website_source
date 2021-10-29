@@ -41,7 +41,7 @@ class Pdf(models.Model):
             )
         ],
     )
-    processing = models.BooleanField(default=False)
+    processing = models.BooleanField(default=False, editable=False)
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -83,7 +83,7 @@ class Part(models.Model):
     def __str__(self):
         return self.name
 
-    class Meta():
+    class Meta:
         ordering = ["pdf", "fromPage", "toPage", "name"]
 
 
