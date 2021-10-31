@@ -29,6 +29,6 @@ Pygments~=2.10
 pyyaml~=5.4
 django-upload-validator~=1.1
 # pytesseract also requires tesseract: https://github.com/tesseract-ocr/tesseract/wiki
-sheatless~=0.0
+sheatless~=0.0.12
 PyPDF2~=1.26.0
 fontawesome-free~=5.15.4
