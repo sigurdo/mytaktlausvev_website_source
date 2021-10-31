@@ -20,6 +20,10 @@ class EventDetail(LoginRequiredMixin, DetailView):
 
     model = Event
 
+    def get_queryset(self):
+        year = self.kwargs.get("year")
+        return super().get_queryset().filter(start_time__year=year)
+
 
 class EventCreate(PermissionRequiredMixin, CreateView):
     """View for creating an event."""
@@ -28,6 +32,10 @@ class EventCreate(PermissionRequiredMixin, CreateView):
     form_class = EventForm
     template_name = "common/form.html"
     permission_required = "events.add_event"
+
+    def get_queryset(self):
+        year = self.kwargs.get("year")
+        return super().get_queryset().filter(start_time__year=year)
 
     def form_valid(self, form):
         form.instance.created_by = self.request.user
@@ -42,6 +50,10 @@ class EventUpdate(PermissionRequiredMixin, UpdateView):
     form_class = EventForm
     template_name = "common/form.html"
     permission_required = "events.change_event"
+
+    def get_queryset(self):
+        year = self.kwargs.get("year")
+        return super().get_queryset().filter(start_time__year=year)
 
     def form_valid(self, form):
         form.instance.modified_by = self.request.user

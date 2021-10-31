@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.test import TestCase
 from django.db import IntegrityError
 from django.urls import reverse
@@ -13,6 +14,15 @@ class EventTestCase(TestCase):
     def setUp(self):
         self.event = EventFactory()
 
+    def test_get_absolute_url(self):
+        """Should link to the article's detail page."""
+        self.assertEqual(
+            self.event.get_absolute_url(),
+            reverse(
+                "events:detail", args=[self.event.start_time.year, self.event.slug]
+            ),
+        )
+
     def test_creates_slug_from_title_automatically(self):
         """Should create a slug from the title automatically during creation."""
         self.assertEqual(self.event.slug, slugify(self.event.title))
@@ -24,10 +34,21 @@ class EventTestCase(TestCase):
         self.event.save()
         self.assertEqual(self.event.slug, slug_before)
 
-    def test_creates_unique_slugs(self):
-        """Should create unique slugs even if titles match."""
-        event_same_title = EventFactory(title=self.event.title)
-        self.assertNotEqual(self.event.slug, event_same_title.slug)
+    def test_creates_unique_slugs_for_events_with_same_year(self):
+        """Should create unique slugs for events with the same year."""
+        event_same_year = EventFactory(
+            title=self.event.title,
+            start_time=timezone.make_aware(datetime(self.event.start_time.year, 1, 1)),
+        )
+        self.assertNotEqual(self.event.slug, event_same_year.slug)
+
+    def test_events_with_different_parents_can_have_equal_slugs(self):
+        """Should allow events with different years to have equal slugs."""
+        event_different_year = EventFactory(
+            title=self.event.title,
+            start_time=timezone.make_aware(datetime(1900, 1, 1)),
+        )
+        self.assertEqual(self.event.slug, event_different_year.slug)
 
     def test_does_not_override_provided_slug(self):
         """Should not override the slug if provided during creation."""
@@ -54,7 +75,9 @@ class EventDetailTestCase(TestMixin, TestCase):
     def test_requires_login(self):
         """Should require login."""
         event = EventFactory()
-        self.assertLoginRequired(reverse("events:detail", args=[event.slug]))
+        self.assertLoginRequired(
+            reverse("events:detail", args=[event.start_time.year, event.slug])
+        )
 
 
 class EventCreateTestCase(TestMixin, TestCase):

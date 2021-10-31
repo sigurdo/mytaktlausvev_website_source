@@ -33,7 +33,7 @@
 
     {% if perms.events.change_event %}
         <footer class="my-4">
-            <a href="{% url 'events:update' event.slug %}" class="btn btn-primary">
+            <a href="{% url 'events:update' event.start_time.year event.slug %}" class="btn btn-primary">
                 Rediger artikkel
             </a>
         </footer>

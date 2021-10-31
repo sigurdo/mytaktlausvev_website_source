@@ -10,7 +10,7 @@
 				<ul>
 					{% for event in events %}
 					<li>
-						<a href="{% url 'events:detail' event.slug %}">
+						<a href="{% url 'events:detail' event.start_time.year event.slug %}">
 							{{event.title}}
 						</a>
 						<div>

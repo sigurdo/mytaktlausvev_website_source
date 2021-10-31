@@ -8,17 +8,18 @@ from autoslug.fields import AutoSlugField
 class Event(ArticleMixin):
     """Model representing an event."""
 
-    slug = AutoSlugField(
-        verbose_name="slug",
-        populate_from="title",
-        unique=True,
-        editable=True,
-    )
     start_time = models.DateTimeField("starttid")
     end_time = models.DateTimeField("sluttid", default=None, blank=True, null=True)
 
+    slug = AutoSlugField(
+        verbose_name="slug",
+        populate_from="title",
+        unique_with=("title", "start_time__year"),
+        editable=True,
+    )
+
     def get_absolute_url(self):
-        return reverse("events:detail", args=[self.slug])
+        return reverse("events:detail", args=[self.start_time.year, self.slug])
 
     class Meta:
         ordering = ["start_time"]
