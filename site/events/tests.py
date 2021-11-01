@@ -110,12 +110,16 @@ class EventUpdateTestCase(TestMixin, TestCase):
 
     def test_requires_login(self):
         """Should require login."""
-        self.assertLoginRequired(reverse("events:update", args=[self.event.slug]))
+        self.assertLoginRequired(
+            reverse("events:update", args=[self.event.start_time.year, self.event.slug])
+        )
 
     def test_requires_permission(self):
         """Should require the `change_event` permission."""
         self.assertPermissionRequired(
-            reverse("events:update", args=[self.event.slug]),
+            reverse(
+                "events:update", args=[self.event.start_time.year, self.event.slug]
+            ),
             "events.change_event",
         )
 
@@ -123,7 +127,9 @@ class EventUpdateTestCase(TestMixin, TestCase):
         """Should not change `created_by` when updating event."""
         self.client.force_login(SuperUserFactory())
         self.client.post(
-            reverse("events:update", args=[self.event.slug]),
+            reverse(
+                "events:update", args=[self.event.start_time.year, self.event.slug]
+            ),
             {"title": "A Title", "start_time": timezone.now(), "content": "Event text"},
         )
 
@@ -136,7 +142,9 @@ class EventUpdateTestCase(TestMixin, TestCase):
         user = SuperUserFactory()
         self.client.force_login(user)
         self.client.post(
-            reverse("events:update", args=[self.event.slug]),
+            reverse(
+                "events:update", args=[self.event.start_time.year, self.event.slug]
+            ),
             {"title": "A Title", "start_time": timezone.now(), "content": "Event text"},
         )
 
