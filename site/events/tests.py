@@ -105,21 +105,21 @@ class EventCreateTestCase(TestMixin, TestCase):
 
 
 class EventUpdateTestCase(TestMixin, TestCase):
+    def get_url(self, event):
+        """Returns the URL for the event update view for `event`."""
+        return reverse("events:update", args=[event.start_time.year, event.slug])
+
     def setUp(self):
         self.event = EventFactory()
 
     def test_requires_login(self):
         """Should require login."""
-        self.assertLoginRequired(
-            reverse("events:update", args=[self.event.start_time.year, self.event.slug])
-        )
+        self.assertLoginRequired(self.get_url(self.event))
 
     def test_requires_permission(self):
         """Should require the `change_event` permission."""
         self.assertPermissionRequired(
-            reverse(
-                "events:update", args=[self.event.start_time.year, self.event.slug]
-            ),
+            self.get_url(self.event),
             "events.change_event",
         )
 
@@ -127,9 +127,7 @@ class EventUpdateTestCase(TestMixin, TestCase):
         """Should not change `created_by` when updating event."""
         self.client.force_login(SuperUserFactory())
         self.client.post(
-            reverse(
-                "events:update", args=[self.event.start_time.year, self.event.slug]
-            ),
+            self.get_url(self.event),
             {"title": "A Title", "start_time": timezone.now(), "content": "Event text"},
         )
 
@@ -142,9 +140,7 @@ class EventUpdateTestCase(TestMixin, TestCase):
         user = SuperUserFactory()
         self.client.force_login(user)
         self.client.post(
-            reverse(
-                "events:update", args=[self.event.start_time.year, self.event.slug]
-            ),
+            self.get_url(self.event),
             {"title": "A Title", "start_time": timezone.now(), "content": "Event text"},
         )
 
