@@ -1,3 +1,4 @@
+from http import HTTPStatus
 from datetime import datetime
 from django.test import TestCase
 from django.db import IntegrityError
@@ -5,8 +6,8 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.text import slugify
 from common.mixins import TestMixin
-from accounts.factories import SuperUserFactory
-from events.models import Event, Attendance
+from accounts.factories import SuperUserFactory, UserFactory
+from events.models import Event, Attendance, EventAttendance
 from .factories import EventAttendanceFactory, EventFactory
 
 
@@ -146,3 +147,48 @@ class EventUpdateTestCase(TestMixin, TestCase):
 
         self.event.refresh_from_db()
         self.assertEqual(self.event.modified_by, user)
+
+
+class EventAttendanceCreateTestCase(TestMixin, TestCase):
+    def get_url(self, event):
+        """Returns the URL for the event attendance create view for `event`."""
+        return reverse("events:attendance", args=[event.start_time.year, event.slug])
+
+    def setUp(self):
+        self.event = EventFactory()
+        self.event_data = {"status": Attendance.ATTENDING_MAYBE}
+
+    def test_requires_login(self):
+        """Should require login."""
+        self.assertLoginRequired(self.get_url(self.event))
+
+    def test_get_not_allowed(self):
+        """Should not allow GET requests."""
+        self.client.force_login(UserFactory())
+        response = self.client.get(self.get_url(self.event))
+        self.assertEqual(response.status_code, HTTPStatus.METHOD_NOT_ALLOWED)
+
+    def test_sets_person_to_logged_in_user(self):
+        """Should set `person` to the logged in user."""
+        user = UserFactory()
+        self.client.force_login(user)
+        self.client.post(self.get_url(self.event), self.event_data)
+
+        self.assertEqual(EventAttendance.objects.count(), 1)
+        attendance = EventAttendance.objects.last()
+        self.assertEqual(attendance.person, user)
+
+    def test_sets_event_based_on_url(self):
+        """Should set `event` based on URL."""
+        self.client.force_login(UserFactory())
+        self.client.post(self.get_url(self.event), self.event_data)
+
+        self.assertEqual(EventAttendance.objects.count(), 1)
+        attendance = EventAttendance.objects.last()
+        self.assertEqual(attendance.event, self.event)
+
+    def test_success_url_is_event(self):
+        """Success URL should be the event."""
+        self.client.force_login(UserFactory())
+        response = self.client.post(self.get_url(self.event), self.event_data)
+        self.assertRedirects(response, self.event.get_absolute_url())

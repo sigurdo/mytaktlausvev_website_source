@@ -11,8 +11,8 @@ from django.views.generic import DetailView
 # Create your views here.
 
 
-from .models import Event, EventAttendance
-from .forms import CreateEventForm, EventForm
+from .models import Attendance, Event, EventAttendance
+from .forms import CreateEventForm, EventAttendanceForm, EventForm
 
 
 class EventDetail(LoginRequiredMixin, DetailView):
@@ -23,6 +23,21 @@ class EventDetail(LoginRequiredMixin, DetailView):
     def get_queryset(self):
         year = self.kwargs.get("year")
         return super().get_queryset().filter(start_time__year=year)
+
+    def get_form_attendance(self):
+        form = EventAttendanceForm(initial={"status": Attendance.ATTENDING})
+        form.helper.form_action = reverse(
+            "events:attendance", args=[self.object.start_time.year, self.object.slug]
+        )
+        return form
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["form_attendance"] = self.get_form_attendance()
+        context["is_registered"] = EventAttendance.objects.filter(
+            event=self.object, person=self.request.user
+        ).exists()
+        return context
 
 
 class EventCreate(PermissionRequiredMixin, CreateView):
@@ -58,6 +73,26 @@ class EventUpdate(PermissionRequiredMixin, UpdateView):
     def form_valid(self, form):
         form.instance.modified_by = self.request.user
         return super().form_valid(form)
+
+
+class EventAttendanceCreate(LoginRequiredMixin, CreateView):
+    """View for registering event attendance."""
+
+    model = EventAttendance
+    form_class = EventAttendanceForm
+    template_name = "common/form.html"
+    http_method_names = ["post", "put"]
+
+    def form_valid(self, form):
+        form.instance.person = self.request.user
+        form.instance.event = Event.objects.get(
+            start_time__year=self.kwargs.get("year"),
+            slug=self.kwargs.get(self.slug_url_kwarg),
+        )
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return self.object.event.get_absolute_url()
 
 
 @login_required
