@@ -1,0 +1,25 @@
+{% if attendances %}
+    <section>
+        <h2 class="mb-3">{{ title }}</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Namn</th>
+                    <th>Nummer</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for attendance in attendances %}
+                <tr>
+                    <td>
+                        <a href="{{ attendance.person.get_absolute_url }}">
+                            {{ attendance.person.get_name }}
+                        </a>
+                    </td>
+                    <td>{{ attendance.person.phone_number }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+{% endif %}

@@ -18,6 +18,15 @@ class Event(ArticleMixin):
         editable=True,
     )
 
+    def attending(self):
+        return self.attendances.filter(status=Attendance.ATTENDING)
+
+    def attending_maybe(self):
+        return self.attendances.filter(status=Attendance.ATTENDING_MAYBE)
+
+    def attending_not(self):
+        return self.attendances.filter(status=Attendance.ATTENDING_NOT)
+
     def get_absolute_url(self):
         return reverse("events:detail", args=[self.start_time.year, self.slug])
 

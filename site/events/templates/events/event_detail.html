@@ -34,10 +34,14 @@
     {% if perms.events.change_event %}
         <footer class="my-4">
             <a href="{% url 'events:update' event.start_time.year event.slug %}" class="btn btn-primary">
-                Rediger artikkel
+                Rediger hending
             </a>
         </footer>
     {% endif %}
+
+    {% include "events/attendances.html" with title="Deltek" attendances=event.attending only %}
+    {% include "events/attendances.html" with title="Deltek kanskje" attendances=event.attending_maybe only %}
+    {% include "events/attendances.html" with title="Deltek ikkje" attendances=event.attending_not only %}
 
     {% load comments %}
     {% comment_list event %}
