@@ -1,7 +1,7 @@
 {% extends './base.html' %}
 {% block content %}
 
-<h1> {{ object.title }} <a href="{% url 'editScore' object.pk %}" class="float-right h6"> rediger </a></h1>
+<h1> {{ object.title }} <a href="{% url 'ScoreUpdate' object.pk %}" class="float-right h6"> rediger </a></h1>
 
 <h2> Favorittstemmer </h2>
 
@@ -43,16 +43,19 @@
 {% endfor %}
 </table>
 
+{% endblock %}
+
 {% block js %}
     {% load static %}
     <script src="{% static 'fontawesome_free/js/all.min.js' %}"></script>
-    <script src="{% static 'notar/fetching.js' %}"></script>
+    <script src="{% static 'common/js/fetching.js' %}"></script>
     <script>
+        const fetchUsersPreferredPartUrl = '{% url 'fetchUsersPreferredPart' %}';
         let favorites = document.querySelectorAll('.favorite');
         for (let i = 0; i < favorites.length; i++) {
             favorites[i].addEventListener('click', ev => {
                 ev.preventDefault();
-                fetchWithCsrf('POST', '/notar/fetch/userspreferredpart', { part_pk: ev.target.closest('a').getAttribute('data-pk') }).then(async response => {
+                fetchWithCsrf('POST', fetchUsersPreferredPartUrl, { part_pk: ev.target.closest('a').getAttribute('data-pk') }).then(async response => {
                     if (response.ok) {
                         location.reload();
                     }
@@ -67,7 +70,7 @@
         for (let i = 0; i < unfavorites.length; i++) {
             unfavorites[i].addEventListener('click', ev => {
                 ev.preventDefault();
-                fetchWithCsrf('DELETE', '/notar/fetch/userspreferredpart', { part_pk: ev.target.closest('a').getAttribute('data-pk') }).then(async response => {
+                fetchWithCsrf('DELETE', fetchUsersPreferredPartUrl, { part_pk: ev.target.closest('a').getAttribute('data-pk') }).then(async response => {
                     if (response.ok) {
                         location.reload();
                     }
@@ -78,6 +81,4 @@
             });
         }
     </script>
-{% endblock %}
-
 {% endblock %}

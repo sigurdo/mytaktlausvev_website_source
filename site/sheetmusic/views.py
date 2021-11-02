@@ -5,26 +5,21 @@ import django
 import os
 import io
 from django.views.generic.base import TemplateResponseMixin
-import yaml
 import threading
 import multiprocessing
 import random
-from typing import Any, Dict, Optional, Type
+from typing import Any, Dict
 from sheatless import processUploadedPdf
 from PyPDF2 import PdfFileReader, PdfFileWriter
 
 # Django packages
 from django.views.generic.detail import SingleObjectMixin
-from django.shortcuts import render
-from django.http import HttpResponseRedirect, HttpRequest, HttpResponse
-from django.core.paginator import Paginator
-from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
-from django.db import transaction, models
-from django.forms import BaseModelForm, Form
+from django.forms import BaseModelForm
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import View, DetailView, ListView
+from django.views.generic import DetailView, ListView
 from django.views.generic.edit import (
     CreateView,
     FormView,
@@ -33,8 +28,6 @@ from django.views.generic.edit import (
     DeleteView,
     FormMixin,
 )
-from django.utils.decorators import classonlymethod
-from django.contrib.auth.models import User
 
 # Modules from other apps
 
@@ -45,16 +38,11 @@ from .forms import (
     ScoreCreateForm,
     UploadPdfForm,
     EditScoreForm,
-    EditPartForm,
     EditPartFormSet,
     EditPartFormSetHelper,
-    EditPdfForm,
     EditPdfFormset,
     EditPdfFormsetHelper,
-    PartCreateForm,
 )
-from . import forms
-from .utils import convertPagesToInputFormat, convertInputFormatToPages
 
 
 # Simplifies management stuff like deleting output files from the code editor on the host system.
@@ -91,7 +79,7 @@ class ScoreUpdate(LoginRequiredMixin, UpdateView):
     form_class = EditScoreForm
 
     def get_success_url(self) -> str:
-        return reverse("editScore", args=[self.get_object().pk])
+        return reverse("ScoreUpdate", args=[self.get_object().pk])
 
 
 class ScoreDelete(LoginRequiredMixin, DeleteView):
@@ -222,8 +210,8 @@ class PdfsUpload(LoginRequiredMixin, FormView):
                 if not os.path.exists(imagesDirPath):
                     os.mkdir(imagesDirPath)
 
-                print("skal prøve:", pdf.file.path, imagesDirPath)
-                # Gjør dette i en egen prosess for å ikke påvirke responstida på andre requests som må besvares i mellomtida:
+                # PDF processing is done in a separate process to not affect responsetime
+                # of other requests the server receives while it is processing
                 parts, instrumentsDefaultParts = multiprocessing.Pool().apply(
                     processUploadedPdf,
                     (pdf.file.path, imagesDirPath),
@@ -232,7 +220,6 @@ class PdfsUpload(LoginRequiredMixin, FormView):
                         "tessdata_dir": os.path.join("tessdata", "tessdata_best-4.1.0"),
                     },
                 )
-                print("Result:", parts, instrumentsDefaultParts)
                 for part in parts:
                     part = Part(
                         name=part["name"],
@@ -273,14 +260,6 @@ class ScoreList(ListView):
         return context
 
 
-class PartCreate(LoginRequiredMixin, CreateView):
-    model = Part
-    form_class = PartCreateForm
-
-    def get_success_url(self) -> str:
-        return reverse("editScoreParts", args=[self.object.pdf.score.pk])
-
-
 class PartRead(LoginRequiredMixin, DetailView):
     model = Part
     template_name = "sheetmusic/part_read.html"
@@ -312,9 +291,3 @@ class PartPdf(LoginRequiredMixin, DetailView):
         obj = self.get_object()
         content = self.split_pdf(obj.pdf.file, obj.fromPage, obj.toPage)
         return HttpResponse(content=content, content_type=self.content_type)
-
-
-def deleteScore(request, score_id=0):
-    if request.method == "POST":
-        Score.objects.filter(id=score_id).delete()
-        return HttpResponseRedirect(reverse("sheetmusic"))

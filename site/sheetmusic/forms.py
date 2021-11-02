@@ -1,12 +1,9 @@
 """Forms for the 'sheetmusic'-app"""
 from django import forms
-from django.core.exceptions import ValidationError
-from django.forms import formset_factory, modelformset_factory, widgets
+from django.forms import modelformset_factory
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Layout, Fieldset, Field, HTML
-from crispy_forms.bootstrap import Alert
+from crispy_forms.layout import Submit
 from .models import Score, Pdf, Part
-from .utils import convertPagesToInputFormat, convertInputFormatToPages
 
 
 class ScoreCreateForm(forms.ModelForm):
@@ -21,16 +18,6 @@ class ScoreCreateForm(forms.ModelForm):
         model = Score
         fields = ["title"]
         labels = {"title": "Tittel"}
-
-
-def validatePagesField(value):
-    # print("validatePagesField")
-    try:
-        fromPage, toPage = convertInputFormatToPages(value)
-        if not fromPage <= toPage:
-            raise Exception()
-    except:
-        raise ValidationError("Pages is not valid: %(value)s", params={"value": value})
 
 
 class EditPartForm(forms.ModelForm):
@@ -48,24 +35,6 @@ class EditPartForm(forms.ModelForm):
             "fromPage": forms.NumberInput(attrs={"size": 1}),
             "toPage": forms.NumberInput(attrs={"size": 1}),
             "pdf": forms.Select(),
-        }
-
-
-class PartCreateForm(forms.ModelForm):
-    # Form for creating a part
-    helper = FormHelper()
-    helper.form_method = "post"
-    helper.label_class = "form-label"
-    helper.add_input(Submit("submit", "Legg til"))
-
-    class Meta:
-        model = Part
-        fields = ["name", "fromPage", "toPage", "pdf"]
-        labels = {
-            "name": "Navn",
-            "fromPage": "Første side",
-            "toPage": "Siste side",
-            "pdf": "PDF",
         }
 
 

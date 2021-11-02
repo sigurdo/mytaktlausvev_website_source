@@ -4,11 +4,9 @@ import django
 from django.contrib.auth.decorators import login_required
 
 # from django.urls import reversed
-from django.utils import timezone
 import json
 
-from sheetmusic.models import Score, Pdf, Part, UsersPreferredPart
-from django.contrib.auth.models import User
+from sheetmusic.models import Part, UsersPreferredPart
 
 
 @login_required

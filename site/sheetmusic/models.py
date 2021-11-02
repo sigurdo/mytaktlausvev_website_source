@@ -1,9 +1,9 @@
 """ Models for the sheetmusic-app """
 
-import os, shutil
+import os
+import shutil
 import django
 from django.db import models
-from django.contrib.auth.models import User
 from django.conf import settings
 from upload_validator import FileTypeValidator
 
@@ -92,6 +92,9 @@ class Instrument(models.Model):
 
     name = models.CharField(max_length=255)
 
+    def __str__(self):
+        return self.name
+
 
 class InstrumentsPreferredPart(models.Model):
     """Model representing the preferred part of an instrument"""
@@ -100,9 +103,15 @@ class InstrumentsPreferredPart(models.Model):
     score = models.ForeignKey(Score, on_delete=models.CASCADE)
     part = models.ForeignKey(Part, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return f"{self.instrument}-{self.part}"
+
 
 class UsersPreferredPart(models.Model):
     """Model representing the preferred part of a user"""
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     part = models.ForeignKey(Part, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.user}-{self.part}"
