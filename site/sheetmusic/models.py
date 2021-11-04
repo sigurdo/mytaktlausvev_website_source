@@ -17,6 +17,8 @@ class Score(models.Model):
 
     class Meta:
         ordering = ["-timestamp"]
+        verbose_name = "note"
+        verbose_name_plural = "notar"
 
     def __str__(self):
         return self.title
@@ -43,6 +45,11 @@ class Pdf(models.Model):
     )
     processing = models.BooleanField(default=False, editable=False)
     timestamp = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-timestamp"]
+        verbose_name = "pdf"
+        verbose_name_plural = "pdfar"
 
     def __str__(self):
         return os.path.basename(self.file.path)
@@ -80,31 +87,13 @@ class Part(models.Model):
     toPage = models.IntegerField(default=None)
     timestamp = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return self.name
-
     class Meta:
         ordering = ["pdf", "fromPage", "toPage", "name"]
-
-
-class Instrument(models.Model):
-    """Model representing an instrument"""
-
-    name = models.CharField(max_length=255)
+        verbose_name = "stemme"
+        verbose_name_plural = "stemmer"
 
     def __str__(self):
         return self.name
-
-
-class InstrumentsPreferredPart(models.Model):
-    """Model representing the preferred part of an instrument"""
-
-    instrument = models.ForeignKey(Instrument, on_delete=models.CASCADE)
-    score = models.ForeignKey(Score, on_delete=models.CASCADE)
-    part = models.ForeignKey(Part, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return f"{self.instrument}-{self.part}"
 
 
 class UsersPreferredPart(models.Model):
@@ -112,6 +101,11 @@ class UsersPreferredPart(models.Model):
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     part = models.ForeignKey(Part, on_delete=models.CASCADE)
+
+    class Meta:
+        ordering = ["user", "part"]
+        verbose_name = "brukarfavorittstemme"
+        verbose_name_plural = "brukarfavorittstemmer"
 
     def __str__(self):
         return f"{self.user}-{self.part}"
