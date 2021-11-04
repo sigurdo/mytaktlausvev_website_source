@@ -3,6 +3,8 @@ from django.urls import path
 from . import views
 from . import fetchEndpoints
 
+# app_name = "sheetmusic"
+
 urlpatterns = [
     path("", views.ScoreList.as_view(), name="sheetmusic"),
     path("sjåpå/<slug:pk>", views.ScoreView.as_view(), name="ScoreView"),

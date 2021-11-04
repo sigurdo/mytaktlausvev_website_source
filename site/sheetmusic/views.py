@@ -4,6 +4,7 @@
 import django
 import os
 import io
+from django.contrib.auth.decorators import permission_required
 from django.views.generic.base import TemplateResponseMixin
 import threading
 import multiprocessing
@@ -18,7 +19,7 @@ from django.http import HttpResponse
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.forms import BaseModelForm
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 from django.views.generic import DetailView, ListView
 from django.views.generic.edit import (
     CreateView,
@@ -49,8 +50,9 @@ from .forms import (
 os.umask(0)
 
 
-class ScoreView(LoginRequiredMixin, DetailView):
+class ScoreView(PermissionRequiredMixin, DetailView):
     model = Score
+    permission_required = "sheetmusic.view_score"
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         pdfs = Pdf.objects.filter(score=self.get_object())
@@ -74,22 +76,24 @@ class ScoreView(LoginRequiredMixin, DetailView):
         return context
 
 
-class ScoreUpdate(LoginRequiredMixin, UpdateView):
+class ScoreUpdate(PermissionRequiredMixin, UpdateView):
     model = Score
     form_class = EditScoreForm
+    permission_required = "sheetmusic.change_score"
 
     def get_success_url(self) -> str:
         return reverse("ScoreUpdate", args=[self.get_object().pk])
 
 
-class ScoreDelete(LoginRequiredMixin, DeleteView):
+class ScoreDelete(PermissionRequiredMixin, DeleteView):
     model = Score
     template_name = "common/confirm_delete.html"
     success_url = reverse_lazy("sheetmusic")
+    permission_required = "sheetmusic.delete_score"
 
 
 class PartsUpdate(
-    LoginRequiredMixin,
+    PermissionRequiredMixin,
     FormMixin,
     SingleObjectMixin,
     TemplateResponseMixin,
@@ -98,6 +102,7 @@ class PartsUpdate(
     model = Score
     form_class = EditPartFormSet
     template_name = "sheetmusic/parts_update.html"
+    permission_required = ("sheetmusic.add_part", "sheetmusic.change_part", "sheetmusic.delete_part")
 
     def get_success_url(self) -> str:
         return reverse("editScoreParts", args=[self.get_object().pk])
@@ -133,7 +138,7 @@ class PartsUpdate(
 
 
 class PdfsUpdate(
-    LoginRequiredMixin,
+    PermissionRequiredMixin,
     FormMixin,
     SingleObjectMixin,
     TemplateResponseMixin,
@@ -143,6 +148,7 @@ class PdfsUpdate(
     form_class = EditPdfFormset
     template_name = "sheetmusic/pdfs_update.html"
     context_object_name = "score"
+    permission_required = ("sheetmusic.change_pdf", "sheetmusic.delete_pdf")
 
     def get_success_url(self) -> str:
         return reverse("editScorePdfs", args=[self.get_object().pk])
@@ -169,10 +175,11 @@ class PdfsUpdate(
         return super().get_context_data(**kwargs)
 
 
-class PdfsUpload(LoginRequiredMixin, FormView):
+class PdfsUpload(PermissionRequiredMixin, FormView):
     form_class = UploadPdfForm
     template_name = "sheetmusic/pdfs_upload.html"
     context_object_name = "score"
+    permission_required = ("sheetmusic.add_pdf", "sheetmusic.add_part")
 
     def get_object(self):
         return Score.objects.get(pk=self.kwargs["pk"])
@@ -234,18 +241,20 @@ class PdfsUpload(LoginRequiredMixin, FormView):
                 pdf.save()
 
 
-class ScoreCreate(LoginRequiredMixin, CreateView):
+class ScoreCreate(PermissionRequiredMixin, CreateView):
     model = Score
     form_class = ScoreCreateForm
     template_name_suffix = "_create_form"
+    permission_required = "sheetmusic.add_score"
 
     def get_success_url(self) -> str:
         return reverse("sheetmusic")
 
 
-class ScoreList(ListView):
+class ScoreList(PermissionRequiredMixin, ListView):
     model = Score
     context_object_name = "scores"
+    permission_required = "sheetmusic.view_score"
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         context = super().get_context_data(**kwargs)
@@ -260,9 +269,10 @@ class ScoreList(ListView):
         return context
 
 
-class PartRead(LoginRequiredMixin, DetailView):
+class PartRead(PermissionRequiredMixin, DetailView):
     model = Part
     template_name = "sheetmusic/part_read.html"
+    permission_required = "sheetmusic.view_part"
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         context = super().get_context_data(**kwargs)
@@ -274,9 +284,10 @@ class PartRead(LoginRequiredMixin, DetailView):
         return context
 
 
-class PartPdf(LoginRequiredMixin, DetailView):
+class PartPdf(PermissionRequiredMixin, DetailView):
     model = Part
     content_type = "application/pdf"
+    permission_required = "sheetmusic.view_part"
 
     def split_pdf(self, path, from_page, to_page) -> bytes:
         pdf = PdfFileReader(path)
