@@ -102,7 +102,11 @@ class PartsUpdate(
     model = Score
     form_class = EditPartFormSet
     template_name = "sheetmusic/parts_update.html"
-    permission_required = ("sheetmusic.add_part", "sheetmusic.change_part", "sheetmusic.delete_part")
+    permission_required = (
+        "sheetmusic.add_part",
+        "sheetmusic.change_part",
+        "sheetmusic.delete_part",
+    )
 
     def get_success_url(self) -> str:
         return reverse("editScoreParts", args=[self.get_object().pk])
