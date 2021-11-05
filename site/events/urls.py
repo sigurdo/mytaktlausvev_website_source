@@ -17,11 +17,4 @@ urlpatterns = [
         views.EventAttendanceCreate.as_view(),
         name="attendance",
     ),
-    # path("rediger/<int:event_id>", views.update_event, name="update_event"),
-    # path("vis/<int:event_id>/", views.event_details, name="details"),
-    # path(
-    #     "deltek/<int:event_id>/<int:attendance_status>",
-    #     views.declare_attendance,
-    #     name="attend",
-    # ),
 ]
