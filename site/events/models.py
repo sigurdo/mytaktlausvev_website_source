@@ -45,19 +45,21 @@ class Attendance(models.TextChoices):
 class EventAttendance(models.Model):
     """Model representing a registered attendance for an event."""
 
-    person = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        verbose_name="person",
-        related_name="event_attendances",
-    )
     event = models.ForeignKey(
         Event,
         on_delete=models.CASCADE,
         verbose_name="hending",
         related_name="attendances",
     )
+    person = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        verbose_name="person",
+        related_name="event_attendances",
+    )
     status = models.CharField("status", max_length=255, choices=Attendance.choices)
+
+    created = models.DateTimeField("laga", auto_now_add=True)
 
     class Meta:
         verbose_name = "hendingdeltaking"

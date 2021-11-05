@@ -149,6 +149,29 @@ class EventUpdateTestCase(TestMixin, TestCase):
         self.assertEqual(self.event.modified_by, user)
 
 
+class EventAttendanceListTestCase(TestMixin, TestCase):
+    def get_url(self, event):
+        """Returns the URL for the event attendance list view for `event`."""
+        return reverse(
+            "events:attendance_list", args=[event.start_time.year, event.slug]
+        )
+
+    def setUp(self):
+        self.event = EventFactory()
+        EventAttendanceFactory(event=self.event)
+        EventAttendanceFactory(event=self.event)
+
+    def test_requires_login(self):
+        """Should require login."""
+        self.assertLoginRequired(self.get_url(self.event))
+
+    def test_requires_permission(self):
+        """Should require the `view_eventattendance` permission."""
+        self.assertPermissionRequired(
+            self.get_url(self.event), "events.view_eventattendance"
+        )
+
+
 class EventAttendanceCreateTestCase(TestMixin, TestCase):
     def get_url(self, event):
         """Returns the URL for the event attendance create view for `event`."""

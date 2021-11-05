@@ -1,0 +1,38 @@
+
+{% extends 'base.html' %}
+
+{% block title %}{{ event.title }} - Registreringar{% endblock title %}
+
+{% block page %}
+<article class="mt-4">
+    <h1 class="mb-3">{{ event.title }} - Registreringar</h1>
+
+    <p>
+        Registreringar for <a href="{{ event.get_absolute_url }}">{{ event.title }}</a>.
+        {{attendances.count}} registrert.
+    </p>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Brukar</th>
+                <th>Status</th>
+                <th>Laga</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for attendance in attendances %}
+            <tr>
+                <td>
+                    <a href="{{ attendance.person.get_absolute_url }}">
+                        {{ attendance.person.get_name }}
+                    </a>
+                </td>
+                <td>{{ attendance.get_status_display }}</td>
+                <td>{{ attendance.created }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</article>
+{% endblock page %}

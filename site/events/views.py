@@ -5,8 +5,9 @@ from django.http import HttpResponseRedirect
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
-from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic import DetailView
+from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic.list import ListView
 
 # Create your views here.
 
@@ -73,6 +74,29 @@ class EventUpdate(PermissionRequiredMixin, UpdateView):
     def form_valid(self, form):
         form.instance.modified_by = self.request.user
         return super().form_valid(form)
+
+
+class EventAttendanceList(PermissionRequiredMixin, ListView):
+    """View for viewing the attendances for an event."""
+
+    model = EventAttendance
+    context_object_name = "attendances"
+    permission_required = "events.view_eventattendance"
+
+    object = None
+
+    def get_event(self):
+        year = self.kwargs.get("year")
+        slug = self.kwargs.get("slug")
+        return self.object or get_object_or_404(Event, start_time__year=year, slug=slug)
+
+    def get_queryset(self):
+        return self.get_event().attendances.order_by("-created")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["event"] = self.get_event()
+        return context
 
 
 class EventAttendanceCreate(LoginRequiredMixin, CreateView):

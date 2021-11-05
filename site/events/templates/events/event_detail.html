@@ -31,11 +31,30 @@
     {% load markdown %}
     {{ event.content | markdown }}
 
-    {% if perms.events.change_event %}
+    {% if perms.events.change_event or perms.events.view_eventattendance %}
         <footer class="my-4">
-            <a href="{% url 'events:update' event.start_time.year event.slug %}" class="btn btn-primary">
-                Rediger hending
-            </a>
+            <ol class="list-unstyled d-flex">
+                {% if perms.events.change_event %}
+                <li class="me-3">
+                    <a
+                        href="{% url 'events:update' event.start_time.year event.slug %}"
+                        class="btn btn-primary"
+                    >
+                        Rediger hending
+                    </a>
+                </li>
+                {% endif %}
+                {% if perms.events.view_eventattendance %}
+                <li>
+                    <a
+                        href="{% url 'events:attendance_list' event.start_time.year event.slug %}"
+                        class="btn btn-primary"
+                    >
+                        Sjå registreringar
+                    </a>
+                </li>
+                {% endif %}
+            </ol>
         </footer>
     {% endif %}
 
