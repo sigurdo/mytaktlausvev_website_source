@@ -61,6 +61,9 @@ class EventAttendance(models.Model):
 
     created = models.DateTimeField("laga", auto_now_add=True)
 
+    def __str__(self):
+        return f"{self.event} - {self.person} - {self.get_status_display()}"
+
     class Meta:
         verbose_name = "hendingdeltaking"
         verbose_name_plural = "hendingdeltakingar"

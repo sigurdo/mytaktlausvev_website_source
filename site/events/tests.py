@@ -61,15 +61,29 @@ class EventTestCase(TestCase):
 
 
 class EventAttendanceTestCase(TestCase):
+    def setUp(self):
+        self.attendance = EventAttendanceFactory()
+
     def test_can_only_register_attendance_once(self):
         """Should only be able to register attendance for an event once."""
-        attendance = EventAttendanceFactory()
         with self.assertRaises(IntegrityError):
             EventAttendanceFactory(
-                event=attendance.event,
-                person=attendance.person,
+                event=self.attendance.event,
+                person=self.attendance.person,
                 status=Attendance.ATTENDING_NOT,
             )
+
+    def test_to_str_includes_event_name(self):
+        """`__str__` should include event name."""
+        self.assertIn(self.attendance.event.title, str(self.attendance))
+
+    def test_to_str_includes_user_name(self):
+        """`__str__` should include the user's name."""
+        self.assertIn(self.attendance.person.get_name(), str(self.attendance))
+
+    def test_to_str_includes_status(self):
+        """`__str__` should include the status."""
+        self.assertIn(self.attendance.get_status_display(), str(self.attendance))
 
 
 class EventDetailTestCase(TestMixin, TestCase):
@@ -82,6 +96,14 @@ class EventDetailTestCase(TestMixin, TestCase):
 
 
 class EventCreateTestCase(TestMixin, TestCase):
+    def test_requires_login(self):
+        """Should require login."""
+        self.assertLoginRequired(reverse("events:create"))
+
+    def test_requires_permission(self):
+        """Should require the `create_event` permission."""
+        self.assertPermissionRequired(reverse("events:create"), "events.add_event")
+
     def test_created_by_modified_by_set_to_current_user(self):
         """Should set `created_by` and `modified_by` to the current user on creation."""
         user = SuperUserFactory()
@@ -95,14 +117,6 @@ class EventCreateTestCase(TestMixin, TestCase):
         event = Event.objects.last()
         self.assertEqual(event.created_by, user)
         self.assertEqual(event.modified_by, user)
-
-    def test_requires_login(self):
-        """Should require login."""
-        self.assertLoginRequired(reverse("events:create"))
-
-    def test_requires_permission(self):
-        """Should require the `create_event` permission."""
-        self.assertPermissionRequired(reverse("events:create"), "events.add_event")
 
 
 class EventUpdateTestCase(TestMixin, TestCase):
