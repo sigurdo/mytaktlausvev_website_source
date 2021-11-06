@@ -7,10 +7,11 @@ class EventAttendanceInline(admin.TabularInline):
 
 
 class EventAdmin(admin.ModelAdmin):
-    prepopulated_fields = {"slug": ("title",)}
-    inlines = (EventAttendanceInline,)
     list_display = ("title", "start_time")
     search_fields = ("title",)
+
+    prepopulated_fields = {"slug": ("title",)}
+    inlines = (EventAttendanceInline,)
 
 
 class EventAttendanceAdmin(admin.ModelAdmin):

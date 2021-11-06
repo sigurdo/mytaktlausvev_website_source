@@ -16,7 +16,7 @@ class EventTestCase(TestCase):
         self.event = EventFactory()
 
     def test_get_absolute_url(self):
-        """Should link to the article's detail page."""
+        """Should link to the event's detail page."""
         self.assertEqual(
             self.event.get_absolute_url(),
             reverse(
@@ -110,7 +110,12 @@ class EventCreateTestCase(TestMixin, TestCase):
         self.client.force_login(user)
         self.client.post(
             reverse("events:create"),
-            {"title": "A Title", "start_time": timezone.now(), "content": "Event text"},
+            {
+                "title": "A Title",
+                "start_time_0": "2021-11-25",
+                "start_time_1": "16:30",
+                "content": "Event text",
+            },
         )
 
         self.assertEqual(Event.objects.count(), 1)
@@ -126,6 +131,12 @@ class EventUpdateTestCase(TestMixin, TestCase):
 
     def setUp(self):
         self.event = EventFactory()
+        self.event_data = {
+            "title": "A Title",
+            "start_time_0": "2021-11-25",
+            "start_time_1": "16:30",
+            "content": "Event text",
+        }
 
     def test_requires_login(self):
         """Should require login."""
@@ -141,10 +152,7 @@ class EventUpdateTestCase(TestMixin, TestCase):
     def test_created_by_not_changed(self):
         """Should not change `created_by` when updating event."""
         self.client.force_login(SuperUserFactory())
-        self.client.post(
-            self.get_url(self.event),
-            {"title": "A Title", "start_time": timezone.now(), "content": "Event text"},
-        )
+        self.client.post(self.get_url(self.event), self.event_data)
 
         created_by_previous = self.event.created_by
         self.event.refresh_from_db()
@@ -154,10 +162,7 @@ class EventUpdateTestCase(TestMixin, TestCase):
         """Should set `modified_by` to the current user on update."""
         user = SuperUserFactory()
         self.client.force_login(user)
-        self.client.post(
-            self.get_url(self.event),
-            {"title": "A Title", "start_time": timezone.now(), "content": "Event text"},
-        )
+        self.client.post(self.get_url(self.event), self.event_data)
 
         self.event.refresh_from_db()
         self.assertEqual(self.event.modified_by, user)
