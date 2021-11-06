@@ -14,7 +14,15 @@
 							{{event.title}}
 						</a>
 						<div>
-							{{event.start_time | date:"d.m.Y - H:s"}}
+							<time datetime="{{ event.start_time | date:"c" }}">
+								{{event.start_time | date:"d.m.Y - H:i"}}
+							</time>
+							{% if event.end_time %}
+								til
+								<time datetime="{{ event.end_time | date:"c" }}">
+									{{event.end_time | date:"d.m.Y - H:i"}}
+								</time>
+							{% endif %}
 						</div>
 					</li>
 					{% endfor %}
