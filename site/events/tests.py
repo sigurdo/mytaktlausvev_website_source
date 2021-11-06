@@ -43,7 +43,7 @@ class EventTestCase(TestCase):
         )
         self.assertNotEqual(self.event.slug, event_same_year.slug)
 
-    def test_events_with_different_parents_can_have_equal_slugs(self):
+    def test_events_with_different_years_can_have_equal_slugs(self):
         """Should allow events with different years to have equal slugs."""
         event_different_year = EventFactory(
             title=self.event.title,

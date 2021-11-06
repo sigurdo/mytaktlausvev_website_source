@@ -12,7 +12,6 @@ def dashboard(request):
         request,
         "dashboard/dashboard.html",
         {
-            "number": random.randint(0, 10),
             "quotes": Quote.objects.all()[:2],
             "events": Event.objects.filter(
                 start_time__gte=(datetime.now() - timedelta(1))
