@@ -1,0 +1,54 @@
+{% if attendances %}
+    <section class="my-4">
+        <h2 class="mb-3">{{ title }}</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Namn</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody class="align-middle">
+                {% for attendance in attendances %}
+                <tr>
+                    <td style="width: 60px;">
+                        <div class="mx-auto" style="width: 40px; height: 40px;">
+                            <a
+                                href="{% url 'profile' attendance.person.slug %}"
+                                class="d-flex justify-content-center w-100 h-100"
+                            >
+                                <img
+                                    src="{{ attendance.person.get_avatar_url }}"
+                                    class="object-fit-cover mw-100 mh-100"
+                                />
+                            </a>
+                        </div>
+                    </td>
+                    <td>
+                        <a href="{{ attendance.person.get_absolute_url }}">
+                            {{ attendance.person.get_name }}
+                        </a>
+                    </td>
+                    <td class="text-center">
+                        {% if user == attendance.person or perms.events.delete_eventattendance %}
+                        <a href="{% url 'events:attendance_delete' attendance.event.start_time.year attendance.event.slug attendance.person.slug %}">
+                            (meld av)
+                        </a>
+                        {% endif %}
+                    </td>
+                    <td class="text-center">
+                        {% if user == attendance.person or perms.events.change_eventattendance %}
+                        <a href="{% url 'events:attendance_update' attendance.event.start_time.year attendance.event.slug attendance.person.slug %}">
+                            (rediger)
+                        </a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        ({{ attendances.count }} brukar{{attendances.count | pluralize:"ar"}})
+    </section>
+{% endif %}

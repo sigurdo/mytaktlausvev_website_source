@@ -1,0 +1,73 @@
+
+{% extends 'base.html' %}
+
+{% block title %}{{ event.title }}{% endblock title %}
+
+{% block page %}
+<article class="mt-4">
+    <header class="mb-4">
+        <h1>{{ event.title }}</h1>
+
+        <p class="fs-7">
+            Lagt ut av
+            <a href="{% url 'profile' event.created_by.slug %}">{{ event.created_by }}</a>
+            den
+            <time datetime="{{ event.submitted | date:"c" }}">{{ event.submitted | date }}</time>.
+
+            Sist redigert av
+            <a href="{% url 'profile' event.modified_by.slug %}">{{ event.modified_by }}</a>
+            den
+            <time datetime="{{ event.modified | date:"c" }}">{{ event.modified | date }}</time>.
+        </p>
+    </header>
+
+    <p>
+        <time datetime="{{ event.start_time | date:"c" }}">{{event.start_time | date:"l, j. F, Y - H:i"}}</time>
+        {% if event.end_time %}
+        til
+        <time datetime="{{ event.end_time | date:"c" }}">{{event.end_time | date:"l, j. F, Y - H:i"}}</time>
+        {% endif %}
+    </p>
+    {% load markdown %}
+    {{ event.content | markdown }}
+
+    {% if perms.events.change_event or perms.events.view_eventattendance %}
+        <footer class="my-4">
+            <ol class="list-unstyled d-flex">
+                {% if perms.events.change_event %}
+                <li class="me-3">
+                    <a
+                        href="{% url 'events:update' event.start_time.year event.slug %}"
+                        class="btn btn-primary"
+                    >
+                        Rediger hending
+                    </a>
+                </li>
+                {% endif %}
+                {% if perms.events.view_eventattendance %}
+                <li>
+                    <a
+                        href="{% url 'events:attendance_list' event.start_time.year event.slug %}"
+                        class="btn btn-primary"
+                    >
+                        Sjå svar
+                    </a>
+                </li>
+                {% endif %}
+            </ol>
+        </footer>
+    {% endif %}
+
+    {% if not is_registered %}
+        {% load crispy_forms_tags %}
+        {% crispy form_attendance %}
+    {% endif %}
+
+    {% include "events/attendances.html" with title="Deltek" attendances=event.attending %}
+    {% include "events/attendances.html" with title="Deltek kanskje" attendances=event.attending_maybe %}
+    {% include "events/attendances.html" with title="Deltek ikkje" attendances=event.attending_not %}
+
+    {% load comments %}
+    {% comment_list event %}
+</article>
+{% endblock page %}

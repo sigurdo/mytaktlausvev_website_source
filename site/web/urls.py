@@ -22,6 +22,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("brukarar/", include("accounts.urls")),
     path("sitat/", include("quotes.urls")),
+    path("hendingar/", include("events.urls")),
     path("", include("dashboard.urls")),
     path("kommentarar/", include("comments.urls")),
     path("kontakt/", include("contact.urls")),

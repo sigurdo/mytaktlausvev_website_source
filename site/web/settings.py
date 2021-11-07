@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "comments",
     "contact",
     "quotes",
+    "events",
     "dashboard",
 ]
 
