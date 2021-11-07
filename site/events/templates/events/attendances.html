@@ -4,14 +4,28 @@
         <table class="table">
             <thead>
                 <tr>
+                    <th></th>
                     <th>Namn</th>
                     <th></th>
                     <th></th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="align-middle">
                 {% for attendance in attendances %}
                 <tr>
+                    <td style="width: 60px;">
+                        <div class="mx-auto" style="width: 40px; height: 40px;">
+                            <a
+                                href="{% url 'profile' attendance.person.slug %}"
+                                class="d-flex justify-content-center w-100 h-100"
+                            >
+                                <img
+                                    src="{{ attendance.person.get_avatar_url }}"
+                                    class="object-fit-cover mw-100 mh-100"
+                                />
+                            </a>
+                        </div>
+                    </td>
                     <td>
                         <a href="{{ attendance.person.get_absolute_url }}">
                             {{ attendance.person.get_name }}
