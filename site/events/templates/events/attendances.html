@@ -5,7 +5,6 @@
             <thead>
                 <tr>
                     <th>Namn</th>
-                    <th>Nummer</th>
                     <th></th>
                     <th></th>
                 </tr>
@@ -18,7 +17,6 @@
                             {{ attendance.person.get_name }}
                         </a>
                     </td>
-                    <td>{{ attendance.person.phone_number }}</td>
                     <td class="text-center">
                         {% if user == attendance.person or perms.events.delete_eventattendance %}
                         <a href="{% url 'events:attendance_delete' attendance.event.start_time.year attendance.event.slug attendance.person.slug %}">
