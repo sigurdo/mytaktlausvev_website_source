@@ -1,7 +1,11 @@
+from datetime import datetime, timedelta
 from django.core.management.base import BaseCommand
+from django.utils.timezone import make_aware
 from accounts.models import UserCustom
 from articles.factories import ArticleFactory
 from contact.factories import ContactCategoryFactory
+from events.factories import EventAttendanceFactory, EventFactory
+from events.models import Attendance
 
 
 class Command(BaseCommand):
@@ -9,19 +13,19 @@ class Command(BaseCommand):
         superuser = UserCustom.objects.create_superuser(
             "leiar", "leiar@taktlaus.no", "password"
         )
-        UserCustom.objects.create_user(
+        aspirant = UserCustom.objects.create_user(
             "aspirant",
             "aspirant@taktlaus.no",
             "password",
             membership_status=UserCustom.MembershipStatus.ACTIVE,
         )
-        UserCustom.objects.create_user(
+        member = UserCustom.objects.create_user(
             "medlem",
             "medlem@taktlaus.no",
             "password",
             membership_status=UserCustom.MembershipStatus.ACTIVE,
         )
-        UserCustom.objects.create_user(
+        retiree = UserCustom.objects.create_user(
             "pensjonist",
             "pensjonist@taktlaus.no",
             "password",
@@ -65,3 +69,22 @@ class Command(BaseCommand):
 
         ContactCategoryFactory(name="Generelt").save()
         ContactCategoryFactory(name="Bli med!").save()
+
+        event = EventFactory(
+            title="SMASH",
+            content="SMASH in Trondheim",
+            created_by=superuser,
+            modified_by=superuser,
+            start_time=make_aware(datetime.now() + timedelta(365)),
+        )
+        event.save()
+        EventAttendanceFactory(
+            event=event, person=superuser, status=Attendance.ATTENDING
+        )
+        EventAttendanceFactory(event=event, person=member, status=Attendance.ATTENDING)
+        EventAttendanceFactory(
+            event=event, person=aspirant, status=Attendance.ATTENDING_MAYBE
+        )
+        EventAttendanceFactory(
+            event=event, person=retiree, status=Attendance.ATTENDING_NOT
+        )
