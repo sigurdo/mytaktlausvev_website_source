@@ -6,6 +6,8 @@
                 <tr>
                     <th>Namn</th>
                     <th>Nummer</th>
+                    <th></th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -17,6 +19,20 @@
                         </a>
                     </td>
                     <td>{{ attendance.person.phone_number }}</td>
+                    <td class="text-center">
+                        {% if user == attendance.person or perms.events.delete_eventattendance %}
+                        <a href="{% url 'events:attendance_delete' attendance.event.start_time.year attendance.event.slug attendance.person.slug %}">
+                            (meld av)
+                        </a>
+                        {% endif %}
+                    </td>
+                    <td class="text-center">
+                        {% if user == attendance.person or perms.events.change_eventattendance %}
+                        <a href="{% url 'events:attendance_update' attendance.event.start_time.year attendance.event.slug attendance.person.slug %}">
+                            (rediger)
+                        </a>
+                        {% endif %}
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>

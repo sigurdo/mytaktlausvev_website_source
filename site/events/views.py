@@ -1,11 +1,30 @@
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.mixins import (
+    LoginRequiredMixin,
+    PermissionRequiredMixin,
+    UserPassesTestMixin,
+)
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.views.generic import DetailView
-from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.views.generic.list import ListView
 from .models import Attendance, Event, EventAttendance
 from .forms import EventAttendanceForm, EventForm
+
+
+def get_event_or_404(year, slug):
+    """Returns an Event if it exists, else raises a 404."""
+    return get_object_or_404(Event, start_time__year=year, slug=slug)
+
+
+def get_event_attendance_or_404(year, slug_event, slug_person):
+    """Returns an EventAttendance if it exists, else raises a 404."""
+    event = get_event_or_404(year, slug_event)
+    return get_object_or_404(
+        EventAttendance,
+        event=event,
+        person__slug=slug_person,
+    )
 
 
 class EventDetail(LoginRequiredMixin, DetailView):
@@ -13,14 +32,14 @@ class EventDetail(LoginRequiredMixin, DetailView):
 
     model = Event
 
-    def get_queryset(self):
-        year = self.kwargs.get("year")
-        return super().get_queryset().filter(start_time__year=year)
+    def get_object(self, queryset=None):
+        return get_event_or_404(self.kwargs.get("year"), self.kwargs.get("slug"))
 
     def get_form_attendance(self):
         form = EventAttendanceForm(initial={"status": Attendance.ATTENDING})
         form.helper.form_action = reverse(
-            "events:attendance", args=[self.object.start_time.year, self.object.slug]
+            "events:attendance_create",
+            args=[self.object.start_time.year, self.object.slug],
         )
         return form
 
@@ -41,9 +60,8 @@ class EventCreate(PermissionRequiredMixin, CreateView):
     template_name = "common/form.html"
     permission_required = "events.add_event"
 
-    def get_queryset(self):
-        year = self.kwargs.get("year")
-        return super().get_queryset().filter(start_time__year=year)
+    def get_object(self, queryset=None):
+        return get_event_or_404(self.kwargs.get("year"), self.kwargs.get("slug"))
 
     def form_valid(self, form):
         form.instance.created_by = self.request.user
@@ -59,9 +77,8 @@ class EventUpdate(PermissionRequiredMixin, UpdateView):
     template_name = "common/form.html"
     permission_required = "events.change_event"
 
-    def get_queryset(self):
-        year = self.kwargs.get("year")
-        return super().get_queryset().filter(start_time__year=year)
+    def get_object(self, queryset=None):
+        return get_event_or_404(self.kwargs.get("year"), self.kwargs.get("slug"))
 
     def form_valid(self, form):
         form.instance.modified_by = self.request.user
@@ -75,15 +92,8 @@ class EventAttendanceList(PermissionRequiredMixin, ListView):
     context_object_name = "attendances"
     permission_required = "events.view_eventattendance"
 
-    object = None
-
     def get_event(self):
-        year = self.kwargs.get("year")
-        slug = self.kwargs.get("slug")
-        return self.object or get_object_or_404(Event, start_time__year=year, slug=slug)
-
-    def get_queryset(self):
-        return self.get_event().attendances.order_by("-created")
+        return get_event_or_404(self.kwargs.get("year"), self.kwargs.get("slug"))
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -99,13 +109,70 @@ class EventAttendanceCreate(LoginRequiredMixin, CreateView):
     template_name = "common/form.html"
     http_method_names = ["post", "put"]
 
+    def get_event(self):
+        return get_event_or_404(self.kwargs.get("year"), self.kwargs.get("slug"))
+
     def form_valid(self, form):
         form.instance.person = self.request.user
-        form.instance.event = Event.objects.get(
-            start_time__year=self.kwargs.get("year"),
-            slug=self.kwargs.get(self.slug_url_kwarg),
-        )
+        form.instance.event = self.get_event()
         return super().form_valid(form)
 
     def get_success_url(self):
         return self.object.event.get_absolute_url()
+
+
+class EventAttendanceUpdate(UserPassesTestMixin, UpdateView):
+    """View for updating event attendance."""
+
+    model = EventAttendance
+    form_class = EventAttendanceForm
+    template_name = "common/form.html"
+
+    object = None
+
+    def get_object(self):
+        if self.object:
+            return self.object
+        self.object = get_event_attendance_or_404(
+            self.kwargs.get("year"),
+            self.kwargs.get("slug_event"),
+            self.kwargs.get("slug_person"),
+        )
+        return self.object
+
+    def test_func(self):
+        user = self.request.user
+        return self.get_object().person == user or user.has_perm(
+            "events.change_eventattendance"
+        )
+
+    def get_success_url(self):
+        return self.get_object().event.get_absolute_url()
+
+
+class EventAttendanceDelete(UserPassesTestMixin, DeleteView):
+    """View for deleting event attendance."""
+
+    model = EventAttendance
+    template_name = "common/confirm_delete.html"
+
+    object = None
+
+    def get_object(self):
+        if self.object:
+            return self.object
+        self.object = get_event_attendance_or_404(
+            self.kwargs.get("year"),
+            self.kwargs.get("slug_event"),
+            self.kwargs.get("slug_person"),
+        )
+        return self.object
+
+    def test_func(self):
+        user = self.request.user
+        return self.get_object().person == user or user.has_perm(
+            "events.delete_eventattendance"
+        )
+
+    def get_success_url(self):
+        return self.get_object().event.get_absolute_url()

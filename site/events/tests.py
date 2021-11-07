@@ -1,5 +1,6 @@
 from http import HTTPStatus
 from datetime import datetime
+from django.http.response import Http404
 from django.test import TestCase
 from django.db import IntegrityError
 from django.urls import reverse
@@ -8,6 +9,7 @@ from django.utils.text import slugify
 from common.mixins import TestMixin
 from accounts.factories import SuperUserFactory, UserFactory
 from events.models import Event, Attendance, EventAttendance
+from events.views import get_event_attendance_or_404, get_event_or_404
 from .factories import EventAttendanceFactory, EventFactory
 
 
@@ -84,6 +86,36 @@ class EventAttendanceTestCase(TestCase):
     def test_to_str_includes_status(self):
         """`__str__` should include the status."""
         self.assertIn(self.attendance.get_status_display(), str(self.attendance))
+
+
+class GetterTestCase(TestCase):
+    def setUp(self):
+        self.event = EventFactory()
+        self.attendance = EventAttendanceFactory()
+
+    def test_get_event_returns_event_if_it_exists(self):
+        """Should return the event if it exists."""
+        event = get_event_or_404(self.event.start_time.year, self.event.slug)
+        self.assertEqual(self.event, event)
+
+    def test_get_event_raises_404_if_event_not_exist(self):
+        """Should raise 404 if event doesn't exist."""
+        with self.assertRaises(Http404):
+            get_event_or_404(1913, "not-exist")
+
+    def test_get_attendance_returns_attendance_if_it_exists(self):
+        """Should return the attendance if it exists."""
+        attendance = get_event_attendance_or_404(
+            self.attendance.event.start_time.year,
+            self.attendance.event.slug,
+            self.attendance.person.slug,
+        )
+        self.assertEqual(self.attendance, attendance)
+
+    def test_get_attendance_raises_404_if_attendance_not_exist(self):
+        """Should raise 404 if attendance doesn't exist."""
+        with self.assertRaises(Http404):
+            get_event_attendance_or_404(1913, "not-exist", "also-not-exist")
 
 
 class EventDetailTestCase(TestMixin, TestCase):
@@ -177,8 +209,6 @@ class EventAttendanceListTestCase(TestMixin, TestCase):
 
     def setUp(self):
         self.event = EventFactory()
-        EventAttendanceFactory(event=self.event)
-        EventAttendanceFactory(event=self.event)
 
     def test_requires_login(self):
         """Should require login."""
@@ -194,7 +224,9 @@ class EventAttendanceListTestCase(TestMixin, TestCase):
 class EventAttendanceCreateTestCase(TestMixin, TestCase):
     def get_url(self, event):
         """Returns the URL for the event attendance create view for `event`."""
-        return reverse("events:attendance", args=[event.start_time.year, event.slug])
+        return reverse(
+            "events:attendance_create", args=[event.start_time.year, event.slug]
+        )
 
     def setUp(self):
         self.event = EventFactory()
@@ -234,3 +266,90 @@ class EventAttendanceCreateTestCase(TestMixin, TestCase):
         self.client.force_login(UserFactory())
         response = self.client.post(self.get_url(self.event), self.event_data)
         self.assertRedirects(response, self.event.get_absolute_url())
+
+
+class EventAttendanceUpdateTestCase(TestMixin, TestCase):
+    def get_url(self, attendance):
+        """Returns the URL for the event attendance update view for `attendance`."""
+        return reverse(
+            "events:attendance_update",
+            args=[
+                attendance.event.start_time.year,
+                attendance.event.slug,
+                attendance.person.slug,
+            ],
+        )
+
+    def setUp(self):
+        self.user = UserFactory()
+        self.attendance = EventAttendanceFactory(person=self.user)
+
+    def test_requires_login(self):
+        """Should require login."""
+        self.assertLoginRequired(self.get_url(self.attendance))
+
+    def test_requires_permission(self):
+        """Should require the `change_eventattendance` permission."""
+        self.assertPermissionRequired(
+            self.get_url(self.attendance), "events.change_eventattendance"
+        )
+
+    def test_succeeds_if_not_permission_but_is_own(self):
+        """
+        Should succeed if it's the user's attendance,
+        even if the user doesn't have the `change_eventattendance` permission.
+        """
+        self.client.force_login(self.user)
+        response = self.client.get(self.get_url(self.attendance))
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+
+class EventAttendanceDeleteTestCase(TestMixin, TestCase):
+    def get_url(self, attendance):
+        """Returns the URL for the event attendance delete view for `attendance`."""
+        return reverse(
+            "events:attendance_delete",
+            args=[
+                attendance.event.start_time.year,
+                attendance.event.slug,
+                attendance.person.slug,
+            ],
+        )
+
+    def setUp(self):
+        self.user = UserFactory()
+        self.attendance = EventAttendanceFactory(person=self.user)
+
+    def test_requires_login(self):
+        """Should require login."""
+        self.assertLoginRequired(self.get_url(self.attendance))
+
+    def test_requires_permission(self):
+        """Should require the `delete_eventattendance` permission."""
+        self.assertPermissionRequired(
+            self.get_url(self.attendance), "events.delete_eventattendance"
+        )
+
+    def test_succeeds_if_not_permission_but_is_own(self):
+        """
+        Should succeed if it's the user's attendance,
+        even if the user doesn't have the `delete_eventattendance` permission.
+        """
+        self.client.force_login(self.user)
+        response = self.client.get(self.get_url(self.attendance))
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+    def test_should_redirect_to_event_on_success(self):
+        """Should redirect to the event on success."""
+        self.client.force_login(self.user)
+        response = self.client.post(self.get_url(self.attendance))
+        self.assertRedirects(
+            response,
+            reverse(
+                "events:detail",
+                args=[
+                    self.attendance.event.start_time.year,
+                    self.attendance.event.slug,
+                ],
+            ),
+        )

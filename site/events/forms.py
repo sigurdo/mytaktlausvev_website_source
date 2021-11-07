@@ -26,9 +26,11 @@ class EventForm(forms.ModelForm):
 class EventAttendanceForm(forms.ModelForm):
     """Form for registering event attendance."""
 
-    helper = FormHelper()
-    helper.field_class = "col-lg-4"
-    helper.add_input(Submit("submit", "Registrer"))
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.field_class = "col-lg-4"
+        self.helper.add_input(Submit("submit", "Registrer"))
 
     class Meta:
         model = EventAttendance
