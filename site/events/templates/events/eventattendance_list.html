@@ -1,14 +1,14 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ event.title }} - Registreringar{% endblock title %}
+{% block title %}{{ event.title }} - Svar{% endblock title %}
 
 {% block page %}
 <article class="mt-4">
-    <h1 class="mb-3">{{ event.title }} - Registreringar</h1>
+    <h1 class="mb-3">{{ event.title }} - Svar</h1>
 
     <p>
-        Registreringar for <a href="{{ event.get_absolute_url }}">{{ event.title }}</a>.
-        {{attendances.count}} registrert.
+        Svar for <a href="{{ event.get_absolute_url }}">{{ event.title }}</a>.
+        {{attendances.count}} har svara.
     </p>
 
     <table class="table">

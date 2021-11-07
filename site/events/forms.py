@@ -30,7 +30,7 @@ class EventAttendanceForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.field_class = "col-lg-4"
-        self.helper.add_input(Submit("submit", "Registrer"))
+        self.helper.add_input(Submit("submit", "Send svar"))
 
     class Meta:
         model = EventAttendance

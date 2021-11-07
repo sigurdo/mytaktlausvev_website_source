@@ -92,8 +92,16 @@ class EventAttendanceList(PermissionRequiredMixin, ListView):
     context_object_name = "attendances"
     permission_required = "events.view_eventattendance"
 
+    event = None
+
     def get_event(self):
-        return get_event_or_404(self.kwargs.get("year"), self.kwargs.get("slug"))
+        if self.event:
+            return self.event
+        self.event = get_event_or_404(self.kwargs.get("year"), self.kwargs.get("slug"))
+        return self.event
+
+    def get_queryset(self):
+        return self.get_event().attendances.order_by("-created")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
