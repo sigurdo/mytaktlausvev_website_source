@@ -9,6 +9,25 @@ class Command(BaseCommand):
         superuser = UserCustom.objects.create_superuser(
             "leiar", "leiar@taktlaus.no", "password"
         )
+        UserCustom.objects.create_user(
+            "aspirant",
+            "aspirant@taktlaus.no",
+            "password",
+            membership_status=UserCustom.MembershipStatus.ACTIVE,
+        )
+        UserCustom.objects.create_user(
+            "medlem",
+            "medlem@taktlaus.no",
+            "password",
+            membership_status=UserCustom.MembershipStatus.ACTIVE,
+        )
+        UserCustom.objects.create_user(
+            "pensjonist",
+            "pensjonist@taktlaus.no",
+            "password",
+            membership_status=UserCustom.MembershipStatus.RETIRED,
+        )
+
         ArticleFactory(
             title="Om oss",
             content="Dette er ein artikkel om oss",
