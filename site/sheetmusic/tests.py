@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.urls import reverse
 
-from accounts.factories import UserFactory, SuperUserFactory
+from accounts.factories import SuperUserFactory
 from common.mixins import TestMixin
 
 from .factories import ScoreFactory
@@ -29,9 +29,12 @@ class ScoreCreateTestCase(TestMixin, TestCase):
 
 class PdfUploadTestCase(TestMixin, TestCase):
     def test_upload_pdf(self):
-        # user = SuperUserFactory()
-        # self.client.force_login(user)
-        # self.client.post(
-        #     reverse("")
-        # )
-        pass
+        user = SuperUserFactory()
+        score = ScoreFactory()
+        self.client.force_login(user)
+        with open("test_data/test.pdf", "rb") as file:
+            self.client.post(
+                reverse("PdfsUpload", kwargs={"pk": score.pk}),
+                {"files": file, "plz_wait": True},
+            )
+        self.assertEqual(score.pdfs.count(), 1)

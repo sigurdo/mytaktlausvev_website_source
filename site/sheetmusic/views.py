@@ -1,25 +1,26 @@
 """ Views for sheetmusic """
 
-# Other python packages
-import django
-import os
+# Official python packages
 import io
-from django.contrib.auth.decorators import permission_required
-from django.views.generic.base import TemplateResponseMixin
+import os
 import threading
 import multiprocessing
 import random
 from typing import Any, Dict
+
+# Other python packages
 from sheatless import processUploadedPdf
 from PyPDF2 import PdfFileReader, PdfFileWriter
 
 # Django packages
+import django
+from django.views.generic.base import TemplateResponseMixin
 from django.views.generic.detail import SingleObjectMixin
 from django.http import HttpResponse
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.forms import BaseModelForm
-from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.views.generic import DetailView, ListView
 from django.views.generic.edit import (
     CreateView,
@@ -203,8 +204,12 @@ class PdfsUpload(PermissionRequiredMixin, FormView):
             pdf = Pdf.objects.create(score=score, file=file)
             pdf.save()
             pdfs.append(pdf)
-        processPdfsThread = threading.Thread(target=self.processPdfs, args=[pdfs])
-        processPdfsThread.start()
+        plz_wait = self.request.POST.get("plz_wait", False)
+        if plz_wait:
+            self.processPdfs(pdfs)
+        else:
+            processPdfsThread = threading.Thread(target=self.processPdfs, args=[pdfs])
+            processPdfsThread.start()
         return super().form_valid(form)
 
     def processPdfs(self, pdfs):

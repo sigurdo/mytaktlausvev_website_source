@@ -16,6 +16,7 @@ services:
       - DEBUG=1
     volumes:
       - ./site:/app/site
+      - ./test_data:/app/test_data
     command: ./site/manage.py runserver 0.0.0.0:8000
     ports:
       - "8000:8000"
