@@ -1,65 +1,92 @@
 import os
 from os.path import join, splitext
+from math import ceil
+import io
 
 import PIL.Image
 import PIL.ImageDraw
 import numpy as np
 
-print("hei buttons")
+def button_pdf_generator(
+    images,
+    num_of_each = 1,
+    page_width_mm = 210,
+    page_height_mm = 297,
+    page_dpi = 300,
+    page_margin_top_mm = 3,
+    page_margin_right_mm = 3,
+    page_margin_bottom_mm = 3,
+    page_margin_left_mm = 3,
+    button_width_mm = 67,
+    button_height_mm = 67,
+    button_border_mm = 0.5
+):
+    def mm_to_px(mm):
+        return int(page_dpi * (mm / 25.4))
 
-PAGE_WIDTH_MM = 210
-PAGE_HEIGHT_MM = 297
-PAGE_DPI = 300
-PAGE_MARGIN_TOP_MM = 3
-PAGE_MARGIN_RIGHT_MM = 3
-PAGE_MARGIN_BOTTOM_MM = 3
-PAGE_MARGIN_LEFT_MM = 3
-BUTTON_WIDTH_MM = 67
-BUTTON_HEIGHT_MM = 67
-BUTTON_BORDER_MM = 0.5
+    page_width_px = mm_to_px(page_width_mm)
+    page_height_px = mm_to_px(page_height_mm)
+    page_margin_top_px = mm_to_px(page_margin_top_mm)
+    page_margin_right_px = mm_to_px(page_margin_right_mm)
+    page_margin_bottom_px = mm_to_px(page_margin_bottom_mm)
+    page_margin_left_px = mm_to_px(page_margin_left_mm)
+    button_width_px = mm_to_px(button_width_mm)
+    button_height_px = mm_to_px(button_height_mm)
+    button_border_px = mm_to_px(button_border_mm)
 
-def mm_to_px(mm):
-	return int(PAGE_DPI * (mm / 25.4))
+    num_buttons_horizontal = (page_width_px - page_margin_left_px - page_margin_right_px) // button_width_px
+    num_buttons_vertical = (page_height_px - page_margin_top_px - page_margin_bottom_px) // button_height_px
+    num_buttons_per_page = num_buttons_horizontal * num_buttons_vertical
+    num_pages = ceil(len(images) * num_of_each / num_buttons_per_page)
 
-PAGE_WIDTH_PX = mm_to_px(PAGE_WIDTH_MM)
-PAGE_HEIGHT_PX = mm_to_px(PAGE_HEIGHT_MM)
-PAGE_MARGIN_TOP_PX = mm_to_px(PAGE_MARGIN_TOP_MM)
-PAGE_MARGIN_RIGHT_PX = mm_to_px(PAGE_MARGIN_RIGHT_MM)
-PAGE_MARGIN_BOTTOM_PX = mm_to_px(PAGE_MARGIN_BOTTOM_MM)
-PAGE_MARGIN_LEFT_PX = mm_to_px(PAGE_MARGIN_LEFT_MM)
-BUTTON_WIDTH_PX = mm_to_px(BUTTON_WIDTH_MM)
-BUTTON_HEIGHT_PX = mm_to_px(BUTTON_HEIGHT_MM)
-BUTTON_BORDER_PX = mm_to_px(BUTTON_BORDER_MM)
+    array_left_px = (page_width_px - (num_buttons_horizontal * button_width_px)) // 2
+    array_top_px = (page_height_px - (num_buttons_vertical * button_height_px)) // 2
 
-NUM_BUTTONS_HORIZONTAL = (PAGE_WIDTH_PX - PAGE_MARGIN_LEFT_PX - PAGE_MARGIN_RIGHT_PX) // BUTTON_WIDTH_PX
-NUM_BUTTONS_VERTICAL = (PAGE_HEIGHT_PX - PAGE_MARGIN_TOP_PX - PAGE_MARGIN_BOTTOM_PX) // BUTTON_HEIGHT_PX
+    pages = []
 
-ARRAY_LEFT_PX = (PAGE_WIDTH_PX - (NUM_BUTTONS_HORIZONTAL * BUTTON_WIDTH_PX)) // 2
-ARRAY_TOP_PX = (PAGE_HEIGHT_PX - (NUM_BUTTONS_VERTICAL * BUTTON_HEIGHT_PX)) // 2
+    for p in range(num_pages):
+        background = PIL.Image.new("RGBA", (page_width_px, page_height_px), (255, 255, 255, 255))
+        mask = PIL.Image.new("RGBA", (button_width_px, button_height_px), (255, 255, 255, 255))
+        PIL.ImageDraw.Draw(mask).ellipse([(0, 0), (button_width_px, button_height_px)], fill=(0, 0, 0, 0))
+        for r in range(num_buttons_vertical):
+            break_nested_for_loop = False
+            for c in range(num_buttons_horizontal):
+                images_index = (num_buttons_per_page * p + num_buttons_horizontal * r + c) // num_of_each
+                if images_index >= len(images):
+                    break_nested_for_loop = True
+                    break
+                img = images[images_index]
+                img = img.resize((button_width_px, button_height_px))
+                img_width, img_height = img.size
+                PIL.ImageDraw.Draw(img).ellipse([(0, 0), (button_width_px, button_height_px)], width=button_border_px, outline=(0, 0, 0, 255))
+                img.paste(mask.copy(), (0, 0), mask=mask.copy())
 
-print(f"number of buttons: {NUM_BUTTONS_HORIZONTAL * NUM_BUTTONS_VERTICAL} ({NUM_BUTTONS_HORIZONTAL}x{NUM_BUTTONS_VERTICAL})")
-
-
-INPUT_PATH = "input_images"
-OUTPUT_PATH = "output_pdfs"
-
-for (dirpath, dirnames, filenames) in os.walk(INPUT_PATH):
-    for filename in filenames:
-        img = PIL.Image.open(join(dirpath, filename), "r")
-        img = img.resize((BUTTON_WIDTH_PX, BUTTON_HEIGHT_PX))
-        img_width, img_height = img.size
-        PIL.ImageDraw.Draw(img).ellipse([(0, 0), (BUTTON_WIDTH_PX, BUTTON_HEIGHT_PX)], width=BUTTON_BORDER_PX, outline=(0, 0, 0, 255))
-
-        mask = PIL.Image.new("RGBA", (BUTTON_WIDTH_PX, BUTTON_HEIGHT_PX), (255, 255, 255, 255))
-        PIL.ImageDraw.Draw(mask).ellipse([(0, 0), (BUTTON_WIDTH_PX, BUTTON_HEIGHT_PX)], fill=(0, 0, 0, 0))
-        img.paste(mask.copy(), (0, 0), mask=mask.copy())
-
-        background = PIL.Image.new("RGBA", (PAGE_WIDTH_PX, PAGE_HEIGHT_PX), (255, 255, 255, 255))
-        for i in range(NUM_BUTTONS_HORIZONTAL):
-            for j in range(NUM_BUTTONS_VERTICAL):
-                offset_left = ARRAY_LEFT_PX + (i * BUTTON_WIDTH_PX)
-                offset_top = ARRAY_TOP_PX + (j * BUTTON_HEIGHT_PX)
+                offset_left = array_left_px + (c * button_width_px)
+                offset_top = array_top_px + (r * button_height_px)
                 background.paste(img.copy(), (offset_left, offset_top), mask=img.copy())
-        output_path = join(OUTPUT_PATH, f"{splitext(filename)[0]}.pdf")
-        background.convert("RGB").save(output_path, format="PDF", resolution=PAGE_DPI)
-        print("pdf written:", output_path)
+            if break_nested_for_loop:
+                break
+        pages.append(background)
+    
+    output_bytes = io.BytesIO()
+    if len(pages) > 1:
+        pages[0].convert("RGB").save(output_bytes, format="PDF", resolution=page_dpi, save_all=True, append_images=[page.convert("RGB") for page in pages[1:]])
+    else:
+        pages[0].convert("RGB").save(output_bytes, format="PDF", resolution=page_dpi)
+    return output_bytes
+        
+input_path = "input_images"
+output_path = "output_pdfs"
+
+images = []
+
+for (dirpath, dirnames, filenames) in os.walk(input_path):
+    for filename in filenames:
+        images.append(PIL.Image.open(join(dirpath, filename), "r"))
+
+pdf = button_pdf_generator(images, num_of_each=7)
+output_path_full = join(output_path, f"{splitext(filename)[0]}.pdf")
+with open(output_path_full, "wb") as file:
+    file.write(pdf.getvalue())
+print("pdf written:", output_path_full)
+
