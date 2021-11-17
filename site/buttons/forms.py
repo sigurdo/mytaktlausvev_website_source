@@ -14,7 +14,7 @@ class ButtonsForm(forms.Form):
     )
     button_diameter_mm = forms.IntegerField(
         min_value=10,
-        max_value=200,
+        max_value=100,
         initial=67,
         label="Diameter for kvart skiltmerke i mm",
     )
