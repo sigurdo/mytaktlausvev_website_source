@@ -28,6 +28,8 @@ urlpatterns = [
     path("kommentarar/", include("comments.urls")),
     path("kontakt/", include("contact.urls")),
     path("skiltmerke/", include("buttons.urls")),
-    path("buttons/", RedirectView.as_view(pattern_name="buttons:buttons", permanent=True)),
+    path(
+        "buttons/", RedirectView.as_view(pattern_name="buttons:buttons", permanent=True)
+    ),
     path("", include("articles.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
