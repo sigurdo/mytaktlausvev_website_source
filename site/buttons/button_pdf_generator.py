@@ -52,7 +52,7 @@ def button_pdf_generator(
                 if images_index >= len(images):
                     break_nested_for_loop = True
                     break
-                img = images[images_index]
+                img = images[images_index].convert("RGBA")
                 img = img.resize((button_width_px, button_height_px))
                 img_width, img_height = img.size
                 PIL.ImageDraw.Draw(img).ellipse([(0, 0), (button_width_px, button_height_px)], width=button_border_px, outline=(0, 0, 0, 255))
