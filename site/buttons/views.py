@@ -22,6 +22,9 @@ class Buttons(FormView):
         images = [PIL.Image.open(image) for image in images]
         num_of_each = form.cleaned_data["num_of_each"]
         button_diameter_mm = form.cleaned_data["button_diameter_mm"]
+
+        # Perform PDF generation in a multiprocessing pool to retain responsiveness for other
+        # requests in the meantime.
         pdf = multiprocessing.Pool().apply(
             button_pdf_generator,
             [images],
