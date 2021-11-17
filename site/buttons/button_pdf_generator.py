@@ -65,7 +65,7 @@ def button_pdf_generator(
             "RGBA", (page_width_px, page_height_px), (255, 255, 255, 255)
         )
 
-        # Used to make image white outside the border
+        # Make white peripheral
         white_peripheral = PIL.Image.new(
             "RGBA", (button_width_px, button_height_px), (255, 255, 255, 255)
         )
@@ -75,7 +75,7 @@ def button_pdf_generator(
         for r in range(num_buttons_vertical):
             break_nested_for_loop = False
             for c in range(num_buttons_horizontal):
-                # Get index to get from the images list
+                # Calculate index to get from the images list
                 images_index = (
                     num_buttons_per_page * p + num_buttons_horizontal * r + c
                 ) // num_of_each
@@ -83,11 +83,12 @@ def button_pdf_generator(
                     break_nested_for_loop = True
                     break
 
-                # Convert to RGBA in case the input image was in RGB or anything else
-                img = images[images_index].convert("RGBA")
+                # Get image from list, convert and scale
+                img = images[images_index]
+                img = img.convert("RGBA")
                 img = img.resize((button_width_px, button_height_px))
 
-                # Draw border on image
+                # Draw border
                 PIL.ImageDraw.Draw(img).ellipse(
                     [(0, 0), (button_width_px, button_height_px)],
                     width=button_border_px,
