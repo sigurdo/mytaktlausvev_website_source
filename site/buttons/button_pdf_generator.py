@@ -1,11 +1,8 @@
-import os
-from os.path import join, splitext
 from math import ceil
 import io
 
 import PIL.Image
 import PIL.ImageDraw
-import numpy as np
 
 def button_pdf_generator(
     images,
@@ -74,19 +71,3 @@ def button_pdf_generator(
     else:
         pages[0].convert("RGB").save(output_bytes, format="PDF", resolution=page_dpi)
     return output_bytes
-        
-input_path = "input_images"
-output_path = "output_pdfs"
-
-images = []
-
-for (dirpath, dirnames, filenames) in os.walk(input_path):
-    for filename in filenames:
-        images.append(PIL.Image.open(join(dirpath, filename), "r"))
-
-pdf = button_pdf_generator(images, num_of_each=7)
-output_path_full = join(output_path, f"{splitext(filename)[0]}.pdf")
-with open(output_path_full, "wb") as file:
-    file.write(pdf.getvalue())
-print("pdf written:", output_path_full)
-
