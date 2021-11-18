@@ -68,4 +68,4 @@ codestyle-monokai.scss
 /*.sh
 
 # Docker postgres data
-db
+db/db
