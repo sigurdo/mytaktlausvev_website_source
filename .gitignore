@@ -64,3 +64,6 @@ codestyle-monokai.scss
 
 # Ignore shell scripts in root directory to easify custom automizations
 /*.sh
+
+# Docker postgres data
+db
