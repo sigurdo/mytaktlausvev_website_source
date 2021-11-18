@@ -127,7 +127,6 @@ def button_pdf_generator(
                     offset_left = array_left_px + (c * button_width_px)
                     offset_top = array_top_px + (r * button_height_px)
 
-                    # Paste image on background
                     background.paste(
                         img.copy(), (offset_left, offset_top), mask=img.copy()
                     )

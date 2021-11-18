@@ -2,7 +2,7 @@ from http import HTTPStatus
 from django.test import TestCase
 from django.urls import reverse
 from common.mixins import TestMixin
-from common.tests import test_image_gif_2x2 as test_image
+from common.test_utils import test_image_gif_2x2 as test_image
 
 
 class ButtonsViewTestSuite(TestMixin, TestCase):
