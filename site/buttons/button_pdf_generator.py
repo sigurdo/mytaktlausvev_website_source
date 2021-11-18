@@ -13,17 +13,18 @@ def pages_to_pdf(pages: list, page_dpi=300) -> io.BytesIO:
     Returns:
     - An io.BytesIO object containing the pdf file
     """
+    pages = [page.convert("RGB") for page in pages]
     output_bytes = io.BytesIO()
     if len(pages) > 1:
-        pages[0].convert("RGB").save(
+        pages[0].save(
             output_bytes,
             format="PDF",
             resolution=page_dpi,
             save_all=True,
-            append_images=[page.convert("RGB") for page in pages[1:]],
+            append_images=pages[1:],
         )
     else:
-        pages[0].convert("RGB").save(output_bytes, format="PDF", resolution=page_dpi)
+        pages[0].save(output_bytes, format="PDF", resolution=page_dpi)
     return output_bytes
 
 
