@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     "quotes",
     "events",
     "dashboard",
+    "buttons",
 ]
 
 MIDDLEWARE = [
