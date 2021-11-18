@@ -54,6 +54,8 @@ settings.cnf
 
 # Generated items
 site/media
+# Uploaded files
+media/
 
 # Compiled scss files
 site/compiled_scss
@@ -64,3 +66,6 @@ codestyle-monokai.scss
 
 # Ignore shell scripts in root directory to easify custom automizations
 /*.sh
+
+# Docker postgres data
+db

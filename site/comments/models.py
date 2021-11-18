@@ -22,7 +22,10 @@ class Comment(models.Model):
         return f"{self.content_object.get_absolute_url()}#comment-{self.pk}"
 
     def __str__(self):
-        return f"Kommentar #{self.pk}"
+        stripped = self.comment.rstrip()
+        if len(stripped) <= 20:
+            return stripped
+        return stripped[0:19] + "…"
 
     class Meta:
         verbose_name = "kommentar"

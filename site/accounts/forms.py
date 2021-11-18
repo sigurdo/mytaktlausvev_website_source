@@ -8,6 +8,5 @@ class LoginForm(AuthenticationForm):
 
     helper = FormHelper()
     helper.form_tag = False
-    helper.label_class = "col-lg-12 form-label"
-    helper.field_class = "col-lg-8 form-field"
+    helper.field_class = "col-lg-8"
     helper.add_input(Submit("submit", "Logg inn"))

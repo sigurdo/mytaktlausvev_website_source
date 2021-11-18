@@ -5,41 +5,58 @@
     <ol class="list-unstyled">
     {% for comment in comments %}
         <li id="comment-{{ comment.pk }}" class="mb-4">
-            <article class="p-margin-last-0">
-                <h3 class="fw-bold h6 m-0">
+            <article class="d-flex">
+                <div class="mx-2 my-1" style="width: 40px; height: 40px;">
                     <a
                         href="{% url 'profile' comment.created_by.slug %}"
-                        class="text-decoration-none color-unset"
-                    >{{ comment.created_by }}</a>
-                </h3>
+                        class="d-flex justify-content-center w-100 h-100"
+                    >
+                        <img
+                            src="{{ comment.created_by.get_avatar_url }}"
+                            class="object-fit-cover mw-100 mh-100"
+                        />
+                    </a>
+                </div>
 
-                {% load markdown %}
-                {{ comment.comment | markdown }}
+                <div class="p-margin-last-0 mx-1">
+                    <h3 class="fw-bold h6 m-0">
+                        <a
+                            href="{% url 'profile' comment.created_by.slug %}"
+                            class="text-decoration-none color-unset"
+                        >
+                            {{ comment.created_by.get_name }}
+                        </a>
+                    </h3>
 
-                <footer>
-                    <ul class="list-inline">
-                        <li class="list-inline-item">
-                            <time
-                                datetime="{{ comment.submitted | date:"c" }}"
-                                title="{{ comment.submitted }}"
-                                class="fw-light"
-                            >
-                                {% load humanize %}
-                                {{ comment.submitted | naturaltime }}
-                            </time>
-                        </li>
-                        {% if user == comment.created_by or perms.comments.change_comment %}
+
+                    {% load markdown %}
+                    {{ comment.comment | markdown }}
+
+                    <footer>
+                        <ul class="list-inline">
                             <li class="list-inline-item">
-                                <a href="{% url 'comment_update' comment.pk %}">Rediger</a>
+                                <time
+                                    datetime="{{ comment.submitted | date:"c" }}"
+                                    title="{{ comment.submitted }}"
+                                    class="fw-light"
+                                >
+                                    {% load humanize %}
+                                    {{ comment.submitted | naturaltime }}
+                                </time>
                             </li>
-                        {% endif %}
-                        {% if user == comment.created_by or perms.comments.delete_comment %}
-                            <li class="list-inline-item">
-                                <a href="{% url 'comment_delete' comment.pk %}">Slett</a>
-                            </li>
-                        {% endif %}
-                    </ul>
-                </footer>
+                            {% if user == comment.created_by or perms.comments.change_comment %}
+                                <li class="list-inline-item">
+                                    <a href="{% url 'comment_update' comment.pk %}">Rediger</a>
+                                </li>
+                            {% endif %}
+                            {% if user == comment.created_by or perms.comments.delete_comment %}
+                                <li class="list-inline-item">
+                                    <a href="{% url 'comment_delete' comment.pk %}">Slett</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </footer>
+                </div>
             </article>
         </li>
     {% endfor %}

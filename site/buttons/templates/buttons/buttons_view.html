@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %} Skiltmerkepdfgenerator {% endblock title %}
+
+{% block page %}
+<article class="mt-4">
+    <h1> Skiltmerkepdfgenerator </h1>
+
+    <div>
+        <h2 class="fs-3"> Framgangsmåte </h2>
+
+        <ol>
+            <li> Design nokre motiv du vil lage skiltmerke av. Designet må vere like langt som det er breidt (om ikkje vert det strekt) og ikkje ha noke viktig motiv utanfor sirkelen med sentrum midt i motivet og diameter lik breidda/høgda (om ikkje vert det borte). </li>
+            <li> Last opp motiva her som bilete og oppgje kor mange skiltmerke du ynskjer av kvart motiv. Om du skal lage skiltmerke i ei anna storleik enn Dei Taktlause sin standard, endre ynskja diameter. </li>
+            <li> Trykk generer PDF, vent til sida svarar (dette kan ta nokre sekund om du provar å lage mange eller store skiltmerke) og print ut. </li>
+        </ol>
+    </div>
+
+    {% load crispy_forms_tags %}
+    {% crispy form %}
+</article>
+{% endblock page %}

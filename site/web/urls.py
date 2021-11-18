@@ -14,20 +14,23 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import include, path
 from django.conf import settings
 from django.conf.urls.static import static
+from django.urls import include, path
+from django.views.generic import RedirectView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("brukarar/", include("accounts.urls")),
     path("sitat/", include("quotes.urls")),
+    path("hendingar/", include("events.urls")),
     path("", include("dashboard.urls")),
     path("notar/", include("sheetmusic.urls")),
     path("kommentarar/", include("comments.urls")),
     path("kontakt/", include("contact.urls")),
+    path("skiltmerke/", include("buttons.urls")),
+    path(
+        "buttons/", RedirectView.as_view(pattern_name="buttons:buttons", permanent=True)
+    ),
     path("", include("articles.urls")),
-]
-
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
