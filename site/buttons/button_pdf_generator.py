@@ -5,6 +5,28 @@ import PIL.Image
 import PIL.ImageDraw
 
 
+def pages_to_pdf(pages: list, page_dpi=300) -> io.BytesIO:
+    """
+    Input:
+    - pages: a list of PIL.Image objects, one for each page in the PDF
+
+    Returns:
+    - An io.BytesIO object containing the pdf file
+    """
+    output_bytes = io.BytesIO()
+    if len(pages) > 1:
+        pages[0].convert("RGB").save(
+            output_bytes,
+            format="PDF",
+            resolution=page_dpi,
+            save_all=True,
+            append_images=[page.convert("RGB") for page in pages[1:]],
+        )
+    else:
+        pages[0].convert("RGB").save(output_bytes, format="PDF", resolution=page_dpi)
+    return output_bytes
+
+
 def button_pdf_generator(
     images,
     num_of_each=1,
@@ -20,8 +42,6 @@ def button_pdf_generator(
     button_border_mm=0.5,
 ):
     """
-    button_pdf_generator
-
     Input:
     - images: a list of PIL image objects
     - kwargs: layout parameters
@@ -29,8 +49,11 @@ def button_pdf_generator(
     Returns:
     - An io.BytesIO object containing the output pdf file
     """
-    # Converts a number of mm to a number of pixels based on page_dpi
+
     def mm_to_px(mm):
+        """
+        Converts a number of mm to a number of pixels based on page_dpi
+        """
         return int(page_dpi * (mm / 25.4))
 
     # Calculate input parameters in pixels
@@ -72,52 +95,44 @@ def button_pdf_generator(
         PIL.ImageDraw.Draw(white_peripheral).ellipse(
             [(0, 0), (button_width_px, button_height_px)], fill=(0, 0, 0, 0)
         )
-        for r in range(num_buttons_vertical):
-            break_nested_for_loop = False
-            for c in range(num_buttons_horizontal):
-                # Calculate index to get from the images list
-                images_index = (
-                    num_buttons_per_page * p + num_buttons_horizontal * r + c
-                ) // num_of_each
-                if images_index >= len(images):
-                    break_nested_for_loop = True
-                    break
 
-                # Get image from list, convert and scale
-                img = images[images_index]
-                img = img.convert("RGBA")
-                img = img.resize((button_width_px, button_height_px))
+        def paint_page():
+            for r in range(num_buttons_vertical):
+                for c in range(num_buttons_horizontal):
+                    # Calculate index to get from the images list
+                    images_index = (
+                        num_buttons_per_page * p + num_buttons_horizontal * r + c
+                    ) // num_of_each
+                    if images_index >= len(images):
+                        return
 
-                # Draw border
-                PIL.ImageDraw.Draw(img).ellipse(
-                    [(0, 0), (button_width_px, button_height_px)],
-                    width=button_border_px,
-                    outline=(0, 0, 0, 255),
-                )
+                    # Get image from list, convert and scale
+                    img = images[images_index]
+                    img = img.convert("RGBA")
+                    img = img.resize((button_width_px, button_height_px))
 
-                # Make image white outside border
-                img.paste(white_peripheral.copy(), (0, 0), mask=white_peripheral.copy())
+                    # Draw border
+                    PIL.ImageDraw.Draw(img).ellipse(
+                        [(0, 0), (button_width_px, button_height_px)],
+                        width=button_border_px,
+                        outline=(0, 0, 0, 255),
+                    )
 
-                # Calculate position on page
-                offset_left = array_left_px + (c * button_width_px)
-                offset_top = array_top_px + (r * button_height_px)
+                    # Make image white outside border
+                    img.paste(
+                        white_peripheral.copy(), (0, 0), mask=white_peripheral.copy()
+                    )
 
-                # Paste image on background
-                background.paste(img.copy(), (offset_left, offset_top), mask=img.copy())
-            if break_nested_for_loop:
-                break
+                    # Calculate position on page
+                    offset_left = array_left_px + (c * button_width_px)
+                    offset_top = array_top_px + (r * button_height_px)
+
+                    # Paste image on background
+                    background.paste(
+                        img.copy(), (offset_left, offset_top), mask=img.copy()
+                    )
+
+        paint_page()
         pages.append(background)
 
-    # Create PDF file from pages list
-    output_bytes = io.BytesIO()
-    if len(pages) > 1:
-        pages[0].convert("RGB").save(
-            output_bytes,
-            format="PDF",
-            resolution=page_dpi,
-            save_all=True,
-            append_images=[page.convert("RGB") for page in pages[1:]],
-        )
-    else:
-        pages[0].convert("RGB").save(output_bytes, format="PDF", resolution=page_dpi)
-    return output_bytes
+    return pages_to_pdf(pages, page_dpi=page_dpi)

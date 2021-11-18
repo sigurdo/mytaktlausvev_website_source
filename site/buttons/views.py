@@ -9,7 +9,7 @@ from .forms import ButtonsForm
 from .button_pdf_generator import button_pdf_generator
 
 
-class Buttons(FormView):
+class ButtonsView(FormView):
     form_class = ButtonsForm
     template_name = "buttons/buttons.html"
 
