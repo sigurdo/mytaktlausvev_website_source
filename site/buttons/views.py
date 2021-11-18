@@ -11,7 +11,7 @@ from .button_pdf_generator import button_pdf_generator
 
 class ButtonsView(FormView):
     form_class = ButtonsForm
-    template_name = "buttons/buttons.html"
+    template_name = "buttons/buttons_view.html"
 
     def form_valid(self, form):
         images = self.request.FILES.getlist("images")
