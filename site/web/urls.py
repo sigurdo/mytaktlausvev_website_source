@@ -33,9 +33,7 @@ urlpatterns = [
     ),
     path(
         "dQw4w9WgXcQ/",
-        RedirectView.as_view(
-            url="https://www.youtube.com/watch?v=dQw4w9WgXcQ", permanent=True
-        ),
+        RedirectView.as_view(url="https://www.youtube.com/watch?v=dQw4w9WgXcQ"),
     ),
     path("", include("articles.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
