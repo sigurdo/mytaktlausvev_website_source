@@ -12,7 +12,7 @@
 
 <ul class="nav nav-tabs">
     <li class="nav-item"> <a class="nav-link {% block activeScoreUpdate %}{% endblock %}" href="{% url 'ScoreUpdate' score.pk %}"> Generelt </a> </li>
-    <li class="nav-item"> <a class="nav-link {% block activePartsUpdate %}{% endblock %}" href="{% url 'editScoreParts' score.pk %}"> Stemmer </a> </li>
+    <li class="nav-item"> <a class="nav-link {% block activePartsUpdate %}{% endblock %}" href="{% url 'PartsUpdate' score.pk %}"> Stemmer </a> </li>
     <li class="nav-item"> <a class="nav-link {% block activePdfsUpdate %}{% endblock %}" href="{% url 'editScorePdfs' score.pk %}"> PDFar </a> </li>
     <li class="nav-item"> <a class="nav-link {% block activePdfsUpload %}{% endblock %}" href="{% url 'PdfsUpload' score.pk %}"> PDF-opplasting </a> </li>
 </ul>

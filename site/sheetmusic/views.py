@@ -110,7 +110,7 @@ class PartsUpdate(
     )
 
     def get_success_url(self) -> str:
-        return reverse("editScoreParts", args=[self.get_object().pk])
+        return reverse("PartsUpdate", args=[self.get_object().pk])
 
     def get_form_kwargs(self) -> Dict[str, Any]:
         # We have to override get_form_kwargs() to restrict the queryset of the formset to only
