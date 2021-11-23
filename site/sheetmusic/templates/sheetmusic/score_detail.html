@@ -37,7 +37,7 @@
     <tr>
         <td> {{ part.name }} </td>
         <td> <a href="{% url 'readPart' part.pk %}"> Les </a> </td>
-        <td> <a href="{% url 'pdfPart' part.pk part.pdfFilename %}.pdf"> PDF </a> </td>
+        <td> <a href="{% url 'pdfPart' part.pk part.pdfFilename %}"> PDF </a> </td>
         <td> {% if part.favorite %} <a href="./" class="unfavorite" data-pk="{{part.pk}}"> <i class="fas fa-star"></i> </a> {% else %} <a href="./" class="favorite" data-pk="{{part.pk}}"> <i class="far fa-star"></i> </a> {% endif %} </td>
     </tr>
 {% endfor %}
