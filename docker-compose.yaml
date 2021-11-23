@@ -4,7 +4,7 @@ services:
   db:
     image: postgres
     volumes:
-      - ./db/db:/var/lib/postgresql/data
+      - ./db/db:/var/lib/postgresql/data:Z
     environment:
       - POSTGRES_DB=taktlaus_db
       - POSTGRES_USER=taktlaus
@@ -15,7 +15,7 @@ services:
     environment:
       - DEBUG=1
     volumes:
-      - ./site:/app/site
+      - ./site:/app/site:Z
     command: ./site/manage.py runserver 0.0.0.0:8000
     ports:
       - "8000:8000"
