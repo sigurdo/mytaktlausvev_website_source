@@ -1,7 +1,7 @@
 from django.urls import reverse
 from django.db import models
 from django.core import validators
-from common.models import BaseArticle
+from common.models import ArticleMixin
 
 
 class Julekalender(models.Model):
@@ -19,7 +19,7 @@ class Julekalender(models.Model):
         ordering = ["-year"]
 
 
-class Window(BaseArticle):
+class Window(ArticleMixin):
     """Model representing a window in a julekalender."""
 
     calendar = models.ForeignKey(
