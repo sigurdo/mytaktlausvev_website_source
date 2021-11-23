@@ -30,6 +30,7 @@ from django.views.generic.edit import (
     DeleteView,
     FormMixin,
 )
+from django.utils.text import slugify
 
 # Modules from other apps
 
@@ -67,10 +68,9 @@ class ScoreView(PermissionRequiredMixin, DetailView):
                 part=part, user=self.request.user
             ).count()
             part.favorite = True if count > 0 else False
-            part.pdfFilename = "{}_{}.pdf".format(
-                part.pdf.score.title, part.name
-            ).replace(" ", "_")
-
+            slug = slugify(f"{part.pdf.score.title}-{part.name}")
+            part.pdfFilename = f"{slug}.pdf"
+            
         context = super().get_context_data(**kwargs)
         context["pdfs"] = pdfs
         context["parts"] = parts
