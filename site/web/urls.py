@@ -23,6 +23,7 @@ urlpatterns = [
     path("brukarar/", include("accounts.urls")),
     path("", include("authentication.urls")),
     path("sitat/", include("quotes.urls")),
+    path("lagertilgjenge/", include("storage.urls")),
     path("hendingar/", include("events.urls")),
     path("", include("dashboard.urls")),
     path("notar/", include("sheetmusic.urls")),

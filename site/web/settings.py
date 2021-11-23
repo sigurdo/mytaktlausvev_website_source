@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     "common",
     "sidebar",
     "articles",
+    "storage",
     "comments",
     "contact",
     "quotes",
