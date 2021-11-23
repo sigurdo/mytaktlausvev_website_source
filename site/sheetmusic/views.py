@@ -70,7 +70,7 @@ class ScoreView(PermissionRequiredMixin, DetailView):
             part.favorite = True if count > 0 else False
             slug = slugify(f"{part.pdf.score.title}-{part.name}")
             part.pdfFilename = f"{slug}.pdf"
-            
+
         context = super().get_context_data(**kwargs)
         context["pdfs"] = pdfs
         context["parts"] = parts
