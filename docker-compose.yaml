@@ -4,7 +4,7 @@ services:
   db:
     image: postgres
     volumes:
-      - ./db/db:/var/lib/postgresql/data:Z
+      - ~/taktlausveven_db:/var/lib/postgresql/data:Z
     environment:
       - POSTGRES_DB=taktlaus_db
       - POSTGRES_USER=taktlaus
