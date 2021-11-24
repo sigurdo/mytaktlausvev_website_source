@@ -1,4 +1,5 @@
 import os
+import io
 
 from http import HTTPStatus
 from django.test import TestCase
@@ -196,8 +197,6 @@ class PdfsUpdateTestSuite(TestMixin, TestCase):
     def test_requires_permission(self):
         self.assertPermissionRequired(
             reverse("sheetmusic:PdfsUpdate", args=[self.score.pk]),
-            "sheetmusic.add_pdf",
-            "sheetmusic.change_pdf",
             "sheetmusic.delete_pdf",
         )
 
@@ -222,6 +221,49 @@ class PdfsUpdateTestSuite(TestMixin, TestCase):
         self.assertEqual(count, 0)
 
 
+class PdfsUploadTestSuite(TestMixin, TestCase):
+    def setUp(self):
+        self.score = ScoreFactory()
+        self.test_data = {
+            "files": open(
+                os.path.join(BASE_DIR, "common", "test_data", "test.pdf"), "rb"
+            ),
+            "plz_wait": True,
+        }
+
+    def test_requires_login(self):
+        self.assertLoginRequired(reverse("sheetmusic:PdfsUpload", args=[self.score.pk]))
+
+    def test_requires_permission(self):
+        self.assertPermissionRequired(
+            reverse("sheetmusic:PdfsUpload", args=[self.score.pk]),
+            "sheetmusic.add_pdf",
+            "sheetmusic.add_part",
+        )
+
+    def test_success_redirect(self):
+        user = SuperUserFactory()
+        self.client.force_login(user)
+        response = self.client.post(
+            reverse("sheetmusic:PdfsUpload", args=[self.score.pk]),
+            self.test_data,
+        )
+        self.assertRedirects(
+            response, reverse("sheetmusic:PdfsUpload", args=[self.score.pk])
+        )
+
+    def test_upload_pdf(self):
+        user = SuperUserFactory()
+        self.client.force_login(user)
+        self.client.post(
+            reverse("sheetmusic:PdfsUpload", args=[self.score.pk]),
+            self.test_data,
+        )
+        self.assertEqual(self.score.pdfs.count(), 1)
+        self.assertEqual(self.score.pdfs.last().parts.count(), 1)
+        self.assertEqual(self.score.pdfs.last().parts.last().name, "Tuba")
+
+
 class ScoreCreateTestSuite(TestMixin, TestCase):
     def test_create_score(self):
         user = SuperUserFactory()
@@ -239,18 +281,3 @@ class ScoreCreateTestSuite(TestMixin, TestCase):
         self.assertPermissionRequired(
             reverse("sheetmusic:ScoreCreate"), "sheetmusic.add_score"
         )
-
-
-class PdfUploadTestSuite(TestMixin, TestCase):
-    def test_upload_pdf(self):
-        user = SuperUserFactory()
-        score = ScoreFactory()
-        self.client.force_login(user)
-        with open(
-            os.path.join(BASE_DIR, "common", "test_data", "test.pdf"), "rb"
-        ) as file:
-            self.client.post(
-                reverse("sheetmusic:PdfsUpload", kwargs={"pk": score.pk}),
-                {"files": file, "plz_wait": True},
-            )
-        self.assertEqual(score.pdfs.count(), 1)

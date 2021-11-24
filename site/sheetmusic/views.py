@@ -153,7 +153,7 @@ class PdfsUpdate(
     form_class = EditPdfFormset
     template_name = "sheetmusic/pdfs_update.html"
     context_object_name = "score"
-    permission_required = ("sheetmusic.change_pdf", "sheetmusic.delete_pdf")
+    permission_required = ("sheetmusic.delete_pdf")
 
     def get_success_url(self) -> str:
         return reverse("sheetmusic:PdfsUpdate", args=[self.get_object().pk])
