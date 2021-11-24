@@ -10,6 +10,7 @@ def test_image_gif_2x2():
         content_type="image/gif",
     )
 
+
 def create_formset_post_data(
     total_forms=2,
     initial_forms=1,
