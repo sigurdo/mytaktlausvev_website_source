@@ -7,10 +7,10 @@
   <nav>
     <ul class="d-flex flex-column list-unstyled align-items-center">
       {% for julekalender in julekalender_list %}
-      <li class="my-2"> 
+      <li class="my-2">
           <a
             class="btn btn-lg btn-julekalender text-white"
-            href="{% url 'julekalender_detail' julekalender.year %}"
+            href="{% url 'julekalender:detail' julekalender.year %}"
           >
             {{ julekalender.year }}
           </a>
@@ -23,7 +23,7 @@
   {% if perms.julekalender.add_julekalender %}
   <a
     class="btn btn-lg btn-julekalender text-white"
-    href="{% url 'julekalender_create' %}"
+    href="{% url 'julekalender:create' %}"
   >
     Lag ny julekalender
   </a>

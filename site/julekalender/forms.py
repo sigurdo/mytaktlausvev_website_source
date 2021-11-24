@@ -25,5 +25,5 @@ class WindowForm(forms.ModelForm):
 
     class Meta:
         model = Window
-        fields = ["title", "content", "calendar", "index"]
-        widgets = {"calendar": forms.HiddenInput(), "index": forms.HiddenInput()}
+        fields = ["title", "content", "index"]
+        widgets = {"index": forms.HiddenInput()}

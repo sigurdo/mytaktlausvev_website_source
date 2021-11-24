@@ -10,10 +10,10 @@ class Julekalender(models.Model):
     year = models.IntegerField("år", primary_key=True)
 
     def __str__(self):
-        return str(self.year)
+        return f"Julekalender {self.year}"
 
     def get_absolute_url(self):
-        return reverse("julekalender_detail", args=[self.pk])
+        return reverse("julekalender:detail", args=[self.year])
 
     class Meta:
         ordering = ["-year"]
@@ -36,7 +36,10 @@ class Window(ArticleMixin):
     )
 
     def __str__(self):
-        return f"{self.calendar.year}, luke {self.index}"
+        return f"Julekalender {self.calendar.year}, luke {self.index}"
+
+    def get_absolute_url(self):
+        return reverse("julekalender:detail", args=[self.calendar.year])
 
     class Meta:
         constraints = [
