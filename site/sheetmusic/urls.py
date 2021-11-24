@@ -9,9 +9,7 @@ urlpatterns = [
     path("", views.ScoreList.as_view(), name="sheetmusic"),
     path("sjåpå/<slug:pk>", views.ScoreView.as_view(), name="ScoreView"),
     path("rediger/<slug:pk>", views.ScoreUpdate.as_view(), name="ScoreUpdate"),
-    path(
-        "rediger/<slug:pk>/stemmer", views.PartsUpdate.as_view(), name="PartsUpdate"
-    ),
+    path("rediger/<slug:pk>/stemmer", views.PartsUpdate.as_view(), name="PartsUpdate"),
     path("rediger/<slug:pk>/pdfar", views.PdfsUpdate.as_view(), name="editScorePdfs"),
     path("rediger/<slug:pk>/pdfar/ny", views.PdfsUpload.as_view(), name="PdfsUpload"),
     path("ny/", views.ScoreCreate.as_view(), name="createScore"),

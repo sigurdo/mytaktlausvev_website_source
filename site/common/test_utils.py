@@ -1,4 +1,8 @@
+import os
+
 from django.core.files.uploadedfile import SimpleUploadedFile
+
+from web.settings import BASE_DIR
 
 
 def test_image_gif_2x2():
@@ -9,6 +13,17 @@ def test_image_gif_2x2():
         content=gif,
         content_type="image/gif",
     )
+
+
+def test_pdf():
+    """Returns a temporary pdf file with 1 page and the text Tuba written on it that can be used in tests."""
+    pdf = open(os.path.join(BASE_DIR, "common", "test_data", "test.pdf"), "rb").read()
+    return SimpleUploadedFile(
+        name="test.pdf",
+        content=pdf,
+        content_type="application/pdf",
+    )
+
 
 def create_formset_post_data(
     total_forms=2,

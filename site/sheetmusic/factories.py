@@ -1,9 +1,11 @@
+from django import test
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 from factory.django import DjangoModelFactory
 from factory import SubFactory
 
 from accounts.factories import UserFactory
+from common.test_utils import test_pdf
 
 from .models import Score, Pdf, Part, UsersPreferredPart
 
@@ -20,7 +22,7 @@ class PdfFactory(DjangoModelFactory):
         model = Pdf
 
     score = SubFactory(ScoreFactory)
-    file = SimpleUploadedFile(name="navn", content="")
+    file = test_pdf()
 
 
 class PartFactory(DjangoModelFactory):
