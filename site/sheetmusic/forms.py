@@ -29,11 +29,11 @@ class EditPartForm(forms.ModelForm):
 
     class Meta:
         model = Part
-        fields = ["name", "fromPage", "toPage", "pdf"]
-        labels = {"name": "Navn", "fromPage": "Første side", "toPage": "Siste side"}
+        fields = ["name", "from_page", "to_page", "pdf"]
+        labels = {"name": "Navn", "from_page": "Første side", "to_page": "Siste side"}
         widgets = {
-            "fromPage": forms.NumberInput(attrs={"size": 1}),
-            "toPage": forms.NumberInput(attrs={"size": 1}),
+            "from_page": forms.NumberInput(attrs={"size": 1}),
+            "to_page": forms.NumberInput(attrs={"size": 1}),
             "pdf": forms.Select(),
         }
 

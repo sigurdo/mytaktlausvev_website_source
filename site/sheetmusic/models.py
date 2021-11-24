@@ -83,12 +83,12 @@ class Part(models.Model):
 
     name = models.CharField(max_length=255)
     pdf = models.ForeignKey(Pdf, on_delete=models.CASCADE, related_name="parts")
-    fromPage = models.IntegerField(default=None)
-    toPage = models.IntegerField(default=None)
+    from_page = models.IntegerField(default=None)
+    to_page = models.IntegerField(default=None)
     timestamp = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        ordering = ["pdf", "fromPage", "toPage", "name"]
+        ordering = ["pdf", "from_page", "to_page", "name"]
         verbose_name = "stemme"
         verbose_name_plural = "stemmer"
 

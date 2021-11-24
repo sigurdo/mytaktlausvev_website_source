@@ -31,8 +31,8 @@ class PartFactory(DjangoModelFactory):
 
     name = "Part"
     pdf = SubFactory(PdfFactory)
-    fromPage = 1
-    toPage = 1
+    from_page = 1
+    to_page = 1
 
 
 class UsersPreferredPartFactory(DjangoModelFactory):

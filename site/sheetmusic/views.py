@@ -240,8 +240,8 @@ class PdfsUpload(PermissionRequiredMixin, FormView):
                     part = Part(
                         name=part["name"],
                         pdf=pdf,
-                        fromPage=part["fromPage"],
-                        toPage=part["toPage"],
+                        from_page=part["fromPage"],
+                        to_page=part["toPage"],
                         timestamp=timezone.now(),
                     )
                     part.save()
@@ -288,7 +288,7 @@ class PartRead(PermissionRequiredMixin, DetailView):
         obj = self.get_object()
         context["pageUrls"] = [
             "/media/sheetmusic/images/{}/page_{}.jpg".format(obj.pdf.pk, pageNum)
-            for pageNum in range(obj.fromPage, obj.toPage + 1)
+            for pageNum in range(obj.from_page, obj.to_page + 1)
         ]
         return context
 
@@ -309,5 +309,5 @@ class PartPdf(PermissionRequiredMixin, DetailView):
 
     def render_to_response(self, _):
         obj = self.get_object()
-        content = self.split_pdf(obj.pdf.file, obj.fromPage, obj.toPage)
+        content = self.split_pdf(obj.pdf.file, obj.from_page, obj.to_page)
         return HttpResponse(content=content, content_type=self.content_type)

@@ -79,8 +79,8 @@ class PartsUpdateTestSuite(TestMixin, TestCase):
         return create_formset_post_data(
             fields={
                 "name": "name",
-                "fromPage": "1",
-                "toPage": "1",
+                "from_page": "1",
+                "to_page": "1",
                 "pdf": str(self.pdf.pk),
                 "id": str(self.part.pk),
                 "DELETE": "",
@@ -133,8 +133,8 @@ class PartsUpdateTestSuite(TestMixin, TestCase):
                     {},
                     {
                         "name": "new name",
-                        "fromPage": "1",
-                        "toPage": "1",
+                        "from_page": "1",
+                        "to_page": "1",
                         "pdf": str(self.pdf.pk),
                     },
                 ]
