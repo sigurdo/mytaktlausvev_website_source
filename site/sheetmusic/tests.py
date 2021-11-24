@@ -20,17 +20,17 @@ class ScoreViewTestSuite(TestMixin, TestCase):
         self.score = ScoreFactory()
 
     def test_requires_login(self):
-        self.assertLoginRequired(reverse("ScoreView", args=[self.score.pk]))
+        self.assertLoginRequired(reverse("sheetmusic:ScoreView", args=[self.score.pk]))
 
     def test_requires_permission(self):
         self.assertPermissionRequired(
-            reverse("ScoreView", args=[self.score.pk]), "sheetmusic.view_score"
+            reverse("sheetmusic:ScoreView", args=[self.score.pk]), "sheetmusic.view_score"
         )
 
     def test_view_score(self):
         user = SuperUserFactory()
         self.client.force_login(user)
-        response = self.client.get(reverse("ScoreView", args=[self.score.pk]))
+        response = self.client.get(reverse("sheetmusic:ScoreView", args=[self.score.pk]))
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
 
@@ -39,20 +39,20 @@ class ScoreUpdateTestSuite(TestMixin, TestCase):
         self.score = ScoreFactory()
 
     def test_requires_login(self):
-        self.assertLoginRequired(reverse("ScoreUpdate", args=[self.score.pk]))
+        self.assertLoginRequired(reverse("sheetmusic:ScoreUpdate", args=[self.score.pk]))
 
     def test_requires_permission(self):
         self.assertPermissionRequired(
-            reverse("ScoreUpdate", args=[self.score.pk]), "sheetmusic.change_score"
+            reverse("sheetmusic:ScoreUpdate", args=[self.score.pk]), "sheetmusic.change_score"
         )
 
     def test_success_redirect(self):
         user = SuperUserFactory()
         self.client.force_login(user)
         response = self.client.post(
-            reverse("ScoreUpdate", args=[self.score.pk]), {"title": "B score"}
+            reverse("sheetmusic:ScoreUpdate", args=[self.score.pk]), {"title": "B score"}
         )
-        self.assertRedirects(response, reverse("ScoreUpdate", args=[self.score.pk]))
+        self.assertRedirects(response, reverse("sheetmusic:ScoreUpdate", args=[self.score.pk]))
 
 
 class ScoreDeleteTestSuite(TestMixin, TestCase):
@@ -60,18 +60,18 @@ class ScoreDeleteTestSuite(TestMixin, TestCase):
         self.score = ScoreFactory()
 
     def test_requires_login(self):
-        self.assertLoginRequired(reverse("ScoreDelete", args=[self.score.pk]))
+        self.assertLoginRequired(reverse("sheetmusic:ScoreDelete", args=[self.score.pk]))
 
     def test_requires_permission(self):
         self.assertPermissionRequired(
-            reverse("ScoreDelete", args=[self.score.pk]), "sheetmusic.delete_score"
+            reverse("sheetmusic:ScoreDelete", args=[self.score.pk]), "sheetmusic.delete_score"
         )
 
     def test_success_redirect(self):
         user = SuperUserFactory()
         self.client.force_login(user)
-        response = self.client.post(reverse("ScoreDelete", args=[self.score.pk]), {})
-        self.assertRedirects(response, reverse("sheetmusic"))
+        response = self.client.post(reverse("sheetmusic:ScoreDelete", args=[self.score.pk]), {})
+        self.assertRedirects(response, reverse("sheetmusic:ScoreList"))
 
 
 class PartsUpdateTestSuite(TestMixin, TestCase):
@@ -95,11 +95,11 @@ class PartsUpdateTestSuite(TestMixin, TestCase):
         self.test_data = self.create_post_data([])
 
     def test_requires_login(self):
-        self.assertLoginRequired(reverse("PartsUpdate", args=[self.score.pk]))
+        self.assertLoginRequired(reverse("sheetmusic:PartsUpdate", args=[self.score.pk]))
 
     def test_requires_permission(self):
         self.assertPermissionRequired(
-            reverse("PartsUpdate", args=[self.score.pk]),
+            reverse("sheetmusic:PartsUpdate", args=[self.score.pk]),
             "sheetmusic.add_part",
             "sheetmusic.change_part",
             "sheetmusic.delete_part",
@@ -109,15 +109,15 @@ class PartsUpdateTestSuite(TestMixin, TestCase):
         user = SuperUserFactory()
         self.client.force_login(user)
         response = self.client.post(
-            reverse("PartsUpdate", args=[self.score.pk]), self.test_data
+            reverse("sheetmusic:PartsUpdate", args=[self.score.pk]), self.test_data
         )
-        self.assertRedirects(response, reverse("PartsUpdate", args=[self.score.pk]))
+        self.assertRedirects(response, reverse("sheetmusic:PartsUpdate", args=[self.score.pk]))
 
     def test_modify(self):
         user = SuperUserFactory()
         self.client.force_login(user)
         self.client.post(
-            reverse("PartsUpdate", args=[self.score.pk]),
+            reverse("sheetmusic:PartsUpdate", args=[self.score.pk]),
             self.create_post_data([{"name": "another name"}]),
         )
         part = Part.objects.get(pk=self.part.pk)
@@ -127,7 +127,7 @@ class PartsUpdateTestSuite(TestMixin, TestCase):
         user = SuperUserFactory()
         self.client.force_login(user)
         self.client.post(
-            reverse("PartsUpdate", args=[self.score.pk]),
+            reverse("sheetmusic:PartsUpdate", args=[self.score.pk]),
             self.create_post_data(
                 [
                     {},
@@ -149,7 +149,7 @@ class PartsUpdateTestSuite(TestMixin, TestCase):
         user = SuperUserFactory()
         self.client.force_login(user)
         self.client.post(
-            reverse("PartsUpdate", args=[self.score.pk]),
+            reverse("sheetmusic:PartsUpdate", args=[self.score.pk]),
             self.create_post_data([{"DELETE": "on"}]),
         )
         count = self.pdf.parts.count()
@@ -163,17 +163,17 @@ class ScoreCreateTestSuite(TestMixin, TestCase):
     def test_create_score(self):
         user = SuperUserFactory()
         self.client.force_login(user)
-        self.client.post(reverse("createScore"), {"title": "A score"})
+        self.client.post(reverse("sheetmusic:ScoreCreate"), {"title": "A score"})
 
         self.assertEqual(Score.objects.count(), 1)
         score = Score.objects.last()
         self.assertEqual(score.title, "A score")
 
     def test_requires_login(self):
-        self.assertLoginRequired(reverse("createScore"))
+        self.assertLoginRequired(reverse("sheetmusic:ScoreCreate"))
 
     def test_requires_permission(self):
-        self.assertPermissionRequired(reverse("createScore"), "sheetmusic.add_score")
+        self.assertPermissionRequired(reverse("sheetmusic:ScoreCreate"), "sheetmusic.add_score")
 
 
 class PdfUploadTestSuite(TestMixin, TestCase):
@@ -185,7 +185,7 @@ class PdfUploadTestSuite(TestMixin, TestCase):
             os.path.join(BASE_DIR, "common", "test_data", "test.pdf"), "rb"
         ) as file:
             self.client.post(
-                reverse("PdfsUpload", kwargs={"pk": score.pk}),
+                reverse("sheetmusic:PdfsUpload", kwargs={"pk": score.pk}),
                 {"files": file, "plz_wait": True},
             )
         self.assertEqual(score.pdfs.count(), 1)

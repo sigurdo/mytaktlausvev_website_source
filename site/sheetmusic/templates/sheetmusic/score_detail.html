@@ -1,7 +1,7 @@
 {% extends './base.html' %}
 {% block content %}
 
-<h1> {{ object.title }} <a href="{% url 'ScoreUpdate' object.pk %}" class="float-right h6"> rediger </a></h1>
+<h1> {{ object.title }} <a href="{% url 'sheetmusic:ScoreUpdate' object.pk %}" class="float-right h6"> rediger </a></h1>
 
 <h2> Favorittstemmer </h2>
 
@@ -16,8 +16,8 @@
     {% if part.favorite %}
         <tr>
             <td> {{ part.name }} </td>
-            <td> <a href="{% url 'readPart' part.pk %}"> Les </a> </td>
-            <td> <a href="{% url 'pdfPart' part.pk part.pdfFilename %}"> PDF </a> </td>
+            <td> <a href="{% url 'sheetmusic:PartRead' part.pk %}"> Les </a> </td>
+            <td> <a href="{% url 'sheetmusic:PartPdf' part.pk part.pdfFilename %}"> PDF </a> </td>
             <td> <a href="./" class="unfavorite" data-pk="{{part.pk}}"> <i class="fas fa-star"></i> </a> </td>
         </tr>
     {% endif %}
@@ -36,8 +36,8 @@
 {% for part in parts %}
     <tr>
         <td> {{ part.name }} </td>
-        <td> <a href="{% url 'readPart' part.pk %}"> Les </a> </td>
-        <td> <a href="{% url 'pdfPart' part.pk part.pdfFilename %}"> PDF </a> </td>
+        <td> <a href="{% url 'sheetmusic:PartRead' part.pk %}"> Les </a> </td>
+        <td> <a href="{% url 'sheetmusic:PartPdf' part.pk part.pdfFilename %}"> PDF </a> </td>
         <td> {% if part.favorite %} <a href="./" class="unfavorite" data-pk="{{part.pk}}"> <i class="fas fa-star"></i> </a> {% else %} <a href="./" class="favorite" data-pk="{{part.pk}}"> <i class="far fa-star"></i> </a> {% endif %} </td>
     </tr>
 {% endfor %}
@@ -50,7 +50,7 @@
     <script src="{% static 'fontawesome_free/js/all.min.js' %}"></script>
     <script src="{% static 'common/js/fetching.js' %}"></script>
     <script>
-        const fetchUsersPreferredPartUrl = '{% url 'fetchUsersPreferredPart' %}';
+        const fetchUsersPreferredPartUrl = '{% url 'sheetmusic:fetchUsersPreferredPart' %}';
         let favorites = document.querySelectorAll('.favorite');
         for (let i = 0; i < favorites.length; i++) {
             favorites[i].addEventListener('click', ev => {

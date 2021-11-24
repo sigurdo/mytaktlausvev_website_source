@@ -83,13 +83,13 @@ class ScoreUpdate(PermissionRequiredMixin, UpdateView):
     permission_required = "sheetmusic.change_score"
 
     def get_success_url(self) -> str:
-        return reverse("ScoreUpdate", args=[self.get_object().pk])
+        return reverse("sheetmusic:ScoreUpdate", args=[self.get_object().pk])
 
 
 class ScoreDelete(PermissionRequiredMixin, DeleteView):
     model = Score
     template_name = "common/confirm_delete.html"
-    success_url = reverse_lazy("sheetmusic")
+    success_url = reverse_lazy("sheetmusic:ScoreList")
     permission_required = "sheetmusic.delete_score"
 
 
@@ -110,7 +110,7 @@ class PartsUpdate(
     )
 
     def get_success_url(self) -> str:
-        return reverse("PartsUpdate", args=[self.get_object().pk])
+        return reverse("sheetmusic:PartsUpdate", args=[self.get_object().pk])
 
     def get_form_kwargs(self) -> Dict[str, Any]:
         # We have to override get_form_kwargs() to restrict the queryset of the formset to only
@@ -156,7 +156,7 @@ class PdfsUpdate(
     permission_required = ("sheetmusic.change_pdf", "sheetmusic.delete_pdf")
 
     def get_success_url(self) -> str:
-        return reverse("editScorePdfs", args=[self.get_object().pk])
+        return reverse("sheetmusic:PdfsUpdate", args=[self.get_object().pk])
 
     def get_form_kwargs(self) -> Dict[str, Any]:
         # We have to override get_form_kwargs() to restrict the queryset of the formset to only
@@ -190,7 +190,7 @@ class PdfsUpload(PermissionRequiredMixin, FormView):
         return Score.objects.get(pk=self.kwargs["pk"])
 
     def get_success_url(self) -> str:
-        return reverse("PdfsUpload", args=[self.get_object().pk])
+        return reverse("sheetmusic:PdfsUpload", args=[self.get_object().pk])
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         kwargs[self.context_object_name] = self.get_object()
@@ -257,7 +257,7 @@ class ScoreCreate(PermissionRequiredMixin, CreateView):
     permission_required = "sheetmusic.add_score"
 
     def get_success_url(self) -> str:
-        return reverse("sheetmusic")
+        return reverse("sheetmusic:ScoreList")
 
 
 class ScoreList(PermissionRequiredMixin, ListView):
