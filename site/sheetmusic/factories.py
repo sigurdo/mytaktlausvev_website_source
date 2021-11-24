@@ -1,6 +1,3 @@
-from django import test
-from django.core.files.uploadedfile import SimpleUploadedFile
-
 from factory.django import DjangoModelFactory
 from factory import SubFactory
 

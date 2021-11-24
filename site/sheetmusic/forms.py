@@ -90,7 +90,7 @@ class EditPdfForm(forms.ModelForm):
         model = Pdf
         fields = ["file"]
         labels = {"file": "Fil"}
-        # widgets={ "processing": forms.HiddenInput() }
+        widgets = {"file": forms.ClearableFileInput(attrs={"disabled": True})}
 
 
 EditPdfFormset = modelformset_factory(
