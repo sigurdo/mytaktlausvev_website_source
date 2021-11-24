@@ -1,13 +1,13 @@
 from django.contrib import admin
 
-from julekalender.models import Julekalender, Window
+from .models import Julekalender, Window
 
 
-@admin.register(Julekalender)
-class JulekalenderAdmin(admin.ModelAdmin):
-    pass
-
-
-@admin.register(Window)
 class WindowAdmin(admin.ModelAdmin):
+    list_display = ("calendar", "index", "title", "created_by")
+    search_fields = ("title", "calendar__year")
     ordering = ["calendar", "-index"]
+
+
+admin.site.register(Julekalender)
+admin.site.register(Window, WindowAdmin)

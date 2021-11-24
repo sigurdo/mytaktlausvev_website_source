@@ -17,6 +17,8 @@ class Julekalender(models.Model):
 
     class Meta:
         ordering = ["-year"]
+        verbose_name = "julekalender"
+        verbose_name_plural = "julekalendrar"
 
 
 class Window(ArticleMixin):
@@ -40,3 +42,5 @@ class Window(ArticleMixin):
         constraints = [
             models.UniqueConstraint(fields=["calendar", "index"], name="uniqueWindow")
         ]
+        verbose_name = "luke"
+        verbose_name_plural = "luker"

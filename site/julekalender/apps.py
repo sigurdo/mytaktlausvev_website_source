@@ -2,4 +2,5 @@ from django.apps import AppConfig
 
 
 class JulekalenderConfig(AppConfig):
-    name = 'julekalender'
+    name = "julekalender"
+    verbose_name = "julekalender"
