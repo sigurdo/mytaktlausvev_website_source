@@ -281,3 +281,49 @@ class ScoreCreateTestSuite(TestMixin, TestCase):
         self.assertPermissionRequired(
             reverse("sheetmusic:ScoreCreate"), "sheetmusic.add_score"
         )
+
+
+class ScoreListTestSuite(TestMixin, TestCase):
+    def test_requires_login(self):
+        self.assertLoginRequired(reverse("sheetmusic:ScoreList"))
+
+    def test_requires_permission(self):
+        self.assertPermissionRequired(
+            reverse("sheetmusic:ScoreList"),
+            "sheetmusic.view_score",
+        )
+
+
+class PartReadTestSuite(TestMixin, TestCase):
+    def setUp(self):
+        self.part = PartFactory()
+
+    def test_requires_login(self):
+        self.assertLoginRequired(reverse("sheetmusic:PartRead", args=[self.part.pk]))
+
+    def test_requires_permission(self):
+        self.assertPermissionRequired(
+            reverse("sheetmusic:PartRead", args=[self.part.pk]), "sheetmusic.view_part"
+        )
+
+
+class PartPdfTestSuite(TestMixin, TestCase):
+    def setUp(self):
+        self.part = PartFactory()
+
+    def test_requires_login(self):
+        self.assertLoginRequired(
+            reverse("sheetmusic:PartPdf", args=[self.part.pk, "part.pdf"])
+        )
+
+    def test_requires_permission(self):
+        self.assertPermissionRequired(
+            reverse("sheetmusic:PartPdf", args=[self.part.pk, "part.pdf"]),
+            "sheetmusic.view_part",
+        )
+
+    def test_returns_pdf(self):
+        user = SuperUserFactory()
+        self.client.force_login(user)
+        response = self.client.get(reverse("sheetmusic:PartPdf", args=[self.part.pk, "part.pdf"]))
+        self.assertEqual(response["content-type"], "application/pdf")
