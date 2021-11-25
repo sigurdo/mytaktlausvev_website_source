@@ -12,6 +12,7 @@ from web.settings import BASE_DIR
 
 from .factories import PartFactory, PdfFactory, ScoreFactory
 from .models import Score, Part
+from .forms import EditPartFormSet, EditPdfFormset
 
 # Create your tests here.
 
@@ -92,14 +93,14 @@ class ScoreDeleteTestSuite(TestMixin, TestCase):
 class PartsUpdateTestSuite(TestMixin, TestCase):
     def create_post_data(self, forms):
         return create_formset_post_data(
-            fields={
+            defaults={
                 "name": "name",
                 "from_page": "1",
                 "to_page": "1",
                 "pdf": str(self.pdf.pk),
                 "id": str(self.part.pk),
-                "DELETE": "",
             },
+            formset_class=EditPartFormSet,
             forms=forms,
         )
 
@@ -178,11 +179,10 @@ class PartsUpdateTestSuite(TestMixin, TestCase):
 class PdfsUpdateTestSuite(TestMixin, TestCase):
     def create_post_data(self, forms):
         return create_formset_post_data(
-            fields={
-                "file": "",
+            defaults={
                 "id": str(self.pdf.pk),
-                "DELETE": "",
             },
+            formset_class=EditPdfFormset,
             forms=forms,
         )
 
