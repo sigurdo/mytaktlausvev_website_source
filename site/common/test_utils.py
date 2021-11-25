@@ -12,52 +12,53 @@ def test_image_gif_2x2():
 
 
 def create_formset_post_data(
+    formset_class=None,
+    defaults=None,
+    data=None,
     total_forms=2,
     initial_forms=1,
     min_num_forms=0,
     max_num_forms=1000,
-    formset_class=None,
-    defaults=None,
-    forms=None,
 ):
     """
     Inputs:
-    - total_forms
-    - initial_forms
-    - min_num_forms
-    - max_num_forms
-    - defaults - a dictionary on the format {"field": "default"} of default values for the fields
-    - forms - a list of dictionaries on the format {"field": "value"} that provide the actual values to use for the fields in each subform
+    - `formset_class`
+    - `defaults` - a dictionary on the format {"field": "default"} of default values for the fields
+    - `data` - a list of dictionaries on the format {"field": "value"} that provide the actual values to use for the fields in each subform
+    - `total_forms`
+    - `initial_forms`
+    - `min_num_forms`
+    - `max_num_forms`
 
     Returns a dictonary which is the post data for the formset
 
     How it works:
 
-    It is always total_forms that tell how many forms the post data will be generated for
+    It is always `total_forms` that tell how many forms the post data will be generated for
 
     All forms will have the same fields. These fields are selected from the input in the following priority:
-    1. The fields in the form of the formset_class
-    2. The keys in the defaults dict
-    3. The keys in the 0th element of the forms list
+    1. The fields in the form of the `formset_class`
+    2. The keys in `defaults`
+    3. The keys in the 0th element of `data`
     4. If none of the above were found, it raises and exception
 
-    Then it fills out values for initial_forms number of forms with the following priority:
-    1. The value from the corresponding index and field in the forms list
-    2. The value from the corresponding field in the defaults dict
+    Then it fills out values for `initial_forms` number of forms with the following priority:
+    1. The value from the corresponding index and field in `data`
+    2. The value from the corresponding field in `defaults`
     3. The value ""
 
-    And finally fils out values up to total_forms number of forms with the following priority:
-    1. The value from the corresponding index and field in the forms list
+    And finally fils out values up to `total_forms` number of forms with the following priority:
+    1. The value from the corresponding index and field in `data`
     2. The value ""
 
-    For details on how fields are named, it is recommended to inspect the post request in developer tools in your browser
+    For details on how fields are named, it is recommended to inspect that particular post request in developer tools in your browser
     """
     if formset_class is not None:
         fields = list(formset_class.form.base_fields.keys())
     elif defaults is not None:
         fields = list(defaults.keys())
-    elif forms is not None and len(forms) > 0:
-        fields = list(forms[0].keys())
+    elif data is not None and len(data) > 0:
+        fields = list(data[0].keys())
     else:
         raise Exception("Must configure either formset_class, defaults or forms")
     if "id" not in fields:
@@ -70,21 +71,16 @@ def create_formset_post_data(
         "form-MIN_NUM_FORMS": str(min_num_forms),
         "form-MAX_NUM_FORMS": str(max_num_forms),
     }
-    for field in fields:
-        result[f"form-__prefix__-{field}"] = ""
     for i in range(total_forms):
         for field in fields:
-            if i < len(forms) and field in forms[i]:
-                # Use provided form field if it exists
-                value = forms[i][field]
-            elif i >= initial_forms:
-                # Use nothing if no provided form field and it is an extra form
-                value = ""
-            elif field in defaults:
-                # Use default value if no provided form field and it is not and extra form
+            if i < len(data) and field in data[i]:
+                # Use value from data if it exists
+                value = data[i][field]
+            elif i < initial_forms and field in defaults:
+                # Use default value if it does not exist in data and it is an initial form
                 value = defaults[field]
             else:
-                # Use nothing if not even a default value is provided
+                # Use nothing if not even a default value exists
                 value = ""
             result[f"form-{i}-{field}"] = value
     return result
