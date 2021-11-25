@@ -91,7 +91,7 @@ class ScoreDeleteTestSuite(TestMixin, TestCase):
 
 
 class PartsUpdateTestSuite(TestMixin, TestCase):
-    def create_post_data(self, forms):
+    def create_post_data(self, data):
         return create_formset_post_data(
             defaults={
                 "name": "name",
@@ -101,7 +101,7 @@ class PartsUpdateTestSuite(TestMixin, TestCase):
                 "id": str(self.part.pk),
             },
             formset_class=EditPartFormSet,
-            forms=forms,
+            data=data,
         )
 
     def setUp(self):
@@ -177,13 +177,13 @@ class PartsUpdateTestSuite(TestMixin, TestCase):
 
 
 class PdfsUpdateTestSuite(TestMixin, TestCase):
-    def create_post_data(self, forms):
+    def create_post_data(self, data):
         return create_formset_post_data(
             defaults={
                 "id": str(self.pdf.pk),
             },
             formset_class=EditPdfFormset,
-            forms=forms,
+            data=data,
         )
 
     def setUp(self):
