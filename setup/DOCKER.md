@@ -30,4 +30,4 @@ If you know you don't want to use the sheetmusic app and want to save 1.3GB of n
 docker-compose build --build-arg SHEETMUSIC=no
 ```
 
-Note that this will just save you time on your first build, since the operation is cached by docker after the first build and the cache will not be invalidated unless you change any dependenies of operations before the sheetmusic step in `Dockerfile`.
+Note that this will just save you time on your first build, since the operation is cached by docker after the first build and the cache will not be invalidated unless you change any dependenies of operations before the sheetmusic step in [`Dockerfile`](/Dockerfile).

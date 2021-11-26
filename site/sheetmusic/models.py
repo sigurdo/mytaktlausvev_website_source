@@ -85,7 +85,7 @@ def pdf_pre_delete_receiver(sender, instance: Pdf, using, **kwargs):
 class Part(models.Model):
     """Model representing a part"""
 
-    name = models.CharField("navn", max_length=255)
+    name = models.CharField("namn", max_length=255)
     pdf = models.ForeignKey(
         Pdf, verbose_name="pdf", on_delete=models.CASCADE, related_name="parts"
     )

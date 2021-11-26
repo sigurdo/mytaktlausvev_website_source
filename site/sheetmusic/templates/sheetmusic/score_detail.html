@@ -1,5 +1,5 @@
-{% extends './base.html' %}
-{% block content %}
+{% extends 'base.html' %}
+{% block page %}
 
 <h1> {{ object.title }} <a href="{% url 'sheetmusic:ScoreUpdate' object.pk %}" class="float-right h6"> rediger </a></h1>
 
@@ -43,7 +43,7 @@
 {% endfor %}
 </table>
 
-{% endblock %}
+{% endblock page %}
 
 {% block js %}
     {% load static %}
@@ -81,4 +81,4 @@
             });
         }
     </script>
-{% endblock %}
+{% endblock js%}

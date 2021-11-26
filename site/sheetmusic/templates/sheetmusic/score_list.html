@@ -1,5 +1,5 @@
-{% extends './base.html' %}
-{% block content %}
+{% extends 'base.html' %}
+{% block page %}
 
 <h1> Alle notar </h1>
 
@@ -37,6 +37,7 @@
 
                 <td>
                     {% if score.favoritePart %} <a href="{% url 'sheetmusic:PartRead' score.favoritePart.pk %}"> Les </a> {% endif %}
+                </td>
 
                 <td>
                     {{ score.timestamp }}
@@ -57,6 +58,6 @@
 {% block js %}
 {% endblock%}
 
-<a href="{% url 'sheetmusic:ScoreCreate' %}"> Ny note </a>
+<a href="{% url 'sheetmusic:ScoreCreate' %}" class="btn btn-primary"> Ny note </a>
 
-{% endblock %}
+{% endblock page %}

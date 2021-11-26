@@ -6,26 +6,21 @@ from crispy_forms.layout import Submit
 from .models import Score, Pdf, Part
 
 
-class ScoreCreateForm(forms.ModelForm):
-    """Form for uploading a new score"""
+class ScoreForm(forms.ModelForm):
+    """Form for creating or changing a score"""
 
     helper = FormHelper()
-    helper.form_method = "post"
-    helper.label_class = "form-label"
     helper.add_input(Submit("submit", "Lagre"))
 
     class Meta:
         model = Score
         fields = ["title"]
-        # labels = {"title": "T ittel"}
 
 
 class EditPartForm(forms.ModelForm):
     """Form for editing a part"""
 
     helper = FormHelper()
-    helper.form_method = "post"
-    helper.label_class = "form-label"
 
     class Meta:
         model = Part
@@ -54,24 +49,8 @@ EditPartFormSet = modelformset_factory(
 )
 
 
-class EditScoreForm(forms.ModelForm):
-    """Form for editing a score"""
-
-    helper = FormHelper()
-    helper.form_method = "post"
-    helper.label_class = "form-label"
-    helper.add_input(Submit("submit", "Lagre"))
-
-    class Meta:
-        model = Score
-        fields = ["title"]
-        labels = {"title": "Tittel"}
-
-
 class UploadPdfForm(forms.Form):
     helper = FormHelper()
-    helper.form_method = "post"
-    helper.label_class = "form-label"
     helper.add_input(Submit("submit", "Last opp"))
     files = forms.FileField(
         widget=forms.ClearableFileInput(attrs={"multiple": True}), label="Filer"
@@ -82,8 +61,6 @@ class EditPdfForm(forms.ModelForm):
     """Form for editing a pdf"""
 
     helper = FormHelper()
-    helper.form_method = "post"
-    helper.label_class = "form-label"
 
     class Meta:
         model = Pdf

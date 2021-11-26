@@ -39,9 +39,8 @@ from web.settings import BASE_DIR
 # Modules from this app
 from .models import Score, Pdf, Part, UsersPreferredPart
 from .forms import (
-    ScoreCreateForm,
+    ScoreForm,
     UploadPdfForm,
-    EditScoreForm,
     EditPartFormSet,
     EditPartFormSetHelper,
     EditPdfFormset,
@@ -76,7 +75,7 @@ class ScoreView(PermissionRequiredMixin, DetailView):
 
 class ScoreUpdate(PermissionRequiredMixin, UpdateView):
     model = Score
-    form_class = EditScoreForm
+    form_class = ScoreForm
     permission_required = "sheetmusic.change_score"
 
     def get_success_url(self) -> str:
@@ -251,7 +250,7 @@ class PdfsUpload(PermissionRequiredMixin, FormView):
 
 class ScoreCreate(PermissionRequiredMixin, CreateView):
     model = Score
-    form_class = ScoreCreateForm
+    form_class = ScoreForm
     template_name_suffix = "_create_form"
     permission_required = "sheetmusic.add_score"
 
