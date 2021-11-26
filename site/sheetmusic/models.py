@@ -26,7 +26,9 @@ class Score(models.Model):
 class Pdf(models.Model):
     """Model representing an uploaded pdf"""
 
-    score = models.ForeignKey(Score, verbose_name="note", on_delete=models.CASCADE, related_name="pdfs")
+    score = models.ForeignKey(
+        Score, verbose_name="note", on_delete=models.CASCADE, related_name="pdfs"
+    )
     file = models.FileField(
         "fil",
         upload_to="sheetmusic/original_pdfs/",
@@ -43,7 +45,9 @@ class Pdf(models.Model):
             )
         ],
     )
-    processing = models.BooleanField("prosessering pågår", default=False, editable=False)
+    processing = models.BooleanField(
+        "prosessering pågår", default=False, editable=False
+    )
     timestamp = models.DateTimeField("tidsmerke", auto_now_add=True)
 
     class Meta:
@@ -82,7 +86,9 @@ class Part(models.Model):
     """Model representing a part"""
 
     name = models.CharField("navn", max_length=255)
-    pdf = models.ForeignKey(Pdf, verbose_name="pdf", on_delete=models.CASCADE, related_name="parts")
+    pdf = models.ForeignKey(
+        Pdf, verbose_name="pdf", on_delete=models.CASCADE, related_name="parts"
+    )
     from_page = models.IntegerField("første side", default=None)
     to_page = models.IntegerField("siste side", default=None)
     timestamp = models.DateTimeField("tidsmerke", auto_now_add=True)
@@ -99,7 +105,9 @@ class Part(models.Model):
 class UsersPreferredPart(models.Model):
     """Model representing the preferred part of a user"""
 
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name="brukar", on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, verbose_name="brukar", on_delete=models.CASCADE
+    )
     part = models.ForeignKey(Part, verbose_name="stemme", on_delete=models.CASCADE)
 
     class Meta:
