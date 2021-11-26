@@ -33,7 +33,7 @@ from django.views.generic.edit import (
 from django.utils.text import slugify
 
 # Modules from other apps
-
+from web.settings import BASE_DIR
 
 # Modules from this app
 from .models import Score, Pdf, Part, UsersPreferredPart
@@ -153,7 +153,7 @@ class PdfsUpdate(
     form_class = EditPdfFormset
     template_name = "sheetmusic/pdfs_update.html"
     context_object_name = "score"
-    permission_required = ("sheetmusic.delete_pdf")
+    permission_required = "sheetmusic.delete_pdf"
 
     def get_success_url(self) -> str:
         return reverse("sheetmusic:PdfsUpdate", args=[self.get_object().pk])
@@ -233,7 +233,9 @@ class PdfsUpload(PermissionRequiredMixin, FormView):
                     (pdf.file.path, imagesDirPath),
                     {
                         "use_lstm": True,
-                        "tessdata_dir": os.path.join("tessdata", "tessdata_best-4.1.0"),
+                        "tessdata_dir": os.path.join(
+                            BASE_DIR, "..", "tessdata", "tessdata_best-4.1.0"
+                        ),
                     },
                 )
                 for part in parts:

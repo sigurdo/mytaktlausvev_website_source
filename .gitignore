@@ -52,10 +52,8 @@ db.sqlite3
 db.sqlite3-journal
 settings.cnf
 
-# Generated items
-site/media
 # Uploaded files
-media/
+site/media
 
 # Compiled scss files
 site/compiled_scss

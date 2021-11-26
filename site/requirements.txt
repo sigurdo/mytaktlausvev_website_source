@@ -27,9 +27,7 @@ flake8-black~=0.2
 django-tree-queries==0.6.0
 Pygments~=2.10
 Pillow~=8.3
-pyyaml~=5.4
 django-upload-validator~=1.1
-# pytesseract also requires tesseract: https://github.com/tesseract-ocr/tesseract/wiki
 sheatless~=0.0.12
 PyPDF2~=1.26.0
 fontawesome-free~=5.15.4

@@ -1,5 +1,4 @@
 import os
-import io
 
 from http import HTTPStatus
 from django.test import TestCase
@@ -325,5 +324,7 @@ class PartPdfTestSuite(TestMixin, TestCase):
     def test_returns_pdf(self):
         user = SuperUserFactory()
         self.client.force_login(user)
-        response = self.client.get(reverse("sheetmusic:PartPdf", args=[self.part.pk, "part.pdf"]))
+        response = self.client.get(
+            reverse("sheetmusic:PartPdf", args=[self.part.pk, "part.pdf"])
+        )
         self.assertEqual(response["content-type"], "application/pdf")
