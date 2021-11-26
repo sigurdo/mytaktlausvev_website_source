@@ -11,9 +11,8 @@ from upload_validator import FileTypeValidator
 class Score(models.Model):
     """Model representing a score"""
 
-    title = models.CharField(max_length=255)
-    # description = models.CharField(max_length=2000)
-    timestamp = models.DateTimeField(auto_now_add=True)
+    title = models.CharField("tittel", max_length=255)
+    timestamp = models.DateTimeField("tidsmerke", auto_now_add=True)
 
     class Meta:
         ordering = ["-timestamp"]
@@ -27,8 +26,9 @@ class Score(models.Model):
 class Pdf(models.Model):
     """Model representing an uploaded pdf"""
 
-    score = models.ForeignKey(Score, on_delete=models.CASCADE, related_name="pdfs")
+    score = models.ForeignKey(Score, verbose_name="note", on_delete=models.CASCADE, related_name="pdfs")
     file = models.FileField(
+        "fil",
         upload_to="sheetmusic/original_pdfs/",
         default=None,
         validators=[
@@ -43,8 +43,8 @@ class Pdf(models.Model):
             )
         ],
     )
-    processing = models.BooleanField(default=False, editable=False)
-    timestamp = models.DateTimeField(auto_now_add=True)
+    processing = models.BooleanField("prosessering pågår", default=False, editable=False)
+    timestamp = models.DateTimeField("tidsmerke", auto_now_add=True)
 
     class Meta:
         ordering = ["-timestamp"]
@@ -81,11 +81,11 @@ def pdf_pre_delete_receiver(sender, instance: Pdf, using, **kwargs):
 class Part(models.Model):
     """Model representing a part"""
 
-    name = models.CharField(max_length=255)
-    pdf = models.ForeignKey(Pdf, on_delete=models.CASCADE, related_name="parts")
-    from_page = models.IntegerField(default=None)
-    to_page = models.IntegerField(default=None)
-    timestamp = models.DateTimeField(auto_now_add=True)
+    name = models.CharField("navn", max_length=255)
+    pdf = models.ForeignKey(Pdf, verbose_name="pdf", on_delete=models.CASCADE, related_name="parts")
+    from_page = models.IntegerField("første side", default=None)
+    to_page = models.IntegerField("siste side", default=None)
+    timestamp = models.DateTimeField("tidsmerke", auto_now_add=True)
 
     class Meta:
         ordering = ["pdf", "from_page", "to_page", "name"]
@@ -99,8 +99,8 @@ class Part(models.Model):
 class UsersPreferredPart(models.Model):
     """Model representing the preferred part of a user"""
 
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    part = models.ForeignKey(Part, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name="brukar", on_delete=models.CASCADE)
+    part = models.ForeignKey(Part, verbose_name="stemme", on_delete=models.CASCADE)
 
     class Meta:
         ordering = ["user", "part"]

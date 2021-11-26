@@ -17,7 +17,7 @@ class ScoreCreateForm(forms.ModelForm):
     class Meta:
         model = Score
         fields = ["title"]
-        labels = {"title": "Tittel"}
+        # labels = {"title": "T ittel"}
 
 
 class EditPartForm(forms.ModelForm):
@@ -30,7 +30,6 @@ class EditPartForm(forms.ModelForm):
     class Meta:
         model = Part
         fields = ["name", "from_page", "to_page", "pdf"]
-        labels = {"name": "Navn", "from_page": "Første side", "to_page": "Siste side"}
         widgets = {
             "from_page": forms.NumberInput(attrs={"size": 1}),
             "to_page": forms.NumberInput(attrs={"size": 1}),
@@ -89,7 +88,6 @@ class EditPdfForm(forms.ModelForm):
     class Meta:
         model = Pdf
         fields = ["file"]
-        labels = {"file": "Fil"}
         widgets = {"file": forms.ClearableFileInput(attrs={"disabled": True})}
 
 

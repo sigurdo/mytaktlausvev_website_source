@@ -22,7 +22,7 @@ const csrfToken = getCookie('csrftoken');
  * @param {Object=} data - An optional data object to send with the request.
  * @returns {Promise<Response>} Returns a Promise that will resolve with a Response object with data from the server
  */
-async function fetchWithCsrf(method, url, data /* optional */) {
+async function fetchWithCsrf(method, url, data) {
     const body = data ? JSON.stringify(data) : undefined;
     return fetch(new Request(url, { method, body,
         headers: { 'X-CSRFToken': csrfToken },

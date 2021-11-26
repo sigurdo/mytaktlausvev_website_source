@@ -6,6 +6,7 @@ import os
 import threading
 import multiprocessing
 import random
+import json
 from typing import Any, Dict
 
 # Other python packages
@@ -21,7 +22,7 @@ from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.forms import BaseModelForm
 from django.contrib.auth.mixins import PermissionRequiredMixin
-from django.views.generic import DetailView, ListView
+from django.views.generic import DetailView, ListView, View
 from django.views.generic.edit import (
     CreateView,
     FormView,
@@ -46,10 +47,6 @@ from .forms import (
     EditPdfFormset,
     EditPdfFormsetHelper,
 )
-
-
-# Simplifies management stuff like deleting output files from the code editor on the host system.
-os.umask(0)
 
 
 class ScoreView(PermissionRequiredMixin, DetailView):
@@ -313,3 +310,27 @@ class PartPdf(PermissionRequiredMixin, DetailView):
         obj = self.get_object()
         content = self.split_pdf(obj.pdf.file, obj.from_page, obj.to_page)
         return HttpResponse(content=content, content_type=self.content_type)
+
+
+class UsersPreferredPartUpdateView(PermissionRequiredMixin, View):
+    permission_required = (
+        "sheetmusic.add_userspreferrepart",
+        "sheetmusic.delete_userspreferredpart",
+    )
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        data = json.loads(request.body)
+        part = Part.objects.get(pk=data["part_pk"])
+        relation = UsersPreferredPart(user=user, part=part)
+        relation.save()
+        return django.http.JsonResponse(django.forms.models.model_to_dict(relation))
+
+    def delete(self, request, *args, **kwargs):
+        user = request.user
+        data = json.loads(request.body)
+        part = Part.objects.get(pk=data["part_pk"])
+        relations = UsersPreferredPart.objects.filter(user=user, part=part)
+        for relation in relations:
+            relation.delete()
+        return django.http.HttpResponse("deleted")

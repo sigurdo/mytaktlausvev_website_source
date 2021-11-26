@@ -13,8 +13,6 @@ from .factories import PartFactory, PdfFactory, ScoreFactory
 from .models import Score, Part
 from .forms import EditPartFormSet, EditPdfFormset
 
-# Create your tests here.
-
 
 class ScoreViewTestSuite(TestMixin, TestCase):
     def setUp(self):
