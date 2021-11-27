@@ -6,11 +6,9 @@ import multiprocessing
 import io
 
 import django
-from django.core.validators import MinValueValidator, MaxValueValidator
-from django.core.exceptions import ValidationError
+from django.core.validators import MinValueValidator
 from django.db import models
 from django.conf import settings
-from django.utils import timezone
 from django.utils.text import slugify
 from django.urls import reverse
 
@@ -144,8 +142,12 @@ class Part(models.Model):
     pdf = models.ForeignKey(
         Pdf, verbose_name="pdf", on_delete=models.CASCADE, related_name="parts"
     )
-    from_page = models.IntegerField("første side", default=None, validators=[MinValueValidator(1)])
-    to_page = models.IntegerField("siste side", default=None, validators=[MinValueValidator(1)])
+    from_page = models.IntegerField(
+        "første side", default=None, validators=[MinValueValidator(1)]
+    )
+    to_page = models.IntegerField(
+        "siste side", default=None, validators=[MinValueValidator(1)]
+    )
     timestamp = models.DateTimeField("tidsmerke", auto_now_add=True)
 
     class Meta:
@@ -155,10 +157,10 @@ class Part(models.Model):
 
     def __str__(self):
         return self.name
-    
+
     def get_absolute_url(self):
         return reverse("sheetmusic:ScoreView", kwargs={"pk": self.pdf.score.pk})
-    
+
     def pdf_file(self):
         """Returns the PDF that contains only this part"""
         pdf = PdfFileReader(self.pdf.file.path)
@@ -172,7 +174,6 @@ class Part(models.Model):
     def pdf_filename_slug(self):
         """Returns a nice filename slug for the PDF that contains only this part"""
         return slugify(f"{self.pdf.score.title}-{self.name}") + ".pdf"
-    
 
 
 class UsersPreferredPart(models.Model):
@@ -198,6 +199,6 @@ class UsersPreferredPart(models.Model):
 
     def __str__(self):
         return f"{self.user}-{self.part}"
-    
+
     def get_absolute_url(self):
         return reverse("sheetmusic:ScoreView", kwargs={"pk": self.part.pdf.score.pk})

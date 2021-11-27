@@ -1,7 +1,6 @@
 """ Views for sheetmusic """
 
 # Official python packages
-import os
 import threading
 import json
 from typing import Any, Dict
@@ -11,7 +10,7 @@ import django
 from django.views.generic.base import TemplateResponseMixin
 from django.views.generic.detail import SingleObjectMixin
 from django.http import HttpResponse
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse_lazy
 from django.forms import BaseModelForm
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.views.generic import DetailView, ListView, View
@@ -23,7 +22,6 @@ from django.views.generic.edit import (
     DeleteView,
     FormMixin,
 )
-from django.utils.text import slugify
 
 # Modules from this app
 from .models import Score, Pdf, Part, UsersPreferredPart
@@ -108,7 +106,7 @@ class PartsUpdate(
         # We must explicitly save the form because it is not done automatically by any ancestors
         form.save()
         return super().form_valid(form)
-    
+
     def post(self, *args, **kwargs):
         # We must set self.object here to be compatible with SingleObjectMixin
         self.object = self.get_object()
