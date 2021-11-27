@@ -4,13 +4,11 @@
 import io
 import os
 import threading
-import multiprocessing
 import random
 import json
 from typing import Any, Dict
 
 # Other python packages
-from sheatless import processUploadedPdf
 from PyPDF2 import PdfFileReader, PdfFileWriter
 
 # Django packages
@@ -19,7 +17,6 @@ from django.views.generic.base import TemplateResponseMixin
 from django.views.generic.detail import SingleObjectMixin
 from django.http import HttpResponse
 from django.urls import reverse, reverse_lazy
-from django.utils import timezone
 from django.forms import BaseModelForm
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.views.generic import DetailView, ListView, View
@@ -34,7 +31,6 @@ from django.views.generic.edit import (
 from django.utils.text import slugify
 
 # Modules from other apps
-from web.settings import BASE_DIR
 
 # Modules from this app
 from .models import Score, Pdf, Part, UsersPreferredPart
@@ -194,58 +190,17 @@ class PdfsUpload(PermissionRequiredMixin, FormView):
 
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
         files = self.request.FILES.getlist("files")
-        pdfs = []
         for file in files:
             score = Score.objects.get(pk=self.kwargs["pk"])
             pdf = Pdf.objects.create(score=score, file=file)
             pdf.save()
-            pdfs.append(pdf)
-        plz_wait = self.request.POST.get("plz_wait", False)
-        if plz_wait:
-            self.processPdfs(pdfs)
-        else:
-            processPdfsThread = threading.Thread(target=self.processPdfs, args=[pdfs])
-            processPdfsThread.start()
+            plz_wait = self.request.POST.get("plz_wait", False)
+            if plz_wait:
+                pdf.find_parts()
+            else:
+                processPdfsThread = threading.Thread(target=pdf.find_parts)
+                processPdfsThread.start()
         return super().form_valid(form)
-
-    def processPdfs(self, pdfs):
-        for pdf in pdfs:
-            pdf.processing = True
-            pdf.save()
-            try:
-                imagesDirPath = os.path.join(
-                    django.conf.settings.MEDIA_ROOT, "sheetmusic", "images"
-                )
-                if not os.path.exists(imagesDirPath):
-                    os.mkdir(imagesDirPath)
-                imagesDirPath = os.path.join(imagesDirPath, str(pdf.pk))
-                if not os.path.exists(imagesDirPath):
-                    os.mkdir(imagesDirPath)
-
-                # PDF processing is done in a separate process to not affect responsetime
-                # of other requests the server receives while it is processing
-                parts, instrumentsDefaultParts = multiprocessing.Pool().apply(
-                    processUploadedPdf,
-                    (pdf.file.path, imagesDirPath),
-                    {
-                        "use_lstm": True,
-                        "tessdata_dir": os.path.join(
-                            BASE_DIR, "..", "tessdata", "tessdata_best-4.1.0"
-                        ),
-                    },
-                )
-                for part in parts:
-                    part = Part(
-                        name=part["name"],
-                        pdf=pdf,
-                        from_page=part["fromPage"],
-                        to_page=part["toPage"],
-                        timestamp=timezone.now(),
-                    )
-                    part.save()
-            finally:
-                pdf.processing = False
-                pdf.save()
 
 
 class ScoreCreate(PermissionRequiredMixin, CreateView):

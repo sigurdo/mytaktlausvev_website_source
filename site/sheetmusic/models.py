@@ -2,10 +2,17 @@
 
 import os
 import shutil
+import multiprocessing
+
 import django
 from django.db import models
 from django.conf import settings
+from django.utils import timezone
+
 from upload_validator import FileTypeValidator
+from sheatless import processUploadedPdf
+
+from web.settings import BASE_DIR
 
 
 class Score(models.Model):
@@ -57,6 +64,44 @@ class Pdf(models.Model):
 
     def __str__(self):
         return os.path.basename(self.file.path)
+
+    def find_parts(self):
+        self.processing = True
+        self.save()
+        try:
+            imagesDirPath = os.path.join(
+                django.conf.settings.MEDIA_ROOT, "sheetmusic", "images"
+            )
+            if not os.path.exists(imagesDirPath):
+                os.mkdir(imagesDirPath)
+            imagesDirPath = os.path.join(imagesDirPath, str(self.pk))
+            if not os.path.exists(imagesDirPath):
+                os.mkdir(imagesDirPath)
+
+            # PDF processing is done in a separate process to not affect responsetime
+            # of other requests the server receives while it is processing
+            parts, instrumentsDefaultParts = multiprocessing.Pool().apply(
+                processUploadedPdf,
+                (self.file.path, imagesDirPath),
+                {
+                    "use_lstm": True,
+                    "tessdata_dir": os.path.join(
+                        BASE_DIR, "..", "tessdata", "tessdata_best-4.1.0"
+                    ),
+                },
+            )
+            for part in parts:
+                part = Part(
+                    name=part["name"],
+                    pdf=self,
+                    from_page=part["fromPage"],
+                    to_page=part["toPage"],
+                    timestamp=timezone.now(),
+                )
+                part.save()
+        finally:
+            self.processing = False
+            self.save()
 
 
 @django.dispatch.receiver(
