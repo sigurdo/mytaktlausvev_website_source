@@ -3,14 +3,21 @@
 import os
 import shutil
 import multiprocessing
+import io
 
 import django
+from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
+from django.utils.text import slugify
+from django.urls import reverse
+
 
 from upload_validator import FileTypeValidator
 from sheatless import processUploadedPdf
+from PyPDF2 import PdfFileReader, PdfFileWriter
 
 from web.settings import TESSDATA_DIR
 
@@ -28,6 +35,9 @@ class Score(models.Model):
 
     def __str__(self):
         return self.title
+
+    def get_absolute_url(self):
+        return reverse("sheetmusic:ScoreView", kwargs={"pk": self.pk})
 
 
 class Pdf(models.Model):
@@ -65,6 +75,9 @@ class Pdf(models.Model):
     def __str__(self):
         return os.path.basename(self.file.path)
 
+    def get_absolute_url(self):
+        return reverse("sheetmusic:ScoreView", kwargs={"pk": self.score.pk})
+
     def find_parts(self):
         self.processing = True
         self.save()
@@ -94,7 +107,6 @@ class Pdf(models.Model):
                     pdf=self,
                     from_page=part["fromPage"],
                     to_page=part["toPage"],
-                    timestamp=timezone.now(),
                 )
                 part.save()
         finally:
@@ -132,8 +144,8 @@ class Part(models.Model):
     pdf = models.ForeignKey(
         Pdf, verbose_name="pdf", on_delete=models.CASCADE, related_name="parts"
     )
-    from_page = models.IntegerField("første side", default=None)
-    to_page = models.IntegerField("siste side", default=None)
+    from_page = models.IntegerField("første side", default=None, validators=[MinValueValidator(1)])
+    to_page = models.IntegerField("siste side", default=None, validators=[MinValueValidator(1)])
     timestamp = models.DateTimeField("tidsmerke", auto_now_add=True)
 
     class Meta:
@@ -143,6 +155,24 @@ class Part(models.Model):
 
     def __str__(self):
         return self.name
+    
+    def get_absolute_url(self):
+        return reverse("sheetmusic:ScoreView", kwargs={"pk": self.pdf.score.pk})
+    
+    def pdf_file(self):
+        """Returns the PDF that contains only this part"""
+        pdf = PdfFileReader(self.pdf.file.path)
+        pdf_writer = PdfFileWriter()
+        for page_nr in range(self.from_page, self.to_page + 1):
+            pdf_writer.addPage(pdf.getPage(page_nr - 1))
+        output_stream = io.BytesIO()
+        pdf_writer.write(output_stream)
+        return output_stream.getvalue()
+
+    def pdf_filename_slug(self):
+        """Returns a nice filename slug for the PDF that contains only this part"""
+        return slugify(f"{self.pdf.score.title}-{self.name}") + ".pdf"
+    
 
 
 class UsersPreferredPart(models.Model):
@@ -168,3 +198,6 @@ class UsersPreferredPart(models.Model):
 
     def __str__(self):
         return f"{self.user}-{self.part}"
+    
+    def get_absolute_url(self):
+        return reverse("sheetmusic:ScoreView", kwargs={"pk": self.part.pdf.score.pk})

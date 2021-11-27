@@ -19,13 +19,17 @@
                     Dato opprettet
                 </th>
 
-                <th class="col-form-label">
-                    Rediger
-                </th>
+                {% if perms.sheetmusic.change_score %}
+                    <th class="col-form-label">
+                        Rediger
+                    </th>
+                {% endif %}
 
-                <th class="col-form-label">
-                    Slett
-                </th>
+                {% if perms.sheetmusic.delete_score %}
+                    <th class="col-form-label">
+                        Slett
+                    </th>
+                {% endif %}
             </tr>
         </thead>
 
@@ -44,19 +48,25 @@
                         {{ score.timestamp }}
                     </td>
 
-                    <td>
-                        <a href="{% url 'sheetmusic:ScoreUpdate' score.pk %}"> Rediger </a>
-                    </td>
+                    {% if perms.sheetmusic.change_score %}
+                        <td>
+                            <a href="{% url 'sheetmusic:ScoreUpdate' score.pk %}"> Rediger </a>
+                        </td>
+                    {% endif %}
 
-                    <td>
-                        <a href="{% url 'sheetmusic:ScoreDelete' score.pk %}"> Slett </a>
-                    </td>
+                    {% if perms.sheetmusic.delete_score %}
+                        <td>
+                            <a href="{% url 'sheetmusic:ScoreDelete' score.pk %}"> Slett </a>
+                        </td>
+                    {% endif %}
                 </tr>
             {% endfor %}
         </tbody>
     </table>
 {% endif %}
 
-<a href="{% url 'sheetmusic:ScoreCreate' %}" class="btn btn-primary"> Ny note </a>
+{% if perms.sheetmusic.add_score %}
+    <a href="{% url 'sheetmusic:ScoreCreate' %}" class="btn btn-primary"> Ny note </a>
+{% endif %}
 
 {% endblock page %}

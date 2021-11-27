@@ -1,14 +1,10 @@
 """ Views for sheetmusic """
 
 # Official python packages
-import io
 import os
 import threading
 import json
 from typing import Any, Dict
-
-# Other python packages
-from PyPDF2 import PdfFileReader, PdfFileWriter
 
 # Django packages
 import django
@@ -29,8 +25,6 @@ from django.views.generic.edit import (
 )
 from django.utils.text import slugify
 
-# Modules from other apps
-
 # Modules from this app
 from .models import Score, Pdf, Part, UsersPreferredPart
 from .forms import (
@@ -49,22 +43,17 @@ class ScoreView(PermissionRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         pdfs = Pdf.objects.filter(score=self.get_object())
-        for pdf in pdfs:
-            pdf.file.displayname = os.path.basename(pdf.file.name)
-
         parts = Part.objects.filter(pdf__in=pdfs)
         for part in parts:
-            part.pdfName = os.path.basename(part.pdf.file.name)
-            count = UsersPreferredPart.objects.filter(
-                part=part, user=self.request.user
-            ).count()
+            count = self.request.user.preferred_parts.filter(part=part).count()
             part.favorite = True if count > 0 else False
-            slug = slugify(f"{part.pdf.score.title}-{part.name}")
-            part.pdfFilename = f"{slug}.pdf"
 
         context = super().get_context_data(**kwargs)
         context["pdfs"] = pdfs
         context["parts"] = parts
+        context["num_of_favorite_parts"] = len(
+            list(filter(lambda part: part.favorite, parts))
+        )
         return context
 
 
@@ -73,9 +62,6 @@ class ScoreUpdate(PermissionRequiredMixin, UpdateView):
     form_class = ScoreForm
     template_name = "sheetmusic/score_edit.html"
     permission_required = "sheetmusic.change_score"
-
-    def get_success_url(self) -> str:
-        return reverse("sheetmusic:ScoreUpdate", args=[self.get_object().pk])
 
 
 class ScoreDelete(PermissionRequiredMixin, DeleteView):
@@ -102,7 +88,7 @@ class PartsUpdate(
     )
 
     def get_success_url(self) -> str:
-        return reverse("sheetmusic:PartsUpdate", args=[self.get_object().pk])
+        return self.get_object().get_absolute_url()
 
     def get_form_kwargs(self) -> Dict[str, Any]:
         # We have to override get_form_kwargs() to restrict the queryset of the formset to only
@@ -122,6 +108,11 @@ class PartsUpdate(
         # We must explicitly save the form because it is not done automatically by any ancestors
         form.save()
         return super().form_valid(form)
+    
+    def post(self, *args, **kwargs):
+        # We must set self.object here to be compatible with SingleObjectMixin
+        self.object = self.get_object()
+        return super().post(*args, **kwargs)
 
     def get(self, *args, **kwargs):
         # We must set self.object here to be compatible with SingleObjectMixin
@@ -148,7 +139,7 @@ class PdfsUpdate(
     permission_required = "sheetmusic.delete_pdf"
 
     def get_success_url(self) -> str:
-        return reverse("sheetmusic:PdfsUpdate", args=[self.get_object().pk])
+        return self.get_object().get_absolute_url()
 
     def get_form_kwargs(self) -> Dict[str, Any]:
         # We have to override get_form_kwargs() to restrict the queryset of the formset to only
@@ -182,7 +173,7 @@ class PdfsUpload(PermissionRequiredMixin, FormView):
         return Score.objects.get(pk=self.kwargs["pk"])
 
     def get_success_url(self) -> str:
-        return reverse("sheetmusic:PdfsUpload", args=[self.get_object().pk])
+        return self.get_object().get_absolute_url()
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         kwargs[self.context_object_name] = self.get_object()
@@ -247,18 +238,8 @@ class PartPdf(PermissionRequiredMixin, DetailView):
     content_type = "application/pdf"
     permission_required = "sheetmusic.view_part"
 
-    def split_pdf(self, path, from_page, to_page) -> bytes:
-        pdf = PdfFileReader(path)
-        pdf_writer = PdfFileWriter()
-        for page_nr in range(from_page, to_page + 1):
-            pdf_writer.addPage(pdf.getPage(page_nr - 1))
-        output_stream = io.BytesIO()
-        pdf_writer.write(output_stream)
-        return output_stream.getvalue()
-
     def render_to_response(self, _):
-        obj = self.get_object()
-        content = self.split_pdf(obj.pdf.file, obj.from_page, obj.to_page)
+        content = self.get_object().pdf_file()
         return HttpResponse(content=content, content_type=self.content_type)
 
 
