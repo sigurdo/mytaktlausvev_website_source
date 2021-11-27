@@ -26,19 +26,17 @@ class EditPartForm(forms.ModelForm):
         model = Part
         fields = ["name", "from_page", "to_page", "pdf"]
         widgets = {
-            "from_page": forms.NumberInput(attrs={"size": 1}),
-            "to_page": forms.NumberInput(attrs={"size": 1}),
-            "pdf": forms.Select(),
+            "from_page": forms.NumberInput(attrs={"size": 3}),
+            "to_page": forms.NumberInput(attrs={"size": 3}),
         }
 
 
 class EditPartFormSetHelper(FormHelper):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.form_method = "post"
         self.render_required_fields = True
-        self.add_input(Submit("submit", "Lagre"))
         self.template = "common/table_inline_formset_shade_delete.html"
+        self.add_input(Submit("submit", "Lagre"))
 
 
 EditPartFormSet = modelformset_factory(
@@ -82,10 +80,9 @@ EditPdfFormset = modelformset_factory(
 class EditPdfFormsetHelper(FormHelper):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.form_method = "post"
         self.render_required_fields = True
-        self.add_input(Submit("submit", "Lagre"))
         self.template = "common/table_inline_formset_shade_delete.html"
+        self.add_input(Submit("submit", "Lagre"))
 
 
 EditPdfFormset.helper = EditPdfFormsetHelper()
