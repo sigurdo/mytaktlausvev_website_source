@@ -32,7 +32,7 @@
                             <a href="{% url 'sheetmusic:PartRead' part.pk %}"> Les </a>
                         </td>
                         <td>
-                            <a href="{% url 'sheetmusic:PartPdf' part.pk part.pdfFilename %}"> PDF </a>
+                            <a href="{% url 'sheetmusic:PartPdf' part.pk part.pdf_filename_slug %}"> PDF </a>
                         </td>
                         <td>
                             <a href="./" class="unfavorite" data-pk="{{part.pk}}"> <i class="fas fa-star"></i> </a>
@@ -65,7 +65,7 @@
                         <a href="{% url 'sheetmusic:PartRead' part.pk %}"> Les </a>
                     </td>
                     <td>
-                        <a href="{% url 'sheetmusic:PartPdf' part.pk part.pdfFilename %}"> PDF </a>
+                        <a href="{% url 'sheetmusic:PartPdf' part.pk part.pdf_filename_slug %}"> PDF </a>
                     </td>
                     <td>
                         {% if part.favorite %}
