@@ -71,6 +71,7 @@ class ScoreView(PermissionRequiredMixin, DetailView):
 class ScoreUpdate(PermissionRequiredMixin, UpdateView):
     model = Score
     form_class = ScoreForm
+    template_name = "sheetmusic/score_edit.html"
     permission_required = "sheetmusic.change_score"
 
     def get_success_url(self) -> str:
@@ -93,7 +94,7 @@ class PartsUpdate(
 ):
     model = Score
     form_class = EditPartFormSet
-    template_name = "sheetmusic/parts_update.html"
+    template_name = "sheetmusic/score_edit.html"
     permission_required = (
         "sheetmusic.add_part",
         "sheetmusic.change_part",
@@ -142,7 +143,7 @@ class PdfsUpdate(
 ):
     model = Score
     form_class = EditPdfFormset
-    template_name = "sheetmusic/pdfs_update.html"
+    template_name = "sheetmusic/score_edit.html"
     context_object_name = "score"
     permission_required = "sheetmusic.delete_pdf"
 
@@ -173,7 +174,7 @@ class PdfsUpdate(
 
 class PdfsUpload(PermissionRequiredMixin, FormView):
     form_class = UploadPdfForm
-    template_name = "sheetmusic/pdfs_upload.html"
+    template_name = "sheetmusic/score_edit.html"
     context_object_name = "score"
     permission_required = ("sheetmusic.add_pdf", "sheetmusic.add_part")
 

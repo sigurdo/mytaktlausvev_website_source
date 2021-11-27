@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block page %}
+
+<h1> <a href="{% url 'sheetmusic:ScoreView' score.pk %}"> {{ score.title }} </a> </h1>
+
+<ul class="nav nav-tabs">
+    <li class="nav-item"> <a class="nav-link {% if request.resolver_match.view_name == 'sheetmusic:ScoreUpdate' %} active {% endif %}" href="{% url 'sheetmusic:ScoreUpdate' score.pk %}"> Generelt </a> </li>
+    <li class="nav-item"> <a class="nav-link {% if request.resolver_match.view_name == 'sheetmusic:PartsUpdate' %} active {% endif %}" href="{% url 'sheetmusic:PartsUpdate' score.pk %}"> Stemmer </a> </li>
+    <li class="nav-item"> <a class="nav-link {% if request.resolver_match.view_name == 'sheetmusic:PdfsUpdate' %} active {% endif %}" href="{% url 'sheetmusic:PdfsUpdate' score.pk %}"> PDFar </a> </li>
+    <li class="nav-item"> <a class="nav-link {% if request.resolver_match.view_name == 'sheetmusic:PdfsUpload' %} active {% endif %}" href="{% url 'sheetmusic:PdfsUpload' score.pk %}"> PDF-opplasting </a> </li>
+</ul>
+
+
+{% block form %}
+    {% load crispy_forms_tags %}
+    {% crispy form %}
+{% endblock form %}
+
+
+{% endblock page %}

@@ -49,6 +49,9 @@ EditPartFormSet = modelformset_factory(
 )
 
 
+EditPartFormSet.helper = EditPartFormSetHelper()
+
+
 class UploadPdfForm(forms.Form):
     helper = FormHelper()
     helper.add_input(Submit("submit", "Last opp"))
@@ -83,3 +86,6 @@ class EditPdfFormsetHelper(FormHelper):
         self.render_required_fields = True
         self.add_input(Submit("submit", "Lagre"))
         self.template = "common/table_inline_formset_shade_delete.html"
+
+
+EditPdfFormset.helper = EditPdfFormsetHelper()
