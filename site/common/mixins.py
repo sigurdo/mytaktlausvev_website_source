@@ -1,10 +1,22 @@
 from http import HTTPStatus
-from django.test import TestCase
+import shutil
+import tempfile
+
+from django.test import TestCase, override_settings
 from django.urls import reverse
 from accounts.factories import UserFactory
 
 
+MEDIA_ROOT = tempfile.mkdtemp()
+
+
+@override_settings(MEDIA_ROOT=MEDIA_ROOT)
 class TestMixin(TestCase):
+    @classmethod
+    def tearDownClass(cls) -> None:
+        shutil.rmtree(MEDIA_ROOT, ignore_errors=True)
+        return super().tearDownClass()
+
     def assertLoginRequired(self, url):
         """
         Asserts that `url` requires login by checking for a redirect to the `login` view.
