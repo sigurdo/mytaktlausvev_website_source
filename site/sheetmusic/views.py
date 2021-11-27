@@ -49,9 +49,7 @@ class ScoreView(PermissionRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         context["pdfs"] = pdfs
         context["parts"] = parts
-        context["num_of_favorite_parts"] = len(
-            list(filter(lambda part: part.favorite, parts))
-        )
+        context["parts_favorite"] = list(filter(lambda part: part.favorite, parts))
         return context
 
 
