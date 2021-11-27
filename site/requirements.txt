@@ -30,4 +30,3 @@ Pillow~=8.3
 django-upload-validator~=1.1
 sheatless~=0.0.12
 PyPDF2~=1.26.0
-fontawesome-free~=5.15.4
