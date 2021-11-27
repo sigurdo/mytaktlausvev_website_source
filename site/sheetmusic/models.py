@@ -12,7 +12,7 @@ from django.utils import timezone
 from upload_validator import FileTypeValidator
 from sheatless import processUploadedPdf
 
-from web.settings import BASE_DIR
+from web.settings import TESSDATA_DIR
 
 
 class Score(models.Model):
@@ -85,9 +85,7 @@ class Pdf(models.Model):
                 (self.file.path, imagesDirPath),
                 {
                     "use_lstm": True,
-                    "tessdata_dir": os.path.join(
-                        BASE_DIR, "..", "tessdata", "tessdata_best-4.1.0"
-                    ),
+                    "tessdata_dir": TESSDATA_DIR,
                 },
             )
             for part in parts:
@@ -151,9 +149,17 @@ class UsersPreferredPart(models.Model):
     """Model representing the preferred part of a user"""
 
     user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, verbose_name="brukar", on_delete=models.CASCADE
+        settings.AUTH_USER_MODEL,
+        verbose_name="brukar",
+        on_delete=models.CASCADE,
+        related_name="preferred_parts",
     )
-    part = models.ForeignKey(Part, verbose_name="stemme", on_delete=models.CASCADE)
+    part = models.ForeignKey(
+        Part,
+        verbose_name="stemme",
+        on_delete=models.CASCADE,
+        related_name="preferring_users",
+    )
 
     class Meta:
         ordering = ["user", "part"]

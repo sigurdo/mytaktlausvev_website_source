@@ -1,9 +1,0 @@
-{% extends "base.html" %}
-{% block page %}
-
-{% if user.is_authenticated %}
-    {% load crispy_forms_tags %}
-    {% crispy form %}
-{% endif %}
-
-{% endblock page %}

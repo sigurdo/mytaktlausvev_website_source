@@ -4,7 +4,6 @@
 import io
 import os
 import threading
-import random
 import json
 from typing import Any, Dict
 
@@ -206,11 +205,9 @@ class PdfsUpload(PermissionRequiredMixin, FormView):
 class ScoreCreate(PermissionRequiredMixin, CreateView):
     model = Score
     form_class = ScoreForm
-    template_name_suffix = "_create_form"
+    template_name = "common/form.html"
     permission_required = "sheetmusic.add_score"
-
-    def get_success_url(self) -> str:
-        return reverse("sheetmusic:ScoreList")
+    success_url = reverse_lazy("sheetmusic:ScoreList")
 
 
 class ScoreList(PermissionRequiredMixin, ListView):
@@ -225,9 +222,7 @@ class ScoreList(PermissionRequiredMixin, ListView):
                 part__pdf__score=score, user=self.request.user
             )
             if len(relations) > 0:
-                score.favoritePart = relations[
-                    random.randint(0, len(relations) - 1)
-                ].part
+                score.favoritePart = relations[0].part
         return context
 
 
@@ -268,7 +263,7 @@ class PartPdf(PermissionRequiredMixin, DetailView):
 
 class UsersPreferredPartUpdateView(PermissionRequiredMixin, View):
     permission_required = (
-        "sheetmusic.add_userspreferrepart",
+        "sheetmusic.add_userspreferredpart",
         "sheetmusic.delete_userspreferredpart",
     )
 
