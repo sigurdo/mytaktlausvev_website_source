@@ -19,11 +19,11 @@
             <td>
                 {% if part.favorite %}
                 <a href="./" class="unfavorite" data-pk="{{ part.pk }}">
-                    <i class="fas fa-star"></i>
+                    <img src="{% static 'sheetmusic/star-filled.svg' %}" alt="Fjern som favoritt" />
                 </a>
                 {% else %}
                 <a href="./" class="favorite" data-pk="{{ part.pk }}">
-                    <i class="far fa-star"></i>
+                    <img src="{% static 'sheetmusic/star-outline.svg' %}" alt="Gjer til favoritt" />
                 </a>
                 {% endif %}
             </td>
