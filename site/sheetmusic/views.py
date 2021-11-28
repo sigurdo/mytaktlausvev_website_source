@@ -43,8 +43,7 @@ class ScoreView(PermissionRequiredMixin, DetailView):
         pdfs = Pdf.objects.filter(score=self.get_object())
         parts = Part.objects.filter(pdf__in=pdfs)
         for part in parts:
-            count = self.request.user.preferred_parts.filter(part=part).count()
-            part.favorite = True if count > 0 else False
+            part.favorite = part.is_favorite_for(self.request.user)
 
         context = super().get_context_data(**kwargs)
         context["pdfs"] = pdfs

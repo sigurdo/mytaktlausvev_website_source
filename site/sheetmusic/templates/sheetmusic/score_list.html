@@ -68,6 +68,10 @@
             {% endfor %}
         </tbody>
     </table>
+    
+    <p>
+        ({{ scores|length }} {% if scores|length == 1 %} note{% else %} notar{% endif %})
+    </p>
     {% endif %}
 
     <a href="{% url 'sheetmusic:ScoreCreate' %}" class="btn btn-primary"> Ny note </a>
