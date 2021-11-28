@@ -246,18 +246,16 @@ class UsersPreferredPartUpdateView(PermissionRequiredMixin, View):
     )
 
     def post(self, request, *args, **kwargs):
-        user = request.user
         data = json.loads(request.body)
         part = Part.objects.get(pk=data["part_pk"])
-        relation = UsersPreferredPart(user=user, part=part)
-        relation.save()
-        return django.http.JsonResponse(django.forms.models.model_to_dict(relation))
+        favorite = UsersPreferredPart.objects.create(user=self.request.user, part=part)
+        favorite.save()
+        return django.http.JsonResponse(django.forms.models.model_to_dict(favorite))
 
     def delete(self, request, *args, **kwargs):
-        user = request.user
         data = json.loads(request.body)
-        part = Part.objects.get(pk=data["part_pk"])
-        relations = UsersPreferredPart.objects.filter(user=user, part=part)
-        for relation in relations:
-            relation.delete()
+        favorite = UsersPreferredPart.objects.get(
+            user=request.user, part__pk=data["part_pk"]
+        )
+        favorite.delete()
         return django.http.HttpResponse("deleted")
