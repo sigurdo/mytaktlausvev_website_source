@@ -4,7 +4,7 @@ from factory import SubFactory
 from accounts.factories import UserFactory
 from common.test_utils import test_pdf
 
-from .models import Score, Pdf, Part, UsersPreferredPart
+from .models import Score, Pdf, Part, FavoritePart
 
 
 class ScoreFactory(DjangoModelFactory):
@@ -32,9 +32,9 @@ class PartFactory(DjangoModelFactory):
     to_page = 1
 
 
-class UsersPreferredPartFactory(DjangoModelFactory):
+class FavoritePartFactory(DjangoModelFactory):
     class Meta:
-        model = UsersPreferredPart
+        model = FavoritePart
 
     user = SubFactory(UserFactory)
     part = SubFactory(PartFactory)

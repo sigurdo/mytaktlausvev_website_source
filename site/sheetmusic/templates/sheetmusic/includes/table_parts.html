@@ -18,7 +18,7 @@
             </td>
             <td>
                 <form
-                    action="{% url "sheetmusic:fetchUsersPreferredPart" %}"
+                    action="{% url "sheetmusic:fetchFavoritePart" %}"
                     data-method="{% if part.favorite %}DELETE{% else %}POST{% endif %}"
                     class="form-favorite-part"
                 >

@@ -176,29 +176,32 @@ class Part(models.Model):
         return slugify(f"{self.pdf.score.title}-{self.name}") + ".pdf"
 
     def is_favorite_for(self, user):
-        return user.preferred_parts.filter(part=self).exists()
+        return user.favorite_parts.filter(part=self).exists()
 
 
-class UsersPreferredPart(models.Model):
-    """Model representing the preferred part of a user"""
+class FavoritePart(models.Model):
+    """Model representing a favorite part of a user"""
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         verbose_name="brukar",
         on_delete=models.CASCADE,
-        related_name="preferred_parts",
+        related_name="favorite_parts",
     )
     part = models.ForeignKey(
         Part,
         verbose_name="stemme",
         on_delete=models.CASCADE,
-        related_name="preferring_users",
+        related_name="favoring_users",
     )
 
     class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["user", "part"], name="unique_user_part")
+        ]
         ordering = ["user", "part"]
-        verbose_name = "brukarfavorittstemme"
-        verbose_name_plural = "brukarfavorittstemmer"
+        verbose_name = "favorittstemme"
+        verbose_name_plural = "favorittstemmer"
 
     def __str__(self):
         return f"{self.user}-{self.part}"
