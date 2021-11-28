@@ -31,6 +31,18 @@
                         {% load markdown %}
                         {{ window.content | markdown }}
                     </div>
+
+
+                    {% if window.created_by == user or perms.julekalender.change_window %}
+                    <footer class="modal-footer">
+                        <a
+                            href="{% url 'julekalender:window_update' julekalender.year window.index %}"
+                            class="btn btn-julekalender text-white"
+                        >
+                            Rediger luke
+                        </a>
+                    </footer>
+                    {% endif %}
                 </article>
             {% endfor %}
 
