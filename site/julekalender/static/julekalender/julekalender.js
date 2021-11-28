@@ -4,14 +4,16 @@ const formContainer = document.getElementById("form-container");
 const form = document.querySelector("form");
 
 document
-  .querySelectorAll(".window-test")
-  .forEach((test) =>
+  .querySelectorAll(".window-modal")
+  .forEach((windowButton) =>
     document
-      .querySelector(`.button-window[data-index="${test.dataset.index}"]`)
+      .querySelector(
+        `.window-button[data-index="${windowButton.dataset.index}"]`
+      )
       .classList.add("written")
   );
 
-document.querySelectorAll(".button-window").forEach((button) =>
+document.querySelectorAll(".window-button").forEach((button) =>
   button.addEventListener("click", () => {
     modal.show();
     button.classList.add("opened");

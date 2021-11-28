@@ -8,8 +8,8 @@
     <ul class="windows mb-4 list-unstyled">
         {% for index in permutation %}
         <li>
-            <div class="button-window w-100 h-100" data-index="{{ index }}">
-                <button class="t">{{ index }}</button>
+            <div class="window-button w-100 h-100" data-index="{{ index }}">
+                <button>{{ index }}</button>
             </div>
         </li>
         {% endfor %}
@@ -18,7 +18,7 @@
     <div id="modal" data-index="{{ index }}" class="modal fade" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             {% for window in julekalender.windows.all %}
-                <article class="modal-content window-test d-none" data-index="{{ window.index }}">
+                <article class="modal-content window-modal d-none" data-index="{{ window.index }}">
                     <header class="modal-header">
                         <h2 class="modal-title">{{ window.title }}</h2>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>

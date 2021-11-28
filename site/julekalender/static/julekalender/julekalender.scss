@@ -41,14 +41,14 @@ body {
   }
 }
 
-.button-window {
+.window-button {
   background-color: white;
   box-shadow: inset 0 0 10px #555;
   background: url("/static/julekalender/squigglyLines.svg"), white;
   background-size: cover;
 }
 
-.button-window > button {
+.window-button > button {
   width: 100%;
   height: 100%;
   border: none;
@@ -60,13 +60,13 @@ body {
   transition: transform 0.7s ease;
   transform-origin: right;
 }
-.button-window > button:hover {
+.window-button > button:hover {
   transform: perspective(1000px) rotate3d(0, 1, 0, 27deg);
 }
-.button-window.opened > button {
+.window-button.opened > button {
   transform: perspective(1000px) rotate3d(0, 1, 0, 140deg);
 }
-.button-window.written > button {
+.window-button.written > button {
   background-color: #5d4f8a;
 }
 
