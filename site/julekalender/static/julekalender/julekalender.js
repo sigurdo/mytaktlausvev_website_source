@@ -1,7 +1,7 @@
 const modalElement = document.getElementById("modal");
 const modal = new bootstrap.Modal(modalElement);
-const form = document.getElementById("form");
-const inputIndex = document.getElementById("id_index");
+const formContainer = document.getElementById("form-container");
+const form = document.querySelector("form");
 
 document
   .querySelectorAll(".window-test")
@@ -15,12 +15,20 @@ document.querySelectorAll(".button-window").forEach((button) =>
   button.addEventListener("click", () => {
     modal.show();
     button.classList.add("opened");
-    inputIndex.value = button.dataset.index;
+    form.index.value = button.dataset.index;
 
     const window = modalElement.querySelector(
       `[data-index="${button.dataset.index}"`
     );
-    const element = window || form;
+    const element = window || formContainer;
+
+    form.title.value =
+      localStorage.getItem(`julekalender-autosave-title-${form.index.value}`) ||
+      "";
+    form.content.value =
+      localStorage.getItem(
+        `julekalender-autosave-content-${form.index.value}`
+      ) || "";
 
     element.classList.remove("d-none");
   })
@@ -32,3 +40,19 @@ modalElement.addEventListener("hide.bs.modal", () => {
     .classList.add("d-none");
   document.querySelector(".opened").classList.remove("opened");
 });
+
+function autoSaveDrafts() {
+  form.title.addEventListener("input", () =>
+    localStorage.setItem(
+      `julekalender-autosave-title-${form.index.value}`,
+      form.title.value
+    )
+  );
+  form.content.addEventListener("input", () =>
+    localStorage.setItem(
+      `julekalender-autosave-content-${form.index.value}`,
+      form.content.value
+    )
+  );
+}
+autoSaveDrafts();
