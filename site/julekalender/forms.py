@@ -16,14 +16,25 @@ class CalendarForm(forms.ModelForm):
         fields = ["year"]
 
 
-class WindowForm(forms.ModelForm):
+class WindowCreateForm(forms.ModelForm):
     """Form for creating a window."""
 
     helper = FormHelper()
     helper.form_action = "window_create"
-    helper.add_input(Submit("submit", "Legg ut"))
+    helper.add_input(Submit("submit", "Legg ut luke"))
 
     class Meta:
         model = Window
         fields = ["title", "content", "index"]
         widgets = {"index": forms.HiddenInput()}
+
+
+class WindowUpdateForm(forms.ModelForm):
+    """Form for updating a window."""
+
+    helper = FormHelper()
+    helper.add_input(Submit("submit", "Rediger luke"))
+
+    class Meta:
+        model = Window
+        fields = ["title", "content"]

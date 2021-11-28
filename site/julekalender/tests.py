@@ -1,8 +1,9 @@
+from http import HTTPStatus
 from django.test import TestCase
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 from django.urls import reverse
-from accounts.factories import SuperUserFactory
+from accounts.factories import SuperUserFactory, UserFactory
 from common.mixins import TestMixin
 from .factories import JulekalenderFactory, WindowFactory
 from .models import Window
@@ -129,3 +130,68 @@ class WindowCreateTestSuite(TestMixin, TestCase):
         window = Window.objects.last()
         self.assertEqual(window.created_by, user)
         self.assertEqual(window.modified_by, user)
+
+
+class WindowUpdateTestSuite(TestMixin, TestCase):
+    def get_url(self, window):
+        """Returns the URL for the window update view for `window`."""
+        return reverse(
+            "julekalender:window_update", args=[window.calendar.year, window.index]
+        )
+
+    def setUp(self):
+        self.author = UserFactory()
+        self.window = WindowFactory(created_by=self.author)
+        self.window_data = {"title": "Title", "content": "Some content."}
+
+    def test_returns_404_if_window_not_exist(self):
+        """Should return 404 if the window doesn't exist."""
+        response = self.client.get(
+            reverse("julekalender:window_update", args=[1337, 15])
+        )
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
+
+    def test_requires_login(self):
+        """Should require login."""
+        self.assertLoginRequired(self.get_url(self.window))
+
+    def test_requires_permission(self):
+        """Should require the `change_window` permission."""
+        self.assertPermissionRequired(
+            self.get_url(self.window), "julekalender.change_window"
+        )
+
+    def test_succeeds_if_not_permission_but_is_author(self):
+        """
+        Should succeed if the user is the author,
+        even if the user doesn't have the `change_window` permission.
+        """
+        self.client.force_login(self.author)
+        response = self.client.get(self.get_url(self.window))
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+    def test_created_by_not_changed(self):
+        """Should not change `created_by` when updating window."""
+        self.client.force_login(SuperUserFactory())
+        response = self.client.post(self.get_url(self.window), self.window_data)
+        self.assertEqual(response.status_code, HTTPStatus.FOUND)
+
+        created_by_previous = self.window.created_by
+        self.window.refresh_from_db()
+        self.assertEqual(self.window.created_by, created_by_previous)
+
+    def test_modified_by_set_to_current_user(self):
+        """Should set `modified_by` to the current user on update."""
+        user = SuperUserFactory()
+        self.client.force_login(user)
+        response = self.client.post(self.get_url(self.window), self.window_data)
+        self.assertEqual(response.status_code, HTTPStatus.FOUND)
+
+        self.window.refresh_from_db()
+        self.assertEqual(self.window.modified_by, user)
+
+    def test_redirects_to_calendar(self):
+        """Should redirect to the window's calendar on success."""
+        self.client.force_login(self.author)
+        response = self.client.post(self.get_url(self.window), self.window_data)
+        self.assertRedirects(response, self.window.calendar.get_absolute_url())
