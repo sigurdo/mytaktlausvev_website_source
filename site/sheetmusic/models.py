@@ -176,8 +176,7 @@ class Part(models.Model):
         return slugify(f"{self.pdf.score.title}-{self.name}") + ".pdf"
 
     def is_favorite_for(self, user):
-        count = user.preferred_parts.filter(part=self).count()
-        return True if count > 0 else False
+        return user.preferred_parts.filter(part=self).exists()
 
 
 class UsersPreferredPart(models.Model):

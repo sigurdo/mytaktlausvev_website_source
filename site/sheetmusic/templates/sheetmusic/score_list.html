@@ -70,7 +70,7 @@
     </table>
     
     <p>
-        ({{ scores|length }} {% if scores|length == 1 %} note{% else %} notar{% endif %})
+        ({{ scores|length }} not{{ scores|length|pluralize:"e,ar" }})
     </p>
     {% endif %}
 
