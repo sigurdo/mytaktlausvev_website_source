@@ -5,6 +5,7 @@ from django.contrib.auth.mixins import (
     PermissionRequiredMixin,
     UserPassesTestMixin,
 )
+from django.urls import reverse
 from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.detail import DetailView
@@ -37,7 +38,11 @@ class JulekalenderDetail(LoginRequiredMixin, DetailView):
         random.seed(context["julekalender"].year)
         context["permutation"] = random.sample(range(1, 25), 24)
         context["form"] = WindowCreateForm(
-            initial={"calendar": context["julekalender"]}
+            action=reverse(
+                "julekalender:window_create",
+                args=[context["julekalender"].year],
+            ),
+            initial={"calendar": context["julekalender"]},
         )
 
         return context

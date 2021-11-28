@@ -20,8 +20,11 @@ class WindowCreateForm(forms.ModelForm):
     """Form for creating a window."""
 
     helper = FormHelper()
-    helper.form_action = "window_create"
     helper.add_input(Submit("submit", "Legg ut luke"))
+
+    def __init__(self, action=None, *args, **kwargs):
+        self.helper.form_action = action
+        super().__init__(*args, **kwargs)
 
     class Meta:
         model = Window

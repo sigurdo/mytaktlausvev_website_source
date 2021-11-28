@@ -1,9 +1,21 @@
 {% extends "./base.html" %}
 
+{% block title %}
+{% if window %} Rediger {% else %} Lag ny {% endif %} luke
+{% endblock title %}
+
 {% block content %}
 <article class="card shadow">
     <div class="card-body">
-        <h1 class="card-title">Rediger luke</h1>
+        <h1 class="card-title">
+        {% if window %}
+            Rediger
+        {% else %}
+            Lag ny
+        {% endif %}
+        luke
+        </h1>
+
         {% load crispy_forms_tags %}
         {% crispy form %}
     </div>
