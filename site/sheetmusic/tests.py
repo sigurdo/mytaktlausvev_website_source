@@ -59,7 +59,7 @@ class ScoreUpdateTestSuite(TestMixin, TestCase):
             {"title": "B score"},
         )
         self.assertRedirects(
-            response, reverse("sheetmusic:ScoreUpdate", args=[self.score.pk])
+            response, reverse("sheetmusic:ScoreView", args=[self.score.pk])
         )
 
 
@@ -127,7 +127,7 @@ class PartsUpdateTestSuite(TestMixin, TestCase):
             reverse("sheetmusic:PartsUpdate", args=[self.score.pk]), self.test_data
         )
         self.assertRedirects(
-            response, reverse("sheetmusic:PartsUpdate", args=[self.score.pk])
+            response, reverse("sheetmusic:ScoreView", args=[self.score.pk])
         )
 
     def test_modify(self):
@@ -204,7 +204,7 @@ class PdfsUpdateTestSuite(TestMixin, TestCase):
             reverse("sheetmusic:PdfsUpdate", args=[self.score.pk]), self.test_data
         )
         self.assertRedirects(
-            response, reverse("sheetmusic:PdfsUpdate", args=[self.score.pk])
+            response, reverse("sheetmusic:ScoreView", args=[self.score.pk])
         )
 
     def test_delete(self):
@@ -246,7 +246,7 @@ class PdfsUploadTestSuite(TestMixin, TestCase):
             self.test_data,
         )
         self.assertRedirects(
-            response, reverse("sheetmusic:PdfsUpload", args=[self.score.pk])
+            response, reverse("sheetmusic:ScoreView", args=[self.score.pk])
         )
 
     def test_upload_pdf(self):
