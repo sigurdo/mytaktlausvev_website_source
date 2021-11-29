@@ -20,7 +20,7 @@ class Repertoire(models.Model):
         return self.title
 
     def pdf_file(self, user):
-        """Returns the PDF that contains the users favorite parts for the scores in this repertoire"""
+        """Returns a PDF contaning the user's favorite parts for the scores in this repertoire."""
         parts = []
         for entry in self.entries.all():
             for pdf in entry.score.pdfs.all():
