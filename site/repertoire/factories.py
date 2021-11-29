@@ -10,7 +10,7 @@ class RepertoireFactory(DjangoModelFactory):
     class Meta:
         model = Repertoire
 
-    title = "Repertoire"
+    name = "Repertoire"
 
 
 class RepertoireEntryFactory(DjangoModelFactory):

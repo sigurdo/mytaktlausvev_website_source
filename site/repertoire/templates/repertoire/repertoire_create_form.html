@@ -1,5 +1,5 @@
-{% extends "./base.html" %}
-{% block content %}
+{% extends "base.html" %}
+{% block page %}
 
 {% if user.is_authenticated %}
     {% csrf_token %}
@@ -7,4 +7,4 @@
     {% crispy form %}
 {% endif %}
 
-{% endblock content %}
+{% endblock page %}

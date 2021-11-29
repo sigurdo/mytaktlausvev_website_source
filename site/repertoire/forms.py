@@ -1,4 +1,3 @@
-"""Forms for the 'sheetmusic'-app"""
 from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
@@ -14,8 +13,7 @@ class RepertoireCreateForm(forms.ModelForm):
 
     class Meta:
         model = models.Repertoire
-        fields = ["title"]
-        labels = {"title": "Tittel"}
+        fields = ["name"]
 
 
 class RepertoireUpdateForm(forms.ModelForm):
@@ -26,8 +24,7 @@ class RepertoireUpdateForm(forms.ModelForm):
 
     class Meta:
         model = models.Repertoire
-        fields = ["title"]
-        labels = {"title": "Tittel"}
+        fields = ["name"]
 
 
 class RepertoireEntryUpdateForm(forms.ModelForm):
@@ -54,5 +51,5 @@ RepertoireEntryUpdateFormset = forms.inlineformset_factory(
     models.Repertoire,
     models.RepertoireEntry,
     form=RepertoireEntryUpdateForm,
-    extra=1,
+    extra=5,
 )

@@ -1,6 +1,6 @@
-{% extends "./base.html" %}
+{% extends "base.html" %}
 
-{% block content %}
+{% block page %}
 
 {% if user.is_authenticated %}
     {% load crispy_forms_tags %}
@@ -10,4 +10,4 @@
     </form>
 {% endif %}
 
-{% endblock content %}
+{% endblock page %}

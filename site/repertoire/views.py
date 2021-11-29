@@ -1,6 +1,6 @@
 from django.http.response import HttpResponse
 from django.views.generic import ListView
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.views.generic import CreateView, DeleteView, DetailView
 
@@ -19,8 +19,10 @@ class RepertoireCreate(PermissionRequiredMixin, CreateView):
     model = models.Repertoire
     form_class = forms.RepertoireCreateForm
     template_name_suffix = "_create_form"
-    success_url = reverse_lazy("repertoire:RepertoireList")
     permission_required = "repertoire.add_repertoire"
+
+    def get_success_url(self):
+        return reverse("repertoire:RepertoireUpdate", args=[self.object.slug])
 
 
 class RepertoireUpdate(PermissionRequiredMixin, FormAndFormsetUpdateView):

@@ -9,12 +9,13 @@ from sheetmusic.factories import UsersPreferredPartFactory
 
 from .factories import RepertoireFactory, RepertoireEntryFactory
 from .forms import RepertoireEntryUpdateFormset
+from .models import Repertoire
 
 
 class RepertoireTestSuite(TestMixin, TestCase):
     def setUp(self):
         self.user = UserFactory()
-        self.repertoire = RepertoireFactory(title="Marsjhefte")
+        self.repertoire = RepertoireFactory(name="Marsjhefte")
         self.entry = RepertoireEntryFactory(repertoire=self.repertoire)
         self.favorite = UsersPreferredPartFactory(
             part__pdf__score=self.entry.score, user=self.user
@@ -35,7 +36,7 @@ class RepertoireTestSuite(TestMixin, TestCase):
 class RepertoireEntryTestSuite(TestMixin, TestCase):
     def setUp(self):
         self.entry = RepertoireEntryFactory(
-            repertoire__title="Vårkonsert", score__title="Ice Cream"
+            repertoire__name="Vårkonsert", score__title="Ice Cream"
         )
 
     def test_to_str(self):
@@ -49,7 +50,7 @@ class RepertoireListTestSuite(TestMixin, TestCase):
 
 class RepertoireCreateTestSuite(TestMixin, TestCase):
     def setUp(self):
-        self.test_data = {"title": "Repertoire"}
+        self.test_data = {"name": "Repertoire"}
 
     def test_requires_login(self):
         self.assertLoginRequired(reverse("repertoire:RepertoireCreate"))
@@ -66,7 +67,10 @@ class RepertoireCreateTestSuite(TestMixin, TestCase):
         response = self.client.post(
             reverse("repertoire:RepertoireCreate"), self.test_data
         )
-        self.assertRedirects(response, reverse("repertoire:RepertoireList"))
+        repertoire = Repertoire.objects.last()
+        self.assertRedirects(
+            response, reverse("repertoire:RepertoireUpdate", args=[repertoire.slug])
+        )
 
 
 class RepertoireUpdateTestSuite(TestMixin, TestCase):
@@ -79,7 +83,7 @@ class RepertoireUpdateTestSuite(TestMixin, TestCase):
         )
 
     def get_url(self):
-        return reverse("repertoire:RepertoireUpdate", args=[self.repertoire.pk])
+        return reverse("repertoire:RepertoireUpdate", args=[self.repertoire.slug])
 
     def setUp(self):
         self.repertoire = RepertoireFactory()
@@ -87,7 +91,7 @@ class RepertoireUpdateTestSuite(TestMixin, TestCase):
         self.test_data = self.create_post_data(
             data=[{"score": self.entry.score.pk, "id": self.entry.pk}]
         )
-        self.test_data["title"] = self.repertoire.title
+        self.test_data["name"] = self.repertoire.name
 
     def test_requires_login(self):
         self.assertLoginRequired(self.get_url())
@@ -107,7 +111,7 @@ class RepertoireUpdateTestSuite(TestMixin, TestCase):
 
 class RepertoireDeleteTestSuite(TestMixin, TestCase):
     def get_url(self):
-        return reverse("repertoire:RepertoireDelete", args=[self.repertoire.pk])
+        return reverse("repertoire:RepertoireDelete", args=[self.repertoire.slug])
 
     def setUp(self):
         self.repertoire = RepertoireFactory()
@@ -118,7 +122,7 @@ class RepertoireDeleteTestSuite(TestMixin, TestCase):
 
 class RepertoirePdfTestSuite(TestMixin, TestCase):
     def get_url(self):
-        return reverse("repertoire:RepertoirePdf", args=[self.entry.repertoire.pk])
+        return reverse("repertoire:RepertoirePdf", args=[self.entry.repertoire.slug])
 
     def setUp(self):
         self.user = UserFactory()
