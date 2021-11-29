@@ -33,7 +33,7 @@
                     </div>
 
 
-                    {% if window.created_by == user or perms.julekalender.change_window %}
+                    {% if window.created_by == user or perms.advent_calendar.change_window %}
                     <footer class="modal-footer">
                         <a
                             href="{% url 'advent_calendar:window_update' advent_calendar.year window.index %}"
@@ -63,5 +63,5 @@
 
 {% block js %}
     {% load static %}
-    <script src="{% static 'julekalender/advent_calendar.js' %}"></script>
+    <script src="{% static 'advent_calendar/advent_calendar.js' %}"></script>
 {% endblock js %}

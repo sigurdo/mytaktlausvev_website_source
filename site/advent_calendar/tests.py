@@ -80,7 +80,7 @@ class AdventCalendarCreateTestSuite(TestMixin, TestCase):
     def test_requires_permission(self):
         """Should require the `add_advent_calendar` permission."""
         self.assertPermissionRequired(
-            reverse("advent_calendar:create"), "julekalender.add_adventcalendar"
+            reverse("advent_calendar:create"), "advent_calendar.add_adventcalendar"
         )
 
 
@@ -159,7 +159,7 @@ class WindowUpdateTestSuite(TestMixin, TestCase):
     def test_requires_permission(self):
         """Should require the `change_window` permission."""
         self.assertPermissionRequired(
-            self.get_url(self.window), "julekalender.change_window"
+            self.get_url(self.window), "advent_calendar.change_window"
         )
 
     def test_succeeds_if_not_permission_but_is_author(self):

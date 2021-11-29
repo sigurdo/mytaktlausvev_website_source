@@ -17,7 +17,7 @@ class AdventCalendarList(LoginRequiredMixin, ListView):
     """View for viewing all advent calendars."""
 
     model = AdventCalendar
-    template_name = "julekalender/advent_calendar_list.html"
+    template_name = "advent_calendar/advent_calendar_list.html"
     context_object_name = "advent_calendar_list"
 
 
@@ -26,8 +26,8 @@ class AdventCalendarCreate(PermissionRequiredMixin, CreateView):
 
     model = AdventCalendar
     form_class = AdventCalendarForm
-    permission_required = "julekalender.add_adventcalendar"
-    template_name = "julekalender/advent_calendar_form.html"
+    permission_required = "advent_calendar.add_adventcalendar"
+    template_name = "advent_calendar/advent_calendar_form.html"
     context_object_name = "advent_calendar"
 
 
@@ -35,7 +35,7 @@ class AdventCalendarDetail(LoginRequiredMixin, DetailView):
     """View for viewing an advent calendar."""
 
     model = AdventCalendar
-    template_name = "julekalender/advent_calendar_detail.html"
+    template_name = "advent_calendar/advent_calendar_detail.html"
     context_object_name = "advent_calendar"
 
     def get_context_data(self, *args, **kwargs):
@@ -82,7 +82,7 @@ class WindowUpdate(UserPassesTestMixin, UpdateView):
     def test_func(self):
         user = self.request.user
         return self.get_object().created_by == user or user.has_perm(
-            "julekalender.change_window"
+            "advent_calendar.change_window"
         )
 
     def form_valid(self, form):

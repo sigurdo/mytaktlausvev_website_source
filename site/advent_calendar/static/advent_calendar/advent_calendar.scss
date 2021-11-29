@@ -5,12 +5,12 @@
 body {
   padding-top: 0;
   background-color: #0d192b;
-  background-image: url("/static/julekalender/nightskymobilecrop.png");
+  background-image: url("/static/advent_calendar/nightskymobilecrop.png");
   background-size: cover;
   background-position: top center;
   background-attachment: fixed;
   @include media-breakpoint-up(md) {
-    background-image: url("/static/julekalender/nightsky.png");
+    background-image: url("/static/advent_calendar/nightsky.png");
   }
 }
 .navbar {
@@ -44,7 +44,7 @@ body {
 .window-button {
   background-color: white;
   box-shadow: inset 0 0 10px #555;
-  background: url("/static/julekalender/squigglyLines.svg"), white;
+  background: url("/static/advent_calendar/squigglyLines.svg"), white;
   background-size: cover;
 }
 

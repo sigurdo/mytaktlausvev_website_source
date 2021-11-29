@@ -25,11 +25,12 @@ document.querySelectorAll(".window-button").forEach((button) =>
     const element = window || formContainer;
 
     form.title.value =
-      localStorage.getItem(`julekalender-autosave-title-${form.index.value}`) ||
-      "";
+      localStorage.getItem(
+        `advent-calendar-autosave-title-${form.index.value}`
+      ) || "";
     form.content.value =
       localStorage.getItem(
-        `julekalender-autosave-content-${form.index.value}`
+        `advent-calendar-autosave-content-${form.index.value}`
       ) || "";
 
     element.classList.remove("d-none");
@@ -46,13 +47,13 @@ modalElement.addEventListener("hide.bs.modal", () => {
 function autoSaveDrafts() {
   form.title.addEventListener("input", () =>
     localStorage.setItem(
-      `julekalender-autosave-title-${form.index.value}`,
+      `advent-calendar-autosave-title-${form.index.value}`,
       form.title.value
     )
   );
   form.content.addEventListener("input", () =>
     localStorage.setItem(
-      `julekalender-autosave-content-${form.index.value}`,
+      `advent-calendar-autosave-content-${form.index.value}`,
       form.content.value
     )
   );

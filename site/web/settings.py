@@ -50,7 +50,7 @@ INSTALLED_APPS = [
     "events",
     "dashboard",
     "buttons",
-    "julekalender",
+    "advent_calendar",
 ]
 
 MIDDLEWARE = [

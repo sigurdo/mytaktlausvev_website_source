@@ -20,7 +20,7 @@
   </nav>
   {% endif %}
 
-  {% if perms.julekalender.add_adventcalendar %}
+  {% if perms.advent_calendar.add_adventcalendar %}
   <a
     class="btn btn-lg btn-advent-calendar text-white"
     href="{% url 'advent_calendar:create' %}"
