@@ -7,3 +7,9 @@ register = template.Library()
 def verbose_name(model_instance):
     """Returns the verbose name of `model_instance`'s model."""
     return model_instance._meta.verbose_name
+
+
+@register.filter
+def get_range(length):
+    """Returns a range from 0 to `length`, exclusive."""
+    return range(length)

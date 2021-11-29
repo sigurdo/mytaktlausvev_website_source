@@ -17,7 +17,7 @@
 
 {% block page %}
   <div class="snowflakes" aria-hidden="true">
-    {% load get_range %}
+    {% load utils %}
     {% for i in 14|get_range %}
       <div class="snowflake">❆</div>
     {% endfor %}
