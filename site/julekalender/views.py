@@ -10,25 +10,25 @@ from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.detail import DetailView
 from .models import Julekalender, Window
-from .forms import CalendarForm, WindowCreateForm, WindowUpdateForm
+from .forms import AdventCalendarForm, WindowCreateForm, WindowUpdateForm
 
 
-class JulekalenderList(LoginRequiredMixin, ListView):
-    """View for viewing all julekalenders."""
-
-    model = Julekalender
-
-
-class JulekalenderCreate(PermissionRequiredMixin, CreateView):
-    """View for creating julekalenders."""
+class AdventCalendarList(LoginRequiredMixin, ListView):
+    """View for viewing all advent calendars."""
 
     model = Julekalender
-    form_class = CalendarForm
+
+
+class AdventCalendarCreate(PermissionRequiredMixin, CreateView):
+    """View for creating advent calendars."""
+
+    model = Julekalender
+    form_class = AdventCalendarForm
     permission_required = "julekalender.add_julekalender"
 
 
-class JulekalenderDetail(LoginRequiredMixin, DetailView):
-    """View for viewing a julekalender."""
+class AdventCalendarDetail(LoginRequiredMixin, DetailView):
+    """View for viewing an advent calendar."""
 
     model = Julekalender
 
@@ -39,37 +39,37 @@ class JulekalenderDetail(LoginRequiredMixin, DetailView):
         context["permutation"] = random.sample(range(1, 25), 24)
         context["form"] = WindowCreateForm(
             action=reverse(
-                "julekalender:window_create",
+                "advent_calendar:window_create",
                 args=[context["julekalender"].year],
             ),
-            initial={"calendar": context["julekalender"]},
+            initial={"advent_calendar": context["julekalender"]},
         )
 
         return context
 
 
 class WindowCreate(LoginRequiredMixin, CreateView):
-    """View for viewing a julekalender window."""
+    """View for viewing an advent calendar window."""
 
     model = Window
     form_class = WindowCreateForm
 
     def form_valid(self, form):
-        form.instance.calendar_id = self.kwargs.get("year")
+        form.instance.advent_calendar_id = self.kwargs.get("year")
         form.instance.created_by = self.request.user
         form.instance.modified_by = self.request.user
         return super().form_valid(form)
 
 
 class WindowUpdate(UserPassesTestMixin, UpdateView):
-    """View for updating a window."""
+    """View for updating an advent calendar window."""
 
     model = Window
     form_class = WindowUpdateForm
 
     def get_object(self, queryset=None):
         return get_object_or_404(
-            Window, calendar=self.kwargs["year"], index=self.kwargs["index"]
+            Window, advent_calendar=self.kwargs["year"], index=self.kwargs["index"]
         )
 
     def test_func(self):

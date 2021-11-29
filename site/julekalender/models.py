@@ -5,7 +5,7 @@ from common.models import ArticleMixin
 
 
 class Julekalender(models.Model):
-    """Model representing a year's julekalender."""
+    """Model representing a year's advent calendar."""
 
     year = models.IntegerField("år", primary_key=True)
 
@@ -13,7 +13,7 @@ class Julekalender(models.Model):
         return f"Julekalender {self.year}"
 
     def get_absolute_url(self):
-        return reverse("julekalender:detail", args=[self.year])
+        return reverse("advent_calendar:detail", args=[self.year])
 
     class Meta:
         ordering = ["-year"]
@@ -22,9 +22,9 @@ class Julekalender(models.Model):
 
 
 class Window(ArticleMixin):
-    """Model representing a window in a julekalender."""
+    """Model representing a window in an advent calendar."""
 
-    calendar = models.ForeignKey(
+    advent_calendar = models.ForeignKey(
         Julekalender,
         on_delete=models.CASCADE,
         related_name="windows",
@@ -36,14 +36,16 @@ class Window(ArticleMixin):
     )
 
     def __str__(self):
-        return f"Julekalender {self.calendar.year}, luke {self.index}"
+        return f"Julekalender {self.advent_calendar.year}, luke {self.index}"
 
     def get_absolute_url(self):
-        return reverse("julekalender:detail", args=[self.calendar.year])
+        return reverse("advent_calendar:detail", args=[self.advent_calendar.year])
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=["calendar", "index"], name="uniqueWindow")
+            models.UniqueConstraint(
+                fields=["advent_calendar", "index"], name="uniqueWindow"
+            )
         ]
         verbose_name = "luke"
         verbose_name_plural = "luker"

@@ -36,7 +36,7 @@
                     {% if window.created_by == user or perms.julekalender.change_window %}
                     <footer class="modal-footer">
                         <a
-                            href="{% url 'julekalender:window_update' julekalender.year window.index %}"
+                            href="{% url 'advent_calendar:window_update' julekalender.year window.index %}"
                             class="btn btn-julekalender text-white"
                         >
                             Rediger luke

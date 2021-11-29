@@ -3,7 +3,7 @@ from accounts.factories import UserFactory
 from .models import Julekalender, Window
 
 
-class JulekalenderFactory(factory.django.DjangoModelFactory):
+class AdventCalendarFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Julekalender
 
@@ -14,7 +14,7 @@ class WindowFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Window
 
-    calendar = factory.SubFactory(JulekalenderFactory)
+    advent_calendar = factory.SubFactory(AdventCalendarFactory)
     index = factory.sequence(lambda n: n)
 
     title = "Another window"

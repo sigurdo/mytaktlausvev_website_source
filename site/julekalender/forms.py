@@ -4,8 +4,8 @@ from crispy_forms.layout import Submit
 from .models import Julekalender, Window
 
 
-class CalendarForm(forms.ModelForm):
-    """Form for creating a calendar."""
+class AdventCalendarForm(forms.ModelForm):
+    """Form for creating an advent calendar."""
 
     helper = FormHelper()
     helper.label_class = "form-label"
