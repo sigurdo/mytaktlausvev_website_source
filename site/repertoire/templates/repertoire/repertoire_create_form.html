@@ -1,10 +1,15 @@
 {% extends "base.html" %}
+{% block title %}
+    Nytt repertoar
+{% endblock title %}
+
 {% block page %}
-
-{% if user.is_authenticated %}
-    {% csrf_token %}
-    {% load crispy_forms_tags %}
-    {% crispy form %}
-{% endif %}
-
+<section>
+    <h1> Nytt repertoar </h1>
+    {% if user.is_authenticated %}
+        {% csrf_token %}
+        {% load crispy_forms_tags %}
+        {% crispy form %}
+    {% endif %}
+</section>
 {% endblock page %}

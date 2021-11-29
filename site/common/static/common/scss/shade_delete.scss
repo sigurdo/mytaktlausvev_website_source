@@ -1,4 +1,4 @@
-.to_be_deleted :not(input, select, td, td:last-child div.controls) {
+.to_be_deleted :not(input, select, td, td:last-of-type div.controls) {
     opacity: 15%;
 }
 
