@@ -7,6 +7,7 @@ from typing import Any, Dict
 
 # Django packages
 import django
+from django.shortcuts import get_object_or_404
 from django.views.generic.base import TemplateResponseMixin
 from django.views.generic.detail import SingleObjectMixin
 from django.http import HttpResponse
@@ -165,7 +166,7 @@ class PdfsUpload(PermissionRequiredMixin, FormView):
     permission_required = ("sheetmusic.add_pdf", "sheetmusic.add_part")
 
     def get_object(self):
-        return Score.objects.get(pk=self.kwargs["pk"])
+        return get_object_or_404(Score, pk=self.kwargs["pk"])
 
     def get_success_url(self) -> str:
         return self.get_object().get_absolute_url()
