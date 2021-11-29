@@ -69,4 +69,4 @@ class RepertoireUpdateTestSuite(TestMixin, TestCase):
         user = SuperUserFactory()
         self.client.force_login(user)
         response = self.client.post(self.get_url(), self.test_data)
-        self.assertRedirects(response, self.get_url())
+        self.assertRedirects(response, reverse("repertoire:RepertoireList"))

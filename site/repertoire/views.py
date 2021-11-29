@@ -34,9 +34,7 @@ class RepertoireUpdate(PermissionRequiredMixin, FormAndFormsetUpdateView):
     permission_required = "repertoire.change_repertoire"
 
     def get_success_url(self) -> str:
-        return reverse(
-            "repertoire:RepertoireUpdate", kwargs={"pk": self.get_object().pk}
-        )
+        return reverse("repertoire:RepertoireList")
 
 
 class RepertoireDelete(PermissionRequiredMixin, DeleteView):
