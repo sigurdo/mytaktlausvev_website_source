@@ -45,10 +45,11 @@ class RepertoireDelete(PermissionRequiredMixin, DeleteView):
     success_url = reverse_lazy("repertoire:RepertoireList")
     permission_required = "repertoire.delete_repertoire"
 
+
 class RepertoirePdf(LoginRequiredMixin, DetailView):
     model = models.Repertoire
     content_type = "application/pdf"
-    
+
     def render_to_response(self, _):
         content = self.get_object().pdf_file(self.request.user)
         return HttpResponse(content=content, content_type=self.content_type)

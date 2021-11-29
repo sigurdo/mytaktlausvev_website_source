@@ -18,7 +18,7 @@ class Repertoire(models.Model):
 
     def __str__(self):
         return self.title
-    
+
     def pdf_file(self, user):
         """Returns the PDF that contains the users favorite parts for the scores in this repertoire"""
         parts = []
@@ -27,7 +27,9 @@ class Repertoire(models.Model):
                 parts += pdf.parts.all()
         parts = list(filter(lambda part: part.is_favorite_for(user), parts))
         if len(parts) < 1:
-            raise Exception(f"Fann inga favorittstemmer for {user} i repertoaret {self}")
+            raise Exception(
+                f"Fann inga favorittstemmer for {user} i repertoaret {self}"
+            )
         pdf_writer = PdfFileWriter()
         for part in parts:
             pdf = PdfFileReader(part.pdf.file.path)

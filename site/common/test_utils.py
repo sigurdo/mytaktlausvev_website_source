@@ -33,6 +33,7 @@ def create_formset_post_data(
     initial_forms=1,
     min_num_forms=0,
     max_num_forms=1000,
+    subform_prefix="form",
 ):
     """
     Inputs:
@@ -80,10 +81,10 @@ def create_formset_post_data(
     if "DELETE" not in fields:
         fields.append("DELETE")
     result = {
-        "form-TOTAL_FORMS": str(total_forms),
-        "form-INITIAL_FORMS": str(initial_forms),
-        "form-MIN_NUM_FORMS": str(min_num_forms),
-        "form-MAX_NUM_FORMS": str(max_num_forms),
+        f"{subform_prefix}-TOTAL_FORMS": str(total_forms),
+        f"{subform_prefix}-INITIAL_FORMS": str(initial_forms),
+        f"{subform_prefix}-MIN_NUM_FORMS": str(min_num_forms),
+        f"{subform_prefix}-MAX_NUM_FORMS": str(max_num_forms),
     }
     for i in range(total_forms):
         for field in fields:
@@ -97,5 +98,5 @@ def create_formset_post_data(
                 # Use nothing if not even a default value exists
                 value = ""
 
-            result[f"form-{i}-{field}"] = value
+            result[f"{subform_prefix}-{i}-{field}"] = value
     return result

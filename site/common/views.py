@@ -75,12 +75,12 @@ class FormAndFormsetUpdateView(UpdateView):
         if form.is_valid():
             form.save()
         else:
-            return self.form_invalid()
+            return self.form_invalid(form)
         formset = self.get_formset()
         if formset.is_valid():
             formset.save()
         else:
-            return self.formset_invalid()
+            return self.formset_invalid(formset)
         return http.HttpResponseRedirect(self.get_success_url())
 
 
