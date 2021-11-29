@@ -4,7 +4,7 @@ from django.core import validators
 from common.models import ArticleMixin
 
 
-class Julekalender(models.Model):
+class AdventCalendar(models.Model):
     """Model representing a year's advent calendar."""
 
     year = models.IntegerField("år", primary_key=True)
@@ -25,7 +25,7 @@ class Window(ArticleMixin):
     """Model representing a window in an advent calendar."""
 
     advent_calendar = models.ForeignKey(
-        Julekalender,
+        AdventCalendar,
         on_delete=models.CASCADE,
         related_name="windows",
         verbose_name="kalender",

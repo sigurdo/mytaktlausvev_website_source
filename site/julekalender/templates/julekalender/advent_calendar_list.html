@@ -3,16 +3,16 @@
 {% block content %}
   <h1 class="text-white dancing-script">Taktlaus Julekalender</h1>
 
-  {% if julekalender_list %}
+  {% if advent_calendar_list %}
   <nav>
     <ul class="d-flex flex-column list-unstyled align-items-center">
-      {% for julekalender in julekalender_list %}
+      {% for advent_calendar in advent_calendar_list %}
       <li class="my-2">
           <a
-            class="btn btn-lg btn-julekalender text-white"
-            href="{% url 'advent_calendar:detail' julekalender.year %}"
+            class="btn btn-lg btn-advent-calendar text-white"
+            href="{% url 'advent_calendar:detail' advent_calendar.year %}"
           >
-            {{ julekalender.year }}
+            {{ advent_calendar.year }}
           </a>
       </li>
       {% endfor %}
@@ -20,9 +20,9 @@
   </nav>
   {% endif %}
 
-  {% if perms.julekalender.add_julekalender %}
+  {% if perms.julekalender.add_adventcalendar %}
   <a
-    class="btn btn-lg btn-julekalender text-white"
+    class="btn btn-lg btn-advent-calendar text-white"
     href="{% url 'advent_calendar:create' %}"
   >
     Lag ny julekalender

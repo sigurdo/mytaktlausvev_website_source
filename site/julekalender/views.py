@@ -9,40 +9,47 @@ from django.urls import reverse
 from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.detail import DetailView
-from .models import Julekalender, Window
+from .models import AdventCalendar, Window
 from .forms import AdventCalendarForm, WindowCreateForm, WindowUpdateForm
 
 
 class AdventCalendarList(LoginRequiredMixin, ListView):
     """View for viewing all advent calendars."""
 
-    model = Julekalender
+    model = AdventCalendar
+    template_name = "julekalender/advent_calendar_list.html"
+    context_object_name = "advent_calendar_list"
 
 
 class AdventCalendarCreate(PermissionRequiredMixin, CreateView):
     """View for creating advent calendars."""
 
-    model = Julekalender
+    model = AdventCalendar
     form_class = AdventCalendarForm
-    permission_required = "julekalender.add_julekalender"
+    permission_required = "julekalender.add_adventcalendar"
+    template_name = "julekalender/advent_calendar_form.html"
+    context_object_name = "advent_calendar"
 
 
 class AdventCalendarDetail(LoginRequiredMixin, DetailView):
     """View for viewing an advent calendar."""
 
-    model = Julekalender
+    model = AdventCalendar
+    template_name = "julekalender/advent_calendar_detail.html"
+    context_object_name = "advent_calendar"
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
+        advent_calendar = context["advent_calendar"]
 
-        random.seed(context["julekalender"].year)
+        random.seed(advent_calendar.year)
         context["permutation"] = random.sample(range(1, 25), 24)
         context["form"] = WindowCreateForm(
             action=reverse(
                 "advent_calendar:window_create",
-                args=[context["julekalender"].year],
+                args=[advent_calendar.year],
             ),
-            initial={"advent_calendar": context["julekalender"]},
+            initial={"advent_calendar": advent_calendar},
         )
 
         return context

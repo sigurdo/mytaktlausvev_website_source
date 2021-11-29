@@ -1,11 +1,11 @@
 import factory
 from accounts.factories import UserFactory
-from .models import Julekalender, Window
+from .models import AdventCalendar, Window
 
 
 class AdventCalendarFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = Julekalender
+        model = AdventCalendar
 
     year = factory.sequence(lambda n: 2030 + n)
 

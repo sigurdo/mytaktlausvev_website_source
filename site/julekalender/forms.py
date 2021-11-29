@@ -1,7 +1,7 @@
 from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
-from .models import Julekalender, Window
+from .models import AdventCalendar, Window
 
 
 class AdventCalendarForm(forms.ModelForm):
@@ -12,7 +12,7 @@ class AdventCalendarForm(forms.ModelForm):
     helper.add_input(Submit("submit", "Lag julekalender"))
 
     class Meta:
-        model = Julekalender
+        model = AdventCalendar
         fields = ["year"]
 
 

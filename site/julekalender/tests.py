@@ -9,38 +9,38 @@ from .factories import AdventCalendarFactory, WindowFactory
 from .models import Window
 
 
-class JulekalenderTestSuite(TestCase):
+class AdventCalendarTestSuite(TestCase):
     def setUp(self):
-        self.julekalender = AdventCalendarFactory()
+        self.advent_calendar = AdventCalendarFactory()
 
     def test_to_str(self):
-        """Julekalender `__str__` should include year."""
+        """Advent calendar `__str__` should include year."""
         self.assertEqual(
-            str(self.julekalender), f"Julekalender {self.julekalender.year}"
+            str(self.advent_calendar), f"Julekalender {self.advent_calendar.year}"
         )
 
     def test_get_absolute_url(self):
-        """Should link to the julekalender's detail page."""
+        """Should link to the advent calendar's detail page."""
         self.assertEqual(
-            self.julekalender.get_absolute_url(),
-            reverse("advent_calendar:detail", args=[self.julekalender.year]),
+            self.advent_calendar.get_absolute_url(),
+            reverse("advent_calendar:detail", args=[self.advent_calendar.year]),
         )
 
 
 class WindowTestSuite(TestCase):
     def setUp(self):
-        self.julekalender = AdventCalendarFactory()
-        self.window = WindowFactory(advent_calendar=self.julekalender)
+        self.advent_calendar = AdventCalendarFactory()
+        self.window = WindowFactory(advent_calendar=self.advent_calendar)
 
     def test_to_str(self):
         """Window `__str__` should include calendar year and window index."""
         self.assertEqual(
             str(self.window),
-            f"Julekalender {self.julekalender.year}, luke {self.window.index}",
+            f"Julekalender {self.advent_calendar.year}, luke {self.window.index}",
         )
 
     def test_get_absolute_url(self):
-        """Should link to the window's julekalender's detail page."""
+        """Should link to the window's advent calendar's detail page."""
         self.assertEqual(
             self.window.get_absolute_url(),
             reverse("advent_calendar:detail", args=[self.window.advent_calendar.year]),
@@ -63,45 +63,45 @@ class WindowTestSuite(TestCase):
     def test_calendar_and_index_unique_together(self):
         """Calendar and index must be unique together."""
         with self.assertRaises(IntegrityError):
-            WindowFactory(advent_calendar=self.julekalender, index=self.window.index)
+            WindowFactory(advent_calendar=self.advent_calendar, index=self.window.index)
 
 
-class JulekalenderListTestSuite(TestMixin, TestCase):
+class AdventCalendarListTestSuite(TestMixin, TestCase):
     def test_requires_login(self):
         """Should require login."""
         self.assertLoginRequired(reverse("advent_calendar:list"))
 
 
-class JulekalenderCreateTestSuite(TestMixin, TestCase):
+class AdventCalendarCreateTestSuite(TestMixin, TestCase):
     def test_requires_login(self):
         """Should require login."""
         self.assertLoginRequired(reverse("advent_calendar:create"))
 
     def test_requires_permission(self):
-        """Should require the `add_julekalender` permission."""
+        """Should require the `add_advent_calendar` permission."""
         self.assertPermissionRequired(
-            reverse("advent_calendar:create"), "julekalender.add_julekalender"
+            reverse("advent_calendar:create"), "julekalender.add_adventcalendar"
         )
 
 
-class JulekalenderDetailTestSuite(TestMixin, TestCase):
+class AdventCalendarDetailTestSuite(TestMixin, TestCase):
     def setUp(self):
-        self.julekalender = AdventCalendarFactory()
+        self.advent_calendar = AdventCalendarFactory()
 
     def test_requires_login(self):
         """Should require login."""
-        self.assertLoginRequired(self.julekalender.get_absolute_url())
+        self.assertLoginRequired(self.advent_calendar.get_absolute_url())
 
 
 class WindowCreateTestSuite(TestMixin, TestCase):
     def setUp(self):
-        self.julekalender = AdventCalendarFactory()
+        self.advent_calendar = AdventCalendarFactory()
         self.window_data = {"title": "Title", "content": "Christmas", "index": 15}
 
     def test_requires_login(self):
         """Should require login."""
         self.assertLoginRequired(
-            reverse("advent_calendar:window_create", args=[self.julekalender.year])
+            reverse("advent_calendar:window_create", args=[self.advent_calendar.year])
         )
 
     def test_sets_calendar_based_on_url(self):
@@ -109,20 +109,20 @@ class WindowCreateTestSuite(TestMixin, TestCase):
         user = SuperUserFactory()
         self.client.force_login(user)
         self.client.post(
-            reverse("advent_calendar:window_create", args=[self.julekalender.year]),
+            reverse("advent_calendar:window_create", args=[self.advent_calendar.year]),
             self.window_data,
         )
 
         self.assertEqual(Window.objects.count(), 1)
         window = Window.objects.last()
-        self.assertEqual(window.advent_calendar, self.julekalender)
+        self.assertEqual(window.advent_calendar, self.advent_calendar)
 
     def test_created_by_modified_by_set_to_current_user(self):
         """Should set `created_by` and `modified_by` to the current user on creation."""
         user = SuperUserFactory()
         self.client.force_login(user)
         self.client.post(
-            reverse("advent_calendar:window_create", args=[self.julekalender.year]),
+            reverse("advent_calendar:window_create", args=[self.advent_calendar.year]),
             self.window_data,
         )
 

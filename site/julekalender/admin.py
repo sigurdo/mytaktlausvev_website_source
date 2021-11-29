@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Julekalender, Window
+from .models import AdventCalendar, Window
 
 
 class WindowAdmin(admin.ModelAdmin):
@@ -9,5 +9,5 @@ class WindowAdmin(admin.ModelAdmin):
     ordering = ["advent_calendar", "-index"]
 
 
-admin.site.register(Julekalender)
+admin.site.register(AdventCalendar)
 admin.site.register(Window, WindowAdmin)

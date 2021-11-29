@@ -25,24 +25,15 @@
   margin-bottom: 0 !important;
 }
 
-$button-color-julekalender: #5d4f8a;
+$button-color-advent-calendar: #5d4f8a;
 
-.btn-julekalender {
+.btn-advent-calendar {
   @include button-variant(
-    $button-color-julekalender,
-    darken($button-color-julekalender, 7.5%),
-    darken($button-color-julekalender, 10%),
-    lighten($button-color-julekalender, 5%),
-    lighten($button-color-julekalender, 10%),
-    darken($button-color-julekalender, 30%)
-  );
-}
-
-.btn-julekalender-outline {
-  @include button-outline-variant(
-    $button-color-julekalender,
-    #222222,
-    lighten($button-color-julekalender, 5%),
-    $button-color-julekalender
+    $button-color-advent-calendar,
+    darken($button-color-advent-calendar, 7.5%),
+    darken($button-color-advent-calendar, 10%),
+    lighten($button-color-advent-calendar, 5%),
+    lighten($button-color-advent-calendar, 10%),
+    darken($button-color-advent-calendar, 30%)
   );
 }

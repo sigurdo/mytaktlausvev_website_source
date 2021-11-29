@@ -1,9 +1,9 @@
 {% extends "./base.html" %}
 
-{% block title %}Julekalender {{julekalender.year}}{% endblock title %}
+{% block title %}Julekalender {{ advent_calendar.year }}{% endblock title %}
 
 {% block content %}
-    <h1 class="text-white my-4 dancing-script">Julekalender {{julekalender.year}}</h1>
+    <h1 class="text-white my-4 dancing-script">Julekalender {{ advent_calendar.year }}</h1>
 
     <ul class="windows mb-4 list-unstyled">
         {% for index in permutation %}
@@ -15,9 +15,9 @@
         {% endfor %}
     </ul>
 
-    <div id="modal" data-index="{{ index }}" class="modal fade" tabindex="-1">
+    <div id="modal" class="modal fade" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
-            {% for window in julekalender.windows.all %}
+            {% for window in advent_calendar.windows.all %}
                 <article class="modal-content window-modal d-none" data-index="{{ window.index }}">
                     <header class="modal-header">
                         <h2 class="modal-title">{{ window.title }}</h2>
@@ -36,8 +36,8 @@
                     {% if window.created_by == user or perms.julekalender.change_window %}
                     <footer class="modal-footer">
                         <a
-                            href="{% url 'advent_calendar:window_update' julekalender.year window.index %}"
-                            class="btn btn-julekalender text-white"
+                            href="{% url 'advent_calendar:window_update' advent_calendar.year window.index %}"
+                            class="btn btn-advent-calendar text-white"
                         >
                             Rediger luke
                         </a>
@@ -63,5 +63,5 @@
 
 {% block js %}
     {% load static %}
-    <script src="{% static 'julekalender/julekalender.js' %}"></script>
+    <script src="{% static 'julekalender/advent_calendar.js' %}"></script>
 {% endblock js %}
