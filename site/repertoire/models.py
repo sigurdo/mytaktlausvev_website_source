@@ -13,6 +13,7 @@ from PyPDF2 import PdfFileReader, PdfFileWriter
 from autoslug import AutoSlugField
 
 import sheetmusic.models
+from sheetmusic.models import Part
 
 
 class Repertoire(Model):
@@ -38,11 +39,9 @@ class Repertoire(Model):
 
     def pdf_file(self, user):
         """Returns a PDF contaning the user's favorite parts for the scores in this repertoire."""
-        parts = []
-        for entry in self.entries.all():
-            for pdf in entry.score.pdfs.all():
-                parts += pdf.parts.all()
-        parts = list(filter(lambda part: part.is_favorite_for(user), parts))
+        parts = Part.objects.filter(
+            preferring_users__user=user, pdf__score__repertoire_entries__repertoire=self
+        )
         if len(parts) < 1:
             raise Exception(
                 f"Fann inga favorittstemmer for {user} i repertoaret {self}"
