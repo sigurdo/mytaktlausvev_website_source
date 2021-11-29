@@ -63,6 +63,8 @@
     </tbody>
 </table>
 
+{% if perms.repertoire.add_repertoire %}
 <a href="{% url 'repertoire:RepertoireCreate' %}" class="btn btn-primary"> Nytt repertoar </a>
+{% endif %}
 
 {% endblock %}
