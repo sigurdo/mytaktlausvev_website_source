@@ -54,3 +54,5 @@ RepertoireEntryUpdateFormset = inlineformset_factory(
     form=RepertoireEntryUpdateForm,
     extra=5,
 )
+
+RepertoireEntryUpdateFormset.helper = RepertoireEntryUpdateFormsetHelper()

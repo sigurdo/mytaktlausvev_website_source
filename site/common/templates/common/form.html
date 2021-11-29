@@ -5,7 +5,9 @@
     {% if object %}
         Rediger {{ object | verbose_name }}
     {% else %}
-        Lag ny
+        Lag
+        {% if view.model.verbose_name_gender == "nongender" %} nytt {% else %} ny {% endif %}
+        {{ view.model | verbose_name }}
     {% endif %}
 {% endblock %}
 
@@ -14,10 +16,18 @@
         {% if object %}
             Rediger {{ object | verbose_name | title }} "{{ object }}"
         {% else %}
-            Lag ny
+            Lag
+            {% if view.model.verbose_name_gender == "nongender" %} nytt {% else %} ny {% endif %}
+            {{ view.model | verbose_name }}
         {% endif %}
     </h2>
 
-    {% load crispy_forms_tags %}
-    {% crispy form %}
+    {% if form %}
+        {% load crispy_forms_tags %}
+        {% crispy form %}
+    {% endif %}
+    {% if formset %}
+        {% load crispy_forms_tags %}
+        {% crispy formset %}
+    {% endif %}
 {% endblock %}

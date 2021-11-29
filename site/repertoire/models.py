@@ -27,6 +27,9 @@ class Repertoire(Model):
         editable=True,
     )
 
+    # Makes common/form.html write "nytt repertoar" instead of "ny repertoar"
+    verbose_name_gender = "nongender"
+
     class Meta:
         constraints = [UniqueConstraint(fields=["slug"], name="repertoire_unique_slug")]
         ordering = ["-timestamp"]

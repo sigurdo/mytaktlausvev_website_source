@@ -23,7 +23,7 @@ class RepertoireList(LoginRequiredMixin, ListView):
 class RepertoireCreate(PermissionRequiredMixin, CreateView):
     model = Repertoire
     form_class = RepertoireCreateForm
-    template_name_suffix = "_create_form"
+    template_name = "common/form.html"
     permission_required = "repertoire.add_repertoire"
 
     def get_success_url(self):
@@ -35,7 +35,7 @@ class RepertoireUpdate(PermissionRequiredMixin, FormAndFormsetUpdateView):
     form_class = RepertoireUpdateForm
     formset_class = RepertoireEntryUpdateFormset
     formset_helper = RepertoireEntryUpdateFormsetHelper
-    template_name_suffix = "_update_form"
+    template_name = "common/form.html"
     success_url = reverse_lazy("repertoire:RepertoireList")
     permission_required = "repertoire.change_repertoire"
 
