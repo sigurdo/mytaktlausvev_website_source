@@ -5,7 +5,6 @@ from django.contrib.auth.mixins import (
     PermissionRequiredMixin,
     UserPassesTestMixin,
 )
-from django.urls import reverse
 from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.detail import DetailView
@@ -45,10 +44,7 @@ class AdventCalendarDetail(LoginRequiredMixin, DetailView):
         random.seed(advent_calendar.year)
         context["permutation"] = random.sample(range(1, 25), 24)
         context["form"] = WindowCreateForm(
-            action=reverse(
-                "advent_calendar:window_create",
-                args=[advent_calendar.year],
-            ),
+            advent_calendar=advent_calendar,
             initial={"advent_calendar": advent_calendar},
         )
 
@@ -56,10 +52,14 @@ class AdventCalendarDetail(LoginRequiredMixin, DetailView):
 
 
 class WindowCreate(LoginRequiredMixin, CreateView):
-    """View for viewing an advent calendar window."""
+    """
+    View for creating an advent calendar window.
+    Used with `WindowCreateForm`.
+    """
 
     model = Window
     form_class = WindowCreateForm
+    http_method_names = ["post", "put"]
 
     def form_valid(self, form):
         form.instance.advent_calendar_id = self.kwargs.get("year")

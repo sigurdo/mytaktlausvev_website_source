@@ -98,6 +98,14 @@ class WindowCreateTestSuite(TestMixin, TestCase):
         self.advent_calendar = AdventCalendarFactory()
         self.window_data = {"title": "Title", "content": "Christmas", "index": 15}
 
+    def test_get_not_allowed(self):
+        """Should not allow GET requests."""
+        self.client.force_login(SuperUserFactory())
+        response = self.client.get(
+            reverse("advent_calendar:window_create", args=[self.advent_calendar.year])
+        )
+        self.assertEqual(response.status_code, HTTPStatus.METHOD_NOT_ALLOWED)
+
     def test_requires_login(self):
         """Should require login."""
         self.assertLoginRequired(
@@ -106,8 +114,7 @@ class WindowCreateTestSuite(TestMixin, TestCase):
 
     def test_sets_calendar_based_on_url(self):
         """Should set the window's calendar based on the URL."""
-        user = SuperUserFactory()
-        self.client.force_login(user)
+        self.client.force_login(SuperUserFactory())
         self.client.post(
             reverse("advent_calendar:window_create", args=[self.advent_calendar.year]),
             self.window_data,
