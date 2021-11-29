@@ -18,7 +18,7 @@ urlpatterns = [
     path("stemme/<int:pk>/pdf/<str:filename>", views.PartPdf.as_view(), name="PartPdf"),
     path(
         "favorittstemme",
-        views.FavoritePartUpdateView.as_view(),
-        name="fetchFavoritePart",
+        views.FavoritePartUpdate.as_view(),
+        name="FavoritePartUpdate",
     ),
 ]

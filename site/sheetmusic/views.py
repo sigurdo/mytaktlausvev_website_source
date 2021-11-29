@@ -239,7 +239,7 @@ class PartPdf(PermissionRequiredMixin, DetailView):
         return HttpResponse(content=content, content_type=self.content_type)
 
 
-class FavoritePartUpdateView(PermissionRequiredMixin, View):
+class FavoritePartUpdate(PermissionRequiredMixin, View):
     permission_required = (
         "sheetmusic.add_favoritepart",
         "sheetmusic.delete_favoritepart",
