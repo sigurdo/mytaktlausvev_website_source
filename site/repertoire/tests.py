@@ -1,12 +1,45 @@
 from django.test import TestCase
 from django.urls import reverse
 
-from accounts.factories import SuperUserFactory
+from accounts.factories import SuperUserFactory, UserFactory
 from common.mixins import TestMixin
 from common.test_utils import create_formset_post_data
 
+from sheetmusic.factories import UsersPreferredPartFactory
+
 from .factories import RepertoireFactory, RepertoireEntryFactory
 from .forms import RepertoireEntryUpdateFormset
+
+
+class RepertoireTestSuite(TestMixin, TestCase):
+    def setUp(self):
+        self.user = UserFactory()
+        self.repertoire = RepertoireFactory(title="Marsjhefte")
+        self.entry = RepertoireEntryFactory(repertoire=self.repertoire)
+        self.favorite = UsersPreferredPartFactory(
+            part__pdf__score=self.entry.score, user=self.user
+        )
+
+    def test_to_str(self):
+        self.assertEqual(str(self.repertoire), "Marsjhefte")
+
+    def test_pdf_file(self):
+        pdf_file = self.repertoire.pdf_file(self.user)
+        self.assertEqual(type(pdf_file), bytes)
+
+    def test_pdf_file_no_favorite(self):
+        self.favorite.delete()
+        self.assertRaises(Exception, self.repertoire.pdf_file, self.user)
+
+
+class RepertoireEntryTestSuite(TestMixin, TestCase):
+    def setUp(self):
+        self.entry = RepertoireEntryFactory(
+            repertoire__title="Vårkonsert", score__title="Ice Cream"
+        )
+
+    def test_to_str(self):
+        self.assertEqual(str(self.entry), "Vårkonsert - Ice Cream")
 
 
 class RepertoireListTestSuite(TestMixin, TestCase):
@@ -70,3 +103,34 @@ class RepertoireUpdateTestSuite(TestMixin, TestCase):
         self.client.force_login(user)
         response = self.client.post(self.get_url(), self.test_data)
         self.assertRedirects(response, reverse("repertoire:RepertoireList"))
+
+
+class RepertoireDeleteTestSuite(TestMixin, TestCase):
+    def get_url(self):
+        return reverse("repertoire:RepertoireDelete", args=[self.repertoire.pk])
+
+    def setUp(self):
+        self.repertoire = RepertoireFactory()
+
+    def test_requires_permission(self):
+        self.assertPermissionRequired(self.get_url(), "repertoire.delete_repertoire")
+
+
+class RepertoirePdfTestSuite(TestMixin, TestCase):
+    def get_url(self):
+        return reverse("repertoire:RepertoirePdf", args=[self.entry.repertoire.pk])
+
+    def setUp(self):
+        self.user = UserFactory()
+        self.entry = RepertoireEntryFactory()
+        self.favorite = UsersPreferredPartFactory(
+            part__pdf__score=self.entry.score, user=self.user
+        )
+
+    def test_requires_login(self):
+        self.assertLoginRequired(self.get_url())
+
+    def test_returns_pdf(self):
+        self.client.force_login(self.user)
+        response = self.client.get(self.get_url())
+        self.assertEqual(response["content-type"], "application/pdf")
