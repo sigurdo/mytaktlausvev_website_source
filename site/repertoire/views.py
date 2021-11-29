@@ -25,7 +25,7 @@ class RepertoireCreate(LoginRequiredMixin, CreateView):
     template_name_suffix = "_create_form"
 
     def get_success_url(self) -> str:
-        return reverse("repertoire")
+        return reverse("repertoire:RepertoireList")
 
 class RepertoireUpdate(LoginRequiredMixin, FormAndFormsetUpdateView):
     model = models.Repertoire
@@ -35,21 +35,9 @@ class RepertoireUpdate(LoginRequiredMixin, FormAndFormsetUpdateView):
     template_name_suffix = "_update_form"
 
     def get_success_url(self) -> str:
-        return reverse("updateRepertoire", kwargs={ "pk": self.get_object().pk })
+        return reverse("repertoire:RepertoireUpdate", kwargs={ "pk": self.get_object().pk })
 
 class RepertoireDelete(LoginRequiredMixin, DeleteView):
     model = models.Repertoire
     template_name = "common/confirm_delete.html"
-    success_url = reverse_lazy("repertoire")
-
-class RepertoireEntryCreate(LoginRequiredMixin, CreateView):
-    model = models.RepertoireEntry
-    form_class = forms.RepertoireEntryCreateForm
-    template_name_suffix = "_create_form"
-
-    def form_valid(self, form: forms.RepertoireEntryCreateForm) -> HttpResponse:
-        form.instance.repertoire = models.Repertoire.objects.get(pk=self.kwargs['repertoire_pk'])
-        return super().form_valid(form)
-
-    def get_success_url(self) -> str:
-        return reverse("updateRepertoire", kwargs={ "pk": self.object.repertoire.pk })
+    success_url = reverse_lazy("repertoire:RepertoireList")

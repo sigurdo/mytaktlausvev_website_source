@@ -11,10 +11,6 @@
             </th>
 
             <th class="col-form-label">
-                Les
-            </th>
-
-            <th class="col-form-label">
                 PDF
             </th>
 
@@ -22,13 +18,17 @@
                 Dato opprettet
             </th>
 
+            {% if perms.repertoire.change_repertoire %}
             <th class="col-form-label">
                 Rediger
             </th>
+            {% endif %}
 
+            {% if perms.repertoire.delete_repertoire %}
             <th class="col-form-label">
                 Slett
             </th>
+            {% endif %}
         </tr>
     </thead>
 
@@ -36,33 +36,33 @@
         {% for repertoire in repertoires %}
             <tr>
                 <td>
-                    <a href="{% url 'repertoire' %}"> {{ repertoire.title }} </a>
-                </td>
-
-                <td>
-                    <a href="{% url 'repertoire' %}"> Les </a>
+                    {{ repertoire.title }}
                 </td>
                 
                 <td>
-                    <a href="{% url 'repertoire' %}"> PDF </a>
+                    <a href="{% url 'repertoire:RepertoireList' %}"> PDF </a>
                 </td>
 
                 <td>
                     {{ repertoire.timestamp }}
                 </td>
 
+                {% if perms.repertoire.change_repertoire %}
                 <td>
-                    <a href="{% url 'updateRepertoire' repertoire.pk %}"> Rediger </a>
+                    <a href="{% url 'repertoire:RepertoireUpdate' repertoire.pk %}"> Rediger </a>
                 </td>
+                {% endif %}
 
+                {% if perms.repertoire.delete_repertoire %}
                 <td>
-                    <a href="{% url 'deleteRepertoire' repertoire.pk %}"> Slett </a>
+                    <a href="{% url 'repertoire:RepertoireDelete' repertoire.pk %}"> Slett </a>
                 </td>
+                {% endif %}
             </tr>
         {% endfor %}
     </tbody>
 </table>
 
-<a href="{% url 'createRepertoire' %}"> Nytt repertoar </a>
+<a href="{% url 'repertoire:RepertoireCreate' %}" class="btn btn-primary"> Nytt repertoar </a>
 
 {% endblock %}
