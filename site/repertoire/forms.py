@@ -1,12 +1,14 @@
 """Forms for the 'sheetmusic'-app"""
 from django import forms
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Layout, Fieldset, Field, HTML
+from crispy_forms.layout import Submit
 
 from . import models
 
+
 class RepertoireCreateForm(forms.ModelForm):
     """Form for creating a new repertoire"""
+
     helper = FormHelper()
     helper.form_method = "post"
     helper.label_class = "form-label"
@@ -15,12 +17,12 @@ class RepertoireCreateForm(forms.ModelForm):
     class Meta:
         model = models.Repertoire
         fields = ["title"]
-        labels = {
-            "title": "Tittel"
-        }
+        labels = {"title": "Tittel"}
+
 
 class RepertoireUpdateForm(forms.ModelForm):
-    """ Form for editing a repertoire """
+    """Form for editing a repertoire"""
+
     helper = FormHelper()
     helper.form_method = "post"
     helper.label_class = "form-label"
@@ -29,12 +31,11 @@ class RepertoireUpdateForm(forms.ModelForm):
     class Meta:
         model = models.Repertoire
         fields = ["title"]
-        labels = {
-            "title": "Tittel"
-        }
+        labels = {"title": "Tittel"}
+
 
 class RepertoireEntryUpdateForm(forms.ModelForm):
-    """ Form for creating a repertoire entry """
+    """Form for creating a repertoire entry"""
 
     class Meta:
         model = models.RepertoireEntry
@@ -42,10 +43,11 @@ class RepertoireEntryUpdateForm(forms.ModelForm):
         labels = {
             "score": "Note",
         }
-    
+
     def save(self, commit: bool = ...) -> models.RepertoireEntry:
         print("skal save RepertoireEntryUpdateForm")
         return super().save(commit=commit)
+
 
 class RepertoireEntryUpdateFormsetHelper(FormHelper):
     def __init__(self, *args, **kwargs):
@@ -54,7 +56,8 @@ class RepertoireEntryUpdateFormsetHelper(FormHelper):
         self.render_required_fields = True
         self.add_input(Submit("submit", "Lagre"))
         self.form_tag = False
-        self.template = 'common/table_inline_formset_shade_delete.html'
+        self.template = "common/table_inline_formset_shade_delete.html"
+
 
 RepertoireEntryUpdateFormset = forms.inlineformset_factory(
     models.Repertoire,
@@ -63,8 +66,10 @@ RepertoireEntryUpdateFormset = forms.inlineformset_factory(
     extra=1,
 )
 
+
 class RepertoireEntryCreateForm(forms.ModelForm):
-    """ Form for creating a repertoire entry """
+    """Form for creating a repertoire entry"""
+
     # helper = FormHelper()
     # helper.form_method = "post"
     # helper.label_class = "form-label"
@@ -73,6 +78,4 @@ class RepertoireEntryCreateForm(forms.ModelForm):
     class Meta:
         model = models.RepertoireEntry
         fields = ["score"]
-        labels = {
-            "score": "Note"
-        }
+        labels = {"score": "Note"}

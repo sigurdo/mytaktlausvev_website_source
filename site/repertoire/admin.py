@@ -1,3 +1,7 @@
-from django.contrib import admin
+"""Admin settings for the 'repertoire'-app"""
 
-# Register your models here.
+from django.contrib import admin
+from .models import Repertoire, RepertoireEntry
+
+admin.site.register(Repertoire)
+admin.site.register(RepertoireEntry)
