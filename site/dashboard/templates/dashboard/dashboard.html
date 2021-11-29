@@ -6,30 +6,34 @@
 	<div class="col-md">
 		<div class="card p-3 mb-5 shadow-sm">
 			<div class="card-body">
-				<h3>This is some text within a card body.</h3>
+				<h2>Hendingar</h2>
+				<ul>
+					{% for event in events %}
+					<li>
+						<a href="{% url 'events:detail' event.start_time.year event.slug %}">
+							{{event.title}}
+						</a>
+						<div>
+							<time datetime="{{ event.start_time | date:"c" }}">
+								{{event.start_time | date:"d.m.Y - H:i"}}
+							</time>
+							{% if event.end_time %}
+								til
+								<time datetime="{{ event.end_time | date:"c" }}">
+									{{event.end_time | date:"d.m.Y - H:i"}}
+								</time>
+							{% endif %}
+						</div>
+					</li>
+					{% endfor %}
+				</ul>
 			</div>
 		</div>
 	</div>
 	<div class="col-md">
 		<div class="card p-3 mb-5 shadow-sm">
 			<div class="card-body">
-				This is some text within a card body.
-			</div>
-		</div>
-	</div>
-</div>
-<div class="row">
-	<div class="col-md">
-		<div class="card p-3 mb-5 shadow-sm">
-			<div class="card-body">
-				This is some text within a card body.
-			</div>
-		</div>
-	</div>
-	<div class="col-md">
-		<div class="card p-3 mb-5 shadow-sm">
-			<div class="card-body">
-				<h4>Gullkorn</h4>
+				<h2>Gullkorn</h2>
 				{% for q in quotes %}
 				<div class="row">
 					<div class="col-lg-6">

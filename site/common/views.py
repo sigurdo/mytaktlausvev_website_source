@@ -41,14 +41,6 @@ class FormAndFormsetUpdateView(UpdateView):
     def formset_invalid(self, formset):
         return self.render_to_response(self.get_context_data(formset=formset))
 
-    def form_valid(self, form: Any) -> http.HttpResponse:
-        formset = self.get_formset()
-        if formset.is_valid():
-            formset.save()
-        else:
-            return self.formset_invalid(formset)
-        return super().form_valid(form)
-
     def get_formset_class(self):
         return self.formset_class
 
@@ -74,6 +66,22 @@ class FormAndFormsetUpdateView(UpdateView):
         if "formset_helper" not in kwargs:
             kwargs["formset_helper"] = self.formset_helper
         return super().get_context_data(**kwargs)
+
+    def post(
+        self, request: http.HttpRequest, *args: str, **kwargs: Any
+    ) -> http.HttpResponse:
+        self.object = self.get_object()
+        form = self.get_form()
+        if form.is_valid():
+            form.save()
+        else:
+            return self.form_invalid()
+        formset = self.get_formset()
+        if formset.is_valid():
+            formset.save()
+        else:
+            return self.formset_invalid()
+        return http.HttpResponseRedirect(self.get_success_url())
 
 
 class DeleteMixin:

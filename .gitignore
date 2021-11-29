@@ -52,7 +52,7 @@ db.sqlite3
 db.sqlite3-journal
 settings.cnf
 
-# Generated items
+# Uploaded files
 site/media
 
 # Compiled scss files
@@ -64,3 +64,6 @@ codestyle-monokai.scss
 
 # Ignore shell scripts in root directory to easify custom automizations
 /*.sh
+
+# Docker postgres data
+db/db

@@ -15,6 +15,10 @@ import sys
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+TESSDATA_DIR = os.path.join(BASE_DIR, "..", "tessdata", "tessdata_best-4.1.0")
+
+# Simplifies management stuff like deleting output files from the code editor on the host system.
+os.umask(0)
 
 
 # Quick-start development settings - unsuitable for production
@@ -30,7 +34,7 @@ ALLOWED_HOSTS = [".localhost", "127.0.0.1", "[::1]", "0.0.0.0"]
 
 
 # Application definition
-sys.modules['fontawesome_free'] = __import__('fontawesome-free')
+sys.modules["fontawesome_free"] = __import__("fontawesome-free")
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -50,7 +54,9 @@ INSTALLED_APPS = [
     "comments",
     "contact",
     "quotes",
+    "events",
     "dashboard",
+    "buttons",
     "sheetmusic",
     "repertoire",
 ]
@@ -181,6 +187,7 @@ CRISPY_FAIL_SILENTLY = not DEBUG
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
 MEDIA_URL = "/media/"
+
 
 # Sass config
 

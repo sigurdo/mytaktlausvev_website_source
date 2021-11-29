@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="nn-no">
+
+<head>
+	<title>{% block title %}Vev 2.0{% endblock %} | Studentorchesteret Dei Taktlause</title>
+
+	{% load sass_tags %}
+	<link href="{% sass_src 'scss/bootstrap-light.scss' %}" media="(prefers-color-scheme: light)" rel="stylesheet" type="text/css">
+	<link href="{% sass_src 'scss/bootstrap-dark.scss' %}" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
+	<link href="{% sass_src 'scss/utilities.scss' %}" rel="stylesheet" type="text/css">
+
+	{% load static %}
+	<link rel="stylesheet" type="text/css" href="{% static 'css/base.css' %}">
+	<link rel="stylesheet" type="text/css" href="{% static 'css/forms.css' %}">
+	
+	{% block css %}{% endblock css %}
+</head>
+
+<body class="sass-example-class">
+	{% block navbar %}
+	{% endblock navbar %}
+
+	{% block body %}
+	{% endblock body %}
+
+	<script
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
+		integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
+		crossorigin="anonymous"
+	></script>
+
+	{% block js %}{% endblock js %}
+</body>

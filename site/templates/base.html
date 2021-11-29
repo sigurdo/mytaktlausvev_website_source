@@ -1,27 +1,10 @@
-<!DOCTYPE html>
-<html lang="nn-no">
-
-<head>
-	<title>{% block title %}Vev 2.0{% endblock %} | Studentorchesteret Dei Taktlause</title>
-
-	{% load sass_tags %}
-	<link href="{% sass_src 'scss/bootstrap-light.scss' %}" media="(prefers-color-scheme: light)" rel="stylesheet" type="text/css">
-	<link href="{% sass_src 'scss/bootstrap-dark.scss' %}" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
-	<link href="{% sass_src 'scss/utilities.scss' %}" rel="stylesheet" type="text/css">
-
-	{% block css %}{% endblock css %}
-
-
-	{% load static %}
-	<link rel="stylesheet" type="text/css" href="{% static 'css/base.css' %}">
-	<link rel="stylesheet" type="text/css" href="{% static 'css/forms.css' %}">
-</head>
-
-<body class="sass-example-class">
+{% extends 'base_base.html' %}
+{% block navbar %}
 	<nav class="navbar navbar-expand fixed-top navbar-dark">
 		<div class="container-fluid">
 
 			<a class="navbar-brand" href="{% if user.is_authenticated %} {% url 'dashboard' %} {% else %} {% url 'articles:detail' 'om-oss' %} {% endif %}">
+				{% load static %}
 				<img class="navbar-logo" src="{% static 'images/logo.png' %}">
 				Studentorchesteret Dei Taktlause
 			</a>
@@ -42,7 +25,7 @@
 					</li>
 					<li class="nav-item">
 						<a class="nav-link {% if 'notar' in request.path %} active {% endif %}"
-							href="{% url 'sheetmusic' %}">Notar</a>
+							href="{% url 'sheetmusic:ScoreList' %}">Notar</a>
 					</li>
 					<li class="nav-item">
 						<a class="nav-link {% if 'repertoar' in request.path %} active {% endif %}"
@@ -55,6 +38,10 @@
 					<li class="nav-item">
 						<a class="nav-link {% if 'wiki' in request.path %} active {% endif %}"
 							href="{% url 'articles:detail' 'wiki' %}">Wiki</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link {% if 'skiltmerke' in request.path %} active {% endif %}"
+							href="{% url 'buttons:buttons' %}">Skiltmerke</a>
 					</li>
 				</ul>
 				<ul class="nav navbar-nav">
@@ -72,22 +59,15 @@
 			</div>
 		</div>
 	</nav>
+{% endblock navbar %}
 
+{% block body %}
 	<div class="container">
 		<div class="row">
 			<div class="col-md">
 				{% block page %}
-
-				{% endblock %}
+				{% endblock page %}
 			</div>
 		</div>
 	</div>
-
-	<script
-		src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
-		integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
-		crossorigin="anonymous"
-	></script>
-
-	{% block js %}{% endblock js %}
-</body>
+{% endblock body %}

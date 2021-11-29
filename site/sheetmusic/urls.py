@@ -1,25 +1,24 @@
 """Urls for the 'sheetmusic'-app"""
 from django.urls import path
 from . import views
-from . import fetchEndpoints
+
+app_name = "sheetmusic"
 
 urlpatterns = [
-    path("", views.ScoreList.as_view(), name="sheetmusic"),
-    path("score/view/<slug:pk>", views.ScoreView.as_view(), name="viewScore"),
-    path("score/edit/<slug:pk>", views.ScoreUpdate.as_view(), name="editScore"),
-    path("score/edit/<slug:pk>/parts", views.PartsUpdate.as_view(), name="editScoreParts"),
-    path("score/edit/<slug:pk>/parts/create", views.PartCreate.as_view(), name="createScorePart"),
-    path("score/edit/<slug:pk>/pdfs", views.PdfsUpdate.as_view(), name="editScorePdfs"),
-    path("score/create/", views.ScoreCreate.as_view(), name="createScore"),
-    path("part/read/<slug:pk>", views.PartRead.as_view(), name="readPart"),
-    path("part/pdf/<slug:pk>/<str:filename>", views.PartPdf.as_view(), name="pdfPart"), # filename is not used for anything, it is just the named the pdf will be saved as at the users machine
-    path("score/delete/<int:score_id>", views.deleteScore, name="deleteScore"),
-    path("fetch/score", fetchEndpoints.score, name="fetchScore"),
-    path("fetch/score/<int:score_id>", fetchEndpoints.score, name="fetchScoreId"),
-    path("fetch/pdf/", fetchEndpoints.pdf, name="fetchPdf"),
-    path("fetch/pdf/<int:pk>", fetchEndpoints.pdf, name="fetchPdfPk"),
-    path("fetch/pdf/processingstatus/<int:pk>", fetchEndpoints.pdfProcessingStatus, name="fetchPdfProcessingStatus"),
-    path("fetch/part/", fetchEndpoints.part, name="fetchPart"),
-    path("fetch/part/<int:pk>", fetchEndpoints.part, name="fetchPartPk"),
-    path("fetch/userspreferredpart", fetchEndpoints.usersPreferredPart, name="fetchUsersPreferredPart"),
+    path("", views.ScoreList.as_view(), name="ScoreList"),
+    path("ny/", views.ScoreCreate.as_view(), name="ScoreCreate"),
+    path("<int:pk>/", views.ScoreView.as_view(), name="ScoreView"),
+    path("<int:pk>/rediger/", views.ScoreUpdate.as_view(), name="ScoreUpdate"),
+    path("<int:pk>/rediger/stemmer/", views.PartsUpdate.as_view(), name="PartsUpdate"),
+    path("<int:pk>/rediger/pdfar/", views.PdfsUpdate.as_view(), name="PdfsUpdate"),
+    path("<int:pk>/rediger/pdfar/ny/", views.PdfsUpload.as_view(), name="PdfsUpload"),
+    path("<int:pk>/slett/", views.ScoreDelete.as_view(), name="ScoreDelete"),
+    path("stemme/<int:pk>/les", views.PartRead.as_view(), name="PartRead"),
+    # filename is not used for anything, it is just the name the pdf will be saved as at the users machine
+    path("stemme/<int:pk>/pdf/<str:filename>", views.PartPdf.as_view(), name="PartPdf"),
+    path(
+        "favorittstemme",
+        views.UsersPreferredPartUpdateView.as_view(),
+        name="fetchUsersPreferredPart",
+    ),
 ]

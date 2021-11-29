@@ -13,9 +13,9 @@ Requires [Docker](https://docs.docker.com/get-docker/) and [docker-compose](http
 - Clone the repository
 - Clone submodules with `git submodule update --init --recursive`
 - Initialize the database with the [`./setup/init.sh`](./setup/init.sh) script
-- Build the project with `docker-compose build --build-arg SHEETMUSIC=yes`
+- Build the project with `docker-compose build`
 
-A superuser with the username "leiar" and the password "password" is created automatically when initializing the database.
+A superuser with the username "leiar" and the password "password" is created automatically when initializing the database. Users "aspirant", "medlem", and "pensjonist" are also created, with the password "password".
 
 ### Running
 

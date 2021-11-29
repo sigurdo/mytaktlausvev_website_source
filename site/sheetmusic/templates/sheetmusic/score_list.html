@@ -1,67 +1,79 @@
-{% extends './base.html' %}
-{% block content %}
+{% extends 'base.html' %}
 
-<h1> Alle noter </h1>
+{% block title %} Notearkiv {% endblock title %}
 
-<table class="table table-striped table-sm">
-    <thead>
-        <tr>
-            <th class="col-form-label">
-                Namn
-            </th>
+{% block page %}
+<article>
+    <h1> Alle notar </h1>
 
-            <th class="col-form-label">
-                Les
-            </th>
-
-            <th class="col-form-label">
-                Dato opprettet
-            </th>
-
-            <th class="col-form-label">
-                Rediger
-            </th>
-
-            <th class="col-form-label">
-                Slett
-            </th>
-        </tr>
-    </thead>
-
-    <tbody>
-        {% for score in scores %}
+    {% if scores %}
+    <table class="table table-striped table-sm">
+        <thead>
             <tr>
-                <td>
-                    <a href="{% url 'viewScore' score.pk %}"> {{ score.title }} </a>
-                </td>
+                <th class="col-form-label">
+                    Namn
+                </th>
 
-                <td>
-                    {% if score.favoritePart %} <a href="{% url 'readPart' score.favoritePart.pk %}"> Les </a> {% endif %}
+                <th class="col-form-label">
+                    Les
+                </th>
 
-                <td>
-                    {{ score.timestamp }}
-                </td>
+                <th class="col-form-label">
+                    Dato oppretta
+                </th>
 
-                <td>
-                    <a href="{% url 'editScore' score.pk %}"> Rediger </a>
-                </td>
+                {% if perms.sheetmusic.change_score %}
+                <th class="col-form-label">
+                    Rediger
+                </th>
+                {% endif %}
 
-                <td>
-                    <button class="delete-score", data-pk="{{ score.pk }}" data-displayname="{{ score.title }}"> X </button>
-                </td>
+                {% if perms.sheetmusic.delete_score %}
+                <th class="col-form-label">
+                    Slett
+                </th>
+                {% endif %}
             </tr>
-        {% endfor %}
-    </tbody>
-</table>
+        </thead>
 
-{% comment %} <button id="test-fetch"> Test fetch </button> {% endcomment %}
+        <tbody>
+            {% for score in scores %}
+                <tr>
+                    <td>
+                        <a href="{% url 'sheetmusic:ScoreView' score.pk %}"> {{ score.title }} </a>
+                    </td>
 
-{% block js %}
-    {% load static %}
-    <script src="{% static 'notar/fetching.js' %}"></script>
-    <script src="{% static 'notar/score_list.js' %}"></script>
-{% endblock%}
+                    <td>
+                        {% if score.favoritePart %}
+                        <a href="{% url 'sheetmusic:PartRead' score.favoritePart.pk %}"> Les </a>
+                        {% endif %}
+                    </td>
 
-<a href="{% url 'createScore' %}"> Ny note </a>
+                    <td>
+                        <time datetime="{{ score.timestamp | date:"c" }}">{{ score.timestamp | date }}</time>
+                    </td>
 
-{% endblock %}
+                    {% if perms.sheetmusic.change_score %}
+                    <td>
+                        <a href="{% url 'sheetmusic:ScoreUpdate' score.pk %}"> Rediger </a>
+                    </td>
+                    {% endif %}
+
+                    {% if perms.sheetmusic.delete_score %}
+                    <td>
+                        <a href="{% url 'sheetmusic:ScoreDelete' score.pk %}"> Slett </a>
+                    </td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <p>
+        ({{ scores|length }} not{{ scores|length|pluralize:"e,ar" }})
+    </p>
+    {% endif %}
+
+    <a href="{% url 'sheetmusic:ScoreCreate' %}" class="btn btn-primary"> Ny note </a>
+</article>
+{% endblock page %}

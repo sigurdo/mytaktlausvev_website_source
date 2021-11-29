@@ -1,0 +1,12 @@
+<div>
+  <label>
+    Dato
+    {% with widget=widget.subwidgets.0 %}{% include widget.template_name %}{% endwith %}
+    <small class="form-text text-muted">Til dømes 2021-11-25</small>
+  </label>
+  <label>
+    Tid
+    {% with widget=widget.subwidgets.1 %}{% include widget.template_name %}{% endwith %}
+    <small class="form-text text-muted">Til dømes 16:30</small>
+  </label>
+</div>

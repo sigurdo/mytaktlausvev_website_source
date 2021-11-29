@@ -2,7 +2,9 @@ from django.test import TestCase
 from django.contrib.auth import authenticate
 from django.urls import reverse
 from django.utils.text import slugify
+from django.templatetags.static import static
 from common.mixins import TestMixin
+from common.utils import test_image
 from .hashers import DrupalPasswordHasher
 from .models import UserCustom
 from .factories import UserFactory
@@ -24,7 +26,7 @@ class DrupalPasswordHasherTest(TestCase):
         self.assertTrue(hasher.verify(password, encoded))
 
 
-class UserCustomTest(TestCase):
+class UserCustomTest(TestMixin, TestCase):
     def test_get_absolute_url(self):
         """Should link to the user's profile page."""
         user = UserFactory()
@@ -33,15 +35,30 @@ class UserCustomTest(TestCase):
             reverse("profile", args=[user.slug]),
         )
 
-    def test_get_name_returns_full_name_if_exists(self):
-        """Should return the full name if it exists."""
-        user = UserFactory(first_name="Bob", last_name="Bobbington")
-        self.assertEqual(user.get_name(), user.get_full_name())
+    def test_to_str_name_exists(self):
+        """`__str__` should return name when it exists."""
+        user = UserFactory(name="Bob Bobbington")
+        self.assertEqual(str(user), user.name)
 
-    def test_get_name_returns_username_if_full_name_not_exist(self):
-        """Should return the username if the full name does not exist."""
-        user = UserFactory(username="bob68")
+    def test_to_str_name_not_exist(self):
+        """`__str__` should return username when name doesn't exist."""
+        user = UserFactory(name="")
+        self.assertEqual(str(user), user.username)
+
+    def test_get_name_returns_name_if_exists(self):
+        """Should return `name` if it exists."""
+        user = UserFactory(name="Bob Bobbington")
+        self.assertEqual(user.get_name(), user.name)
+
+    def test_get_name_returns_username_if_name_not_exist(self):
+        """Should return `username` if `name` doesn't exist."""
+        user = UserFactory(name="")
         self.assertEqual(user.get_name(), user.username)
+
+    def test_default_membership_status_is_active(self):
+        """The default membership status should be `ACTIVE`."""
+        user = UserFactory()
+        self.assertEqual(user.membership_status, UserCustom.MembershipStatus.ACTIVE)
 
     def test_can_login_with_newer_drupal_password_hashes(self):
         """Should be able to login with newer, Drupal 7+ password hashes."""
@@ -86,6 +103,22 @@ class UserCustomTest(TestCase):
         user_a = UserFactory(username="test")
         user_b = UserFactory(username="te@st")
         self.assertNotEqual(user_a.slug, user_b.slug)
+
+    def test_get_avatar_url_avatar_exists(self):
+        """
+        `get_avatar_url` should return the URL to
+        the user's avatar when it exists.
+        """
+        user = UserFactory(avatar=test_image())
+        self.assertEqual(user.get_avatar_url(), user.avatar.url)
+
+    def test_get_avatar_url_avatar_not_exist(self):
+        """
+        `get_avatar_url` should return the default avatar
+        when the user's avatar doesn't exist.
+        """
+        user = UserFactory()
+        self.assertEqual(user.get_avatar_url(), static("accounts/default-avatar.svg"))
 
 
 class ProfileDetailTest(TestMixin, TestCase):

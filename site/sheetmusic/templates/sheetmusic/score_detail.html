@@ -1,58 +1,46 @@
-{% extends './base.html' %}
-{% block content %}
+{% extends 'base.html' %}
 
-<h1> {{ object.title }} <a href="{% url 'editScore' object.pk %}" class="float-right h6"> rediger </a></h1>
+{% block title %}{{ score.title }}{% endblock title %}
 
-<h2> Favorittstemmer </h2>
+{% block page %}
+<article>
+    <h1>
+        {{ score.title }}
+        {% if perms.sheetmusic.change_score %}
+            <a href="{% url 'sheetmusic:ScoreUpdate' score.pk %}" class="fs-6"> rediger </a>
+        {% endif %}
+    </h1>
 
-<table class="table table-bordered">
-    <tr>
-        <th> Navn </th>
-        <th> Les </th>
-        <th> PDF </th>
-        <th> Favoritt </th>
-    </tr>
-{% for part in parts %}
-    {% if part.favorite %}
-        <tr>
-            <td> {{ part.name }} </td>
-            <td> <a href="{% url 'readPart' part.pk %}"> Les </a> </td>
-            <td> <a href="{% url 'pdfPart' part.pk part.pdfFilename %}"> PDF </a> </td>
-            <td> <a href="./" class="unfavorite" data-pk="{{part.pk}}"> <i class="fas fa-star"></i> </a> </td>
-        </tr>
+    {% if parts_favorite %}
+    <section>
+        <h2> Favorittstemmer </h2>
+
+        {% include "sheetmusic/includes/table_parts.html" with parts=parts_favorite only %}
+    </section>
     {% endif %}
-{% endfor %}
-</table>
 
-<h2> Alle stemmer </h2>
 
-<table class="table table-bordered">
-    <tr>
-        <th> Navn </th>
-        <th> Les </th>
-        <th> PDF </th>
-        <th> Favoritt </th>
-    </tr>
-{% for part in parts %}
-    <tr>
-        <td> {{ part.name }} </td>
-        <td> <a href="{% url 'readPart' part.pk %}"> Les </a> </td>
-        <td> <a href="{% url 'pdfPart' part.pk part.pdfFilename %}.pdf"> PDF </a> </td>
-        <td> {% if part.favorite %} <a href="./" class="unfavorite" data-pk="{{part.pk}}"> <i class="fas fa-star"></i> </a> {% else %} <a href="./" class="favorite" data-pk="{{part.pk}}"> <i class="far fa-star"></i> </a> {% endif %} </td>
-    </tr>
-{% endfor %}
-</table>
+    {% if parts %}
+    <section>
+        <h2> Alle stemmer </h2>
+
+        {% include "sheetmusic/includes/table_parts.html" with parts=parts only %}
+    </section>
+    {% endif %}
+</article>
+{% endblock page %}
 
 {% block js %}
     {% load static %}
     <script src="{% static 'fontawesome_free/js/all.min.js' %}"></script>
-    <script src="{% static 'notar/fetching.js' %}"></script>
+    <script src="{% static 'common/js/fetching.js' %}"></script>
     <script>
+        const fetchUsersPreferredPartUrl = '{% url 'sheetmusic:fetchUsersPreferredPart' %}';
         let favorites = document.querySelectorAll('.favorite');
         for (let i = 0; i < favorites.length; i++) {
             favorites[i].addEventListener('click', ev => {
                 ev.preventDefault();
-                fetchWithCsrf('POST', '/notar/fetch/userspreferredpart', { part_pk: ev.target.closest('a').getAttribute('data-pk') }).then(async response => {
+                fetchWithCsrf('POST', fetchUsersPreferredPartUrl, { part_pk: ev.target.closest('a').getAttribute('data-pk') }).then(async response => {
                     if (response.ok) {
                         location.reload();
                     }
@@ -67,7 +55,7 @@
         for (let i = 0; i < unfavorites.length; i++) {
             unfavorites[i].addEventListener('click', ev => {
                 ev.preventDefault();
-                fetchWithCsrf('DELETE', '/notar/fetch/userspreferredpart', { part_pk: ev.target.closest('a').getAttribute('data-pk') }).then(async response => {
+                fetchWithCsrf('DELETE', fetchUsersPreferredPartUrl, { part_pk: ev.target.closest('a').getAttribute('data-pk') }).then(async response => {
                     if (response.ok) {
                         location.reload();
                     }
@@ -78,6 +66,4 @@
             });
         }
     </script>
-{% endblock %}
-
-{% endblock %}
+{% endblock js%}
