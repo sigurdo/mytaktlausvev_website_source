@@ -1,4 +1,4 @@
-import io
+from io import BytesIO
 
 from django.db.models import (
     UniqueConstraint,
@@ -12,8 +12,7 @@ from django.db.models import (
 from PyPDF2 import PdfFileReader, PdfFileWriter
 from autoslug import AutoSlugField
 
-import sheetmusic.models
-from sheetmusic.models import Part
+from sheetmusic.models import Score, Part
 
 
 class Repertoire(Model):
@@ -51,7 +50,7 @@ class Repertoire(Model):
             pdf = PdfFileReader(part.pdf.file.path)
             for page_nr in range(part.from_page, part.to_page + 1):
                 pdf_writer.addPage(pdf.getPage(page_nr - 1))
-        output_stream = io.BytesIO()
+        output_stream = BytesIO()
         pdf_writer.write(output_stream)
         return output_stream.getvalue()
 
@@ -61,7 +60,7 @@ class RepertoireEntry(Model):
 
     repertoire = ForeignKey(Repertoire, on_delete=CASCADE, related_name="entries")
     score = ForeignKey(
-        sheetmusic.models.Score,
+        Score,
         on_delete=CASCADE,
         related_name="repertoire_entries",
     )

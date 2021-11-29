@@ -1,37 +1,38 @@
-from django import forms
+from django.forms import ModelForm, inlineformset_factory
+
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 
-from . import models
+from .models import Repertoire, RepertoireEntry
 
 
-class RepertoireCreateForm(forms.ModelForm):
+class RepertoireCreateForm(ModelForm):
     """Form for creating a new repertoire"""
 
     helper = FormHelper()
     helper.add_input(Submit("submit", "Lagre"))
 
     class Meta:
-        model = models.Repertoire
+        model = Repertoire
         fields = ["name"]
 
 
-class RepertoireUpdateForm(forms.ModelForm):
+class RepertoireUpdateForm(ModelForm):
     """Form for editing a repertoire"""
 
     helper = FormHelper()
     helper.form_tag = False
 
     class Meta:
-        model = models.Repertoire
+        model = Repertoire
         fields = ["name"]
 
 
-class RepertoireEntryUpdateForm(forms.ModelForm):
+class RepertoireEntryUpdateForm(ModelForm):
     """Form for creating a repertoire entry"""
 
     class Meta:
-        model = models.RepertoireEntry
+        model = RepertoireEntry
         fields = ["score"]
         labels = {
             "score": "Note",
@@ -47,9 +48,9 @@ class RepertoireEntryUpdateFormsetHelper(FormHelper):
         self.template = "common/table_inline_formset_shade_delete.html"
 
 
-RepertoireEntryUpdateFormset = forms.inlineformset_factory(
-    models.Repertoire,
-    models.RepertoireEntry,
+RepertoireEntryUpdateFormset = inlineformset_factory(
+    Repertoire,
+    RepertoireEntry,
     form=RepertoireEntryUpdateForm,
     extra=5,
 )

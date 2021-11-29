@@ -1,7 +1,7 @@
 """Admin settings for the 'repertoire'-app"""
 
-from django.contrib import admin
+from django.contrib.admin import site
 from .models import Repertoire, RepertoireEntry
 
-admin.site.register(Repertoire)
-admin.site.register(RepertoireEntry)
+site.register(Repertoire)
+site.register(RepertoireEntry)

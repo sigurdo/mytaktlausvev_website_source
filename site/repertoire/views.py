@@ -6,18 +6,23 @@ from django.views.generic import CreateView, DeleteView, DetailView
 
 from common.views import FormAndFormsetUpdateView
 
-from . import models
-from . import forms
+from .models import Repertoire
+from .forms import (
+    RepertoireCreateForm,
+    RepertoireUpdateForm,
+    RepertoireEntryUpdateFormset,
+    RepertoireEntryUpdateFormsetHelper,
+)
 
 
 class RepertoireList(LoginRequiredMixin, ListView):
-    model = models.Repertoire
+    model = Repertoire
     context_object_name = "repertoires"
 
 
 class RepertoireCreate(PermissionRequiredMixin, CreateView):
-    model = models.Repertoire
-    form_class = forms.RepertoireCreateForm
+    model = Repertoire
+    form_class = RepertoireCreateForm
     template_name_suffix = "_create_form"
     permission_required = "repertoire.add_repertoire"
 
@@ -26,24 +31,24 @@ class RepertoireCreate(PermissionRequiredMixin, CreateView):
 
 
 class RepertoireUpdate(PermissionRequiredMixin, FormAndFormsetUpdateView):
-    model = models.Repertoire
-    form_class = forms.RepertoireUpdateForm
-    formset_class = forms.RepertoireEntryUpdateFormset
-    formset_helper = forms.RepertoireEntryUpdateFormsetHelper
+    model = Repertoire
+    form_class = RepertoireUpdateForm
+    formset_class = RepertoireEntryUpdateFormset
+    formset_helper = RepertoireEntryUpdateFormsetHelper
     template_name_suffix = "_update_form"
     success_url = reverse_lazy("repertoire:RepertoireList")
     permission_required = "repertoire.change_repertoire"
 
 
 class RepertoireDelete(PermissionRequiredMixin, DeleteView):
-    model = models.Repertoire
+    model = Repertoire
     template_name = "common/confirm_delete.html"
     success_url = reverse_lazy("repertoire:RepertoireList")
     permission_required = "repertoire.delete_repertoire"
 
 
 class RepertoirePdf(LoginRequiredMixin, DetailView):
-    model = models.Repertoire
+    model = Repertoire
     content_type = "application/pdf"
 
     def render_to_response(self, _):
