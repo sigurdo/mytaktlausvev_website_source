@@ -8,6 +8,7 @@ from common.templatetags.markdown import markdown
 
 from .forms import UserCustomCreateForm
 from .models import UserCustom
+from django.views.generic import ListView
 
 
 class UserCustomCreate(PermissionRequiredMixin, CreateView):
@@ -40,3 +41,9 @@ class ProfileDetail(LoginRequiredMixin, DetailView):
     model = UserCustom
     template_name = "accounts/profile_detail.html"
     context_object_name = "profile"
+
+class MemberList(ListView):
+
+    model= UserCustom
+    template_name = "accounts/member_list.html"
+    context_object_name = "medlemmer"

@@ -101,9 +101,15 @@ class UserCustom(AbstractUser):
         return None
 
     def get_absolute_url(self):
+<<<<<<< HEAD
         return reverse("accounts:ProfileDetail", args=[self.slug])
 
     class Meta(AbstractUser.Meta):
         constraints = [
             UniqueConstraint(Lower("username"), name="username_case_insensitive")
         ]
+=======
+        return reverse("profile", args=[self.slug])
+
+
+>>>>>>> start medlemsliste
