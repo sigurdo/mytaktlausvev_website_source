@@ -13,7 +13,7 @@ from django.views.generic.detail import SingleObjectMixin
 from django.http import HttpResponse
 from django.urls import reverse_lazy
 from django.forms import BaseModelForm
-from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.views.generic import DetailView, ListView, View
 from django.views.generic.edit import (
     CreateView,
@@ -36,9 +36,8 @@ from .forms import (
 )
 
 
-class ScoreView(PermissionRequiredMixin, DetailView):
+class ScoreView(LoginRequiredMixin, DetailView):
     model = Score
-    permission_required = "sheetmusic.view_score"
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         pdfs = Pdf.objects.filter(score=self.get_object())
@@ -198,10 +197,9 @@ class ScoreCreate(PermissionRequiredMixin, CreateView):
     success_url = reverse_lazy("sheetmusic:ScoreList")
 
 
-class ScoreList(PermissionRequiredMixin, ListView):
+class ScoreList(LoginRequiredMixin, ListView):
     model = Score
     context_object_name = "scores"
-    permission_required = "sheetmusic.view_score"
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         context = super().get_context_data(**kwargs)
@@ -214,10 +212,9 @@ class ScoreList(PermissionRequiredMixin, ListView):
         return context
 
 
-class PartRead(PermissionRequiredMixin, DetailView):
+class PartRead(LoginRequiredMixin, DetailView):
     model = Part
     template_name = "sheetmusic/part_read.html"
-    permission_required = "sheetmusic.view_part"
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         context = super().get_context_data(**kwargs)
@@ -229,22 +226,16 @@ class PartRead(PermissionRequiredMixin, DetailView):
         return context
 
 
-class PartPdf(PermissionRequiredMixin, DetailView):
+class PartPdf(LoginRequiredMixin, DetailView):
     model = Part
     content_type = "application/pdf"
-    permission_required = "sheetmusic.view_part"
 
     def render_to_response(self, _):
         content = self.get_object().pdf_file()
         return HttpResponse(content=content, content_type=self.content_type)
 
 
-class FavoritePartUpdate(PermissionRequiredMixin, View):
-    permission_required = (
-        "sheetmusic.add_favoritepart",
-        "sheetmusic.delete_favoritepart",
-    )
-
+class FavoritePartUpdate(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         data = json.loads(request.body)
         part = Part.objects.get(pk=data["part_pk"])
