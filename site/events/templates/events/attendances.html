@@ -33,14 +33,14 @@
                     </td>
                     <td class="text-center">
                         {% if user == attendance.person or perms.events.delete_eventattendance %}
-                        <a href="{% url 'events:attendance_delete' attendance.event.start_time.year attendance.event.slug attendance.person.slug %}">
+                        <a href="{% url 'events:EventAttendanceDelete' attendance.event.start_time.year attendance.event.slug attendance.person.slug %}">
                             (meld av)
                         </a>
                         {% endif %}
                     </td>
                     <td class="text-center">
                         {% if user == attendance.person or perms.events.change_eventattendance %}
-                        <a href="{% url 'events:attendance_update' attendance.event.start_time.year attendance.event.slug attendance.person.slug %}">
+                        <a href="{% url 'events:EventAttendanceUpdate' attendance.event.start_time.year attendance.event.slug attendance.person.slug %}">
                             (rediger)
                         </a>
                         {% endif %}

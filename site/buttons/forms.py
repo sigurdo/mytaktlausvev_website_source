@@ -21,4 +21,4 @@ class ButtonsForm(forms.Form):
 
     helper = FormHelper()
     helper.add_input(Submit("submit", "Generer PDF"))
-    helper.form_action = reverse_lazy("buttons:buttons_with_filename")
+    helper.form_action = reverse_lazy("buttons:ButtonsView_with_filename")

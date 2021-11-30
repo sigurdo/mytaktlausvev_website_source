@@ -22,7 +22,7 @@ class EventTestCase(TestCase):
         self.assertEqual(
             self.event.get_absolute_url(),
             reverse(
-                "events:detail", args=[self.event.start_time.year, self.event.slug]
+                "events:EventDetail", args=[self.event.start_time.year, self.event.slug]
             ),
         )
 
@@ -123,25 +123,25 @@ class EventDetailTestCase(TestMixin, TestCase):
         """Should require login."""
         event = EventFactory()
         self.assertLoginRequired(
-            reverse("events:detail", args=[event.start_time.year, event.slug])
+            reverse("events:EventDetail", args=[event.start_time.year, event.slug])
         )
 
 
 class EventCreateTestCase(TestMixin, TestCase):
     def test_requires_login(self):
         """Should require login."""
-        self.assertLoginRequired(reverse("events:create"))
+        self.assertLoginRequired(reverse("events:EventCreate"))
 
     def test_requires_permission(self):
         """Should require the `create_event` permission."""
-        self.assertPermissionRequired(reverse("events:create"), "events.add_event")
+        self.assertPermissionRequired(reverse("events:EventCreate"), "events.add_event")
 
     def test_created_by_modified_by_set_to_current_user(self):
         """Should set `created_by` and `modified_by` to the current user on creation."""
         user = SuperUserFactory()
         self.client.force_login(user)
         self.client.post(
-            reverse("events:create"),
+            reverse("events:EventCreate"),
             {
                 "title": "A Title",
                 "start_time_0": "2021-11-25",
@@ -159,7 +159,7 @@ class EventCreateTestCase(TestMixin, TestCase):
 class EventUpdateTestCase(TestMixin, TestCase):
     def get_url(self, event):
         """Returns the URL for the event update view for `event`."""
-        return reverse("events:update", args=[event.start_time.year, event.slug])
+        return reverse("events:EventUpdate", args=[event.start_time.year, event.slug])
 
     def setUp(self):
         self.event = EventFactory()
@@ -204,7 +204,7 @@ class EventAttendanceListTestCase(TestMixin, TestCase):
     def get_url(self, event):
         """Returns the URL for the event attendance list view for `event`."""
         return reverse(
-            "events:attendance_list", args=[event.start_time.year, event.slug]
+            "events:EventAttendanceList", args=[event.start_time.year, event.slug]
         )
 
     def setUp(self):
@@ -225,7 +225,7 @@ class EventAttendanceCreateTestCase(TestMixin, TestCase):
     def get_url(self, event):
         """Returns the URL for the event attendance create view for `event`."""
         return reverse(
-            "events:attendance_create", args=[event.start_time.year, event.slug]
+            "events:EventAttendanceCreate", args=[event.start_time.year, event.slug]
         )
 
     def setUp(self):
@@ -272,7 +272,7 @@ class EventAttendanceUpdateTestCase(TestMixin, TestCase):
     def get_url(self, attendance):
         """Returns the URL for the event attendance update view for `attendance`."""
         return reverse(
-            "events:attendance_update",
+            "events:EventAttendanceUpdate",
             args=[
                 attendance.event.start_time.year,
                 attendance.event.slug,
@@ -308,7 +308,7 @@ class EventAttendanceDeleteTestCase(TestMixin, TestCase):
     def get_url(self, attendance):
         """Returns the URL for the event attendance delete view for `attendance`."""
         return reverse(
-            "events:attendance_delete",
+            "events:EventAttendanceDelete",
             args=[
                 attendance.event.start_time.year,
                 attendance.event.slug,
@@ -346,7 +346,7 @@ class EventAttendanceDeleteTestCase(TestMixin, TestCase):
         self.assertRedirects(
             response,
             reverse(
-                "events:detail",
+                "events:EventDetail",
                 args=[
                     self.attendance.event.start_time.year,
                     self.attendance.event.slug,
