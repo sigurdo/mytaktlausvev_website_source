@@ -3,10 +3,9 @@
 
 {% block title %}
     {% if object %}
-        Rediger {{ object | verbose_name }}
+        Rediger {{ object | verbose_name }} "{{ object }}"
     {% else %}
-        Lag
-        {% if view.model.verbose_name_gender == "nongender" %} nytt {% else %} ny {% endif %}
+        Opprett
         {{ view.model | verbose_name }}
     {% endif %}
 {% endblock %}
@@ -14,10 +13,9 @@
 {% block page %}
     <h2>
         {% if object %}
-            Rediger {{ object | verbose_name | title }} "{{ object }}"
+            Rediger {{ object | verbose_name }} "{{ object }}"
         {% else %}
-            Lag
-            {% if view.model.verbose_name_gender == "nongender" %} nytt {% else %} ny {% endif %}
+            Opprett
             {{ view.model | verbose_name }}
         {% endif %}
     </h2>

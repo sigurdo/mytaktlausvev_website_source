@@ -27,9 +27,6 @@ class Repertoire(Model):
         editable=True,
     )
 
-    # Makes common/form.html write "nytt repertoar" instead of "ny repertoar"
-    verbose_name_gender = "nongender"
-
     class Meta:
         constraints = [UniqueConstraint(fields=["slug"], name="repertoire_unique_slug")]
         ordering = ["-timestamp"]
@@ -61,11 +58,17 @@ class Repertoire(Model):
 class RepertoireEntry(Model):
     """Model representing a score entry in a repertoire"""
 
-    repertoire = ForeignKey(Repertoire, on_delete=CASCADE, related_name="entries")
+    repertoire = ForeignKey(
+        Repertoire,
+        on_delete=CASCADE,
+        related_name="entries",
+        verbose_name="repertoar",
+    )
     score = ForeignKey(
         Score,
         on_delete=CASCADE,
         related_name="repertoire_entries",
+        verbose_name="note",
     )
 
     class Meta:

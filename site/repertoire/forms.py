@@ -34,9 +34,6 @@ class RepertoireEntryUpdateForm(ModelForm):
     class Meta:
         model = RepertoireEntry
         fields = ["score"]
-        labels = {
-            "score": "Note",
-        }
 
 
 class RepertoireEntryUpdateFormsetHelper(FormHelper):
