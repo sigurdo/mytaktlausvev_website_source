@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ score.title }}{% endblock title %}
+
+{% block page %}
+<article>
+    <h1>
+        {{ score.title }}
+        {% if perms.sheetmusic.change_score %}
+            <a href="{% url 'sheetmusic:ScoreUpdate' score.pk %}" class="fs-6"> rediger </a>
+        {% endif %}
+    </h1>
+
+    {% if parts_favorite %}
+    <section>
+        <h2> Favorittstemmer </h2>
+
+        {% include "sheetmusic/includes/table_parts.html" with parts=parts_favorite only %}
+    </section>
+    {% endif %}
+
+
+    {% if parts %}
+    <section>
+        <h2> Alle stemmer </h2>
+
+        {% include "sheetmusic/includes/table_parts.html" with parts=parts only %}
+    </section>
+    {% endif %}
+</article>
+{% endblock page %}
+
+{% block js %}
+    {% load static %}
+    <script src="{% static 'fontawesome_free/js/all.min.js' %}"></script>
+    <script src="{% static 'common/js/fetching.js' %}"></script>
+    <script>
+        const fetchUsersPreferredPartUrl = '{% url 'sheetmusic:fetchUsersPreferredPart' %}';
+        let favorites = document.querySelectorAll('.favorite');
+        for (let i = 0; i < favorites.length; i++) {
+            favorites[i].addEventListener('click', ev => {
+                ev.preventDefault();
+                fetchWithCsrf('POST', fetchUsersPreferredPartUrl, { part_pk: ev.target.closest('a').getAttribute('data-pk') }).then(async response => {
+                    if (response.ok) {
+                        location.reload();
+                    }
+                    else {
+                        console.error('Klarte ikke å POSTe favorittstemme')
+                    }
+                });
+            });
+        }
+
+        let unfavorites = document.querySelectorAll('.unfavorite');
+        for (let i = 0; i < unfavorites.length; i++) {
+            unfavorites[i].addEventListener('click', ev => {
+                ev.preventDefault();
+                fetchWithCsrf('DELETE', fetchUsersPreferredPartUrl, { part_pk: ev.target.closest('a').getAttribute('data-pk') }).then(async response => {
+                    if (response.ok) {
+                        location.reload();
+                    }
+                    else {
+                        console.error('Klarte ikke å DELETEe favorittstemme')
+                    }
+                });
+            });
+        }
+    </script>
+{% endblock js%}

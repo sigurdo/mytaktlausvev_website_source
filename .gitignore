@@ -53,7 +53,7 @@ db.sqlite3-journal
 settings.cnf
 
 # Uploaded files
-media/
+site/media
 
 # Compiled scss files
 site/compiled_scss

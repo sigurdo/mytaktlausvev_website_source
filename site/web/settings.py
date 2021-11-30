@@ -11,9 +11,14 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+import sys
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+TESSDATA_DIR = os.path.join(BASE_DIR, "..", "tessdata", "tessdata_best-4.1.0")
+
+# Simplifies management stuff like deleting output files from the code editor on the host system.
+os.umask(0)
 
 
 # Quick-start development settings - unsuitable for production
@@ -29,6 +34,7 @@ ALLOWED_HOSTS = [".localhost", "127.0.0.1", "[::1]", "0.0.0.0"]
 
 
 # Application definition
+sys.modules["fontawesome_free"] = __import__("fontawesome-free")
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -41,6 +47,7 @@ INSTALLED_APPS = [
     "crispy_forms",
     "crispy_bootstrap5",
     "sass_processor",
+    "fontawesome_free",
     "accounts",
     "common",
     "articles",
@@ -177,9 +184,8 @@ LOGIN_REDIRECT_URL = "/"
 LOGIN_URL = "login"
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
-
 CRISPY_TEMPLATE_PACK = "bootstrap5"
-
+CRISPY_FAIL_SILENTLY = not DEBUG
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
 MEDIA_URL = "/media/"
