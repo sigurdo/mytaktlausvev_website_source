@@ -1,6 +1,7 @@
 """Views for the 'dashboard'-module."""
 from datetime import datetime, timedelta
 from django.shortcuts import render
+from django.utils.timezone import make_aware
 from quotes.models import Quote
 from events.models import Event
 
@@ -13,7 +14,7 @@ def dashboard(request):
         {
             "quotes": Quote.objects.all()[:2],
             "events": Event.objects.filter(
-                start_time__gte=(datetime.now() - timedelta(1))
+                start_time__gte=make_aware(datetime.now() - timedelta(1))
             )[:10],
         },
     )
