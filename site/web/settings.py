@@ -55,6 +55,9 @@ INSTALLED_APPS = [
     "dashboard",
     "buttons",
     "sheetmusic",
+    "repertoire",
+    "advent_calendar",
+    "easter_eggs",
 ]
 
 MIDDLEWARE = [
