@@ -2,21 +2,29 @@
 {% load utils %}
 
 {% block title %}
-    {% if object %}
+    {% if form_title %}
+        {{ form_title }}
+    {% elif object %}
         Rediger {{ object | verbose_name }} "{{ object }}"
-    {% else %}
+    {% elif view.model %}
         Opprett
         {{ view.model | verbose_name }}
+    {% else %}
+        Skjema
     {% endif %}
 {% endblock %}
 
 {% block page %}
     <h2>
-        {% if object %}
+        {% if form_title %}
+            {{ form_title }}
+        {% elif object %}
             Rediger {{ object | verbose_name }} "{{ object }}"
-        {% else %}
+        {% elif view.model %}
             Opprett
             {{ view.model | verbose_name }}
+        {% else %}
+            Skjema
         {% endif %}
     </h2>
 
