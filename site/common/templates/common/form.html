@@ -3,21 +3,35 @@
 
 {% block title %}
     {% if object %}
-        Rediger {{ object | verbose_name }}
+        Rediger {{ object | verbose_name }} "{{ object }}"
     {% else %}
-        Lag Ny
+        Opprett
+        {{ view.model | verbose_name }}
     {% endif %}
 {% endblock %}
 
 {% block page %}
     <h2>
         {% if object %}
-            Rediger {{ object | verbose_name | title }} "{{ object }}"
+            Rediger {{ object | verbose_name }} "{{ object }}"
         {% else %}
-            Lag Ny
+            Opprett
+            {{ view.model | verbose_name }}
         {% endif %}
     </h2>
 
-    {% load crispy_forms_tags %}
-    {% crispy form %}
+    {% if form and formset %}
+    <form method="post">
+    {% endif %}
+        {% if form %}
+            {% load crispy_forms_tags %}
+            {% crispy form %}
+        {% endif %}
+        {% if formset %}
+            {% load crispy_forms_tags %}
+            {% crispy formset %}
+        {% endif %}
+    {% if form and formset %}
+    </form>
+    {% endif %}
 {% endblock %}

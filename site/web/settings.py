@@ -14,6 +14,10 @@ import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+TESSDATA_DIR = os.path.join(BASE_DIR, "..", "tessdata", "tessdata_best-4.1.0")
+
+# Simplifies management stuff like deleting output files from the code editor on the host system.
+os.umask(0)
 
 
 # Quick-start development settings - unsuitable for production
@@ -50,6 +54,10 @@ INSTALLED_APPS = [
     "events",
     "dashboard",
     "buttons",
+    "sheetmusic",
+    "repertoire",
+    "advent_calendar",
+    "easter_eggs",
 ]
 
 MIDDLEWARE = [
@@ -173,9 +181,8 @@ LOGIN_REDIRECT_URL = "/"
 LOGIN_URL = "login"
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
-
 CRISPY_TEMPLATE_PACK = "bootstrap5"
-
+CRISPY_FAIL_SILENTLY = not DEBUG
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
 MEDIA_URL = "/media/"
@@ -183,15 +190,14 @@ MEDIA_URL = "/media/"
 
 # Sass config
 
-SASS_PRECISION = 8  # Default is 5, while 8 is required by bootsrap
+# Default is 5, while 8 is required by bootsrap
+SASS_PRECISION = 8
 
-SASS_OUTPUT_STYLE = (
-    "expanded" if DEBUG else "compressed"
-)  # Default for DEBUG is nested, while I think expanded is better
+# Default for DEBUG is nested, while I think expanded is better
+SASS_OUTPUT_STYLE = "expanded" if DEBUG else "compressed"
 
-SASS_PROCESSOR_ROOT = os.path.join(
-    BASE_DIR, "compiled_scss"
-)  # Defines a root directory to output compiled scss files
+# Defines a root directory to output compiled scss files
+SASS_PROCESSOR_ROOT = os.path.join(BASE_DIR, "compiled_scss")
 
 # Directories that act as a base to include from
 SASS_PROCESSOR_INCLUDE_DIRS = [

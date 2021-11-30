@@ -100,25 +100,10 @@ siden skal nå kjøre på [localhost](http://localhost:8000/)
 Alt er skamløst stjålet fra [digitalocean](https://www.digitalocean.com/community/tutorials/how-to-use-postgresql-with-your-django-application-on-ubuntu-14-04)
 
 
+## Sette opp tools for noteopplasteren
 
-## Alternativt - Oppsett av MySQL-server
-__Mulig dette steget ikke blir nødvendig om man får egen test-database på en eller annen server i fremtiden__
-1. Last ned en MySQL-server-løsning, [for eksempel her.](https://dev.mysql.com/downloads/windows/installer/8.0.html) (eller for tilsvarende operativsystem)
-2. Når du starter installasjonen så trenger du egentlig ikke å installere alt. På Windows kan du egentlig klare deg med "Developer Default"-innstillingen, men om du ikke har lyst til å installere masse unødvendige greier kan du velge custom. Under vinduet der du kan velge "products and features" som du vil installere må du ha følgende:
-- MySQL Server 8.x.x
-- Connector/Python 8.x.x (under MySQL Connectors > Connector/Python)
+For linux: (må kjøres fra root-mappa i repoet)
 
-3. Når man blir bedt om å konfigurere MySQL-serveren kan du egentlig bare bruke standardverdiene. Men under **Accounts and Roles** må du oppgi et root-passord (som kan være hva som helst, må huske det selv), og lage en MySQL-brukerkonto. Denne kan du egentlig kalle hva som helst, og bruke hva som helst som passord, men det skal straks brukes i en annen fil i prosjektet. Denne brukeren burde ha adminrettigheter.
-4. Finn ut hvor du installerte MySQL-serveren (på Windows: vanligvis `C:\Program Files\MySQL\MySQL Server 8.0\bin`), og legg de til i PATH. (eller bare sett det opp slik at du kan få tak i `mysql` i et terminalvindu)
-5. Skriv `mysql -u root -p` i et terminalvindu, og skriv inn rootpassordet ditt. (du er nå logget inn)
-6. Lag en ny database som du kaller `taktlause`. (CREATE DATABASE taktlause;)
-
-7. Lag en ny fil under site/web/ som du kaller settings.cnf. Denne skal ha følgende innhold:
 ```
-[client]
-database = taktlause
-host = localhost
-user = BRUKERNAVNET_DU_VALGTE
-password = PASSORDET_DU_VALGTE
-default-character-set = utf8
+sudo sh setup/sheetmusic.sh
 ```

@@ -26,7 +26,7 @@ class DrupalPasswordHasherTest(TestCase):
         self.assertTrue(hasher.verify(password, encoded))
 
 
-class UserCustomTest(TestCase):
+class UserCustomTest(TestMixin, TestCase):
     def test_get_absolute_url(self):
         """Should link to the user's profile page."""
         user = UserFactory()

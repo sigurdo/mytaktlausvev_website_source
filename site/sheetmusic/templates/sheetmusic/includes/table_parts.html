@@ -1,0 +1,38 @@
+<table class="table table-bordered">
+    <tr>
+        <th> Navn </th>
+        <th> Les </th>
+        <th> PDF </th>
+        <th> Favoritt </th>
+    </tr>
+    {% for part in parts %}
+        <tr>
+            <td>
+                {{ part.name }}
+            </td>
+            <td>
+                <a href="{% url 'sheetmusic:PartRead' part.pk %}"> Les </a>
+            </td>
+            <td>
+                <a href="{% url 'sheetmusic:PartPdf' part.pk part.pdf_filename_slug %}"> PDF </a>
+            </td>
+            <td>
+                <form
+                    action="{% url "sheetmusic:FavoritePartUpdate" %}"
+                    data-method="{% if part.favorite %}DELETE{% else %}POST{% endif %}"
+                    class="form-favorite-part"
+                >
+                    <input type="hidden" name="part_pk" value="{{ part.pk }}" />
+                    <button class="bg-transparent border-0">
+                        {% load static %}
+                        {% if part.favorite %}
+                            <img src="{% static 'sheetmusic/star-filled.svg' %}" alt="Fjern som favoritt" />
+                        {% else %}
+                            <img src="{% static 'sheetmusic/star-outline.svg' %}" alt="Gjer til favoritt" />
+                        {% endif %}
+                    </button>
+                </form>
+            </td>
+        </tr>
+    {% endfor %}
+</table>

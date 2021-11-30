@@ -1,0 +1,31 @@
+{% extends "./base.html" %}
+
+{% block content %}
+  <h1 class="text-white dancing-script">Taktlaus Julekalender</h1>
+
+  {% if advent_calendar_list %}
+  <nav>
+    <ul class="d-flex flex-column list-unstyled align-items-center">
+      {% for advent_calendar in advent_calendar_list %}
+      <li class="my-2">
+          <a
+            class="btn btn-lg btn-advent-calendar text-white"
+            href="{% url 'advent_calendar:AdventCalendarDetail' advent_calendar.year %}"
+          >
+            {{ advent_calendar.year }}
+          </a>
+      </li>
+      {% endfor %}
+    </ul>
+  </nav>
+  {% endif %}
+
+  {% if perms.advent_calendar.add_adventcalendar %}
+  <a
+    class="btn btn-lg btn-advent-calendar text-white"
+    href="{% url 'advent_calendar:AdventCalendarCreate' %}"
+  >
+    Lag ny julekalender
+  </a>
+  {% endif %}
+{% endblock %}

@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %} Notearkiv {% endblock title %}
+
+{% block page %}
+<article>
+    <h1> Alle notar </h1>
+
+    {% if scores %}
+    <table class="table table-striped table-sm">
+        <thead>
+            <tr>
+                <th class="col-form-label">
+                    Namn
+                </th>
+
+                <th class="col-form-label">
+                    Les
+                </th>
+
+                <th class="col-form-label">
+                    Dato oppretta
+                </th>
+
+                {% if perms.sheetmusic.change_score %}
+                <th class="col-form-label">
+                    Rediger
+                </th>
+                {% endif %}
+
+                {% if perms.sheetmusic.delete_score %}
+                <th class="col-form-label">
+                    Slett
+                </th>
+                {% endif %}
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for score in scores %}
+                <tr>
+                    <td>
+                        <a href="{% url 'sheetmusic:ScoreView' score.pk %}"> {{ score.title }} </a>
+                    </td>
+
+                    <td>
+                        {% if score.favoritePart %}
+                        <a href="{% url 'sheetmusic:PartRead' score.favoritePart.pk %}"> Les </a>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        <time datetime="{{ score.timestamp | date:"c" }}">{{ score.timestamp | date }}</time>
+                    </td>
+
+                    {% if perms.sheetmusic.change_score %}
+                    <td>
+                        <a href="{% url 'sheetmusic:ScoreUpdate' score.pk %}"> Rediger </a>
+                    </td>
+                    {% endif %}
+
+                    {% if perms.sheetmusic.delete_score %}
+                    <td>
+                        <a href="{% url 'sheetmusic:ScoreDelete' score.pk %}"> Slett </a>
+                    </td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <p>
+        ({{ scores|length }} not{{ scores|length|pluralize:"e,ar" }})
+    </p>
+    {% endif %}
+
+    <a href="{% url 'sheetmusic:ScoreCreate' %}" class="btn btn-primary"> Ny note </a>
+</article>
+{% endblock page %}

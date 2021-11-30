@@ -1,0 +1,67 @@
+{% extends "./base.html" %}
+
+{% block title %}Julekalender {{ advent_calendar.year }}{% endblock title %}
+
+{% block content %}
+    <h1 class="text-white my-4 dancing-script">Julekalender {{ advent_calendar.year }}</h1>
+
+    <ul class="windows mb-4 list-unstyled">
+        {% for index in permutation %}
+        <li>
+            <div class="window-button w-100 h-100" data-index="{{ index }}">
+                <button type="button">{{ index }}</button>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+
+    <div id="modal" class="modal fade" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            {% for window in advent_calendar.windows.all %}
+                <article class="modal-content window-modal d-none" data-index="{{ window.index }}">
+                    <header class="modal-header">
+                        <h2 class="modal-title">{{ window.title }}</h2>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </header>
+
+                    <div class="modal-body">
+                        <p>
+                        Skrive av <span class="fst-italic">{{ window.created_by }}</span>
+                        </p>
+                        {% load markdown %}
+                        {{ window.content | markdown }}
+                    </div>
+
+
+                    {% if window.created_by == user or perms.advent_calendar.change_window %}
+                    <footer class="modal-footer">
+                        <a
+                            href="{% url 'advent_calendar:WindowUpdate' advent_calendar.year window.index %}"
+                            class="btn btn-advent-calendar text-white"
+                        >
+                            Rediger luke
+                        </a>
+                    </footer>
+                    {% endif %}
+                </article>
+            {% endfor %}
+
+            <section id="form-container" class="modal-content d-none" data-year="{{ advent_calendar.year }}">
+                <header class="modal-header">
+                    <h2 class="modal-title">Ny luke</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </header>
+
+                <div class="modal-body">
+                    {% load crispy_forms_tags %}
+                    {% crispy form %}
+                </div>
+            </section>
+        </div>
+    </div>
+{% endblock content %}
+
+{% block js %}
+    {% load static %}
+    <script src="{% static 'advent_calendar/advent_calendar.js' %}"></script>
+{% endblock js %}
