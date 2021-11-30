@@ -32,38 +32,6 @@
 
 {% block js %}
     {% load static %}
-    <script src="{% static 'fontawesome_free/js/all.min.js' %}"></script>
     <script src="{% static 'common/js/fetching.js' %}"></script>
-    <script>
-        const fetchUsersPreferredPartUrl = '{% url 'sheetmusic:fetchUsersPreferredPart' %}';
-        let favorites = document.querySelectorAll('.favorite');
-        for (let i = 0; i < favorites.length; i++) {
-            favorites[i].addEventListener('click', ev => {
-                ev.preventDefault();
-                fetchWithCsrf('POST', fetchUsersPreferredPartUrl, { part_pk: ev.target.closest('a').getAttribute('data-pk') }).then(async response => {
-                    if (response.ok) {
-                        location.reload();
-                    }
-                    else {
-                        console.error('Klarte ikke å POSTe favorittstemme')
-                    }
-                });
-            });
-        }
-
-        let unfavorites = document.querySelectorAll('.unfavorite');
-        for (let i = 0; i < unfavorites.length; i++) {
-            unfavorites[i].addEventListener('click', ev => {
-                ev.preventDefault();
-                fetchWithCsrf('DELETE', fetchUsersPreferredPartUrl, { part_pk: ev.target.closest('a').getAttribute('data-pk') }).then(async response => {
-                    if (response.ok) {
-                        location.reload();
-                    }
-                    else {
-                        console.error('Klarte ikke å DELETEe favorittstemme')
-                    }
-                });
-            });
-        }
-    </script>
-{% endblock js%}
+    <script src="{% static 'sheetmusic/favorite.js' %}"></script>
+{% endblock js %}

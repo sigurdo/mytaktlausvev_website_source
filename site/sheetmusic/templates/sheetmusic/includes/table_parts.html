@@ -17,15 +17,21 @@
                 <a href="{% url 'sheetmusic:PartPdf' part.pk part.pdf_filename_slug %}"> PDF </a>
             </td>
             <td>
-                {% if part.favorite %}
-                <a href="./" class="unfavorite" data-pk="{{ part.pk }}">
-                    <i class="fas fa-star"></i>
-                </a>
-                {% else %}
-                <a href="./" class="favorite" data-pk="{{ part.pk }}">
-                    <i class="far fa-star"></i>
-                </a>
-                {% endif %}
+                <form
+                    action="{% url "sheetmusic:fetchFavoritePart" %}"
+                    data-method="{% if part.favorite %}DELETE{% else %}POST{% endif %}"
+                    class="form-favorite-part"
+                >
+                    <input type="hidden" name="part_pk" value="{{ part.pk }}" />
+                    <button class="bg-transparent border-0">
+                        {% load static %}
+                        {% if part.favorite %}
+                            <img src="{% static 'sheetmusic/star-filled.svg' %}" alt="Fjern som favoritt" />
+                        {% else %}
+                            <img src="{% static 'sheetmusic/star-outline.svg' %}" alt="Gjer til favoritt" />
+                        {% endif %}
+                    </button>
+                </form>
             </td>
         </tr>
     {% endfor %}

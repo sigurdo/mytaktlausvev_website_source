@@ -25,7 +25,7 @@ from django.views.generic.edit import (
 )
 
 # Modules from this app
-from .models import Score, Pdf, Part, UsersPreferredPart
+from .models import Score, Pdf, Part, FavoritePart
 from .forms import (
     ScoreForm,
     UploadPdfForm,
@@ -206,7 +206,7 @@ class ScoreList(PermissionRequiredMixin, ListView):
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         context = super().get_context_data(**kwargs)
         for score in context["scores"]:
-            relations = UsersPreferredPart.objects.filter(
+            relations = FavoritePart.objects.filter(
                 part__pdf__score=score, user=self.request.user
             )
             if len(relations) > 0:
@@ -239,25 +239,21 @@ class PartPdf(PermissionRequiredMixin, DetailView):
         return HttpResponse(content=content, content_type=self.content_type)
 
 
-class UsersPreferredPartUpdateView(PermissionRequiredMixin, View):
+class FavoritePartUpdateView(PermissionRequiredMixin, View):
     permission_required = (
-        "sheetmusic.add_userspreferredpart",
-        "sheetmusic.delete_userspreferredpart",
+        "sheetmusic.add_favoritepart",
+        "sheetmusic.delete_favoritepart",
     )
 
     def post(self, request, *args, **kwargs):
-        user = request.user
         data = json.loads(request.body)
         part = Part.objects.get(pk=data["part_pk"])
-        relation = UsersPreferredPart(user=user, part=part)
-        relation.save()
-        return django.http.JsonResponse(django.forms.models.model_to_dict(relation))
+        favorite = FavoritePart.objects.create(user=self.request.user, part=part)
+        favorite.save()
+        return django.http.JsonResponse(django.forms.models.model_to_dict(favorite))
 
     def delete(self, request, *args, **kwargs):
-        user = request.user
         data = json.loads(request.body)
-        part = Part.objects.get(pk=data["part_pk"])
-        relations = UsersPreferredPart.objects.filter(user=user, part=part)
-        for relation in relations:
-            relation.delete()
+        favorite = FavoritePart.objects.get(user=request.user, part__pk=data["part_pk"])
+        favorite.delete()
         return django.http.HttpResponse("deleted")
