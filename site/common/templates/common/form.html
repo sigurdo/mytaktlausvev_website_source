@@ -4,9 +4,13 @@
 {% block title %}
     {% if object %}
         Rediger {{ object | verbose_name }} "{{ object }}"
-    {% else %}
+    {% elif view.model %}
         Opprett
         {{ view.model | verbose_name }}
+    {% elif form_title %}
+        {{ form_title }}
+    {% else %}
+        Skjema
     {% endif %}
 {% endblock %}
 
@@ -14,9 +18,13 @@
     <h2>
         {% if object %}
             Rediger {{ object | verbose_name }} "{{ object }}"
-        {% else %}
+        {% elif view.model %}
             Opprett
             {{ view.model | verbose_name }}
+        {% elif form_title %}
+            {{ form_title }}
+        {% else %}
+            Skjema
         {% endif %}
     </h2>
 

@@ -6,7 +6,7 @@ from crispy_forms.layout import Submit
 
 
 class BrewForm(forms.Form):
-    drink = ChoiceField(choices=[("coffee", "Kaffe")], label="Drikke")
+    drink = ChoiceField(choices=[("coffee", "Kaffe")], label="Drikk")
     addition = CharField(label="Tilsetjing", required=False)
     helper = FormHelper()
     helper.add_input(Submit("submit", "Brygg"))
