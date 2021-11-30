@@ -5,7 +5,7 @@ from accounts.factories import SuperUserFactory, UserFactory
 from common.mixins import TestMixin
 from common.test_utils import create_formset_post_data
 
-from sheetmusic.factories import UsersPreferredPartFactory
+from sheetmusic.factories import FavoritePartFactory
 
 from .factories import RepertoireFactory, RepertoireEntryFactory
 from .forms import RepertoireEntryUpdateFormset
@@ -17,7 +17,7 @@ class RepertoireTestSuite(TestMixin, TestCase):
         self.user = UserFactory()
         self.repertoire = RepertoireFactory(name="Marsjhefte")
         self.entry = RepertoireEntryFactory(repertoire=self.repertoire)
-        self.favorite = UsersPreferredPartFactory(
+        self.favorite = FavoritePartFactory(
             part__pdf__score=self.entry.score, user=self.user
         )
 
@@ -127,7 +127,7 @@ class RepertoirePdfTestSuite(TestMixin, TestCase):
     def setUp(self):
         self.user = UserFactory()
         self.entry = RepertoireEntryFactory()
-        self.favorite = UsersPreferredPartFactory(
+        self.favorite = FavoritePartFactory(
             part__pdf__score=self.entry.score, user=self.user
         )
 

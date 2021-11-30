@@ -39,7 +39,7 @@ class Repertoire(Model):
     def pdf_file(self, user):
         """Returns a PDF contaning the user's favorite parts for the scores in this repertoire."""
         parts = Part.objects.filter(
-            preferring_users__user=user, pdf__score__repertoire_entries__repertoire=self
+            favoring_users__user=user, pdf__score__repertoire_entries__repertoire=self
         )
         if len(parts) < 1:
             raise Exception(
