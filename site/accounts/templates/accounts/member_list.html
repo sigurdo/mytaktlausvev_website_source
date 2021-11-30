@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block title%}{{'Medlemsliste'}}{%endblock title%}
+
+{% block page %}
+
+{% for medlem in medlemmer%}
+<li></li>
+{% endfor %}
+
+{% endblock page %}
