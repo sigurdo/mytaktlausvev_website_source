@@ -25,16 +25,15 @@ urlpatterns = [
     path("sitat/", include("quotes.urls")),
     path("hendingar/", include("events.urls")),
     path("", include("dashboard.urls")),
+    path("notar/", include("sheetmusic.urls")),
     path("kommentarar/", include("comments.urls")),
     path("kontakt/", include("contact.urls")),
+    path("repertoar/", include("repertoire.urls")),
     path("skiltmerke/", include("buttons.urls")),
     path("julekalender/", include("advent_calendar.urls")),
     path(
         "buttons/", RedirectView.as_view(pattern_name="buttons:buttons", permanent=True)
     ),
-    path(
-        "dQw4w9WgXcQ/",
-        RedirectView.as_view(url="https://www.youtube.com/watch?v=dQw4w9WgXcQ"),
-    ),
+    path("", include("easter_eggs.urls")),
     path("", include("articles.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
