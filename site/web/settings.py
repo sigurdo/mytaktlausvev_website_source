@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "crispy_forms",
     "crispy_bootstrap5",
     "sass_processor",
+    "authentication",
     "accounts",
     "common",
     "articles",
@@ -118,7 +119,7 @@ PASSWORD_HASHERS = [
     "django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher",
     "django.contrib.auth.hashers.Argon2PasswordHasher",
     "django.contrib.auth.hashers.BCryptSHA256PasswordHasher",
-    "accounts.hashers.DrupalPasswordHasher",
+    "authentication.hashers.DrupalPasswordHasher",
 ]
 
 

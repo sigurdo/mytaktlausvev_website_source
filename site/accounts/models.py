@@ -81,4 +81,4 @@ class UserCustom(AbstractUser):
             return static("accounts/default-avatar.svg")
 
     def get_absolute_url(self):
-        return reverse("profile", args=[self.slug])
+        return reverse("accounts:ProfileDetail", args=[self.slug])

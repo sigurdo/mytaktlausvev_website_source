@@ -10,12 +10,12 @@
 
         <p class="fs-7">
             Lagt ut av
-            <a href="{% url 'profile' event.created_by.slug %}">{{ event.created_by }}</a>
+            <a href="{% url 'accounts:ProfileDetail' event.created_by.slug %}">{{ event.created_by }}</a>
             den
             <time datetime="{{ event.submitted | date:"c" }}">{{ event.submitted | date }}</time>.
 
             Sist redigert av
-            <a href="{% url 'profile' event.modified_by.slug %}">{{ event.modified_by }}</a>
+            <a href="{% url 'accounts:ProfileDetail' event.modified_by.slug %}">{{ event.modified_by }}</a>
             den
             <time datetime="{{ event.modified | date:"c" }}">{{ event.modified | date }}</time>.
         </p>

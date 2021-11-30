@@ -48,7 +48,7 @@
 					<li class="nav-item">
 						<span class="navbar-text">
 							{% if user.is_authenticated %}
-							<span>Innlogga som <a href="{% url 'profile' user.slug %}">{{user.username}}</a>!</span>
+							<span>Innlogga som <a href="{% url 'accounts:ProfileDetail' user.slug %}">{{user.username}}</a>!</span>
 							<a href="{% url 'logout' %}?next=/">Logg ut</a>
 							{% else %}
 							<span>Du er ikkje innlogga. <a href="{% url 'login' %}">Logg inn</a></span>

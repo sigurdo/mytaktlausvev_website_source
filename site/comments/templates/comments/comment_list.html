@@ -8,7 +8,7 @@
             <article class="d-flex">
                 <div class="mx-2 my-1" style="width: 40px; height: 40px;">
                     <a
-                        href="{% url 'profile' comment.created_by.slug %}"
+                        href="{% url 'accounts:ProfileDetail' comment.created_by.slug %}"
                         class="d-flex justify-content-center w-100 h-100"
                     >
                         <img
@@ -21,7 +21,7 @@
                 <div class="p-margin-last-0 mx-1">
                     <h3 class="fw-bold h6 m-0">
                         <a
-                            href="{% url 'profile' comment.created_by.slug %}"
+                            href="{% url 'accounts:ProfileDetail' comment.created_by.slug %}"
                             class="text-decoration-none color-unset"
                         >
                             {{ comment.created_by.get_name }}

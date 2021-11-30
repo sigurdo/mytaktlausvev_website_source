@@ -23,12 +23,12 @@
         {% if user.is_authenticated %}
             <p class="fs-7">
                 Lagt ut av
-                <a href="{% url 'profile' article.created_by.slug %}">{{ article.created_by }}</a>
+                <a href="{% url 'accounts:ProfileDetail' article.created_by.slug %}">{{ article.created_by }}</a>
                 den
                 <time datetime="{{ article.submitted | date:"c" }}">{{ article.submitted | date }}</time>.
 
                 Sist redigert av
-                <a href="{% url 'profile' article.modified_by.slug %}">{{ article.modified_by }}</a>
+                <a href="{% url 'accounts:ProfileDetail' article.modified_by.slug %}">{{ article.modified_by }}</a>
                 den
                 <time datetime="{{ article.modified | date:"c" }}">{{ article.modified | date }}</time>.
             </p>
