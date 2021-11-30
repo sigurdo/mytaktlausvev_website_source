@@ -23,7 +23,7 @@
                             {{ entry.score }}
                         </td>
                         <td>
-                            <a href="{% url "sheetmusic:ScoreView" entry.score.pk %}"> Stemmeoversikt </a>
+                            <a href="{% url "sheetmusic:ScoreView" entry.score.slug %}"> Stemmeoversikt </a>
                         </td>
                     </tr>
                 {% endfor %}

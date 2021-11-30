@@ -14,7 +14,7 @@ class Event(ArticleMixin):
     slug = AutoSlugField(
         verbose_name="slug",
         populate_from="title",
-        unique_with=("title", "start_time__year"),
+        unique_with="start_time__year",
         editable=True,
     )
 

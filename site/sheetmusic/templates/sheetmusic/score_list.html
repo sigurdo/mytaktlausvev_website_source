@@ -40,12 +40,12 @@
             {% for score in scores %}
                 <tr>
                     <td>
-                        <a href="{% url 'sheetmusic:ScoreView' score.pk %}"> {{ score.title }} </a>
+                        <a href="{% url 'sheetmusic:ScoreView' score.slug %}"> {{ score.title }} </a>
                     </td>
 
                     <td>
                         {% if score.favoritePart %}
-                        <a href="{% url 'sheetmusic:PartRead' score.favoritePart.pk %}"> Les </a>
+                        <a href="{% url 'sheetmusic:PartRead' score.slug score.favoritePart.slug %}"> Les </a>
                         {% endif %}
                     </td>
 
@@ -55,13 +55,13 @@
 
                     {% if perms.sheetmusic.change_score %}
                     <td>
-                        <a href="{% url 'sheetmusic:ScoreUpdate' score.pk %}"> Rediger </a>
+                        <a href="{% url 'sheetmusic:ScoreUpdate' score.slug %}"> Rediger </a>
                     </td>
                     {% endif %}
 
                     {% if perms.sheetmusic.delete_score %}
                     <td>
-                        <a href="{% url 'sheetmusic:ScoreDelete' score.pk %}"> Slett </a>
+                        <a href="{% url 'sheetmusic:ScoreDelete' score.slug %}"> Slett </a>
                     </td>
                     {% endif %}
                 </tr>

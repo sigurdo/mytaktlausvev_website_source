@@ -18,7 +18,7 @@ class Article(ArticleMixin, TreeNode):
     slug = AutoSlugField(
         verbose_name="slug",
         populate_from="title",
-        unique_with=("title", "parent"),
+        unique_with="parent",
         editable=True,
     )
 
