@@ -12,7 +12,7 @@ class Event(ArticleMixin):
     end_time = models.DateTimeField("sluttid", default=None, blank=True, null=True)
 
     slug = AutoSlugField(
-        verbose_name="slug",
+        verbose_name="lenkjenamn",
         populate_from="title",
         unique_with="start_time__year",
         editable=True,
