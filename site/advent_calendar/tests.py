@@ -23,7 +23,9 @@ class AdventCalendarTestSuite(TestCase):
         """Should link to the advent calendar's detail page."""
         self.assertEqual(
             self.advent_calendar.get_absolute_url(),
-            reverse("advent_calendar:detail", args=[self.advent_calendar.year]),
+            reverse(
+                "advent_calendar:AdventCalendarDetail", args=[self.advent_calendar.year]
+            ),
         )
 
 
@@ -43,7 +45,10 @@ class WindowTestSuite(TestCase):
         """Should link to the window's advent calendar's detail page."""
         self.assertEqual(
             self.window.get_absolute_url(),
-            reverse("advent_calendar:detail", args=[self.window.advent_calendar.year]),
+            reverse(
+                "advent_calendar:AdventCalendarDetail",
+                args=[self.window.advent_calendar.year],
+            ),
         )
 
     def test_index_cannot_be_lower_than_1(self):
@@ -69,18 +74,19 @@ class WindowTestSuite(TestCase):
 class AdventCalendarListTestSuite(TestMixin, TestCase):
     def test_requires_login(self):
         """Should require login."""
-        self.assertLoginRequired(reverse("advent_calendar:list"))
+        self.assertLoginRequired(reverse("advent_calendar:AdventCalendarList"))
 
 
 class AdventCalendarCreateTestSuite(TestMixin, TestCase):
     def test_requires_login(self):
         """Should require login."""
-        self.assertLoginRequired(reverse("advent_calendar:create"))
+        self.assertLoginRequired(reverse("advent_calendar:AdventCalendarCreate"))
 
     def test_requires_permission(self):
         """Should require the `add_advent_calendar` permission."""
         self.assertPermissionRequired(
-            reverse("advent_calendar:create"), "advent_calendar.add_adventcalendar"
+            reverse("advent_calendar:AdventCalendarCreate"),
+            "advent_calendar.add_adventcalendar",
         )
 
 
@@ -98,25 +104,24 @@ class WindowCreateTestSuite(TestMixin, TestCase):
         self.advent_calendar = AdventCalendarFactory()
         self.window_data = {"title": "Title", "content": "Christmas", "index": 15}
 
+    def get_url(self):
+        return reverse("advent_calendar:WindowCreate", args=[self.advent_calendar.year])
+
     def test_get_not_allowed(self):
         """Should not allow GET requests."""
         self.client.force_login(SuperUserFactory())
-        response = self.client.get(
-            reverse("advent_calendar:window_create", args=[self.advent_calendar.year])
-        )
+        response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, HTTPStatus.METHOD_NOT_ALLOWED)
 
     def test_requires_login(self):
         """Should require login."""
-        self.assertLoginRequired(
-            reverse("advent_calendar:window_create", args=[self.advent_calendar.year])
-        )
+        self.assertLoginRequired(self.get_url())
 
     def test_sets_calendar_based_on_url(self):
         """Should set the window's calendar based on the URL."""
         self.client.force_login(SuperUserFactory())
         self.client.post(
-            reverse("advent_calendar:window_create", args=[self.advent_calendar.year]),
+            self.get_url(),
             self.window_data,
         )
 
@@ -129,7 +134,7 @@ class WindowCreateTestSuite(TestMixin, TestCase):
         user = SuperUserFactory()
         self.client.force_login(user)
         self.client.post(
-            reverse("advent_calendar:window_create", args=[self.advent_calendar.year]),
+            self.get_url(),
             self.window_data,
         )
 
@@ -143,7 +148,7 @@ class WindowUpdateTestSuite(TestMixin, TestCase):
     def get_url(self, window):
         """Returns the URL for the window update view for `window`."""
         return reverse(
-            "advent_calendar:window_update",
+            "advent_calendar:WindowUpdate",
             args=[window.advent_calendar.year, window.index],
         )
 
@@ -155,7 +160,7 @@ class WindowUpdateTestSuite(TestMixin, TestCase):
     def test_returns_404_if_window_not_exist(self):
         """Should return 404 if the window doesn't exist."""
         response = self.client.get(
-            reverse("advent_calendar:window_update", args=[1337, 15])
+            reverse("advent_calendar:WindowUpdate", args=[1337, 15])
         )
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
 

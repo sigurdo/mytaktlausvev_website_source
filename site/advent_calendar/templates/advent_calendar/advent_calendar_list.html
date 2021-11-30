@@ -10,7 +10,7 @@
       <li class="my-2">
           <a
             class="btn btn-lg btn-advent-calendar text-white"
-            href="{% url 'advent_calendar:detail' advent_calendar.year %}"
+            href="{% url 'advent_calendar:AdventCalendarDetail' advent_calendar.year %}"
           >
             {{ advent_calendar.year }}
           </a>
@@ -23,7 +23,7 @@
   {% if perms.advent_calendar.add_adventcalendar %}
   <a
     class="btn btn-lg btn-advent-calendar text-white"
-    href="{% url 'advent_calendar:create' %}"
+    href="{% url 'advent_calendar:AdventCalendarCreate' %}"
   >
     Lag ny julekalender
   </a>

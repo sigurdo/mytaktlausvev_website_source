@@ -13,7 +13,7 @@ class AdventCalendar(models.Model):
         return f"Julekalender {self.year}"
 
     def get_absolute_url(self):
-        return reverse("advent_calendar:detail", args=[self.year])
+        return reverse("advent_calendar:AdventCalendarDetail", args=[self.year])
 
     class Meta:
         ordering = ["-year"]
@@ -39,7 +39,9 @@ class Window(ArticleMixin):
         return f"Julekalender {self.advent_calendar.year}, luke {self.index}"
 
     def get_absolute_url(self):
-        return reverse("advent_calendar:detail", args=[self.advent_calendar.year])
+        return reverse(
+            "advent_calendar:AdventCalendarDetail", args=[self.advent_calendar.year]
+        )
 
     class Meta:
         constraints = [
