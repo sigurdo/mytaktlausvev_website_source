@@ -24,11 +24,9 @@ class WindowCreateForm(forms.ModelForm):
 
     def __init__(self, advent_calendar=None, *args, **kwargs):
         if advent_calendar:
-            self.helper.form_action = (
-                reverse(
-                    "advent_calendar:window_create",
-                    args=[advent_calendar.year],
-                ),
+            self.helper.form_action = reverse(
+                "advent_calendar:window_create",
+                args=[advent_calendar.year],
             )
         super().__init__(*args, **kwargs)
 
