@@ -22,12 +22,18 @@
         {% endif %}
     </h2>
 
-    {% if form %}
-        {% load crispy_forms_tags %}
-        {% crispy form %}
+    {% if form and formset %}
+    <form method="post">
     {% endif %}
-    {% if formset %}
-        {% load crispy_forms_tags %}
-        {% crispy formset %}
+        {% if form %}
+            {% load crispy_forms_tags %}
+            {% crispy form %}
+        {% endif %}
+        {% if formset %}
+            {% load crispy_forms_tags %}
+            {% crispy formset %}
+        {% endif %}
+    {% if form and formset %}
+    </form>
     {% endif %}
 {% endblock %}
