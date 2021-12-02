@@ -208,7 +208,7 @@ class ScoreList(LoginRequiredMixin, ListView):
                 part__pdf__score=score, user=self.request.user
             )
             if len(relations) > 0:
-                score.favoritePart = relations[0].part
+                score.favorite_part = relations[0].part
         return context
 
 

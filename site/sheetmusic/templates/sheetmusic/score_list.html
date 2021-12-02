@@ -44,8 +44,8 @@
                     </td>
 
                     <td>
-                        {% if score.favoritePart %}
-                        <a href="{% url 'sheetmusic:PartRead' score.slug score.favoritePart.slug %}"> Les </a>
+                        {% if score.favorite_part %}
+                        <a href="{% url 'sheetmusic:PartRead' score.slug score.favorite_part.slug %}"> Les </a>
                         {% endif %}
                     </td>
 
