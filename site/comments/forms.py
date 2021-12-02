@@ -9,7 +9,7 @@ class CommentCreateForm(forms.ModelForm):
 
     helper = FormHelper()
     helper.add_input(Submit("submit", "Legg ut kommentar"))
-    helper.form_action = "comment_create"
+    helper.form_action = "comments:CommentCreate"
 
     class Meta:
         model = Comment

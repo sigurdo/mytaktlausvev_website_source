@@ -22,6 +22,7 @@ from django.views.generic import RedirectView
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("brukarar/", include("accounts.urls")),
+    path("", include("authentication.urls")),
     path("sitat/", include("quotes.urls")),
     path("hendingar/", include("events.urls")),
     path("", include("dashboard.urls")),
@@ -32,7 +33,8 @@ urlpatterns = [
     path("skiltmerke/", include("buttons.urls")),
     path("julekalender/", include("advent_calendar.urls")),
     path(
-        "buttons/", RedirectView.as_view(pattern_name="buttons:buttons", permanent=True)
+        "buttons/",
+        RedirectView.as_view(pattern_name="buttons:ButtonsView", permanent=True),
     ),
     path("", include("easter_eggs.urls")),
     path("", include("articles.urls")),

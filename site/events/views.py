@@ -38,7 +38,7 @@ class EventDetail(LoginRequiredMixin, DetailView):
     def get_form_attendance(self):
         form = EventAttendanceForm(initial={"status": Attendance.ATTENDING})
         form.helper.form_action = reverse(
-            "events:attendance_create",
+            "events:EventAttendanceCreate",
             args=[self.object.start_time.year, self.object.slug],
         )
         return form

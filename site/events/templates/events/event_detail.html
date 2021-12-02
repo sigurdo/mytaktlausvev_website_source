@@ -10,12 +10,12 @@
 
         <p class="fs-7">
             Lagt ut av
-            <a href="{% url 'profile' event.created_by.slug %}">{{ event.created_by }}</a>
+            <a href="{% url 'accounts:ProfileDetail' event.created_by.slug %}">{{ event.created_by }}</a>
             den
             <time datetime="{{ event.submitted | date:"c" }}">{{ event.submitted | date }}</time>.
 
             Sist redigert av
-            <a href="{% url 'profile' event.modified_by.slug %}">{{ event.modified_by }}</a>
+            <a href="{% url 'accounts:ProfileDetail' event.modified_by.slug %}">{{ event.modified_by }}</a>
             den
             <time datetime="{{ event.modified | date:"c" }}">{{ event.modified | date }}</time>.
         </p>
@@ -37,7 +37,7 @@
                 {% if perms.events.change_event %}
                 <li class="me-3">
                     <a
-                        href="{% url 'events:update' event.start_time.year event.slug %}"
+                        href="{% url 'events:EventUpdate' event.start_time.year event.slug %}"
                         class="btn btn-primary"
                     >
                         Rediger hending
@@ -47,7 +47,7 @@
                 {% if perms.events.view_eventattendance %}
                 <li>
                     <a
-                        href="{% url 'events:attendance_list' event.start_time.year event.slug %}"
+                        href="{% url 'events:EventAttendanceList' event.start_time.year event.slug %}"
                         class="btn btn-primary"
                     >
                         Sjå svar

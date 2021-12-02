@@ -28,7 +28,7 @@ class Event(ArticleMixin):
         return self.attendances.filter(status=Attendance.ATTENDING_NOT)
 
     def get_absolute_url(self):
-        return reverse("events:detail", args=[self.start_time.year, self.slug])
+        return reverse("events:EventDetail", args=[self.start_time.year, self.slug])
 
     class Meta:
         ordering = ["start_time"]

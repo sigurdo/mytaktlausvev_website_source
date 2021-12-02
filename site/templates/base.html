@@ -3,7 +3,7 @@
 	<nav class="navbar navbar-expand fixed-top navbar-dark">
 		<div class="container-fluid">
 
-			<a class="navbar-brand" href="{% if user.is_authenticated %} {% url 'dashboard' %} {% else %} {% url 'articles:detail' 'om-oss' %} {% endif %}">
+			<a class="navbar-brand" href="{% if user.is_authenticated %} {% url 'dashboard:dashboard' %} {% else %} {% url 'articles:ArticleDetail' 'om-oss' %} {% endif %}">
 				{% load static %}
 				<img class="navbar-logo" src="{% static 'images/logo.png' %}">
 				Studentorchesteret Dei Taktlause
@@ -17,11 +17,11 @@
 			<div class="collapse navbar-collapse" id="collapsable">
 				<ul class="navbar-nav me-auto">
 					<li class="nav-item {% if 'om-oss' in request.path %} active {% endif %}">
-						<a class="nav-link" href="{% url 'articles:detail' 'om-oss' %}">Om oss</a>
+						<a class="nav-link" href="{% url 'articles:ArticleDetail' 'om-oss' %}">Om oss</a>
 					</li>
 					<li class="nav-item">
 						<a class="nav-link {% if 'sitat' in request.path %} active {% endif %}"
-							href="{% url 'quotes' %}">Sitat</a>
+							href="{% url 'quotes:quotes' %}">Sitat</a>
 					</li>
 					<li class="nav-item">
 						<a class="nav-link {% if 'notar' in request.path %} active {% endif %}"
@@ -33,22 +33,22 @@
 					</li>
 					<li class="nav-item">
 						<a class="nav-link {% if 'songar' in request.path %} active {% endif %}"
-							href="{% url 'articles:detail' 'songar' %}">Songar</a>
+							href="{% url 'articles:ArticleDetail' 'songar' %}">Songar</a>
 					</li>
 					<li class="nav-item">
 						<a class="nav-link {% if 'wiki' in request.path %} active {% endif %}"
-							href="{% url 'articles:detail' 'wiki' %}">Wiki</a>
+							href="{% url 'articles:ArticleDetail' 'wiki' %}">Wiki</a>
 					</li>
 					<li class="nav-item">
 						<a class="nav-link {% if 'skiltmerke' in request.path %} active {% endif %}"
-							href="{% url 'buttons:buttons' %}">Skiltmerke</a>
+							href="{% url 'buttons:ButtonsView' %}">Skiltmerke</a>
 					</li>
 				</ul>
 				<ul class="nav navbar-nav">
 					<li class="nav-item">
 						<span class="navbar-text">
 							{% if user.is_authenticated %}
-							<span>Innlogga som <a href="{% url 'profile' user.slug %}">{{user.username}}</a>!</span>
+							<span>Innlogga som <a href="{% url 'accounts:ProfileDetail' user.slug %}">{{user.username}}</a>!</span>
 							<a href="{% url 'logout' %}?next=/">Logg ut</a>
 							{% else %}
 							<span>Du er ikkje innlogga. <a href="{% url 'login' %}">Logg inn</a></span>

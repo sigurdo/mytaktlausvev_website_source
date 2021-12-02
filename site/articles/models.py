@@ -28,7 +28,7 @@ class Article(ArticleMixin, TreeNode):
         return "/".join(slugs)
 
     def get_absolute_url(self):
-        return reverse("articles:detail", args=[self.path()])
+        return reverse("articles:ArticleDetail", args=[self.path()])
 
     class Meta:
         constraints = [

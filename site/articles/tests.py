@@ -36,7 +36,7 @@ class ArticleTestCase(TestCase):
         """Should link to the article's detail page."""
         self.assertEqual(
             self.article.get_absolute_url(),
-            reverse("articles:detail", args=[self.article.path()]),
+            reverse("articles:ArticleDetail", args=[self.article.path()]),
         )
 
     def test_creates_slug_from_title_automatically(self):
@@ -122,13 +122,17 @@ class ArticleDetailTestCase(TestMixin, TestCase):
     def test_public_articles_do_not_require_login(self):
         """Should be able to view public articles without logging in."""
         article = ArticleFactory(public=True)
-        response = self.client.get(reverse("articles:detail", args=[article.path()]))
+        response = self.client.get(
+            reverse("articles:ArticleDetail", args=[article.path()])
+        )
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_not_public_articles_require_login(self):
         """Articles that aren't public should require logging in."""
         article = ArticleFactory(public=False)
-        self.assertLoginRequired(reverse("articles:detail", args=[article.path()]))
+        self.assertLoginRequired(
+            reverse("articles:ArticleDetail", args=[article.path()])
+        )
 
     def test_includes_only_public_subarticles_if_not_authenticated(self):
         """Should include only public subarticles if not authenticated."""
@@ -138,7 +142,9 @@ class ArticleDetailTestCase(TestMixin, TestCase):
             subarticles_public.append(ArticleFactory(public=True, parent=article))
             ArticleFactory(public=False, parent=article)
 
-        response = self.client.get(reverse("articles:detail", args=[article.path()]))
+        response = self.client.get(
+            reverse("articles:ArticleDetail", args=[article.path()])
+        )
         self.assertListEqual(
             list(response.context["subarticles"]),
             subarticles_public,
@@ -155,7 +161,9 @@ class ArticleDetailTestCase(TestMixin, TestCase):
         ]
 
         self.client.force_login(UserFactory())
-        response = self.client.get(reverse("articles:detail", args=[article.path()]))
+        response = self.client.get(
+            reverse("articles:ArticleDetail", args=[article.path()])
+        )
         self.assertListEqual(
             list(response.context["subarticles"]),
             subarticles_public + subarticles_private,
@@ -168,7 +176,7 @@ class ArticleCreateTestCase(TestMixin, TestCase):
         user = SuperUserFactory()
         self.client.force_login(user)
         self.client.post(
-            reverse("articles:create_article"),
+            reverse("articles:ArticleCreate"),
             {"title": "A Title", "content": "Article text"},
         )
 
@@ -179,12 +187,12 @@ class ArticleCreateTestCase(TestMixin, TestCase):
 
     def test_requires_login(self):
         """Should require login."""
-        self.assertLoginRequired(reverse("articles:create_article"))
+        self.assertLoginRequired(reverse("articles:ArticleCreate"))
 
     def test_requires_permission(self):
         """Should require the `create_article` permission."""
         self.assertPermissionRequired(
-            reverse("articles:create_article"), "articles.add_article"
+            reverse("articles:ArticleCreate"), "articles.add_article"
         )
 
 
@@ -196,7 +204,7 @@ class SubarticleCreateTestCase(TestCase):
         """Should set the form's initial data based on the parent."""
         parent = ArticleFactory()
         response = self.client.get(
-            reverse("articles:create_subarticle", args=[parent.path()])
+            reverse("articles:SubarticleCreate", args=[parent.path()])
         )
         self.assertDictEqual(
             response.context["form"].initial,
@@ -214,12 +222,14 @@ class ArticleUpdateTestCase(TestMixin, TestCase):
 
     def test_requires_login(self):
         """Should require login."""
-        self.assertLoginRequired(reverse("articles:update", args=[self.article.path()]))
+        self.assertLoginRequired(
+            reverse("articles:ArticleUpdate", args=[self.article.path()])
+        )
 
     def test_requires_permission(self):
         """Should require the `change_article` permission."""
         self.assertPermissionRequired(
-            reverse("articles:update", args=[self.article.path()]),
+            reverse("articles:ArticleUpdate", args=[self.article.path()]),
             "articles.change_article",
         )
 
@@ -227,7 +237,7 @@ class ArticleUpdateTestCase(TestMixin, TestCase):
         """Should not change `created_by` when updating article."""
         self.client.force_login(SuperUserFactory())
         self.client.post(
-            reverse("articles:update", args=[self.article.path()]),
+            reverse("articles:ArticleUpdate", args=[self.article.path()]),
             {"title": "A Title", "content": "Article text"},
         )
 
@@ -240,7 +250,7 @@ class ArticleUpdateTestCase(TestMixin, TestCase):
         user = SuperUserFactory()
         self.client.force_login(user)
         self.client.post(
-            reverse("articles:update", args=[self.article.path()]),
+            reverse("articles:ArticleUpdate", args=[self.article.path()]),
             {"title": "A Title", "content": "Article text"},
         )
 

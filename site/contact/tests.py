@@ -40,7 +40,7 @@ class ContactViewTestCase(TestCase):
 
     def send_test_mail(self, to_self=False):
         self.client.post(
-            reverse("contact"), {**self.mail_data, "send_to_self": to_self}
+            reverse("contact:ContactView"), {**self.mail_data, "send_to_self": to_self}
         )
         self.assertEqual(len(mail.outbox), 1)
         return mail.outbox[0]
@@ -77,7 +77,7 @@ class ContactViewTestCase(TestCase):
         """Should initialize with username and email if logged in."""
         user = UserFactory(username="Bob", email="bob@bobbington.com")
         self.client.force_login(user)
-        response = self.client.get(reverse("contact"))
+        response = self.client.get(reverse("contact:ContactView"))
         self.assertDictEqual(
             response.context["form"].initial,
             {"name": user.username, "email": user.email},

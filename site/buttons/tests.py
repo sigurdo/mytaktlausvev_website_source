@@ -14,26 +14,26 @@ class ButtonsViewTestSuite(TestMixin, TestCase):
         }
 
     def test_get_do_not_require_login(self):
-        response = self.client.get(reverse("buttons:buttons"))
+        response = self.client.get(reverse("buttons:ButtonsView"))
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_post_do_not_require_login(self):
         response = self.client.post(
-            reverse("buttons:buttons"),
+            reverse("buttons:ButtonsView"),
             self.test_data,
         )
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_post_returns_pdf(self):
         response = self.client.post(
-            reverse("buttons:buttons"),
+            reverse("buttons:ButtonsView"),
             self.test_data,
         )
         self.assertEqual(response["content-type"], "application/pdf")
 
     def test_max_64_of_each(self):
         response = self.client.post(
-            reverse("buttons:buttons"),
+            reverse("buttons:ButtonsView"),
             {**self.test_data, "num_of_each": 65},
         )
         self.assertEqual(response.status_code, HTTPStatus.OK)
@@ -41,7 +41,7 @@ class ButtonsViewTestSuite(TestMixin, TestCase):
 
     def test_max_64_images(self):
         response = self.client.post(
-            reverse("buttons:buttons"),
+            reverse("buttons:ButtonsView"),
             {
                 **self.test_data,
                 "images": [test_image() for _ in range(65)],

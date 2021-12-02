@@ -26,7 +26,7 @@ class CommentTestCase(TestCase):
         """Should link to the comment on the model's page."""
         self.assertEqual(
             self.comment.get_absolute_url(),
-            f"{reverse('articles:detail', args=[self.article.slug])}#comment-{self.comment.pk}",
+            f"{reverse('articles:ArticleDetail', args=[self.article.slug])}#comment-{self.comment.pk}",
         )
 
     def test_to_str_comment_shorter_than_20_characters(self):
@@ -51,12 +51,12 @@ class CommentCreateTestCase(TestMixin, TestCase):
     def test_get_not_allowed(self):
         """Should not allow GET requests."""
         self.client.force_login(UserFactory())
-        response = self.client.get(reverse("comment_create"))
+        response = self.client.get(reverse("comments:CommentCreate"))
         self.assertEqual(response.status_code, HTTPStatus.METHOD_NOT_ALLOWED)
 
     def test_requires_login(self):
         """Should require login."""
-        self.assertLoginRequired(reverse("comment_create"))
+        self.assertLoginRequired(reverse("comments:CommentCreate"))
 
 
 class CommentUpdateTestCase(TestMixin, TestCase):
@@ -69,12 +69,15 @@ class CommentUpdateTestCase(TestMixin, TestCase):
 
     def test_requires_login(self):
         """Should require login."""
-        self.assertLoginRequired(reverse("comment_update", args=[self.comment.pk]))
+        self.assertLoginRequired(
+            reverse("comments:CommentUpdate", args=[self.comment.pk])
+        )
 
     def test_requires_permission(self):
         """Should require the `change_comment` permission."""
         self.assertPermissionRequired(
-            reverse("comment_update", args=[self.comment.pk]), "comments.change_comment"
+            reverse("comments:CommentUpdate", args=[self.comment.pk]),
+            "comments.change_comment",
         )
 
     def test_succeeds_if_not_permission_but_is_author(self):
@@ -83,7 +86,9 @@ class CommentUpdateTestCase(TestMixin, TestCase):
         even if the user doesn't have the `change_comment` permission.
         """
         self.client.force_login(self.author)
-        response = self.client.get(reverse("comment_update", args=[self.comment.pk]))
+        response = self.client.get(
+            reverse("comments:CommentUpdate", args=[self.comment.pk])
+        )
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
 
@@ -98,19 +103,24 @@ class CommentDeleteTestCase(TestMixin, TestCase):
     def test_should_redirect_to_content_object_on_success(self):
         """Should redirect to the model the comment is associated with on success."""
         self.client.force_login(self.author)
-        response = self.client.post(reverse("comment_delete", args=[self.comment.pk]))
+        response = self.client.post(
+            reverse("comments:CommentDelete", args=[self.comment.pk])
+        )
         self.assertRedirects(
-            response, reverse("articles:detail", args=[self.article.slug])
+            response, reverse("articles:ArticleDetail", args=[self.article.slug])
         )
 
     def test_requires_login(self):
         """Should require login."""
-        self.assertLoginRequired(reverse("comment_delete", args=[self.comment.pk]))
+        self.assertLoginRequired(
+            reverse("comments:CommentDelete", args=[self.comment.pk])
+        )
 
     def test_requires_permission(self):
         """Should require the `delete_comment` permission."""
         self.assertPermissionRequired(
-            reverse("comment_delete", args=[self.comment.pk]), "comments.delete_comment"
+            reverse("comments:CommentDelete", args=[self.comment.pk]),
+            "comments.delete_comment",
         )
 
     def test_succeeds_if_not_permission_but_is_author(self):
@@ -119,5 +129,7 @@ class CommentDeleteTestCase(TestMixin, TestCase):
         even if the user doesn't have the `delete_comment` permission.
         """
         self.client.force_login(self.author)
-        response = self.client.get(reverse("comment_delete", args=[self.comment.pk]))
+        response = self.client.get(
+            reverse("comments:CommentDelete", args=[self.comment.pk])
+        )
         self.assertEqual(response.status_code, HTTPStatus.OK)
