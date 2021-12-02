@@ -16,6 +16,7 @@ from django.urls import reverse
 from upload_validator import FileTypeValidator
 from sheatless import processUploadedPdf
 from PyPDF2 import PdfFileReader, PdfFileWriter
+from autoslug import AutoSlugField
 
 from web.settings import TESSDATA_DIR
 
@@ -25,6 +26,12 @@ class Score(models.Model):
 
     title = models.CharField("tittel", max_length=255)
     timestamp = models.DateTimeField("tidsmerke", auto_now_add=True)
+    slug = AutoSlugField(
+        verbose_name="lenkjenamn",
+        populate_from="title",
+        unique=True,
+        editable=True,
+    )
 
     class Meta:
         ordering = ["-timestamp"]
@@ -35,7 +42,7 @@ class Score(models.Model):
         return self.title
 
     def get_absolute_url(self):
-        return reverse("sheetmusic:ScoreView", kwargs={"pk": self.pk})
+        return reverse("sheetmusic:ScoreView", kwargs={"slug": self.slug})
 
 
 class Pdf(models.Model):
@@ -74,7 +81,7 @@ class Pdf(models.Model):
         return os.path.basename(self.file.path)
 
     def get_absolute_url(self):
-        return reverse("sheetmusic:ScoreView", kwargs={"pk": self.score.pk})
+        return reverse("sheetmusic:ScoreView", kwargs={"slug": self.score.slug})
 
     def find_parts(self):
         self.processing = True
@@ -149,6 +156,12 @@ class Part(models.Model):
         "siste side", default=None, validators=[MinValueValidator(1)]
     )
     timestamp = models.DateTimeField("tidsmerke", auto_now_add=True)
+    slug = AutoSlugField(
+        verbose_name="lenkjenamn",
+        populate_from="name",
+        unique_with="pdf__score__slug",
+        editable=True,
+    )
 
     class Meta:
         ordering = ["pdf", "from_page", "to_page", "name"]
@@ -159,7 +172,7 @@ class Part(models.Model):
         return self.name
 
     def get_absolute_url(self):
-        return reverse("sheetmusic:ScoreView", kwargs={"pk": self.pdf.score.pk})
+        return reverse("sheetmusic:ScoreView", kwargs={"slug": self.pdf.score.slug})
 
     def pdf_file(self):
         """Returns the PDF that contains only this part"""
@@ -171,9 +184,9 @@ class Part(models.Model):
         pdf_writer.write(output_stream)
         return output_stream.getvalue()
 
-    def pdf_filename_slug(self):
+    def pdf_basefilename_slug(self):
         """Returns a nice filename slug for the PDF that contains only this part"""
-        return slugify(f"{self.pdf.score.title}-{self.name}") + ".pdf"
+        return slugify(f"{self.pdf.score.title} {self.name}")
 
     def is_favorite_for(self, user):
         return user.favorite_parts.filter(part=self).exists()
@@ -207,4 +220,6 @@ class FavoritePart(models.Model):
         return f"{self.user}-{self.part}"
 
     def get_absolute_url(self):
-        return reverse("sheetmusic:ScoreView", kwargs={"pk": self.part.pdf.score.pk})
+        return reverse(
+            "sheetmusic:ScoreView", kwargs={"slug": self.part.pdf.score.slug}
+        )

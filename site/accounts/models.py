@@ -16,7 +16,9 @@ class UserManagerCustom(UserManager):
 
 
 class UserCustom(AbstractUser):
-    slug = AutoSlugField(verbose_name="slug", populate_from="username", unique=True)
+    slug = AutoSlugField(
+        verbose_name="lenkjenamn", populate_from="username", unique=True
+    )
 
     first_name = None
     last_name = None

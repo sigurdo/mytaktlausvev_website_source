@@ -11,10 +11,10 @@
                 {{ part.name }}
             </td>
             <td>
-                <a href="{% url 'sheetmusic:PartRead' part.pk %}"> Les </a>
+                <a href="{% url 'sheetmusic:PartRead' part.pdf.score.slug part.slug %}"> Les </a>
             </td>
             <td>
-                <a href="{% url 'sheetmusic:PartPdf' part.pk part.pdf_filename_slug %}"> PDF </a>
+                <a href="{% url 'sheetmusic:PartPdf' part.pdf.score.slug part.slug part.pdf_basefilename_slug %}"> PDF </a>
             </td>
             <td>
                 <form

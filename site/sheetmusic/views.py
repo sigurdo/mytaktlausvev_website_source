@@ -165,7 +165,7 @@ class PdfsUpload(PermissionRequiredMixin, FormView):
     permission_required = ("sheetmusic.add_pdf", "sheetmusic.add_part")
 
     def get_object(self):
-        return get_object_or_404(Score, pk=self.kwargs["pk"])
+        return get_object_or_404(Score, slug=self.kwargs["slug"])
 
     def get_success_url(self) -> str:
         return self.get_object().get_absolute_url()
@@ -177,7 +177,7 @@ class PdfsUpload(PermissionRequiredMixin, FormView):
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
         files = self.request.FILES.getlist("files")
         for file in files:
-            score = Score.objects.get(pk=self.kwargs["pk"])
+            score = Score.objects.get(slug=self.kwargs["slug"])
             pdf = Pdf.objects.create(score=score, file=file)
             pdf.save()
             plz_wait = self.request.POST.get("plz_wait", False)
@@ -208,13 +208,20 @@ class ScoreList(LoginRequiredMixin, ListView):
                 part__pdf__score=score, user=self.request.user
             )
             if len(relations) > 0:
-                score.favoritePart = relations[0].part
+                score.favorite_part = relations[0].part
         return context
 
 
 class PartRead(LoginRequiredMixin, DetailView):
     model = Part
     template_name = "sheetmusic/part_read.html"
+
+    def get_object(self, queryset=None):
+        if queryset is None:
+            queryset = self.get_queryset()
+        score_slug = self.kwargs["score_slug"]
+        slug = self.kwargs[self.slug_url_kwarg]
+        return queryset.get(**{self.slug_field: slug}, pdf__score__slug=score_slug)
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         context = super().get_context_data(**kwargs)
@@ -229,6 +236,13 @@ class PartRead(LoginRequiredMixin, DetailView):
 class PartPdf(LoginRequiredMixin, DetailView):
     model = Part
     content_type = "application/pdf"
+
+    def get_object(self, queryset=None):
+        if queryset is None:
+            queryset = self.get_queryset()
+        score_slug = self.kwargs["score_slug"]
+        slug = self.kwargs[self.slug_url_kwarg]
+        return queryset.get(**{self.slug_field: slug}, pdf__score__slug=score_slug)
 
     def render_to_response(self, _):
         content = self.get_object().pdf_file()
