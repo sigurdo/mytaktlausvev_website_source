@@ -2,7 +2,7 @@ version: "3"
 
 services:
   db:
-    image: postgres
+    image: postgres:14.1-alpine
     volumes:
       - ~/.taktlausveven_db:/var/lib/postgresql/data:Z
     environment:
