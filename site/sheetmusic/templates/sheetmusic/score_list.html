@@ -74,6 +74,8 @@
     </p>
     {% endif %}
 
-    <a href="{% url 'sheetmusic:ScoreCreate' %}" class="btn btn-primary"> Ny note </a>
+    {% if perms.sheetmusic.add_score %}
+        <a href="{% url 'sheetmusic:ScoreCreate' %}" class="btn btn-primary"> Ny note </a>
+    {% endif %}
 </article>
 {% endblock page %}

@@ -4,7 +4,7 @@ from http import HTTPStatus
 from django.test import TestCase
 from django.urls import reverse
 
-from accounts.factories import SuperUserFactory
+from accounts.factories import UserFactory, SuperUserFactory
 from common.mixins import TestMixin
 from common.test_utils import create_formset_post_data
 from web.settings import BASE_DIR
@@ -21,14 +21,8 @@ class ScoreViewTestSuite(TestMixin, TestCase):
     def test_requires_login(self):
         self.assertLoginRequired(reverse("sheetmusic:ScoreView", args=[self.score.pk]))
 
-    def test_requires_permission(self):
-        self.assertPermissionRequired(
-            reverse("sheetmusic:ScoreView", args=[self.score.pk]),
-            "sheetmusic.view_score",
-        )
-
     def test_view_score(self):
-        user = SuperUserFactory()
+        user = UserFactory()
         self.client.force_login(user)
         response = self.client.get(
             reverse("sheetmusic:ScoreView", args=[self.score.pk])
@@ -284,12 +278,6 @@ class ScoreListTestSuite(TestMixin, TestCase):
     def test_requires_login(self):
         self.assertLoginRequired(reverse("sheetmusic:ScoreList"))
 
-    def test_requires_permission(self):
-        self.assertPermissionRequired(
-            reverse("sheetmusic:ScoreList"),
-            "sheetmusic.view_score",
-        )
-
 
 class PartReadTestSuite(TestMixin, TestCase):
     def setUp(self):
@@ -297,11 +285,6 @@ class PartReadTestSuite(TestMixin, TestCase):
 
     def test_requires_login(self):
         self.assertLoginRequired(reverse("sheetmusic:PartRead", args=[self.part.pk]))
-
-    def test_requires_permission(self):
-        self.assertPermissionRequired(
-            reverse("sheetmusic:PartRead", args=[self.part.pk]), "sheetmusic.view_part"
-        )
 
 
 class PartPdfTestSuite(TestMixin, TestCase):
@@ -313,14 +296,8 @@ class PartPdfTestSuite(TestMixin, TestCase):
             reverse("sheetmusic:PartPdf", args=[self.part.pk, "part.pdf"])
         )
 
-    def test_requires_permission(self):
-        self.assertPermissionRequired(
-            reverse("sheetmusic:PartPdf", args=[self.part.pk, "part.pdf"]),
-            "sheetmusic.view_part",
-        )
-
     def test_returns_pdf(self):
-        user = SuperUserFactory()
+        user = UserFactory()
         self.client.force_login(user)
         response = self.client.get(
             reverse("sheetmusic:PartPdf", args=[self.part.pk, "part.pdf"])

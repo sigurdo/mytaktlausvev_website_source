@@ -7,6 +7,7 @@
     <h1> <a href="{% url 'sheetmusic:ScoreView' score.pk %}"> {{ score.title }} </a> </h1>
 
     <ul class="nav nav-tabs mb-3">
+        {% if perms.sheetmusic.change_score %}
         <li class="nav-item">
             <a
                 class="nav-link {% if request.resolver_match.view_name == 'sheetmusic:ScoreUpdate' %} active {% endif %}"
@@ -15,6 +16,8 @@
                 Generelt
             </a>
         </li>
+        {% endif %}
+        {% if perms.sheetmusic.add_part and perms.sheetmusic.change_part and perms.sheetmusic.delete_part %}
         <li class="nav-item">
             <a
                 class="nav-link {% if request.resolver_match.view_name == 'sheetmusic:PartsUpdate' %} active {% endif %}"
@@ -23,6 +26,8 @@
                 Stemmer
             </a>
         </li>
+        {% endif %}
+        {% if perms.sheetmusic.delete_pdf %}
         <li class="nav-item">
             <a
                 class="nav-link {% if request.resolver_match.view_name == 'sheetmusic:PdfsUpdate' %} active {% endif %}"
@@ -31,6 +36,8 @@
                 PDFar
             </a>
         </li>
+        {% endif %}
+        {% if perms.sheetmusic.add_pdf and perms.sheetmusic.add_part %}
         <li class="nav-item">
             <a
                 class="nav-link {% if request.resolver_match.view_name == 'sheetmusic:PdfsUpload' %} active {% endif %}"
@@ -39,6 +46,7 @@
                 PDF-opplasting
             </a>
         </li>
+        {% endif %}
     </ul>
 
 
