@@ -1,0 +1,13 @@
+# syntax=docker/dockerfile:1
+FROM python:3.10.0
+ENV PYTHONUNBUFFERED=1
+ENV DJANGO_SETTINGS_MODULE=web.settings
+WORKDIR /app
+
+COPY setup/sheetmusic.sh /app/
+RUN sh sheetmusic.sh
+
+COPY site/requirements.txt /app/
+RUN pip install -r requirements.txt
+
+COPY ./site /app/
