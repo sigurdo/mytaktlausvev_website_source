@@ -5,7 +5,7 @@
 
 			<a class="navbar-brand" href="{% if user.is_authenticated %} {% url 'dashboard:dashboard' %} {% else %} {% url 'articles:ArticleDetail' 'om-oss' %} {% endif %}">
 				{% load static %}
-				<img class="navbar-logo" src="{% static 'images/logo.png' %}">
+				<img class="navbar-logo" src="{% static 'images/logo.svg' %}" />
 				Studentorchesteret Dei Taktlause
 			</a>
 
