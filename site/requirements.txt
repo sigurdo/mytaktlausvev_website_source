@@ -16,6 +16,7 @@ wrapt~=1.11
 psycopg2-binary~=2.8
 libsass~=0.20
 django-sass-processor~=1.0
+django-compressor~=2.4.1
 markdown~=3.3
 bleach~=3.3
 factory-boy~=3.2

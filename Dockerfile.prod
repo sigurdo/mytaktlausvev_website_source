@@ -5,7 +5,8 @@ ENV DJANGO_SETTINGS_MODULE=web.settings
 WORKDIR /app
 
 COPY setup/sheetmusic.sh /app/
-RUN sh sheetmusic.sh
+ARG SHEETMUSIC="yes"
+RUN if [ $SHEETMUSIC = yes ]; then sh sheetmusic.sh; fi
 
 COPY site/requirements.txt /app/
 RUN pip install -r requirements.txt
