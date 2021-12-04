@@ -6,15 +6,19 @@
 
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+	{% load static %}
+	<link rel="icon" href="{% static 'images/favicon.ico' %}" sizes="any">
+	<link rel="icon" href="{% static 'images/logo.svg' %}" type="image/svg+xml">
+	<link rel="apple-touch-icon" href="{% static 'images/apple-touch-icon.png' %}">
+
 	{% load sass_tags %}
 	<link href="{% sass_src 'scss/bootstrap-light.scss' %}" media="(prefers-color-scheme: light)" rel="stylesheet" type="text/css">
 	<link href="{% sass_src 'scss/bootstrap-dark.scss' %}" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
 	<link href="{% sass_src 'scss/utilities.scss' %}" rel="stylesheet" type="text/css">
 
-	{% load static %}
 	<link rel="stylesheet" type="text/css" href="{% static 'css/base.css' %}">
 	<link rel="stylesheet" type="text/css" href="{% static 'css/forms.css' %}">
-	
+
 	{% block css %}{% endblock css %}
 </head>
 
