@@ -11,4 +11,4 @@ RUN if [ $SHEETMUSIC = yes ]; then sh sheetmusic.sh; fi
 COPY site/requirements.txt /app/
 RUN pip install -r requirements.txt
 
-COPY ./site /app/
+COPY ./site /app/site/
