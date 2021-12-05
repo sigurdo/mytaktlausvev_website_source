@@ -21,6 +21,8 @@ test:
     - docker-compose down
   only:
     - merge_requests
+  tags:
+    - docker
 
 deploy:
   stage: deploy
@@ -32,7 +34,7 @@ deploy:
     - mkdir -p ~/.ssh
     - chmod 700 ~/.ssh
   script:
-    - ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no "$SERVER_USER"@"$SERVER_IP" "~/veven/taktlausveven/deployment/deploy.sh" 
+    - ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no "$SERVER_USER"@"$SERVER_IP" "~/veven/taktlausveven/deployment/deploy.sh"
     # Variables ID_RSA, SERVER_USER and SERVER_IP are set in settings -> ci/cd -> variables
-  only: 
+  only:
     - master
