@@ -4,9 +4,9 @@ services:
   db:
     image: postgres:14.1-alpine
     volumes:
-      - ~/.taktlaus_db:/var/lib/postgresql/data:Z
+      - db_prod:/var/lib/postgresql/data:Z
     env_file:
-      - ./.env.prod.db
+      - ./.env.prod
 
   web:
     build:
@@ -34,5 +34,6 @@ services:
       - web
 
 volumes:
+  db_prod:
   static_files:
   media_files:
