@@ -10,24 +10,22 @@ PWA_APP_DISPLAY = "standalone"
 PWA_APP_ORIENTATION = "portrait"
 PWA_APP_ICONS = [
     {
-        "src": "/static/images/logo.png",
-        "sizes": "99x88"
+        "src": "/static/images/logo.svg",
     },
     {
         "src": "/static/images/logo_256x256.png",
         "sizes": "256x256",
-        "purpose": "any"
+        "purpose": "any",
     }
 ]
 PWA_APP_ICONS_APPLE = [
     {
-        "src": "/static/images/logo.png",
-        "sizes": "99x98"
+        "src": "/static/images/logo.svg",
     },
     {
         "src": "/static/images/logo_256x256.png",
         "sizes": "256x256",
-        "purpose": "any"
+        "purpose": "any",
     }
 ]
 PWA_APP_DIR = "pwa"
