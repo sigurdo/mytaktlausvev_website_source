@@ -87,7 +87,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
-                "common.context_processors.pwa_app_enabled"
+                "common.context_processors.pwa_app_enabled",
             ],
         },
     },
@@ -207,6 +207,42 @@ SASS_PROCESSOR_INCLUDE_DIRS = [
     os.path.join(BASE_DIR, "static/scss/"),
 ]
 
-from .pwa_settings import *
+# Settings for django-pwa
+PWA_APP_NAME = "Taktlausveven"
+PWA_APP_DESCRIPTION = "Heimvevstaden til Studentorchesteret Dei Taktlause"
+PWA_APP_THEME_COLOR = "#a50104"
+PWA_APP_BACKGROUND_COLOR = "#ffffff"
+PWA_APP_DISPLAY = "standalone"
+PWA_APP_ORIENTATION = "portrait"
+PWA_APP_ICONS = [
+    {
+        "src": "/static/images/logo.svg",
+        "type": "image/svg",
+    },
+    {
+        "src": "/static/images/logo_256x256.png",
+        "type": "image/png",
+        "sizes": "256x256",
+    },
+    {
+        "src": "/static/images/apple-touch-icon.png",
+        "type": "image/png",
+        "sizes": "180x180",
+    },
+]
+# PWA_APP_ICONS_APPLE is currently not supported by django-pwa even though it's mentioned
+# in their README. So it does nothing as it is now, but I feel like we should leave
+# it in case they suddenly decide to fix their package.
+PWA_APP_ICONS_APPLE = [
+    {
+        "src": "/static/images/apple-touch-icon.png",
+        "sizes": "180x180",
+        "type": "image/png",
+    },
+]
+PWA_APP_DIR = "pwa"
+PWA_APP_LANG = "nn-no"
+PWA_APP_START_URL = "/"
+PWA_SERVICE_WORKER_PATH = os.path.join(BASE_DIR, "static", "js", "serviceworker.js")
 PWA_APP_DEBUG_MODE = DEBUG
-PWA_APP_ENABLED = True # not DEBUG
+PWA_APP_ENABLED = not DEBUG
