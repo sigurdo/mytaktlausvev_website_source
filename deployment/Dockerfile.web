@@ -9,6 +9,6 @@ ARG SHEETMUSIC="yes"
 RUN if [ $SHEETMUSIC = yes ]; then sh sheetmusic.sh; fi
 
 COPY site/requirements.txt /app/
-RUN pip install -r requirements.txt
+RUN pip install --no-cache -r requirements.txt
 
 COPY ./site /app/site/
