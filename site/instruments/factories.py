@@ -1,8 +1,6 @@
 from factory.django import DjangoModelFactory
 from factory import SubFactory
 
-from accounts.factories import UserFactory
-
 from .models import InstrumentGroup, Instrument, InstrumentLocation
 
 
@@ -23,7 +21,7 @@ class InstrumentLocationFactory(DjangoModelFactory):
 class InstrumentFactory(DjangoModelFactory):
     class Meta:
         model = Instrument
-    
+
     name = "Instrument"
     group = SubFactory(InstrumentGroupFactory)
     user = None

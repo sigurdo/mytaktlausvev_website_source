@@ -7,7 +7,11 @@ from contact.factories import ContactCategoryFactory
 from events.factories import EventAttendanceFactory, EventFactory
 from events.models import Attendance
 from instruments.models import Instrument
-from instruments.factories import InstrumentGroupFactory, InstrumentLocationFactory, InstrumentFactory
+from instruments.factories import (
+    InstrumentGroupFactory,
+    InstrumentLocationFactory,
+    InstrumentFactory,
+)
 
 
 class Command(BaseCommand):
@@ -103,8 +107,18 @@ class Command(BaseCommand):
         InstrumentLocationFactory(name="Tatt med hjem")
         member.instrument_group = flute
         member.save()
-        InstrumentFactory(name="Piccolo 1", group=flute, user=member, location=main_storage)
+        InstrumentFactory(
+            name="Piccolo 1", group=flute, user=member, location=main_storage
+        )
         superuser.instrument_group = trumpet
         superuser.save()
-        InstrumentFactory(name="Piccolotrompet", group=trumpet, user=superuser, location=main_storage)
-        InstrumentFactory(name="Tuba 2", group=tuba, location=main_storage, comment="Valset over på SMASH", state=Instrument.State.UNPLAYABLE)
+        InstrumentFactory(
+            name="Piccolotrompet", group=trumpet, user=superuser, location=main_storage
+        )
+        InstrumentFactory(
+            name="Tuba 2",
+            group=tuba,
+            location=main_storage,
+            comment="Valset over på SMASH",
+            state=Instrument.State.UNPLAYABLE,
+        )
