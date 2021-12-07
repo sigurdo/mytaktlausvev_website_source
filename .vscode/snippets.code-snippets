@@ -45,5 +45,39 @@
 			"",
 		],
 		"description": "Create a new model factory"
-	}
+	},
+	"ModelTestSuite": {
+		"scope": "python",
+		"prefix": "ModelTestSuite",
+		"body": [
+			"from django.test import TestCase",
+			"from common.mixins import TestMixin",
+			"from .factories import $1Factory",
+			"class $1TestSuite(TestMixin, TestCase):",
+			"    def setUp(self):",
+			"        self.$2 = $1Factory(name=\"$3\")",
+			"",
+			"    def test_to_str(self):",
+			"        self.assertEqual(str(self.$2), \"$3\")",
+			"",
+		],
+		"description": "Create a new TestSuite for a model",
+	},
+	"ViewTestSuite": {
+		"scope": "python",
+		"prefix": "ViewTestSuite",
+		"body": [
+			"from django.test import TestCase",
+			"from django.urls import reverse",
+			"from common.mixins import TestMixin",
+			"class $1TestSuite(TestMixin, TestCase):",
+			"    def get_url(self):",
+			"        return reverse(\"$2:$1\")",
+			"",
+			"    def setUp(self):",
+			"        ${3:pass}",
+			"",
+		],
+		"description": "Create a new TestSuite for a view",
+	},
 }
