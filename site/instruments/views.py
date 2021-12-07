@@ -25,6 +25,10 @@ class InstrumentsUpdate(
 
     def get_success_url(self) -> str:
         return reverse("instruments:InstrumentList")
+    
+    def get_context_data(self, **kwargs):
+        kwargs["form_title"] = "Rediger instrumentoversikt"
+        return super().get_context_data(**kwargs)
 
     def form_valid(self, form):
         # We must explicitly save the form because it is not done automatically by any ancestors
