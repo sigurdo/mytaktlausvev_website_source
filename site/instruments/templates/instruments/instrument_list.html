@@ -59,6 +59,9 @@
             {% endfor %}
         </tbody>
     </table>
+    {% if perms.instruments.add_instrument and perms.instruments.change_instrument and perms.instruments.delete_instrument %}
+    <a href="{% url "instruments:InstrumentsUpdate" %}" class="btn btn-primary"> Rediger </a>
+    {% endif %}
 </article>
 {% endblock page %}
 
