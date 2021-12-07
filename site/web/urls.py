@@ -36,6 +36,7 @@ urlpatterns = [
         "buttons/",
         RedirectView.as_view(pattern_name="buttons:ButtonsView", permanent=True),
     ),
+    path("instrument/", include("instruments.urls")),
     path("", include("easter_eggs.urls")),
     path("", include("articles.urls")),
     path("", include("pwa.urls")),

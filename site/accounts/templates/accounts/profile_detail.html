@@ -10,5 +10,10 @@
         Instrumentgruppe: {{ profile.instrument_type }}
     </p>
     {% endif %}
+    {% if profile.instruments %}
+    <p>
+        Lånte instrument: {% for instrument in profile.instruments.all %}{{ instrument }}{% if forloop.counter < profile.instruments.all|length %}, {% else %}.{% endif %}{% endfor %}
+    </p>
+    {% endif %}
 </article>
 {% endblock page %}
