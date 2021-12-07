@@ -28,8 +28,6 @@ class Instrument(Model):
         verbose_name="instrumentgruppe",
         related_name="instruments",
         on_delete=DO_NOTHING,
-        null=True,
-        blank=True,
     )
     user = ForeignKey(
         UserCustom,
@@ -44,10 +42,10 @@ class Instrument(Model):
     comment = TextField(verbose_name="kommentar", blank=True)
 
     class State(TextChoices):
-        GOOD = "GOOD", "god"
-        OK = "OK", "ok"
-        BAD = "BAD", "dårleg"
-        UNPLAYABLE = "UNPLAYABLE", "ikkje spelbart"
+        GOOD = "GOOD", "God"
+        OK = "OK", "Ok"
+        BAD = "BAD", "Dårleg"
+        UNPLAYABLE = "UNPLAYABLE", "Ikkje spelbart"
 
     state = CharField(
         max_length=255,

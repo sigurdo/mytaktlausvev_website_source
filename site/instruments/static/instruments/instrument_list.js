@@ -1,10 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
     new DataTable('#instrument_overview', {
         "order": [[2, "asc"]],
+        "paging": false,
         "language": {
             "lengthMenu": "Vis _MENU_  instrument per side",
             "zeroRecords": "Ingen instrument funne",
-            "info": "Viser side _PAGE_ av _PAGES_",
+            // Would otherwise say "showing page 1 of 1" even though we've turned off paging
+            "info": "",
             "infoEmpty": "Ingen instrument funne",
             "infoFiltered": "(filtrert fra totalt _MAX_ instrument)",
             "search": "Søk:",

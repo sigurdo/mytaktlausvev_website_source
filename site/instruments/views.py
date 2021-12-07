@@ -25,7 +25,7 @@ class InstrumentsUpdate(
 
     def get_success_url(self) -> str:
         return reverse("instruments:InstrumentList")
-    
+
     def get_context_data(self, **kwargs):
         kwargs["form_title"] = "Rediger instrumentoversikt"
         return super().get_context_data(**kwargs)

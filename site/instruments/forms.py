@@ -7,7 +7,7 @@ from .models import Instrument
 
 
 class InstrumentUpdateForm(ModelForm):
-    """Form for creating a repertoire entry"""
+    """Form for creating a Instrument entry"""
 
     class Meta:
         model = Instrument
@@ -34,6 +34,7 @@ class InstrumentUpdateFormsetHelper(FormHelper):
 InstrumentUpdateFormset = modelformset_factory(
     Instrument,
     form=InstrumentUpdateForm,
+    can_delete=True,
     extra=5,
 )
 
