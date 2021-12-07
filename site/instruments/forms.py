@@ -34,7 +34,7 @@ class InstrumentUpdateFormsetHelper(FormHelper):
 InstrumentUpdateFormset = modelformset_factory(
     Instrument,
     form=InstrumentUpdateForm,
-    extra=1,
+    extra=5,
 )
 
 InstrumentUpdateFormset.helper = InstrumentUpdateFormsetHelper()
