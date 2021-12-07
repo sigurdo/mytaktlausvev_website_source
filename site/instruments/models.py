@@ -1,9 +1,10 @@
 from django.db.models import (
     CharField,
     TextField,
+    IntegerField,
     Model,
     ForeignKey,
-    TextChoices,
+    IntegerChoices,
     DO_NOTHING,
 )
 
@@ -19,6 +20,17 @@ class InstrumentGroup(Model):
     class Meta:
         verbose_name = "instrumentgruppe"
         verbose_name_plural = "instrumentgrupper"
+
+
+class InstrumentLocation(Model):
+    name = CharField(max_length=255, verbose_name="namn")
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = "instrumentstad"
+        verbose_name_plural = "instrumentstadar"
 
 
 class Instrument(Model):
@@ -37,18 +49,22 @@ class Instrument(Model):
         null=True,
         blank=True,
     )
-    location = CharField(max_length=255, verbose_name="stad")
+    location = ForeignKey(
+        InstrumentLocation,
+        verbose_name="stad",
+        related_name="instruments",
+        on_delete=DO_NOTHING,
+    )
     serial_number = CharField(max_length=255, verbose_name="serienummer", blank=True)
     comment = TextField(verbose_name="kommentar", blank=True)
 
-    class State(TextChoices):
-        GOOD = "GOOD", "God"
-        OK = "OK", "Ok"
-        BAD = "BAD", "Dårleg"
-        UNPLAYABLE = "UNPLAYABLE", "Ikkje spelbart"
+    class State(IntegerChoices):
+        GOOD = 0, "God"
+        OK = 1, "Ok"
+        BAD = 2, "Dårleg"
+        UNPLAYABLE = 3, "Ikkje spelbart"
 
-    state = CharField(
-        max_length=255,
+    state = IntegerField(
         verbose_name="tilstand",
         choices=State.choices,
         default=State.OK,

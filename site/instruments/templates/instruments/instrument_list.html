@@ -28,28 +28,18 @@
                 <td> {{ instrument }} </td>
                 <td> {{ instrument.group }} </td>
                 <td> {{ instrument.location }} </td>
-                <td> {% if instrument.user %} <a href="{% url "accounts:ProfileDetail" instrument.user.slug %}">{{ instrument.user }}</a> {% endif %} </td>
+                <td> {% if instrument.user %} <a href="{% url "accounts:ProfileDetail" instrument.user.slug %}">{{ instrument.user }}</a>{% if instrument.user and instrument.user.membership_status != "ACTIVE" %} ({{ instrument.user.get_membership_status_display }}) {% endif %} {% endif %} </td>
                 <td> {{ instrument.serial_number }} </td>
                 <td> {{ instrument.comment }} </td>
-                <td data-order="
-                    {% if instrument.state == "GOOD" %}
-                        1
-                    {% elif instrument.state == "OK" %}
-                        2
-                    {% elif instrument.state == "BAD" %}
-                        3
-                    {% elif instrument.state == "UNPLAYABLE" %}
-                        4
-                    {% endif %}
-                    "
+                <td data-order="{{ instrument.state }}"
                 class="
-                    {% if instrument.state == "GOOD" %}
+                    {% if instrument.state == 0 %}
                         bg-success
-                    {% elif instrument.state == "OK" %}
+                    {% elif instrument.state == 1 %}
                         bg-info
-                    {% elif instrument.state == "BAD" %}
+                    {% elif instrument.state == 2 %}
                         bg-warning
-                    {% elif instrument.state == "UNPLAYABLE" %}
+                    {% elif instrument.state == 3 %}
                         bg-danger
                     {% endif %}
                     ">

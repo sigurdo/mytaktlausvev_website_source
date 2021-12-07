@@ -29,5 +29,21 @@
 			"",
 		],
 		"description": "Create a new UpdateForm",
+	},
+	"factory": {
+		"scope": "python",
+		"prefix": "factory",
+		"body": [
+			"from factory.django import DjangoModelFactory",
+			"from factory import SubFactory",
+			"from .models import $1",
+			"class $1Factory(DjangoModelFactory):",
+			"    class Meta:",
+			"        model = $1",
+			"",
+			"    $2",
+			"",
+		],
+		"description": "Create a new model factory"
 	}
 }
