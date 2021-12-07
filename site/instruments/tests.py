@@ -2,12 +2,12 @@ from django.test import TestCase
 
 from common.mixins import TestMixin
 
-from .factories import InstrumentTypeFactory
+from .factories import InstrumentGroupFactory
 
 
-class InstrumentTypeTestSuite(TestMixin, TestCase):
+class InstrumentGroupTestSuite(TestMixin, TestCase):
     def setUp(self):
-        self.instrument_type = InstrumentTypeFactory(name="Tuba")
+        self.instrument_group = InstrumentGroupFactory(name="Tuba")
 
     def test_to_str(self):
-        self.assertEqual(str(self.instrument_type), "Tuba")
+        self.assertEqual(str(self.instrument_group), "Tuba")

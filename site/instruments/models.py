@@ -10,7 +10,7 @@ from django.db.models import (
 from accounts.models import UserCustom
 
 
-class InstrumentType(Model):
+class InstrumentGroup(Model):
     name = CharField(max_length=255, verbose_name="namn")
 
     def __str__(self):
@@ -23,8 +23,8 @@ class InstrumentType(Model):
 
 class Instrument(Model):
     name = CharField(max_length=255, verbose_name="namn", unique=True)
-    type = ForeignKey(
-        InstrumentType,
+    group = ForeignKey(
+        InstrumentGroup,
         verbose_name="instrumentgruppe",
         related_name="instruments",
         on_delete=DO_NOTHING,

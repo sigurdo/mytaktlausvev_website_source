@@ -13,7 +13,7 @@ class InstrumentUpdateForm(ModelForm):
         model = Instrument
         fields = [
             "name",
-            "type",
+            "group",
             "user",
             "location",
             "serial_number",

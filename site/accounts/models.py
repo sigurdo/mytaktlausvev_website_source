@@ -39,8 +39,8 @@ class UserCustom(AbstractUser):
     avatar = models.ImageField(
         "profilbilde", upload_to="profile/", null=True, blank=True
     )
-    instrument_type = models.ForeignKey(
-        "instruments.InstrumentType",
+    instrument_group = models.ForeignKey(
+        "instruments.InstrumentGroup",
         verbose_name="instrumentgruppe",
         related_name="users",
         on_delete=models.DO_NOTHING,

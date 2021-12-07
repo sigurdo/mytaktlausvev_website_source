@@ -1,10 +1,10 @@
 from factory.django import DjangoModelFactory
 
-from .models import InstrumentType
+from .models import InstrumentGroup
 
 
-class InstrumentTypeFactory(DjangoModelFactory):
+class InstrumentGroupFactory(DjangoModelFactory):
     class Meta:
-        model = InstrumentType
+        model = InstrumentGroup
 
     name = "Instrumentgruppe"

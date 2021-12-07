@@ -1,5 +1,5 @@
 from django.contrib.admin import site
-from .models import InstrumentType, Instrument
+from .models import InstrumentGroup, Instrument
 
-site.register(InstrumentType)
+site.register(InstrumentGroup)
 site.register(Instrument)
