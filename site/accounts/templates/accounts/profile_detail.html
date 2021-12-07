@@ -5,5 +5,10 @@
 {% block page %}
 <article class="mt-4">
     <h1 class="text-center">{{ profile.get_name }}</h1>
+    {% if profile.instrument_type %}
+    <p>
+        Instrumentgruppe: {{ profile.instrument_type }}
+    </p>
+    {% endif %}
 </article>
 {% endblock page %}

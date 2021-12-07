@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractUser, UserManager
 from django.urls import reverse
 from django.templatetags.static import static
 from autoslug import AutoSlugField
+from instruments.models import InstrumentType
 
 
 class UserManagerCustom(UserManager):
@@ -38,6 +39,14 @@ class UserCustom(AbstractUser):
     )
     avatar = models.ImageField(
         "profilbilde", upload_to="profile/", null=True, blank=True
+    )
+    instrument_type = models.ForeignKey(
+        InstrumentType,
+        verbose_name="instrumentgruppe",
+        related_name="users",
+        on_delete=models.DO_NOTHING,
+        null=True,
+        blank=True,
     )
 
     class MembershipStatus(models.TextChoices):
