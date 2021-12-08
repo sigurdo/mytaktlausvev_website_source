@@ -34,3 +34,7 @@ class InstrumentsUpdate(
         # We must explicitly save the form because it is not done automatically by any ancestors
         form.save()
         return super().form_valid(form)
+
+    def form_invalid(self, form):
+        print("form invalid:", form.errors)
+        return super().form_invalid(form)
