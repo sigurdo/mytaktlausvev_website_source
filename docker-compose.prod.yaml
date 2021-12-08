@@ -27,15 +27,20 @@ services:
     build:
       context: deployment
       dockerfile: Dockerfile.nginx
+    environment:
+      - CERTBOT_EMAIL=www@taktlaus.no
     volumes:
+      - nginx_secrets:/etc/letsencrypt
       - static_files:/app/staticfiles
       - media_files:/app/media
     ports:
-      - 8000:80
+      - 80:80
+      - 443:443
     depends_on:
       - web
 
 volumes:
   db_prod:
+  nginx_secrets:
   static_files:
   media_files:
