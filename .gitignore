@@ -27,6 +27,8 @@ Temporary Items
 .apdisk
 
 
+.vscode
+!.vscode/snippets.code-snippets
 *.sublime-workspace
 *.sublime-project
 

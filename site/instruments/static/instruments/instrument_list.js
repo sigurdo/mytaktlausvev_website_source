@@ -3,19 +3,12 @@ document.addEventListener('DOMContentLoaded', () => {
         "order": [[2, "asc"]],
         "paging": false,
         "language": {
-            "lengthMenu": "Vis _MENU_  instrument per side",
             "zeroRecords": "Ingen instrument funne",
             // Would otherwise say "showing page 1 of 1" even though we've turned off paging
             "info": "",
             "infoEmpty": "Ingen instrument funne",
             "infoFiltered": "(filtrert fra totalt _MAX_ instrument)",
             "search": "Søk:",
-            "paginate": {
-                "first": "Første",
-                "last": "Siste",
-                "next": "Neste",
-                "previous": "Forrige",
-            },
         }
     });
 } );

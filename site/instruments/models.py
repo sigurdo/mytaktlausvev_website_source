@@ -1,14 +1,13 @@
 from django.db.models import (
     CharField,
     TextField,
-    IntegerField,
+    TextChoices,
     Model,
     ForeignKey,
-    IntegerChoices,
-    DO_NOTHING,
+    SET_NULL,
+    RESTRICT,
 )
-
-from accounts.models import UserCustom
+from django.conf import settings
 
 
 class InstrumentGroup(Model):
@@ -39,13 +38,13 @@ class Instrument(Model):
         InstrumentGroup,
         verbose_name="instrumentgruppe",
         related_name="instruments",
-        on_delete=DO_NOTHING,
+        on_delete=RESTRICT,
     )
     user = ForeignKey(
-        UserCustom,
+        settings.AUTH_USER_MODEL,
         verbose_name="vert lånt av",
         related_name="instruments",
-        on_delete=DO_NOTHING,
+        on_delete=SET_NULL,
         null=True,
         blank=True,
     )
@@ -53,22 +52,27 @@ class Instrument(Model):
         InstrumentLocation,
         verbose_name="stad",
         related_name="instruments",
-        on_delete=DO_NOTHING,
+        on_delete=RESTRICT,
     )
     serial_number = CharField(max_length=255, verbose_name="serienummer", blank=True)
     comment = TextField(verbose_name="kommentar", blank=True)
 
-    class State(IntegerChoices):
-        GOOD = 0, "God"
-        OK = 1, "Ok"
-        BAD = 2, "Dårleg"
-        UNPLAYABLE = 3, "Ikkje spelbart"
+    class State(TextChoices):
+        GOOD = "GOOD", "God"
+        OK = "OK", "Ok"
+        BAD = "BAD", "Dårleg"
+        UNPLAYABLE = "UNPLAYABLE", "Ikkje spelbart"
 
-    state = IntegerField(
+    state = CharField(
+        max_length=255,
         verbose_name="tilstand",
         choices=State.choices,
         default=State.OK,
     )
+
+    def get_state_order(self):
+        ordering = ["GOOD", "OK", "BAD", "UNPLAYABLE"]
+        return ordering.index(self.state)
 
     def __str__(self):
         return self.name

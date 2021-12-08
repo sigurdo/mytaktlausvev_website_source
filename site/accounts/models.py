@@ -43,7 +43,7 @@ class UserCustom(AbstractUser):
         "instruments.InstrumentGroup",
         verbose_name="instrumentgruppe",
         related_name="users",
-        on_delete=models.DO_NOTHING,
+        on_delete=models.SET_NULL,
         null=True,
         blank=True,
     )
