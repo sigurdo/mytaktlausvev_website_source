@@ -39,6 +39,14 @@ class UserCustom(AbstractUser):
     avatar = models.ImageField(
         "profilbilde", upload_to="profile/", null=True, blank=True
     )
+    instrument_group = models.ForeignKey(
+        "instruments.InstrumentGroup",
+        verbose_name="instrumentgruppe",
+        related_name="users",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
 
     class MembershipStatus(models.TextChoices):
         ACTIVE = "ACTIVE", "Aktiv"

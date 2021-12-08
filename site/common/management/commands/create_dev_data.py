@@ -6,6 +6,12 @@ from articles.factories import ArticleFactory
 from contact.factories import ContactCategoryFactory
 from events.factories import EventAttendanceFactory, EventFactory
 from events.models import Attendance
+from instruments.models import Instrument
+from instruments.factories import (
+    InstrumentGroupFactory,
+    InstrumentLocationFactory,
+    InstrumentFactory,
+)
 
 
 class Command(BaseCommand):
@@ -87,4 +93,32 @@ class Command(BaseCommand):
         )
         EventAttendanceFactory(
             event=event, person=retiree, status=Attendance.ATTENDING_NOT
+        )
+        flute = InstrumentGroupFactory(name="Fløyte")
+        InstrumentGroupFactory(name="Klarinett")
+        trumpet = InstrumentGroupFactory(name="Trompet")
+        InstrumentGroupFactory(name="Saxofon")
+        InstrumentGroupFactory(name="Trombone")
+        InstrumentGroupFactory(name="Juff")
+        tuba = InstrumentGroupFactory(name="Tuba")
+        main_storage = InstrumentLocationFactory(name="Hovedskapet")
+        InstrumentLocationFactory(name="Styreskapet")
+        InstrumentLocationFactory(name="Saunaen")
+        InstrumentLocationFactory(name="Tatt med hjem")
+        member.instrument_group = flute
+        member.save()
+        InstrumentFactory(
+            name="Piccolo 1", group=flute, user=member, location=main_storage
+        )
+        superuser.instrument_group = trumpet
+        superuser.save()
+        InstrumentFactory(
+            name="Piccolotrompet", group=trumpet, user=superuser, location=main_storage
+        )
+        InstrumentFactory(
+            name="Tuba 2",
+            group=tuba,
+            location=main_storage,
+            comment="Valset over på SMASH",
+            state=Instrument.State.UNPLAYABLE,
         )

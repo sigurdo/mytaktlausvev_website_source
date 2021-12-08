@@ -28,6 +28,7 @@ Temporary Items
 
 
 .vscode
+!.vscode/snippets.code-snippets
 *.sublime-workspace
 *.sublime-project
 

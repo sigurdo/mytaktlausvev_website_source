@@ -91,7 +91,7 @@ def create_formset_post_data(
             if i < len(data) and field in data[i]:
                 # Use value from data if it exists
                 value = data[i][field]
-            elif i < initial_forms and field in defaults:
+            elif i < initial_forms and defaults is not None and field in defaults:
                 # Use default value if it does not exist in data and it is an initial form
                 value = defaults[field]
             else:

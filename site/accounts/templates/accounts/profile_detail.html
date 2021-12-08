@@ -5,5 +5,15 @@
 {% block page %}
 <article class="mt-4">
     <h1 class="text-center">{{ profile.get_name }}</h1>
+    {% if profile.instrument_group %}
+    <p>
+        Instrumentgruppe: {{ profile.instrument_group }}
+    </p>
+    {% endif %}
+    {% if profile.instruments.exists %}
+    <p>
+        Lånte instrument: {% for instrument in profile.instruments.all %}{{ instrument }}{% if not forloop.last %}, {% else %}.{% endif %}{% endfor %}
+    </p>
+    {% endif %}
 </article>
 {% endblock page %}
