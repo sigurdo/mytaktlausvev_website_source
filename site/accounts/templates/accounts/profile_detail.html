@@ -12,7 +12,7 @@
     {% endif %}
     {% if profile.instruments.exists %}
     <p>
-        Lånte instrument: {% for instrument in profile.instruments.all %}{{ instrument }}{% if forloop.counter < profile.instruments.all|length %}, {% else %}.{% endif %}{% endfor %}
+        Lånte instrument: {% for instrument in profile.instruments.all %}{{ instrument }}{% if not forloop.last %}, {% else %}.{% endif %}{% endfor %}
     </p>
     {% endif %}
 </article>
