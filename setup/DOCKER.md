@@ -16,8 +16,8 @@ The bug is caused by a race condition between the two Docker images.
 
 To run the server, build the project with `docker-compose build` and run with `docker-compose up`. Stop and remove Docker containers with `docker-compose down`.
 
-The site is accessible at [localhost:8000](localhost:8000), and the database is permanently stored at "~/taktlaus_db" between runs.
-To clear the database, simply remove it and rerun [`init.sh`](./init.sh).
+The site is accessible at [localhost:8000](localhost:8000), and the database is permanently stored in a Docker volume between runs.
+To clear the database, simply run `docker volume rm taktlausveven_db_dev` and rerun [`init.sh`](./init.sh).
 
 Note that `docker-compose up` can be run with the `-d` option (detach) to run the server in the background.
 Accessing the live logs is still possible by entering the the live docker containers, though this is a bit more complicated and depends on the exact use case.

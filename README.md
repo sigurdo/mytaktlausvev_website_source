@@ -23,6 +23,7 @@ A superuser with the username "leiar" and the password "password" is created aut
 - Run Django commands in the Docker container with `docker-compose run --service-ports web site/manage.py <command>`
 - Run Docker container as interactive shell with `docker-compose run --service-ports web bash`
 - Stop and remove Docker containers with `docker-compose down`
+- Remove database volume with `docker volume rm taktlausveven_db_dev`
 
 ### Code Quality
 
