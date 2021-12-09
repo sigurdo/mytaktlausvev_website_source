@@ -1,13 +1,19 @@
 #!/usr/bin/env bash
 set -e
 
-echo Runing deployment scripts on server
+echo Runing deployment script on server
+cd veven/taktlausveven
 
 echo Pulling updates
-#TODO: pull the newest from the master branch
+git pull
 
+echo Rebuilding Docker container
+docker-compose -f docker-compose.prod.yaml up -d --build --force-recreate
 
-echo Restarting services to update web
-sudo systemctl restart gunicorn
-sudo systemctl restart nginx
+echo Migrating database
+docker-compose -f docker-compose.prod.yaml exec -T django site/manage.py migrate
 
+echo Collecting static files
+docker-compose -f docker-compose.prod.yaml exec -T django site/manage.py generate_code_styles site/static/scss default monokai
+docker-compose -f docker-compose.prod.yaml exec -T django site/manage.py compilescss
+docker-compose -f docker-compose.prod.yaml exec -T django site/manage.py collectstatic --no-input
