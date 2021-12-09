@@ -2,11 +2,10 @@
 {
     "name": "Taktlausveven",
     "short_name": "Taktlausveven",
-    "description": "Heimvevstaden til studentorchesteret dei taktlause",
+    "description": "Heimvevstaden til Studentorchesteret Dei Taktlause",
     "start_url": "/",
     "display": "standalone",
     "scope": "/",
-    "orientation": "portrait",
     "background_color": "#ffffff",
     "theme_color": "#a50104",
     "status_bar": "default",

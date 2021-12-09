@@ -39,5 +39,4 @@ urlpatterns = [
     path("instrument/", include("instruments.urls")),
     path("", include("easter_eggs.urls")),
     path("", include("articles.urls")),
-    # path("", include("pwa.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
