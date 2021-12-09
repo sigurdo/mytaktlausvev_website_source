@@ -8,6 +8,7 @@ from django.urls import reverse
 from django.views.generic import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.views.generic.list import ListView
+from django_ical.views import ICalFeed
 from .models import Attendance, Event, EventAttendance
 from .forms import EventAttendanceForm, EventForm
 
@@ -184,3 +185,34 @@ class EventAttendanceDelete(UserPassesTestMixin, DeleteView):
 
     def get_success_url(self):
         return self.get_object().event.get_absolute_url()
+
+
+class EventFeed(ICalFeed):
+    product_id = "-//taktlaus.no//kalender//NO-NN"
+    timezone = "UTC"
+    title = "Taktlauskalender"
+    description = "Kalender for taktlause hendingar"
+
+    def items(self):
+        return Event.objects.all()
+
+    def item_guid(self, item):
+        return f"@taktlaus.no{item.get_absolute_url()}"
+
+    def item_title(self, item):
+        return item.title
+
+    def item_decription(self, item):
+        return item.content
+
+    def item_link(self, item):
+        return f"https://taktlaus.no{item.get_absolute_url()}"
+
+    def item_start_datetime(self, item):
+        return item.start_time
+
+    def item_end_datetime(self, item):
+        return item.end_time
+
+    def item_location(self, item):
+        return "kommer snart"

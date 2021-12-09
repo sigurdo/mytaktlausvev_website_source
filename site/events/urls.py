@@ -31,4 +31,5 @@ urlpatterns = [
         views.EventAttendanceDelete.as_view(),
         name="EventAttendanceDelete",
     ),
+    path("taktlaushendingar.ics", views.EventFeed(), name="EventFeed"),
 ]

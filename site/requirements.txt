@@ -31,3 +31,4 @@ django-upload-validator~=1.1
 sheatless~=0.0.12
 PyPDF2~=1.26.0
 django-pwa~=1.0.10
+django-ical~=1.8.0
