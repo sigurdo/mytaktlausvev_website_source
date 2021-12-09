@@ -18,9 +18,24 @@
 	<link rel="stylesheet" type="text/css" href="{% static 'css/base.css' %}">
 	<link rel="stylesheet" type="text/css" href="{% static 'css/forms.css' %}">
 
-	{% if PWA_APP_ENABLED %}
-	{% load pwa %}
-	{% progressive_web_app_meta %}
+	{% if ENABLE_PWA_MANIFEST %}
+		{% load static %}
+		<!-- Path to manifest.json -->
+		<link rel="manifest" href="{% static "pwa/manifest.json" %}">
+		<!-- Add to homescreen for Chrome on Android -->
+		<meta name="mobile-web-app-capable" content="yes">
+		<meta name="application-name" content="Taktlausveven">
+		<!-- Chrome for Android theme color -->
+		<meta name="theme-color" content="#a50104">
+		<!-- Add to homescreen for Safari on iOS -->
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-title" content="Taktlausveven">
+		<meta name="apple-mobile-web-app-status-bar-style" content="default">
+		<link rel="apple-touch-icon" href="/static/images/apple-touch-icon.png" sizes="">
+	{% endif %}
+	{% if ENABLE_SERVICEWORKER %}
+		<!-- Register serviceworker -->
+		<script src="{% static "pwa/js/register_serviceworker.js" %}"></script>
 	{% endif %}
 	
 	{% block css %}{% endblock css %}
