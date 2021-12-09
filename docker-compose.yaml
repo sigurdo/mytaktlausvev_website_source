@@ -10,7 +10,7 @@ services:
       - POSTGRES_USER=taktlaus
       - POSTGRES_PASSWORD=taktlaus
 
-  web:
+  django:
     build: .
     environment:
       - DEBUG=1

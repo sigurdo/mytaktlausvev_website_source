@@ -8,10 +8,10 @@ services:
     env_file:
       - deployment/.prod.env
 
-  web:
+  django:
     build:
       context: .
-      dockerfile: deployment/Dockerfile.web
+      dockerfile: deployment/Dockerfile.django
     volumes:
       - static_files:/app/staticfiles
       - media_files:/app/media
@@ -37,7 +37,7 @@ services:
       - 80:80
       - 443:443
     depends_on:
-      - web
+      - django
 
 volumes:
   db_prod:
