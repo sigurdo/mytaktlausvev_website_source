@@ -1,0 +1,26 @@
+
+{
+    "name": "Taktlausveven",
+    "short_name": "Taktlausveven",
+    "description": "Heimvevstaden til Studentorchesteret Dei Taktlause",
+    "start_url": "/",
+    "display": "standalone",
+    "scope": "/",
+    "background_color": "#ffffff",
+    "theme_color": "#a50104",
+    "status_bar": "default",
+    "icons": [{
+        "src": "/static/images/logo.svg",
+        "type": "image/svg"
+    }, {
+        "src": "/static/images/logo_256x256.png",
+        "type": "image/png", "sizes": "256x256"
+    }, {
+        "src": "/static/images/apple-touch-icon.png",
+        "type": "image/png",
+        "sizes": "180x180"
+    }],
+    "dir": "pwa",
+    "lang": "nn-no"
+  }
+  
