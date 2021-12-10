@@ -38,3 +38,5 @@ deploy:
     # Variables ID_RSA, SERVER_USER and SERVER_IP are set in settings -> ci/cd -> variables
   only:
     - master
+  tags:
+    - taktlaustenaren
