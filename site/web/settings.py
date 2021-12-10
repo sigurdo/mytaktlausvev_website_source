@@ -21,14 +21,18 @@ TESSDATA_DIR = os.path.join(BASE_DIR, "..", "tessdata", "tessdata_best-4.1.0")
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("SECRET_KEY")
+SECRET_KEY = os.environ.get(
+    "SECRET_KEY", ")c9b-kx9169s*!v1i^era6)ez3^k*io3c9#d+(*gf52-i0wh_0"
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = int(os.environ.get("DEBUG"))
+DEBUG = int(os.environ.get("DEBUG", "1"))
 
 # ALLOWED_HOSTS should be a string of space-separated hosts
 # e.g. ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS").split(" ")
+ALLOWED_HOSTS = os.environ.get(
+    "ALLOWED_HOSTS", ".localhost 127.0.0.1 [::1] 0.0.0.0"
+).split(" ")
 
 # Simplifies management stuff like deleting output files from the code editor on the host system.
 if DEBUG:
@@ -105,12 +109,12 @@ WSGI_APPLICATION = "web.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": os.environ.get("DB_ENGINE"),
-        "NAME": os.environ.get("DB_NAME"),
-        "USER": os.environ.get("DB_USER"),
-        "PASSWORD": os.environ.get("DB_PASSWORD"),
-        "HOST": os.environ.get("DB_HOST"),
-        "PORT": os.environ.get("DB_PORT"),
+        "ENGINE": os.environ.get("DB_ENGINE", "django.db.backends.postgresql_psycopg2"),
+        "NAME": os.environ.get("DB_NAME", "taktlaus_db"),
+        "USER": os.environ.get("DB_USER", "taktlaus"),
+        "PASSWORD": os.environ.get("DB_PASSWORD", "taktlaus"),
+        "HOST": os.environ.get("DB_HOST", "db"),
+        "PORT": os.environ.get("DB_PORT", "5432"),
     }
 }
 
