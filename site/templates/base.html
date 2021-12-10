@@ -27,6 +27,9 @@
 					<li class="nav-item {% if 'om-oss' in request.path %} active {% endif %}">
 						<a class="nav-link" href="{% url 'articles:ArticleDetail' 'om-oss' %}">Om oss</a>
 					</li>
+					<li class="nav-item {% if 'julekalender' in request.path %} active {% endif %}">
+						<a class="nav-link" href="{% url 'advent_calendar:AdventCalendarList' %}">Julekalender</a>
+					</li>
 					<li class="nav-item">
 						<a class="nav-link {% if 'sitat' in request.path %} active {% endif %}"
 							href="{% url 'quotes:quotes' %}">Sitat</a>

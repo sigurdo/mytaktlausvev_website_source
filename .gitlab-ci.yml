@@ -16,8 +16,8 @@ test:
   stage: test
   script:
     - sh setup/init.sh
-    - docker-compose run web site/manage.py test site/
-    - docker-compose run web flake8
+    - docker-compose run django site/manage.py test site/
+    - docker-compose run django flake8
     - docker-compose down
   only:
     - merge_requests

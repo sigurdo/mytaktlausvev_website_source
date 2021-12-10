@@ -12,4 +12,4 @@ RUN if [ $SHEETMUSIC = yes ]; then sh sheetmusic.sh; fi
 
 # Then setup the rest
 COPY site/requirements.txt .flake8 pyproject.toml /app/
-RUN pip install -r requirements.txt
+RUN pip install --no-cache -r requirements.txt

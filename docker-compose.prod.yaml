@@ -1,0 +1,46 @@
+version: "3"
+
+services:
+  db:
+    image: postgres:14.1-alpine
+    volumes:
+      - db_prod:/var/lib/postgresql/data:Z
+    env_file:
+      - deployment/.prod.env
+
+  django:
+    build:
+      context: .
+      dockerfile: deployment/Dockerfile.django
+    volumes:
+      - static_files:/app/staticfiles
+      - media_files:/app/media
+    env_file:
+      - deployment/.prod.env
+    command: gunicorn web.wsgi:application --bind 0.0.0.0:8000 --chdir site
+    expose:
+      - 8000
+    depends_on:
+      - db
+
+  nginx:
+    build:
+      context: deployment
+      dockerfile: Dockerfile.nginx
+    environment:
+      - CERTBOT_EMAIL=www@taktlaus.no
+    volumes:
+      - nginx_secrets:/etc/letsencrypt
+      - static_files:/app/staticfiles
+      - media_files:/app/media
+    ports:
+      - 80:80
+      - 443:443
+    depends_on:
+      - django
+
+volumes:
+  db_prod:
+  nginx_secrets:
+  static_files:
+  media_files:
