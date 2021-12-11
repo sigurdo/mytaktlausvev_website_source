@@ -1,10 +1,12 @@
 from datetime import date
 from django.test import TestCase
 from django.utils.text import slugify
-from .factories import GalleryFactory
+from common.mixins import TestMixin
+from .factories import GalleryFactory, ImageFactory
+from .models import Image
 
 
-class ArticleTestCase(TestCase):
+class GalleryTestSuite(TestCase):
     def setUp(self):
         self.gallery = GalleryFactory()
 
@@ -35,3 +37,26 @@ class ArticleTestCase(TestCase):
     def test_default_date_is_current_date(self):
         """The default date should be the current date."""
         self.assertEqual(self.gallery.date, date.today())
+
+
+class ImageTestSuite(TestMixin, TestCase):
+    def setUp(self):
+        self.image = ImageFactory()
+
+    def test_to_str(self):
+        """`__str__` should be the image filename."""
+        self.assertTrue(str(self.image), self.image.image.name)
+
+    def test_get_absolute_url(self):
+        """Should be the image's URL."""
+        self.assertTrue(self.image.get_absolute_url(), self.image.image.url)
+
+    def test_deleting_gallery_deletes_its_images(self):
+        """Deleting a gallery should delete all images in the gallery."""
+        self.assertTrue(Image.objects.all().exists())
+        self.image.gallery.delete()
+        self.assertFalse(Image.objects.all().exists())
+
+    def test_deleting_image_deletes_file_on_disk(self):
+        """Deleting an image should delete the image file on the disk."""
+        pass
