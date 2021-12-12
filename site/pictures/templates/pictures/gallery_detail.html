@@ -20,7 +20,7 @@
 
     <ul class="list-unstyled d-flex flex-wrap justify-content-center">
     {% for image in gallery.images.all %}
-        <li class="m-3 d-flex justify-content-center align-items-center" style="height: 13rem;">
+        <li class="d-flex justify-content-center align-items-center m-3 h-52">
             <img
                 src="{{ image.image.url }}"
                 class="mh-100 mw-100"
