@@ -1,8 +1,8 @@
 from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
-
-from .models import Gallery
+from django.forms.models import inlineformset_factory
+from .models import Gallery, Image
 
 
 class GalleryForm(forms.ModelForm):
@@ -18,3 +18,25 @@ class GalleryForm(forms.ModelForm):
             "date": forms.DateInput(attrs={"type": "date"}),
             "date_to": forms.DateInput(attrs={"type": "date"}),
         }
+
+
+class ImageForm(forms.ModelForm):
+    """Form for images."""
+
+    class Meta:
+        model = Image
+        fields = ["image"]
+
+
+class ImageFormsetHelper(FormHelper):
+    template = "pictures/image_formset.html"
+
+
+ImageFormSet = inlineformset_factory(
+    Gallery,
+    Image,
+    form=ImageForm,
+    can_delete=False,
+    extra=0,
+)
+ImageFormSet.helper = ImageFormsetHelper()

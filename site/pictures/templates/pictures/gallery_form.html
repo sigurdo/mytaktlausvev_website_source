@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block page %}
+<article>
+    <h1>Rediger galleri</h1>
+
+    {% load crispy_forms_tags %}
+    <form method="post" enctype="multipart/form-data" class="container">
+        <div class="row">
+            <div class="col-4">
+                {% crispy form %}
+            </div>
+            <div class="col-8">
+                {% crispy formset %}
+            </div>
+        </div>
+    </form>
+</article>
+{% endblock %}

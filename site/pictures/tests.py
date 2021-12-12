@@ -4,6 +4,8 @@ from django.urls import reverse
 from django.utils.text import slugify
 from accounts.factories import SuperUserFactory
 from common.mixins import TestMixin
+from common.test_utils import create_formset_post_data
+from pictures.forms import ImageFormSet
 from .factories import GalleryFactory, ImageFactory
 from .models import Gallery, Image
 
@@ -102,6 +104,12 @@ class GalleryUpdateTestCase(TestMixin, TestCase):
             "title": "A Title",
             "date": "2021-11-25",
             "content": "Gallery text",
+            **create_formset_post_data(
+                formset_class=ImageFormSet,
+                subform_prefix="images",
+                initial_forms=0,
+                total_forms=0,
+            ),
         }
 
     def get_url(self):

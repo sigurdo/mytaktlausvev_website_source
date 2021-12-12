@@ -1,0 +1,22 @@
+<div>
+    {{ formset.management_form }}
+
+    {% for form in formset %}
+    <ol class="list-unstyled">
+        <li class="card shadow d-flex justify-content-center align-items-center m-3 h-96">
+            <img
+                src="{{ form.instance.image.url }}"
+                class="mw-100 mh-100"
+                alt=""
+                loading="lazy"
+            />
+
+            <div class="d-none">
+                {% for field in form %}
+                    {{ field }}
+                {% endfor %}
+            </div>
+        </li>
+    </ol>
+    {% endfor %}
+</div>
