@@ -29,5 +29,14 @@
         </li>
     {% endfor %}
     </ul>
+
+    <footer>
+        <a
+        href="{% url 'pictures:GalleryUpdate' gallery.slug %}"
+        class="btn btn-primary"
+        >
+            Rediger galleri
+        </a>
+    </footer>
 </article>
 {% endblock %}

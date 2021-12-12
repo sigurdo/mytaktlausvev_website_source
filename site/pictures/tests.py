@@ -2,9 +2,10 @@ from datetime import date
 from django.test import TestCase
 from django.urls import reverse
 from django.utils.text import slugify
+from accounts.factories import SuperUserFactory
 from common.mixins import TestMixin
 from .factories import GalleryFactory, ImageFactory
-from .models import Image
+from .models import Gallery, Image
 
 
 class GalleryTestSuite(TestCase):
@@ -68,3 +69,59 @@ class ImageTestSuite(TestMixin, TestCase):
     def test_deleting_image_deletes_file_on_disk(self):
         """Deleting an image should delete the image file on the disk."""
         pass
+
+
+class GalleryCreateTestCase(TestMixin, TestCase):
+    def test_created_by_modified_by_set_to_current_user(self):
+        """Should set `created_by` and `modified_by` to the current user on creation."""
+        user = SuperUserFactory()
+        self.client.force_login(user)
+        self.client.post(
+            reverse("pictures:GalleryCreate"),
+            {
+                "title": "A Title",
+                "date": "2021-11-25",
+                "content": "Gallery text",
+            },
+        )
+
+        self.assertEqual(Gallery.objects.count(), 1)
+        gallery = Gallery.objects.last()
+        self.assertEqual(gallery.created_by, user)
+        self.assertEqual(gallery.modified_by, user)
+
+    def test_redirects_to_image_upload_view(self):
+        """Should redirect to the view for uploading images."""
+        pass
+
+
+class GalleryUpdateTestCase(TestMixin, TestCase):
+    def setUp(self):
+        self.gallery = GalleryFactory()
+        self.gallery_data = {
+            "title": "A Title",
+            "date": "2021-11-25",
+            "content": "Gallery text",
+        }
+
+    def get_url(self):
+        """Returns the URL for the gallery update view for `self.gallery`."""
+        return reverse("pictures:GalleryUpdate", args=[self.gallery.slug])
+
+    def test_created_by_not_changed(self):
+        """Should not change `created_by` when updating gallery."""
+        self.client.force_login(SuperUserFactory())
+        self.client.post(self.get_url(), self.gallery_data)
+
+        created_by_previous = self.gallery.created_by
+        self.gallery.refresh_from_db()
+        self.assertEqual(self.gallery.created_by, created_by_previous)
+
+    def test_modified_by_set_to_current_user(self):
+        """Should set `modified_by` to the current user on update."""
+        user = SuperUserFactory()
+        self.client.force_login(user)
+        self.client.post(self.get_url(), self.gallery_data)
+
+        self.gallery.refresh_from_db()
+        self.assertEqual(self.gallery.modified_by, user)
