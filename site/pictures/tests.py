@@ -1,5 +1,6 @@
 from datetime import date
 from django.test import TestCase
+from django.urls import reverse
 from django.utils.text import slugify
 from common.mixins import TestMixin
 from .factories import GalleryFactory, ImageFactory
@@ -9,6 +10,13 @@ from .models import Image
 class GalleryTestSuite(TestCase):
     def setUp(self):
         self.gallery = GalleryFactory()
+
+    def test_get_absolute_url(self):
+        """Should link to the gallery's detail page."""
+        self.assertEqual(
+            self.gallery.get_absolute_url(),
+            reverse("pictures:GalleryDetail", args=[self.gallery.slug]),
+        )
 
     def test_creates_slug_from_title_automatically(self):
         """Should create a slug from the title automatically during creation."""

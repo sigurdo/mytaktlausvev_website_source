@@ -7,6 +7,7 @@ from django.db.models import (
     CharField,
     CASCADE,
 )
+from django.urls.base import reverse
 from common.models import ArticleMixin
 from autoslug.fields import AutoSlugField
 
@@ -23,6 +24,9 @@ class Gallery(ArticleMixin):
         unique=True,
         editable=True,
     )
+
+    def get_absolute_url(self):
+        return reverse("pictures:GalleryDetail", args=[self.slug])
 
     class Meta:
         verbose_name = "galleri"

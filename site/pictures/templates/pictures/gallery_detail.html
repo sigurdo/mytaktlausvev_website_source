@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}{{ gallery.title }}{% endblock %}
+
+
+{% block page %}
+<article>
+    <h1>{{ gallery.title }}</h1>
+
+    <p>
+        <b>Dato:</b>
+        <time datetime="{{ gallery.date | date:"c" }}">{{ gallery.date }}</time>
+        {% if gallery.date_to %}
+        - <time datetime="{{ gallery.date_to | date:"c" }}">{{ gallery.date_to }}</time>
+        {% endif %}
+    </p>
+
+    {% load markdown %}
+    {{ gallery.content | markdown }}
+
+    <ul class="list-unstyled d-flex flex-wrap justify-content-center">
+    {% for image in gallery.images.all %}
+        <li class="m-3 d-flex justify-content-center align-items-center" style="height: 13rem;">
+            <img
+                src="{{ image.image.url }}"
+                class="mh-100 mw-100"
+                alt=""
+            />
+        </li>
+    {% endfor %}
+    </ul>
+</article>
+{% endblock %}
