@@ -52,7 +52,6 @@ class Score(models.Model):
                     "audio/midi",
                     "audio/ogg",
                     "audio/mp4",
-                    "audio/x-matroska",
                     "audio/flac",
                 ],
                 allowed_extensions=[
@@ -62,7 +61,6 @@ class Score(models.Model):
                     ".ogg",
                     ".mp4",
                     ".m4a",  # another extension for mp4
-                    ".mka",  # matroska
                     ".flac",
                 ],
             )
