@@ -183,6 +183,8 @@ class PdfsUpload(PermissionRequiredMixin, FormView):
             pdf.save()
             match form["part_prediction"].value():
                 case "sheatless":
+                    # plz_wait is a simple hack used only by the test framework so that the
+                    # server does not return a response before the PDF is done processing
                     plz_wait = self.request.POST.get("plz_wait", False)
                     if plz_wait:
                         pdf.find_parts()
