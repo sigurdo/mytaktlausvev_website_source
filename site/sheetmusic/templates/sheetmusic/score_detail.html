@@ -69,6 +69,31 @@
     </section>
     {% endif %}
 
+    {% if pdfs %}
+    <section>
+        <h2> Opphavelege PDFar </h2>
+
+        <table class="table table-sm table-bordered">
+            <thead>
+                <tr>
+                    <th>
+                        PDF-fil
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pdf in pdfs %}
+                <tr>
+                    <td>
+                        <a href="{{ pdf.file.url }}"> {{ pdf }} </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+    {% endif %}
+
     {% load comments %}
     {% comment_list score %}
 </article>

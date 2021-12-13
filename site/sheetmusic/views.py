@@ -1,6 +1,7 @@
 """ Views for sheetmusic """
 
 # Official python packages
+import os
 import threading
 import json
 from typing import Any, Dict
@@ -12,7 +13,7 @@ from django.views.generic.base import TemplateResponseMixin
 from django.views.generic.detail import SingleObjectMixin
 from django.http import HttpResponse
 from django.urls import reverse_lazy
-from django.forms import BaseModelForm
+from django.forms import BaseModelForm, ValidationError
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.views.generic import DetailView, ListView, View
 from django.views.generic.edit import (
@@ -180,12 +181,26 @@ class PdfsUpload(PermissionRequiredMixin, FormView):
             score = Score.objects.get(slug=self.kwargs["slug"])
             pdf = Pdf.objects.create(score=score, file=file)
             pdf.save()
-            plz_wait = self.request.POST.get("plz_wait", False)
-            if plz_wait:
-                pdf.find_parts()
-            else:
-                processPdfsThread = threading.Thread(target=pdf.find_parts)
-                processPdfsThread.start()
+            match form["part_prediction"].value():
+                case "sheatless":
+                    plz_wait = self.request.POST.get("plz_wait", False)
+                    if plz_wait:
+                        pdf.find_parts()
+                    else:
+                        processPdfsThread = threading.Thread(target=pdf.find_parts)
+                        processPdfsThread.start()
+                case "filename":
+                    predicted_name = os.path.splitext(os.path.basename(file.name))[0]
+                    Part(
+                        name=predicted_name,
+                        pdf=pdf,
+                        from_page=1,
+                        to_page=pdf.num_of_pages(),
+                    ).save()
+                case "none":
+                    pass
+                case part_prediction:
+                    raise ValidationError(f"Ulovleg stemmegjettingstrategi: {part_prediction}")
         return super().form_valid(form)
 
 

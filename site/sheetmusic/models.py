@@ -117,6 +117,10 @@ class Pdf(models.Model):
 
     def get_absolute_url(self):
         return reverse("sheetmusic:ScoreView", kwargs={"slug": self.score.slug})
+    
+    def num_of_pages(self):
+        pdf_reader = PdfFileReader(self.file.path)
+        return pdf_reader.getNumPages()
 
     def find_parts(self):
         self.processing = True

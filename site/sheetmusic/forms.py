@@ -1,6 +1,6 @@
 """Forms for the 'sheetmusic'-app"""
 from django import forms
-from django.forms import modelformset_factory
+from django.forms import modelformset_factory, ChoiceField
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 from .models import Score, Pdf, Part
@@ -63,6 +63,7 @@ class UploadPdfForm(forms.Form):
     files = forms.FileField(
         widget=forms.ClearableFileInput(attrs={"multiple": True}), label="Filer"
     )
+    part_prediction = ChoiceField(choices=[("sheatless", "sheatless",), ("filename", "filnavn",), ("none", "ingen",)], label="Gjett stemmer ved hjelp av")
 
 
 class EditPdfForm(forms.ModelForm):
