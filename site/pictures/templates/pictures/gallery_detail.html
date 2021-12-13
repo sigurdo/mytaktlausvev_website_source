@@ -21,12 +21,7 @@
     <ul class="list-unstyled d-flex flex-wrap justify-content-center">
     {% for image in gallery.images.all %}
         <li class="d-flex justify-content-center align-items-center m-3 h-52">
-            <img
-                src="{{ image.image.url }}"
-                class="mh-100 mw-100"
-                alt=""
-                loading="lazy"
-            />
+            {% include "pictures/includes/image.html" with image=image only %}
         </li>
     {% endfor %}
     </ul>

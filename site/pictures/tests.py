@@ -73,6 +73,12 @@ class ImageTestSuite(TestMixin, TestCase):
         pass
 
 
+class GalleryCreateTestSuite(TestMixin, TestCase):
+    def test_queryset_excludes_galleries_with_no_images(self):
+        """Should exclude galleries with no images."""
+        pass
+
+
 class GalleryCreateTestCase(TestMixin, TestCase):
     def test_created_by_modified_by_set_to_current_user(self):
         """Should set `created_by` and `modified_by` to the current user on creation."""

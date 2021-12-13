@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}Fotoarkiv{% endblock title %}
+
+{% block page %}
+<article>
+    <h1>Fotoarkiv</h1>
+
+    <ol class="list-unstyled">
+        {% for gallery in galleries %}
+        <li class="my-4">
+            <h2><a href="{{ gallery.get_absolute_url }}">{{ gallery.title }}</a></h2>
+            <ol class="list-unstyled d-flex flex-wrap">
+                {% for image in gallery.images.all|slice:":5" %}
+                <li class="d-flex justify-content-center align-items-center m-3 h-52">
+                    {% include "pictures/includes/image.html" with image=image  only %}
+                </li>
+                {% endfor %}
+            </ol>
+        </li>
+        {% endfor %}
+    </ol>
+</article>
+{% endblock page %}
