@@ -27,6 +27,9 @@
         {% include "sheetmusic/includes/table_parts.html" with parts=parts only %}
     </section>
     {% endif %}
+
+    {% load comments %}
+    {% comment_list score %}
 </article>
 {% endblock page %}
 
