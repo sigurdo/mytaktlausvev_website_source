@@ -8,27 +8,27 @@ import io
 import django
 from django.core.validators import MinValueValidator
 from django.db import models
-from django.db.models import CharField, DateTimeField, TextField, URLField, FileField
+from django.db.models import CharField, TextField, URLField, FileField
 from django.db.models.signals import pre_delete, pre_save
 from django.dispatch import receiver
 from django.conf import settings
 from django.utils.text import slugify
 from django.urls import reverse
 
-
 from upload_validator import FileTypeValidator
 from sheatless import processUploadedPdf
 from PyPDF2 import PdfFileReader, PdfFileWriter
 from autoslug import AutoSlugField
 
+from common.models import ArticleMixin
 from web.settings import TESSDATA_DIR
 
 
-class Score(models.Model):
+class Score(ArticleMixin):
     """Model representing a score"""
 
-    title = CharField("tittel", max_length=255)
-    timestamp = DateTimeField("tidsmerke", auto_now_add=True)
+    # Override content to get a more suitable verbose_name
+    content = TextField(verbose_name="beskriving", blank=True)
     slug = AutoSlugField(
         verbose_name="lenkjenamn",
         populate_from="title",
@@ -37,9 +37,8 @@ class Score(models.Model):
     )
     arrangement = CharField(verbose_name="arrangement", blank=True, max_length=255)
     originally_from = CharField(
-        verbose_name="originalt ifrå", blank=True, max_length=255
+        verbose_name="opphaveleg ifrå", blank=True, max_length=255
     )
-    description = TextField(verbose_name="beskriving", blank=True)
     sound_file = FileField(
         verbose_name="lydfil",
         upload_to="sheetmusic/sound_files/",
@@ -69,7 +68,7 @@ class Score(models.Model):
     sound_link = URLField(verbose_name="lydlenkje", blank=True)
 
     class Meta:
-        ordering = ["-timestamp"]
+        ordering = ["-submitted"]
         verbose_name = "note"
         verbose_name_plural = "notar"
 

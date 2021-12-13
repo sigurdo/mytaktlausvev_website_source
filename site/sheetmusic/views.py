@@ -59,6 +59,10 @@ class ScoreUpdate(PermissionRequiredMixin, UpdateView):
     template_name = "sheetmusic/score_edit.html"
     permission_required = "sheetmusic.change_score"
 
+    def form_valid(self, form):
+        form.instance.modified_by = self.request.user
+        return super().form_valid(form)
+
 
 class ScoreDelete(PermissionRequiredMixin, DeleteView):
     model = Score
@@ -216,6 +220,11 @@ class ScoreCreate(PermissionRequiredMixin, CreateView):
     template_name = "common/form.html"
     permission_required = "sheetmusic.add_score"
     success_url = reverse_lazy("sheetmusic:ScoreList")
+
+    def form_valid(self, form):
+        form.instance.created_by = self.request.user
+        form.instance.modified_by = self.request.user
+        return super().form_valid(form)
 
 
 class ScoreList(LoginRequiredMixin, ListView):

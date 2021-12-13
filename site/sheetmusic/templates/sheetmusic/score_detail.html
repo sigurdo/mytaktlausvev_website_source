@@ -11,7 +11,14 @@
         {% endif %}
     </h1>
 
-    {% if score.arrangement or score.originally_from or score.description or score.sound_file or score.sound_link %}
+    {% if score.content %}
+    <section>
+        {% load markdown %}    
+        {{ score.content | markdown }}
+    </section>
+    {% endif %}
+
+    {% if score.arrangement or score.originally_from or score.sound_file or score.sound_link %}
     <section>
         <table class="table table-bordered">
             {% if score.arrangement %}
@@ -23,15 +30,8 @@
 
             {% if score.originally_from %}
             <tr>
-                <th> Originalt ifrå </th>
+                <th> Opphaveleg ifrå </th>
                 <td> {{ score.originally_from }} </td>
-            </tr>
-            {% endif %}
-
-            {% if score.description %}
-            <tr>
-                <th> Beskriving </th>
-                <td> {{ score.description }} </td>
             </tr>
             {% endif %}
 
@@ -54,7 +54,7 @@
 
     {% if parts_favorite %}
     <section>
-        <h2> Favorittstemmer </h2>
+        <h2 class="fs-3"> Favorittstemmer </h2>
 
         {% include "sheetmusic/includes/table_parts.html" with parts=parts_favorite only %}
     </section>
@@ -63,7 +63,7 @@
 
     {% if parts %}
     <section>
-        <h2> Alle stemmer </h2>
+        <h2 class="fs-3"> Alle stemmer </h2>
 
         {% include "sheetmusic/includes/table_parts.html" with parts=parts only %}
     </section>
@@ -71,7 +71,7 @@
 
     {% if pdfs %}
     <section>
-        <h2> Opphavelege PDFar </h2>
+        <h2 class="fs-3"> Opphavelege PDFar </h2>
 
         <dl>
             {% for pdf in pdfs %}

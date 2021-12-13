@@ -18,7 +18,7 @@ class ScoreForm(forms.ModelForm):
             "title",
             "arrangement",
             "originally_from",
-            "description",
+            "content",
             "sound_file",
             "sound_link",
         ]
