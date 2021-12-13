@@ -8,6 +8,9 @@ import io
 import django
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.db.models import CharField, DateTimeField, TextField, URLField, FileField
+from django.db.models.signals import pre_delete, pre_save
+from django.dispatch import receiver
 from django.conf import settings
 from django.utils.text import slugify
 from django.urls import reverse
@@ -24,14 +27,27 @@ from web.settings import TESSDATA_DIR
 class Score(models.Model):
     """Model representing a score"""
 
-    title = models.CharField("tittel", max_length=255)
-    timestamp = models.DateTimeField("tidsmerke", auto_now_add=True)
+    title = CharField("tittel", max_length=255)
+    timestamp = DateTimeField("tidsmerke", auto_now_add=True)
     slug = AutoSlugField(
         verbose_name="lenkjenamn",
         populate_from="title",
         unique=True,
         editable=True,
     )
+    arrangement = CharField(verbose_name="arrangement", blank=True, max_length=255)
+    originally_from = CharField(
+        verbose_name="originalt ifrå", blank=True, max_length=255
+    )
+    description = TextField(verbose_name="beskriving", blank=True)
+    sound_file = FileField(
+        verbose_name="lydfil",
+        upload_to="sheetmusic/sound_files/",
+        blank=True,
+        null=True,
+        default=None,
+    )
+    sound_link = URLField(verbose_name="lydlenkje", blank=True)
 
     class Meta:
         ordering = ["-timestamp"]
@@ -43,6 +59,25 @@ class Score(models.Model):
 
     def get_absolute_url(self):
         return reverse("sheetmusic:ScoreView", kwargs={"slug": self.slug})
+
+
+@receiver(pre_save, sender=Score, dispatch_uid="score_pre_save_receiver")
+def score_pre_save_receiver(sender, instance: Score, using, **kwargs):
+    """
+    Delete eventual old sound_file from filesystem
+    """
+    if not instance.pk:
+        return
+
+    try:
+        old_file = Score.objects.get(pk=instance.pk).sound_file
+    except Score.DoesNotExist:
+        return
+
+    new_file = instance.sound_file
+    if old_file and not old_file == new_file:
+        if os.path.isfile(old_file.path):
+            os.remove(old_file.path)
 
 
 class Pdf(models.Model):
@@ -96,7 +131,7 @@ class Pdf(models.Model):
             if not os.path.exists(imagesDirPath):
                 os.mkdir(imagesDirPath)
 
-            # PDF processing is done in a separate process to not affect responsetime
+            # PDF processing is done in a separate process to not affect response time
             # of other requests the server receives while it is processing
             parts, instrumentsDefaultParts = multiprocessing.Pool().apply(
                 processUploadedPdf,
@@ -119,11 +154,12 @@ class Pdf(models.Model):
             self.save()
 
 
-@django.dispatch.receiver(
-    django.db.models.signals.pre_delete, sender=Pdf, dispatch_uid="pdf_delete_images"
-)
+@receiver(pre_delete, sender=Pdf, dispatch_uid="pdf_delete_images")
 def pdf_pre_delete_receiver(sender, instance: Pdf, using, **kwargs):
-    # Deleting all images related to that pdf
+    """
+    Delete pdf file and all related images from filesystem
+    """
+    # Delete related images
     if os.path.exists(
         os.path.join(
             django.conf.settings.MEDIA_ROOT, "sheetmusic", "images", str(instance.pk)
@@ -137,7 +173,7 @@ def pdf_pre_delete_receiver(sender, instance: Pdf, using, **kwargs):
                 str(instance.pk),
             )
         )
-    # Deleting actual pdf file
+    # Delete pdf file
     if os.path.isfile(instance.file.path):
         os.remove(instance.file.path)
 

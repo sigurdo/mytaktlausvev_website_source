@@ -14,7 +14,14 @@ class ScoreForm(forms.ModelForm):
 
     class Meta:
         model = Score
-        fields = ["title"]
+        fields = [
+            "title",
+            "arrangement",
+            "originally_from",
+            "description",
+            "sound_file",
+            "sound_link",
+        ]
 
 
 class EditPartForm(forms.ModelForm):
