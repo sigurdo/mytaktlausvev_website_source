@@ -45,6 +45,28 @@ class Score(models.Model):
         upload_to="sheetmusic/sound_files/",
         blank=True,
         default=None,
+        validators=[
+            FileTypeValidator(
+                allowed_types=[
+                    "audio/mp3",
+                    "audio/midi",
+                    "audio/ogg",
+                    "audio/mp4",
+                    "audio/x-matroska",
+                    "audio/flac",
+                ],
+                allowed_extensions=[
+                    ".mp3",
+                    ".midi",
+                    ".mid",  # another extension for midi
+                    ".ogg",
+                    ".mp4",
+                    ".m4a",  # another extension for mp4
+                    ".mka",  # matroska
+                    ".flac",
+                ],
+            )
+        ],
     )
     sound_link = URLField(verbose_name="lydlenkje", blank=True)
 

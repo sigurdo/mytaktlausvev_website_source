@@ -67,15 +67,15 @@ class UploadPdfForm(forms.Form):
         choices=[
             (
                 "sheatless",
-                "sheatless",
+                "Sheatless",
             ),
             (
                 "filename",
-                "filnavn",
+                "Filnavn",
             ),
             (
                 "none",
-                "ingen",
+                "Ingen",
             ),
         ],
         label="Gjett stemmer ved hjelp av",

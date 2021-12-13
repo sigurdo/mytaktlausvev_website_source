@@ -256,7 +256,7 @@ class PdfsUploadTestSuite(TestMixin, TestCase):
             response, reverse("sheetmusic:ScoreView", args=[self.score.slug])
         )
 
-    def test_upload_pdf(self):
+    def test_upload_pdf_filename(self):
         user = SuperUserFactory()
         self.client.force_login(user)
         self.upload_pdf()

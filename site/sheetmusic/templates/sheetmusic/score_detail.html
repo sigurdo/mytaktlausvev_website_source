@@ -4,7 +4,7 @@
 
 {% block page %}
 <article>
-    <h1>
+    <h1 class="mb-4">
         {{ score.title }}
         {% if perms.sheetmusic.change_score %}
             <a href="{% url 'sheetmusic:ScoreUpdate' score.slug %}" class="fs-6"> rediger </a>
@@ -73,24 +73,13 @@
     <section>
         <h2> Opphavelege PDFar </h2>
 
-        <table class="table table-sm table-bordered">
-            <thead>
-                <tr>
-                    <th>
-                        PDF-fil
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for pdf in pdfs %}
-                <tr>
-                    <td>
-                        <a href="{{ pdf.file.url }}"> {{ pdf }} </a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <dl>
+            {% for pdf in pdfs %}
+                <dd>
+                    <a href="{{ pdf.file.url }}"> {{ pdf }} </a>
+                </dd>
+            {% endfor %}
+        </dl>
     </section>
     {% endif %}
 
