@@ -44,7 +44,6 @@ class Score(models.Model):
         verbose_name="lydfil",
         upload_to="sheetmusic/sound_files/",
         blank=True,
-        null=True,
         default=None,
     )
     sound_link = URLField(verbose_name="lydlenkje", blank=True)
@@ -117,7 +116,7 @@ class Pdf(models.Model):
 
     def get_absolute_url(self):
         return reverse("sheetmusic:ScoreView", kwargs={"slug": self.score.slug})
-    
+
     def num_of_pages(self):
         pdf_reader = PdfFileReader(self.file.path)
         return pdf_reader.getNumPages()

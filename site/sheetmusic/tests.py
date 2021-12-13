@@ -223,6 +223,7 @@ class PdfsUploadTestSuite(TestMixin, TestCase):
             "files": open(
                 os.path.join(BASE_DIR, "common", "test_data", "test.pdf"), "rb"
             ),
+            "part_prediction": "sheatless",
             "plz_wait": True,
         }
 

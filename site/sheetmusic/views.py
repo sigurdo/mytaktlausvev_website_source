@@ -199,8 +199,12 @@ class PdfsUpload(PermissionRequiredMixin, FormView):
                     ).save()
                 case "none":
                     pass
-                case part_prediction:
-                    raise ValidationError(f"Ulovleg stemmegjettingstrategi: {part_prediction}")
+                case _:
+                    raise ValidationError(
+                        "Ulovleg stemmegjettingstrategi: {}".format(
+                            form["part_prediction"].value()
+                        )
+                    )
         return super().form_valid(form)
 
 

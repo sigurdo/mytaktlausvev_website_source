@@ -63,7 +63,23 @@ class UploadPdfForm(forms.Form):
     files = forms.FileField(
         widget=forms.ClearableFileInput(attrs={"multiple": True}), label="Filer"
     )
-    part_prediction = ChoiceField(choices=[("sheatless", "sheatless",), ("filename", "filnavn",), ("none", "ingen",)], label="Gjett stemmer ved hjelp av")
+    part_prediction = ChoiceField(
+        choices=[
+            (
+                "sheatless",
+                "sheatless",
+            ),
+            (
+                "filename",
+                "filnavn",
+            ),
+            (
+                "none",
+                "ingen",
+            ),
+        ],
+        label="Gjett stemmer ved hjelp av",
+    )
 
 
 class EditPdfForm(forms.ModelForm):
