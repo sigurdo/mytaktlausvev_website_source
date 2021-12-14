@@ -2,7 +2,11 @@
 @import "variables";
 @import "bootstrap/scss/bootstrap.scss";
 @import "bootswatch/dist/flatly/bootswatch";
+
 @import "codestyle-default.scss";
+
+@import "base";
+@import "utilities";
 
 .table-striped tbody tr:nth-child(odd) {
   background-color: $gray-200;
