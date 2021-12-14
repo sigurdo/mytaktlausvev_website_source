@@ -3,6 +3,7 @@ from markdown.treeprocessors import Treeprocessor
 from markdown.extensions import Extension
 from markdown.inlinepatterns import SimpleTagPattern
 
+
 class BootstrapTableProcessor(Treeprocessor):
     """Finds all tables and adds the classes `table table-striped`"""
 
