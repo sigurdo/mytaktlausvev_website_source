@@ -20,35 +20,27 @@
 
     {% if score.arrangement or score.originally_from or score.sound_file or score.sound_link %}
     <section>
-        <table class="table table-bordered">
+        <dl>
             {% if score.arrangement %}
-            <tr>
-                <th> Arrangement </th>
-                <td> {{ score.arrangement }} </td>
-            </tr>
+                <dt> Arrangement </dt>
+                <dd> {{ score.arrangement }} </dd>
             {% endif %}
 
             {% if score.originally_from %}
-            <tr>
-                <th> Opphaveleg ifrå </th>
-                <td> {{ score.originally_from }} </td>
-            </tr>
+                <dt> Opphaveleg ifrå </dt>
+                <dd> {{ score.originally_from }} </dd>
             {% endif %}
 
             {% if score.sound_file %}
-            <tr>
-                <th> Lydfil </th>
-                <td> <a href="{{ score.sound_file.url }}"> {{ score.sound_file.url }} </a> </td>
-            </tr>
+                <dt> Lydfil </dt>
+                <dd> <a href="{{ score.sound_file.url }}"> {{ score.sound_file.url }} </a> </dd>
             {% endif %}
 
             {% if score.sound_link %}
-            <tr>
-                <th> Lydlenkje </th>
-                <td> <a href="{{ score.sound_link }}"> {{ score.sound_link }} </a> </td>
-            </tr>
+                <dt> Lydlenkje </dt>
+                <dd> <a href="{{ score.sound_link }}"> {{ score.sound_link }} </a> </dd>
             {% endif %}
-        </table>
+        </dl>
     </section>
     {% endif %}
 

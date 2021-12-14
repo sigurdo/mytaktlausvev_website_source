@@ -10,52 +10,54 @@
 {% block page %}
 <article>
     <h1> Instrumentoversikt </h1>
-    <table class="table table-striped table-sm" id="instrument_overview">
-        <thead>
-            <tr>
-                <th> Instrument </th>
-                <th> Instrumentgruppe </th>
-                <th> Stad </th>
-                <th> Vert lånt av </th>
-                <th> Serienummer </th>
-                <th> Kommentar </th>
-                <th> Tilstand </th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for instrument in instruments %}
-            <tr data-state="{{ instrument.state }}">
-                <td> {{ instrument }} </td>
-                <td> {{ instrument.group }} </td>
-                <td> {{ instrument.location }} </td>
-                <td>
-                    {% if instrument.user %}
-                        <a href="{% url "accounts:ProfileDetail" instrument.user.slug %}"> {{ instrument.user }} </a>
-                        {% if instrument.user.membership_status != "ACTIVE" %}
-                            ({{ instrument.user.get_membership_status_display }})
+    <div class="table-responsive">
+        <table class="table table-striped table-sm" id="instrument_overview">
+            <thead>
+                <tr>
+                    <th> Instrument </th>
+                    <th> Instrumentgruppe </th>
+                    <th> Stad </th>
+                    <th> Vert lånt av </th>
+                    <th> Serienummer </th>
+                    <th> Kommentar </th>
+                    <th> Tilstand </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for instrument in instruments %}
+                <tr data-state="{{ instrument.state }}">
+                    <td> {{ instrument }} </td>
+                    <td> {{ instrument.group }} </td>
+                    <td> {{ instrument.location }} </td>
+                    <td>
+                        {% if instrument.user %}
+                            <a href="{% url "accounts:ProfileDetail" instrument.user.slug %}"> {{ instrument.user }} </a>
+                            {% if instrument.user.membership_status != "ACTIVE" %}
+                                ({{ instrument.user.get_membership_status_display }})
+                            {% endif %}
                         {% endif %}
-                    {% endif %}
-                </td>
-                <td> {{ instrument.serial_number }} </td>
-                <td> {{ instrument.comment }} </td>
-                <td data-order="{{ instrument.get_state_order }}"
-                class="
-                    {% if instrument.get_state_order == 0 %}
-                        bg-success
-                    {% elif instrument.get_state_order == 1 %}
-                        bg-info
-                    {% elif instrument.get_state_order == 2 %}
-                        bg-warning
-                    {% elif instrument.get_state_order == 3 %}
-                        bg-danger
-                    {% endif %}
-                    ">
-                    {{ instrument.get_state_display }}
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+                    </td>
+                    <td> {{ instrument.serial_number }} </td>
+                    <td> {{ instrument.comment }} </td>
+                    <td data-order="{{ instrument.get_state_order }}"
+                    class="
+                        {% if instrument.get_state_order == 0 %}
+                            bg-success
+                        {% elif instrument.get_state_order == 1 %}
+                            bg-info
+                        {% elif instrument.get_state_order == 2 %}
+                            bg-warning
+                        {% elif instrument.get_state_order == 3 %}
+                            bg-danger
+                        {% endif %}
+                        ">
+                        {{ instrument.get_state_display }}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
     {% if perms.instruments.add_instrument and perms.instruments.change_instrument and perms.instruments.delete_instrument %}
     <a href="{% url "instruments:InstrumentsUpdate" %}" class="btn btn-primary"> Rediger </a>
     {% endif %}

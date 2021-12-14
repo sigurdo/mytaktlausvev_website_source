@@ -66,12 +66,9 @@ class Score(ArticleMixin):
     sound_link = URLField(verbose_name="lydlenkje", blank=True)
 
     class Meta:
-        ordering = ["-submitted"]
+        ordering = ["title", "-submitted"]
         verbose_name = "note"
         verbose_name_plural = "notar"
-
-    def __str__(self):
-        return self.title
 
     def get_absolute_url(self):
         return reverse("sheetmusic:ScoreView", kwargs={"slug": self.slug})
