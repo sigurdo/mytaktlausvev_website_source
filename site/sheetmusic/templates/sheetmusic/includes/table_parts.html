@@ -1,10 +1,14 @@
-<table class="table table-bordered">
-    <tr>
-        <th> Navn </th>
-        <th> Les </th>
-        <th> PDF </th>
-        <th> Favoritt </th>
-    </tr>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th> Navn </th>
+            <th> Les </th>
+            <th> PDF </th>
+            <th> Favoritt </th>
+        </tr>
+    </thead>
+
+    <tbody>
     {% for part in parts %}
         <tr>
             <td>
@@ -35,4 +39,5 @@
             </td>
         </tr>
     {% endfor %}
+    </tbody>
 </table>

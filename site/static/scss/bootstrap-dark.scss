@@ -4,6 +4,6 @@
 @import "bootswatch/dist/darkly/bootswatch";
 @import "codestyle-monokai.scss";
 
-tbody tr:nth-child(odd) {
+.table-striped tbody tr:nth-child(odd) {
   background-color: $gray-800;
 }

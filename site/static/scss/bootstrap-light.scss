@@ -4,6 +4,6 @@
 @import "bootswatch/dist/flatly/bootswatch";
 @import "codestyle-default.scss";
 
-tbody tr:nth-child(odd) {
+.table-striped tbody tr:nth-child(odd) {
   background-color: $gray-200;
 }

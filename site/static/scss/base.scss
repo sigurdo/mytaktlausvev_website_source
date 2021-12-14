@@ -12,10 +12,10 @@ body {
 thead,
 thead tr {
   background-color: $primary;
+  color: white;
 }
-th,
-td {
-  padding: 10px 14px;
+th {
+  border-bottom-style: none;
 }
 
 .form-label {
