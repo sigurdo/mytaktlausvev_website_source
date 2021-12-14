@@ -23,7 +23,7 @@ class BootstrapTableExtension(Extension):
         )
 
 
-class StrikeThroughExtension(Extension):
+class StrikethroughExtension(Extension):
     """
     Adds the possibility to use "~~something~~" to create a span that looks like <del>something</del>
     """

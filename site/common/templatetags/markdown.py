@@ -4,7 +4,7 @@ import markdown as md
 import bleach
 from common.markdown_extensions import (
     BootstrapTableExtension,
-    StrikeThroughExtension,
+    StrikethroughExtension,
     UnderlineExtension,
 )
 
@@ -68,7 +68,7 @@ def markdown(string):
             "codehilite",
             "tables",
             BootstrapTableExtension(),
-            StrikeThroughExtension(),
+            StrikethroughExtension(),
             UnderlineExtension(),
         ],
     )
