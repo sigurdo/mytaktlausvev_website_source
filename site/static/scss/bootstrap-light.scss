@@ -8,6 +8,9 @@
 @import "base";
 @import "utilities";
 
+// Flatly changes this color to the link color, which is really ugly...
+$navbar-dark-active-color: $white;
+
 .table-striped tbody tr:nth-child(odd) {
   background-color: $gray-200;
 }
