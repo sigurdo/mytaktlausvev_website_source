@@ -45,7 +45,7 @@ class Score(ArticleMixin):
         validators=[
             FileTypeValidator(
                 allowed_types=[
-                    "audio/mp3",
+                    "audio/mpeg",  # aka mp3
                     "audio/midi",
                     "audio/ogg",
                     "audio/mp4",

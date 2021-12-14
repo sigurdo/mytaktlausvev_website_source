@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AlterModelOptions(
             name='score',
-            options={'ordering': ['-submitted'], 'verbose_name': 'note', 'verbose_name_plural': 'notar'},
+            options={'ordering': ['title', '-submitted'], 'verbose_name': 'note', 'verbose_name_plural': 'notar'},
         ),
         migrations.RemoveField(
             model_name='score',
@@ -58,7 +58,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='score',
             name='sound_file',
-            field=models.FileField(blank=True, default=None, upload_to='sheetmusic/sound_files/', validators=[upload_validator.FileTypeValidator(allowed_extensions=['.mp3', '.midi', '.mid', '.ogg', '.mp4', '.m4a', '.flac'], allowed_types=['audio/mp3', 'audio/midi', 'audio/ogg', 'audio/mp4', 'audio/flac'])], verbose_name='lydfil'),
+            field=models.FileField(blank=True, default=None, upload_to='sheetmusic/sound_files/', validators=[upload_validator.FileTypeValidator(allowed_extensions=['.mp3', '.midi', '.mid', '.ogg', '.mp4', '.m4a', '.flac'], allowed_types=['audio/mpeg', 'audio/midi', 'audio/ogg', 'audio/mp4', 'audio/flac'])], verbose_name='lydfil'),
         ),
         migrations.AddField(
             model_name='score',

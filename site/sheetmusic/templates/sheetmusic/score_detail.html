@@ -65,13 +65,13 @@
     <section>
         <h2 class="fs-3"> Opphavelege PDFar </h2>
 
-        <dl>
+        <ul class="list-unstyled">
             {% for pdf in pdfs %}
-                <dd>
+                <li>
                     <a href="{{ pdf.file.url }}"> {{ pdf }} </a>
-                </dd>
+                </li>
             {% endfor %}
-        </dl>
+        </ul>
     </section>
     {% endif %}
 
