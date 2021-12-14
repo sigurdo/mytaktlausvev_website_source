@@ -2,6 +2,7 @@ from django import template
 from django.utils.safestring import mark_safe
 import markdown as md
 import bleach
+from common.bootstrap_tables import BootstrapTableExtension
 
 register = template.Library()
 
@@ -54,7 +55,14 @@ ALLOWED_ATTRIBUTES = ["src", "alt", "width", "height", "class", "href"]
 @register.filter(is_safe=True)
 def markdown(string):
     converted = md.markdown(
-        string, extensions=["nl2br", "fenced_code", "codehilite", "tables"]
+        string,
+        extensions=[
+            "nl2br",
+            "fenced_code",
+            "codehilite",
+            "tables",
+            BootstrapTableExtension(),
+        ],
     )
     bleached = bleach.clean(converted, tags=ALLOWED_TAGS, attributes=ALLOWED_ATTRIBUTES)
     return mark_safe(bleached)
