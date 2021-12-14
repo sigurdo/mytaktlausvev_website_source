@@ -242,27 +242,6 @@ class ScoreList(LoginRequiredMixin, ListView):
         return context
 
 
-class PartRead(LoginRequiredMixin, DetailView):
-    model = Part
-    template_name = "sheetmusic/part_read.html"
-
-    def get_object(self, queryset=None):
-        if queryset is None:
-            queryset = self.get_queryset()
-        score_slug = self.kwargs["score_slug"]
-        slug = self.kwargs[self.slug_url_kwarg]
-        return queryset.get(**{self.slug_field: slug}, pdf__score__slug=score_slug)
-
-    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-        obj = self.get_object()
-        context["pageUrls"] = [
-            "/media/sheetmusic/images/{}/page_{}.jpg".format(obj.pdf.pk, pageNum)
-            for pageNum in range(obj.from_page, obj.to_page + 1)
-        ]
-        return context
-
-
 class PartPdf(LoginRequiredMixin, DetailView):
     model = Part
     content_type = "application/pdf"

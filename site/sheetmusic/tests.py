@@ -326,18 +326,6 @@ class ScoreListTestSuite(TestMixin, TestCase):
         self.assertLoginRequired(reverse("sheetmusic:ScoreList"))
 
 
-class PartReadTestSuite(TestMixin, TestCase):
-    def setUp(self):
-        self.part = PartFactory()
-
-    def test_requires_login(self):
-        self.assertLoginRequired(
-            reverse(
-                "sheetmusic:PartRead", args=[self.part.pdf.score.slug, self.part.slug]
-            )
-        )
-
-
 class PartPdfTestSuite(TestMixin, TestCase):
     def setUp(self):
         self.part = PartFactory()

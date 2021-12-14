@@ -1,11 +1,9 @@
 """ Models for the sheetmusic-app """
 
 import os
-import shutil
 import multiprocessing
 import io
 
-import django
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import CharField, TextField, URLField, FileField
@@ -16,7 +14,7 @@ from django.utils.text import slugify
 from django.urls import reverse
 
 from upload_validator import FileTypeValidator
-from sheatless import processUploadedPdf
+from sheatless import predict_parts_in_pdf
 from PyPDF2 import PdfFileReader, PdfFileWriter
 from autoslug import AutoSlugField
 
@@ -144,25 +142,17 @@ class Pdf(models.Model):
         self.processing = True
         self.save()
         try:
-            imagesDirPath = os.path.join(
-                django.conf.settings.MEDIA_ROOT, "sheetmusic", "images"
-            )
-            if not os.path.exists(imagesDirPath):
-                os.mkdir(imagesDirPath)
-            imagesDirPath = os.path.join(imagesDirPath, str(self.pk))
-            if not os.path.exists(imagesDirPath):
-                os.mkdir(imagesDirPath)
-
             # PDF processing is done in a separate process to not affect response time
             # of other requests the server receives while it is processing
-            parts, instrumentsDefaultParts = multiprocessing.Pool().apply(
-                processUploadedPdf,
-                (self.file.path, imagesDirPath),
-                {
-                    "use_lstm": True,
-                    "tessdata_dir": TESSDATA_DIR,
-                },
-            )
+            with open(self.file.path, "rb") as pdf_file:
+                parts, instrumentsDefaultParts = multiprocessing.Pool().apply(
+                    predict_parts_in_pdf,
+                    [pdf_file.read()],
+                    {
+                        "use_lstm": True,
+                        "tessdata_dir": TESSDATA_DIR,
+                    },
+                )
             for part in parts:
                 part = Part(
                     name=part["name"],
@@ -179,23 +169,8 @@ class Pdf(models.Model):
 @receiver(pre_delete, sender=Pdf, dispatch_uid="pdf_delete_images")
 def pdf_pre_delete_receiver(sender, instance: Pdf, using, **kwargs):
     """
-    Delete pdf file and all related images from filesystem
+    Delete pdf file from filesystem
     """
-    # Delete related images
-    if os.path.exists(
-        os.path.join(
-            django.conf.settings.MEDIA_ROOT, "sheetmusic", "images", str(instance.pk)
-        )
-    ):
-        shutil.rmtree(
-            os.path.join(
-                django.conf.settings.MEDIA_ROOT,
-                "sheetmusic",
-                "images",
-                str(instance.pk),
-            )
-        )
-    # Delete pdf file
     if os.path.isfile(instance.file.path):
         os.remove(instance.file.path)
 

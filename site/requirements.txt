@@ -28,6 +28,6 @@ django-tree-queries==0.6.0
 Pygments~=2.10
 Pillow~=8.3
 django-upload-validator~=1.1
-sheatless~=0.0.12
+sheatless~=1.0.1
 PyPDF2~=1.26.0
 django-ical~=1.8.0

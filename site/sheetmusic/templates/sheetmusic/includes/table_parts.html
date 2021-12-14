@@ -2,7 +2,6 @@
     <thead>
         <tr>
             <th> Navn </th>
-            <th> Les </th>
             <th> PDF </th>
             <th> Favoritt </th>
         </tr>
@@ -12,9 +11,6 @@
         <tr>
             <td>
                 {{ part.name }}
-            </td>
-            <td>
-                <a href="{% url 'sheetmusic:PartRead' part.pdf.score.slug part.slug %}"> Les </a>
             </td>
             <td>
                 <a href="{% url 'sheetmusic:PartPdf' part.pdf.score.slug part.slug part.pdf_basefilename_slug %}"> PDF </a>
