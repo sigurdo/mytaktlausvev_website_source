@@ -1,5 +1,6 @@
 @import "bootstrap/scss/functions";
 @import "bootstrap/scss/variables";
+@import "variables";
 @import "bootstrap/scss/mixins";
 
 .fs-7 {
@@ -24,8 +25,6 @@
 .p-margin-last-0 > p:last-of-type {
   margin-bottom: 0 !important;
 }
-
-$button-color-advent-calendar: #5d4f8a;
 
 .btn-advent-calendar {
   @include button-variant(

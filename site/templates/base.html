@@ -1,20 +1,14 @@
 {% extends 'base_base.html' %}
 {% block navbar %}
-	<nav class="navbar navbar-expand-xl fixed-top navbar-dark">
-		<div class="container-fluid d-flex">
-			<a class="navbar-brand d-flex justify-content-center d-none d-sm-block" href="{% if user.is_authenticated %} {% url 'dashboard:dashboard' %} {% else %} {% url 'articles:ArticleDetail' 'om-oss' %} {% endif %}">
-				<div class="d-flex align-items-center justify-content-center">
-					{% load static %}
-					<img class="navbar-logo ms-1 me-3" src="{% static 'images/logo.svg' %}">
-					<span> Studentorchesteret Dei Taktlause </span>
-				</div>
-			</a>
-
-			<a class="navbar-brand flex-grow-1 d-flex justify-content-center d-sm-none" href="{% if user.is_authenticated %} {% url 'dashboard:dashboard' %} {% else %} {% url 'articles:ArticleDetail' 'om-oss' %} {% endif %}">
-				<div class="d-flex flex-grow-1 align-items-center justify-content-center">
-					{% load static %}
-					<img class="navbar-logo ms-1 me-3" src="{% static 'images/logo.svg' %}">
-				</div>
+	<nav class="navbar navbar-expand-xl fixed-top navbar-dark bg-primary">
+		<div class="container-fluid">
+			<a
+				class="navbar-brand"
+				href="{% if user.is_authenticated %} {% url 'dashboard:dashboard' %} {% else %} {% url 'articles:ArticleDetail' 'om-oss' %} {% endif %}"
+			>
+				{% load static %}
+				<img class="w-16 me-2" src="{% static 'images/logo.svg' %}">
+				<span class="d-none d-sm-inline fw-bold">Studentorchesteret Dei Taktlause</span>
 			</a>
 
 			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapsable"
