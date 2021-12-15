@@ -6,6 +6,7 @@ cd veven/taktlausveven
 
 echo Pulling updates
 git pull
+git submodule update --init --recursive
 
 echo Rebuilding Docker container
 docker-compose -f docker-compose.prod.yaml up -d --build --force-recreate
