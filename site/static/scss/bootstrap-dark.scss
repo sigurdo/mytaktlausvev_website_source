@@ -2,8 +2,12 @@
 @import "variables";
 @import "bootstrap/scss/bootstrap.scss";
 @import "bootswatch/dist/darkly/bootswatch";
+
 @import "codestyle-monokai.scss";
 
-tbody tr:nth-child(odd) {
+@import "base";
+@import "utilities";
+
+.table-striped tbody tr:nth-child(odd) {
   background-color: $gray-800;
 }

@@ -2,8 +2,15 @@
 @import "variables";
 @import "bootstrap/scss/bootstrap.scss";
 @import "bootswatch/dist/flatly/bootswatch";
+
 @import "codestyle-default.scss";
 
-tbody tr:nth-child(odd) {
+@import "base";
+@import "utilities";
+
+// Flatly changes this color to the link color, which is really ugly...
+$navbar-dark-active-color: $white;
+
+.table-striped tbody tr:nth-child(odd) {
   background-color: $gray-200;
 }
