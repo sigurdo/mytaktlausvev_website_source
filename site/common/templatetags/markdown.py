@@ -2,7 +2,11 @@ from django import template
 from django.utils.safestring import mark_safe
 import markdown as md
 import bleach
-from common.bootstrap_tables import BootstrapTableExtension
+from common.markdown_extensions import (
+    BootstrapTableExtension,
+    StrikethroughExtension,
+    UnderlineExtension,
+)
 
 register = template.Library()
 
@@ -47,6 +51,8 @@ ALLOWED_TAGS = [
     "acronym",
     "br",
     "cite",
+    "del",
+    "ins",
 ]
 
 ALLOWED_ATTRIBUTES = ["src", "alt", "width", "height", "class", "href"]
@@ -62,6 +68,8 @@ def markdown(string):
             "codehilite",
             "tables",
             BootstrapTableExtension(),
+            StrikethroughExtension(),
+            UnderlineExtension(),
         ],
     )
     bleached = bleach.clean(converted, tags=ALLOWED_TAGS, attributes=ALLOWED_ATTRIBUTES)
