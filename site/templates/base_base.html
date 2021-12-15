@@ -13,14 +13,12 @@
 	{% load sass_tags %}
 	<link href="{% sass_src 'scss/bootstrap-light.scss' %}" media="(prefers-color-scheme: light)" rel="stylesheet" type="text/css">
 	<link href="{% sass_src 'scss/bootstrap-dark.scss' %}" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
+	<link href="{% sass_src 'scss/base.scss' %}" rel="stylesheet" type="text/css">
 	<link href="{% sass_src 'scss/utilities.scss' %}" rel="stylesheet" type="text/css">
-
-	<link rel="stylesheet" type="text/css" href="{% static 'css/base.css' %}">
-	<link rel="stylesheet" type="text/css" href="{% static 'css/forms.css' %}">
 
 	<!-- Chrome for Android theme color -->
 	<meta name="theme-color" content="#a50104">
-	
+
 	{% if ENABLE_PWA_MANIFEST %}
 		{% load static %}
 		<!-- Path to manifest.json -->
@@ -38,7 +36,7 @@
 		<!-- Register serviceworker -->
 		<script src="{% static "pwa/js/register_serviceworker.js" %}"></script>
 	{% endif %}
-	
+
 	{% block css %}{% endblock css %}
 </head>
 

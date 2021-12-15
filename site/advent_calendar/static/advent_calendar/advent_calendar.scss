@@ -1,5 +1,6 @@
 @import "bootstrap/scss/functions";
 @import "bootstrap/scss/variables";
+@import "variables";
 @import "bootstrap/scss/mixins/breakpoints";
 
 body {
@@ -69,7 +70,7 @@ body {
   transform: perspective(1000px) rotate3d(0, 1, 0, 140deg);
 }
 .window-button.written > button {
-  background-color: #5d4f8a;
+  background-color: $button-color-advent-calendar;
 }
 
 @keyframes topToBottom {
