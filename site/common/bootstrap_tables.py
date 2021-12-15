@@ -7,7 +7,6 @@ class BootstrapTableProcessor(Treeprocessor):
     """Finds all tables and adds the classes `table table-striped`"""
 
     def run(self, root):
-        print("before", datetime.now())
         tables = root.findall("table")
         for table in tables:
             table.set("class", "table table-striped")
