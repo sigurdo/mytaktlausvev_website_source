@@ -67,6 +67,7 @@ class EventAttendance(models.Model):
     class Meta:
         verbose_name = "hendingdeltaking"
         verbose_name_plural = "hendingdeltakingar"
+        ordering = ["person__pk"]
         constraints = [
             models.UniqueConstraint(
                 fields=["event", "person"], name="unique_event_attendance"

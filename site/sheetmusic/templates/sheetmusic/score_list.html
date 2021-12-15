@@ -15,7 +15,7 @@
                 </th>
 
                 <th class="col-form-label">
-                    Les
+                    Favorittstemme
                 </th>
 
                 <th class="col-form-label">
@@ -45,12 +45,12 @@
 
                     <td>
                         {% if score.favorite_part %}
-                        <a href="{% url 'sheetmusic:PartRead' score.slug score.favorite_part.slug %}"> Les </a>
+                        <a href="{% url 'sheetmusic:PartPdf' score.slug score.favorite_part.slug score.favorite_part.pdf_basefilename_slug %}"> Favorittstemme </a>
                         {% endif %}
                     </td>
 
                     <td>
-                        <time datetime="{{ score.timestamp | date:"c" }}">{{ score.timestamp | date }}</time>
+                        <time datetime="{{ score.submitted | date:"c" }}">{{ score.submitted | date }}</time>
                     </td>
 
                     {% if perms.sheetmusic.change_score %}

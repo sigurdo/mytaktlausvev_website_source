@@ -4,16 +4,49 @@
 
 {% block page %}
 <article>
-    <h1>
+    <h1 class="mb-4">
         {{ score.title }}
         {% if perms.sheetmusic.change_score %}
             <a href="{% url 'sheetmusic:ScoreUpdate' score.slug %}" class="fs-6"> rediger </a>
         {% endif %}
     </h1>
 
+    {% if score.content %}
+    <section>
+        {% load markdown %}    
+        {{ score.content | markdown }}
+    </section>
+    {% endif %}
+
+    {% if score.arrangement or score.originally_from or score.sound_file or score.sound_link %}
+    <section>
+        <dl>
+            {% if score.arrangement %}
+                <dt> Arrangement </dt>
+                <dd> {{ score.arrangement }} </dd>
+            {% endif %}
+
+            {% if score.originally_from %}
+                <dt> Opphaveleg ifrå </dt>
+                <dd> {{ score.originally_from }} </dd>
+            {% endif %}
+
+            {% if score.sound_file %}
+                <dt> Lydfil </dt>
+                <dd> <a href="{{ score.sound_file.url }}"> {{ score.sound_file.url }} </a> </dd>
+            {% endif %}
+
+            {% if score.sound_link %}
+                <dt> Lydlenkje </dt>
+                <dd> <a href="{{ score.sound_link }}"> {{ score.sound_link }} </a> </dd>
+            {% endif %}
+        </dl>
+    </section>
+    {% endif %}
+
     {% if parts_favorite %}
     <section>
-        <h2> Favorittstemmer </h2>
+        <h2 class="fs-3"> Favorittstemmer </h2>
 
         {% include "sheetmusic/includes/table_parts.html" with parts=parts_favorite only %}
     </section>
@@ -22,9 +55,23 @@
 
     {% if parts %}
     <section>
-        <h2> Alle stemmer </h2>
+        <h2 class="fs-3"> Alle stemmer </h2>
 
         {% include "sheetmusic/includes/table_parts.html" with parts=parts only %}
+    </section>
+    {% endif %}
+
+    {% if pdfs %}
+    <section>
+        <h2 class="fs-3"> Opphavelege PDFar </h2>
+
+        <ul class="list-unstyled">
+            {% for pdf in pdfs %}
+                <li>
+                    <a href="{{ pdf.file.url }}"> {{ pdf }} </a>
+                </li>
+            {% endfor %}
+        </ul>
     </section>
     {% endif %}
 

@@ -12,6 +12,8 @@ class ScoreFactory(DjangoModelFactory):
         model = Score
 
     title = "Score"
+    created_by = SubFactory(UserFactory)
+    modified_by = SubFactory(UserFactory)
 
 
 class PdfFactory(DjangoModelFactory):

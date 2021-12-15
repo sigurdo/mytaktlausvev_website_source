@@ -1,48 +1,96 @@
 """ Models for the sheetmusic-app """
 
 import os
-import shutil
 import multiprocessing
 import io
 
-import django
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.db.models import CharField, TextField, URLField, FileField
+from django.db.models.signals import pre_delete, pre_save
+from django.dispatch import receiver
 from django.conf import settings
 from django.utils.text import slugify
 from django.urls import reverse
 
-
 from upload_validator import FileTypeValidator
-from sheatless import processUploadedPdf
+from sheatless import predict_parts_in_pdf
 from PyPDF2 import PdfFileReader, PdfFileWriter
 from autoslug import AutoSlugField
 
+from common.models import ArticleMixin
 from web.settings import TESSDATA_DIR
 
 
-class Score(models.Model):
+class Score(ArticleMixin):
     """Model representing a score"""
 
-    title = models.CharField("tittel", max_length=255)
-    timestamp = models.DateTimeField("tidsmerke", auto_now_add=True)
+    # Override content to get a more suitable verbose_name
+    content = TextField(verbose_name="beskriving", blank=True)
     slug = AutoSlugField(
         verbose_name="lenkjenamn",
         populate_from="title",
         unique=True,
         editable=True,
     )
+    arrangement = CharField(verbose_name="arrangement", blank=True, max_length=255)
+    originally_from = CharField(
+        verbose_name="opphaveleg ifrå", blank=True, max_length=255
+    )
+    sound_file = FileField(
+        verbose_name="lydfil",
+        upload_to="sheetmusic/sound_files/",
+        blank=True,
+        default=None,
+        validators=[
+            FileTypeValidator(
+                allowed_types=[
+                    "audio/mpeg",  # aka mp3
+                    "audio/midi",
+                    "audio/ogg",
+                    "audio/mp4",
+                    "audio/flac",
+                ],
+                allowed_extensions=[
+                    ".mp3",
+                    ".midi",
+                    ".mid",  # another extension for midi
+                    ".ogg",
+                    ".mp4",
+                    ".m4a",  # another extension for mp4
+                    ".flac",
+                ],
+            )
+        ],
+    )
+    sound_link = URLField(verbose_name="lydlenkje", blank=True)
 
     class Meta:
-        ordering = ["-timestamp"]
+        ordering = ["title", "-submitted"]
         verbose_name = "note"
         verbose_name_plural = "notar"
 
-    def __str__(self):
-        return self.title
-
     def get_absolute_url(self):
         return reverse("sheetmusic:ScoreView", kwargs={"slug": self.slug})
+
+
+@receiver(pre_save, sender=Score, dispatch_uid="score_pre_save_receiver")
+def score_pre_save_receiver(sender, instance: Score, using, **kwargs):
+    """
+    Delete eventual old sound_file from filesystem
+    """
+    if not instance.pk:
+        return
+
+    try:
+        old_file = Score.objects.get(pk=instance.pk).sound_file
+    except Score.DoesNotExist:
+        return
+
+    new_file = instance.sound_file
+    if old_file and not old_file == new_file:
+        if os.path.isfile(old_file.path):
+            os.remove(old_file.path)
 
 
 class Pdf(models.Model):
@@ -83,29 +131,25 @@ class Pdf(models.Model):
     def get_absolute_url(self):
         return reverse("sheetmusic:ScoreView", kwargs={"slug": self.score.slug})
 
+    def num_of_pages(self):
+        pdf_reader = PdfFileReader(self.file.path)
+        return pdf_reader.getNumPages()
+
     def find_parts(self):
         self.processing = True
         self.save()
         try:
-            imagesDirPath = os.path.join(
-                django.conf.settings.MEDIA_ROOT, "sheetmusic", "images"
-            )
-            if not os.path.exists(imagesDirPath):
-                os.mkdir(imagesDirPath)
-            imagesDirPath = os.path.join(imagesDirPath, str(self.pk))
-            if not os.path.exists(imagesDirPath):
-                os.mkdir(imagesDirPath)
-
-            # PDF processing is done in a separate process to not affect responsetime
+            # PDF processing is done in a separate process to not affect response time
             # of other requests the server receives while it is processing
-            parts, instrumentsDefaultParts = multiprocessing.Pool().apply(
-                processUploadedPdf,
-                (self.file.path, imagesDirPath),
-                {
-                    "use_lstm": True,
-                    "tessdata_dir": TESSDATA_DIR,
-                },
-            )
+            with open(self.file.path, "rb") as pdf_file:
+                parts, instrumentsDefaultParts = multiprocessing.Pool().apply(
+                    predict_parts_in_pdf,
+                    [pdf_file.read()],
+                    {
+                        "use_lstm": True,
+                        "tessdata_dir": TESSDATA_DIR,
+                    },
+                )
             for part in parts:
                 part = Part(
                     name=part["name"],
@@ -119,25 +163,11 @@ class Pdf(models.Model):
             self.save()
 
 
-@django.dispatch.receiver(
-    django.db.models.signals.pre_delete, sender=Pdf, dispatch_uid="pdf_delete_images"
-)
+@receiver(pre_delete, sender=Pdf, dispatch_uid="pdf_delete_images")
 def pdf_pre_delete_receiver(sender, instance: Pdf, using, **kwargs):
-    # Deleting all images related to that pdf
-    if os.path.exists(
-        os.path.join(
-            django.conf.settings.MEDIA_ROOT, "sheetmusic", "images", str(instance.pk)
-        )
-    ):
-        shutil.rmtree(
-            os.path.join(
-                django.conf.settings.MEDIA_ROOT,
-                "sheetmusic",
-                "images",
-                str(instance.pk),
-            )
-        )
-    # Deleting actual pdf file
+    """
+    Delete pdf file from filesystem
+    """
     if os.path.isfile(instance.file.path):
         os.remove(instance.file.path)
 
