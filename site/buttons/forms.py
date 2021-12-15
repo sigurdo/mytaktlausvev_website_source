@@ -10,13 +10,13 @@ class ButtonsForm(forms.Form):
         widget=forms.ClearableFileInput(attrs={"multiple": True}), label="Motiv"
     )
     num_of_each = forms.IntegerField(
-        min_value=1, max_value=64, initial=1, label="Antal skiltmerke av kvart motiv"
+        min_value=1, max_value=64, initial=1, label="Antal buttons av kvart motiv"
     )
     button_diameter_mm = forms.IntegerField(
         min_value=10,
         max_value=100,
         initial=67,
-        label="Diameter for kvart skiltmerke i mm",
+        label="Diameter for kvar button i mm",
     )
 
     helper = FormHelper()

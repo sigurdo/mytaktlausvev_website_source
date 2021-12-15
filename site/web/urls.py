@@ -17,7 +17,6 @@ from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import include, path
-from django.views.generic import RedirectView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -30,12 +29,8 @@ urlpatterns = [
     path("kommentarar/", include("comments.urls")),
     path("kontakt/", include("contact.urls")),
     path("repertoar/", include("repertoire.urls")),
-    path("skiltmerke/", include("buttons.urls")),
+    path("buttons/", include("buttons.urls")),
     path("julekalender/", include("advent_calendar.urls")),
-    path(
-        "buttons/",
-        RedirectView.as_view(pattern_name="buttons:ButtonsView", permanent=True),
-    ),
     path("instrument/", include("instruments.urls")),
     path("", include("easter_eggs.urls")),
     path("", include("articles.urls")),
