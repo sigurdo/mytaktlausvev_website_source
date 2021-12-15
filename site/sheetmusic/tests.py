@@ -10,7 +10,7 @@ from common.test_utils import create_formset_post_data
 from web.settings import BASE_DIR
 
 from .factories import PartFactory, PdfFactory, ScoreFactory
-from .models import Score, Part
+from .models import Score, Pdf, Part
 from .forms import EditPartFormSet, EditPdfFormset
 
 
@@ -223,8 +223,15 @@ class PdfsUploadTestSuite(TestMixin, TestCase):
             "files": open(
                 os.path.join(BASE_DIR, "common", "test_data", "test.pdf"), "rb"
             ),
+            "part_prediction": "filename",
             "plz_wait": True,
         }
+
+    def upload_pdf(self):
+        self.client.post(
+            reverse("sheetmusic:PdfsUpload", args=[self.score.slug]),
+            self.test_data,
+        )
 
     def test_requires_login(self):
         self.assertLoginRequired(
@@ -249,16 +256,50 @@ class PdfsUploadTestSuite(TestMixin, TestCase):
             response, reverse("sheetmusic:ScoreView", args=[self.score.slug])
         )
 
-    def test_upload_pdf(self):
+    def test_upload_pdf_filename(self):
         user = SuperUserFactory()
         self.client.force_login(user)
-        self.client.post(
-            reverse("sheetmusic:PdfsUpload", args=[self.score.slug]),
-            self.test_data,
-        )
+        self.upload_pdf()
         self.assertEqual(self.score.pdfs.count(), 1)
         self.assertEqual(self.score.pdfs.last().parts.count(), 1)
-        self.assertEqual(self.score.pdfs.last().parts.last().name, "Tuba")
+        self.assertEqual(self.score.pdfs.last().parts.last().name, "test")
+        self.assertEqual(Part.objects.count(), 1)
+
+    def test_upload_pdf_sheatless(self):
+        user = SuperUserFactory()
+        self.client.force_login(user)
+        self.test_data["part_prediction"] = "sheatless"
+        self.upload_pdf()
+        self.assertEqual(Pdf.objects.count(), 1)
+        self.assertEqual(Part.objects.count(), 1)
+        self.assertEqual(Part.objects.last().name, "Tuba")
+
+    def test_upload_pdf_no_part_prediction(self):
+        user = SuperUserFactory()
+        self.client.force_login(user)
+        self.test_data["part_prediction"] = "none"
+        self.upload_pdf()
+        self.assertEqual(Pdf.objects.count(), 1)
+        self.assertEqual(Part.objects.count(), 0)
+
+    def test_upload_pdf_undefined_part_prediction(self):
+        user = SuperUserFactory()
+        self.client.force_login(user)
+        self.test_data["part_prediction"] = "qwertyuiopå"
+        self.upload_pdf()
+        self.assertEqual(Pdf.objects.count(), 0)
+        self.assertEqual(Part.objects.count(), 0)
+
+    def test_upload_multiple_pdfs(self):
+        user = SuperUserFactory()
+        self.client.force_login(user)
+        self.test_data["files"] = [
+            open(os.path.join(BASE_DIR, "common", "test_data", "test.pdf"), "rb")
+            for _ in range(3)
+        ]
+        self.upload_pdf()
+        self.assertEqual(Pdf.objects.count(), 3)
+        self.assertEqual(Part.objects.count(), 3)
 
 
 class ScoreCreateTestSuite(TestMixin, TestCase):
@@ -283,18 +324,6 @@ class ScoreCreateTestSuite(TestMixin, TestCase):
 class ScoreListTestSuite(TestMixin, TestCase):
     def test_requires_login(self):
         self.assertLoginRequired(reverse("sheetmusic:ScoreList"))
-
-
-class PartReadTestSuite(TestMixin, TestCase):
-    def setUp(self):
-        self.part = PartFactory()
-
-    def test_requires_login(self):
-        self.assertLoginRequired(
-            reverse(
-                "sheetmusic:PartRead", args=[self.part.pdf.score.slug, self.part.slug]
-            )
-        )
 
 
 class PartPdfTestSuite(TestMixin, TestCase):

@@ -11,5 +11,5 @@ ARG SHEETMUSIC="yes"
 RUN if [ $SHEETMUSIC = yes ]; then sh sheetmusic.sh; fi
 
 # Then setup the rest
-COPY site/requirements.txt .flake8 pyproject.toml /app/
+COPY site/requirements.txt /app/
 RUN pip install --no-cache -r requirements.txt

@@ -24,6 +24,8 @@ services:
       - DB_PORT=5432
     volumes:
       - ./site:/app/site:Z
+      - ./.flake8:/app/.flake8:Z
+      - ./pyproject.toml:/app/pyproject.toml:Z
     command: ./site/manage.py runserver 0.0.0.0:8000
     ports:
       - 8000:8000

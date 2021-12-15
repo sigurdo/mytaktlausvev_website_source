@@ -1,17 +1,16 @@
-<table class="table table-bordered">
-    <tr>
-        <th> Navn </th>
-        <th> Les </th>
-        <th> PDF </th>
-        <th> Favoritt </th>
-    </tr>
+<table class="table table-sm table-bordered">
+    <thead>
+        <tr>
+            <th> Navn </th>
+            <th> PDF </th>
+            <th> Favoritt </th>
+        </tr>
+    </thead>
+    <tbody>
     {% for part in parts %}
         <tr>
             <td>
                 {{ part.name }}
-            </td>
-            <td>
-                <a href="{% url 'sheetmusic:PartRead' part.pdf.score.slug part.slug %}"> Les </a>
             </td>
             <td>
                 <a href="{% url 'sheetmusic:PartPdf' part.pdf.score.slug part.slug part.pdf_basefilename_slug %}"> PDF </a>
@@ -35,4 +34,5 @@
             </td>
         </tr>
     {% endfor %}
+    </tbody>
 </table>

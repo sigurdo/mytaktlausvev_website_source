@@ -36,9 +36,7 @@ class UserCustom(AbstractUser):
             "du vil ha tilgang til lageret. Nummeret er det som byrjar med EM."
         ),
     )
-    avatar = models.ImageField(
-        "profilbilde", upload_to="profile/", null=True, blank=True
-    )
+    avatar = models.ImageField("profilbilde", upload_to="profile/", blank=True)
     instrument_group = models.ForeignKey(
         "instruments.InstrumentGroup",
         verbose_name="instrumentgruppe",
