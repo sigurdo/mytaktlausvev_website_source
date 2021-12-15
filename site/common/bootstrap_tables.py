@@ -1,4 +1,3 @@
-from datetime import datetime
 from markdown.treeprocessors import Treeprocessor
 from markdown.extensions import Extension
 

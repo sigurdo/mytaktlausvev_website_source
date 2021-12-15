@@ -7,6 +7,11 @@ body {
   font-weight: bold;
 }
 
+img {
+  max-width: 100%;
+  height: auto;
+}
+
 thead,
 thead tr {
   background-color: $primary;
