@@ -1,7 +1,7 @@
 asgiref~=3.2
 astroid~=2.3
 colorama~=0.4
-django~=3.0
+django~=4.0
 django-crispy-forms~=1.12
 crispy-bootstrap5~=0.3
 isort~=4.3
