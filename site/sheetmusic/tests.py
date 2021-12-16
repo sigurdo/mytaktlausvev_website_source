@@ -9,7 +9,7 @@ from common.mixins import TestMixin
 from common.test_utils import create_formset_post_data
 from web.settings import BASE_DIR
 
-from .factories import PartFactory, PdfFactory, ScoreFactory
+from .factories import FavoritePartFactory, PartFactory, PdfFactory, ScoreFactory
 from .models import Score, Pdf, Part
 from .forms import EditPartFormSet, EditPdfFormset
 
@@ -334,7 +334,7 @@ class PartPdfTestSuite(TestMixin, TestCase):
         self.assertLoginRequired(
             reverse(
                 "sheetmusic:PartPdf",
-                args=[self.part.pdf.score.slug, self.part.slug, "part"],
+                args=[self.part.pdf.score.slug, self.part.slug],
             )
         )
 
@@ -344,7 +344,32 @@ class PartPdfTestSuite(TestMixin, TestCase):
         response = self.client.get(
             reverse(
                 "sheetmusic:PartPdf",
-                args=[self.part.pdf.score.slug, self.part.slug, "part"],
+                args=[self.part.pdf.score.slug, self.part.slug],
+            )
+        )
+        self.assertEqual(response["content-type"], "application/pdf")
+
+
+class FavoritePartPdfTestSuite(TestMixin, TestCase):
+    def setUp(self):
+        self.favorite_part = FavoritePartFactory()
+        self.user = self.favorite_part.user
+        self.part = self.favorite_part.part
+
+    def test_requires_login(self):
+        self.assertLoginRequired(
+            reverse(
+                "sheetmusic:FavoritePartPdf",
+                args=[self.part.pdf.score.slug],
+            )
+        )
+
+    def test_returns_pdf(self):
+        self.client.force_login(self.user)
+        response = self.client.get(
+            reverse(
+                "sheetmusic:FavoritePartPdf",
+                args=[self.part.pdf.score.slug],
             )
         )
         self.assertEqual(response["content-type"], "application/pdf")

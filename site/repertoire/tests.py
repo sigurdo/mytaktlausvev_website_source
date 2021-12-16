@@ -1,3 +1,5 @@
+from io import BytesIO
+
 from django.test import TestCase
 from django.urls import reverse
 
@@ -26,7 +28,11 @@ class RepertoireTestSuite(TestMixin, TestCase):
 
     def test_pdf_file(self):
         pdf_file = self.repertoire.pdf_file(self.user)
-        self.assertEqual(type(pdf_file), bytes)
+        self.assertEqual(type(pdf_file), BytesIO)
+
+    def test_pdf_filename(self):
+        pdf_filename = self.repertoire.pdf_filename(self.user)
+        self.assertEqual(pdf_filename, f"marsjhefte-{self.user.slug}.pdf")
 
     def test_pdf_file_no_favorite(self):
         self.favorite.delete()

@@ -8,6 +8,7 @@ from typing import Any, Dict
 
 # Django packages
 import django
+from django.http.response import FileResponse
 from django.shortcuts import get_object_or_404
 from django.views.generic.base import TemplateResponseMixin
 from django.views.generic.detail import SingleObjectMixin
@@ -231,16 +232,6 @@ class ScoreList(LoginRequiredMixin, ListView):
     model = Score
     context_object_name = "scores"
 
-    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-        for score in context["scores"]:
-            relations = FavoritePart.objects.filter(
-                part__pdf__score=score, user=self.request.user
-            )
-            if len(relations) > 0:
-                score.favorite_part = relations[0].part
-        return context
-
 
 class PartPdf(LoginRequiredMixin, DetailView):
     model = Part
@@ -254,8 +245,23 @@ class PartPdf(LoginRequiredMixin, DetailView):
         return queryset.get(**{self.slug_field: slug}, pdf__score__slug=score_slug)
 
     def render_to_response(self, _):
-        content = self.get_object().pdf_file()
-        return HttpResponse(content=content, content_type=self.content_type)
+        pdf_stream = self.get_object().pdf_file()
+        filename = self.get_object().pdf_filename()
+        return FileResponse(
+            pdf_stream, content_type=self.content_type, filename=filename
+        )
+
+
+class FavoritePartPdf(LoginRequiredMixin, DetailView):
+    model = Score
+    content_type = "application/pdf"
+
+    def render_to_response(self, _):
+        pdf_stream = self.get_object().favorite_parts_pdf_file(self.request.user)
+        filename = self.get_object().favorite_parts_pdf_filename(self.request.user)
+        return FileResponse(
+            pdf_stream, content_type=self.content_type, filename=filename
+        )
 
 
 class FavoritePartUpdate(LoginRequiredMixin, View):

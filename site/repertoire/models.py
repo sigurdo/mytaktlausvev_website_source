@@ -8,6 +8,7 @@ from django.db.models import (
     CharField,
     Model,
 )
+from django.utils.text import slugify
 
 from PyPDF2 import PdfFileReader, PdfFileWriter
 from autoslug import AutoSlugField
@@ -41,18 +42,26 @@ class Repertoire(Model):
         parts = Part.objects.filter(
             favoring_users__user=user, pdf__score__repertoire_entries__repertoire=self
         )
-        if len(parts) < 1:
+        if not parts.exists():
             raise Exception(
                 f"Fann inga favorittstemmer for {user} i repertoaret {self}"
             )
         pdf_writer = PdfFileWriter()
-        for part in parts:
-            pdf = PdfFileReader(part.pdf.file.path)
-            for page_nr in range(part.from_page, part.to_page + 1):
-                pdf_writer.addPage(pdf.getPage(page_nr - 1))
+        for entry in self.entries.all():
+            try:
+                pdf_writer.appendPagesFromReader(
+                    PdfFileReader(entry.score.favorite_parts_pdf_file(user))
+                )
+            except:
+                pass
         output_stream = BytesIO()
         pdf_writer.write(output_stream)
-        return output_stream.getvalue()
+        output_stream.seek(0)
+        return output_stream
+
+    def pdf_filename(self, user):
+        """Returns a nice filename for the PDF that contains the users favorite parts for this repertoire."""
+        return slugify(f"{self.name} {user}") + ".pdf"
 
 
 class RepertoireEntry(Model):

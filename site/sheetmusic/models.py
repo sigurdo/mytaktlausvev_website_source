@@ -41,7 +41,7 @@ class Score(ArticleMixin):
         verbose_name="lydfil",
         upload_to="sheetmusic/sound_files/",
         blank=True,
-        default=None,
+        default="",
         validators=[
             FileTypeValidator(
                 allowed_types=[
@@ -72,6 +72,22 @@ class Score(ArticleMixin):
 
     def get_absolute_url(self):
         return reverse("sheetmusic:ScoreView", kwargs={"slug": self.slug})
+
+    def favorite_parts_pdf_file(self, user):
+        """Returns the PDF that contains user's favorite parts on this score"""
+        parts = Part.objects.filter(favoring_users__user=user, pdf__score=self)
+        if not parts.exists():
+            raise Exception(f"Fann inga favorittstemmer for {user} for nota {self}")
+        pdf_writer = PdfFileWriter()
+        for part in parts:
+            pdf_writer.appendPagesFromReader(PdfFileReader(part.pdf_file()))
+        output_stream = io.BytesIO()
+        pdf_writer.write(output_stream)
+        output_stream.seek(0)
+        return output_stream
+
+    def favorite_parts_pdf_filename(self, user):
+        return slugify(f"{self.title} {user}") + ".pdf"
 
 
 @receiver(pre_save, sender=Score, dispatch_uid="score_pre_save_receiver")
@@ -212,11 +228,12 @@ class Part(models.Model):
             pdf_writer.addPage(pdf.getPage(page_nr - 1))
         output_stream = io.BytesIO()
         pdf_writer.write(output_stream)
-        return output_stream.getvalue()
+        output_stream.seek(0)
+        return output_stream
 
-    def pdf_basefilename_slug(self):
-        """Returns a nice filename slug for the PDF that contains only this part"""
-        return slugify(f"{self.pdf.score.title} {self.name}")
+    def pdf_filename(self):
+        """Returns a nice filename for the PDF that contains only this part"""
+        return slugify(f"{self.pdf.score.title} {self.name}") + ".pdf"
 
     def is_favorite_for(self, user):
         return user.favorite_parts.filter(part=self).exists()
