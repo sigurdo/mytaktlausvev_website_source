@@ -27,16 +27,16 @@ class RepertoireTestSuite(TestMixin, TestCase):
         self.assertEqual(str(self.repertoire), "Marsjhefte")
 
     def test_pdf_file(self):
-        pdf_file = self.repertoire.pdf_file(self.user)
+        pdf_file = self.repertoire.favorite_parts_pdf_file(self.user)
         self.assertEqual(type(pdf_file), BytesIO)
 
     def test_pdf_filename(self):
-        pdf_filename = self.repertoire.pdf_filename(self.user)
+        pdf_filename = self.repertoire.favorite_parts_pdf_filename(self.user)
         self.assertEqual(pdf_filename, f"marsjhefte-{self.user.slug}.pdf")
 
     def test_pdf_file_no_favorite(self):
         self.favorite.delete()
-        self.assertRaises(Exception, self.repertoire.pdf_file, self.user)
+        self.assertRaises(Exception, self.repertoire.favorite_parts_pdf_file, self.user)
 
 
 class RepertoireEntryTestSuite(TestMixin, TestCase):

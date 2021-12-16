@@ -52,8 +52,8 @@ class RepertoirePdf(LoginRequiredMixin, DetailView):
     content_type = "application/pdf"
 
     def render_to_response(self, _):
-        pdf_stream = self.get_object().pdf_file(self.request.user)
-        filename = self.get_object().pdf_filename(self.request.user)
+        pdf_stream = self.get_object().favorite_parts_pdf_file(self.request.user)
+        filename = self.get_object().favorite_parts_pdf_filename(self.request.user)
         return FileResponse(
             pdf_stream,
             content_type=self.content_type,

@@ -37,7 +37,7 @@ class Repertoire(Model):
     def __str__(self):
         return self.name
 
-    def pdf_file(self, user):
+    def favorite_parts_pdf_file(self, user):
         """Returns a PDF contaning the user's favorite parts for the scores in this repertoire."""
         parts = Part.objects.filter(
             favoring_users__user=user, pdf__score__repertoire_entries__repertoire=self
@@ -59,7 +59,7 @@ class Repertoire(Model):
         output_stream.seek(0)
         return output_stream
 
-    def pdf_filename(self, user):
+    def favorite_parts_pdf_filename(self, user):
         """Returns a nice filename for the PDF that contains the users favorite parts for this repertoire."""
         return slugify(f"{self.name} {user}") + ".pdf"
 
