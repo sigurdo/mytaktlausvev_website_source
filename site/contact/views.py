@@ -1,5 +1,6 @@
 from smtplib import SMTPException
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMessage
+from django.conf import settings
 from django.views.generic import FormView
 from django.shortcuts import render
 from contact.forms import ContactForm
@@ -30,8 +31,12 @@ class ContactView(FormView):
 
     def _get_email_body(self, form):
         """Returns the email body with an intro message."""
-        intro = f"{form.cleaned_data['name']} sende ei melding gjennom kontaktskjemaet på nettsida."
+        intro = f"{form.cleaned_data['name']} ({form.cleaned_data['email']}) sende ei melding gjennom kontaktskjemaet på nettsida."
         return f"{intro}\n\n{form.cleaned_data['message']}"
+
+    def _get_from_mail(self, form):
+        """Returns the from mail, including the sender's name."""
+        return f'"{form.cleaned_data["name"]}" <{form.cleaned_data["email"]}>'
 
     def _get_to_mails(self, form):
         """
@@ -48,13 +53,16 @@ class ContactView(FormView):
 
     def form_valid(self, form):
         try:
-            send_mail(
+            EmailMessage(
                 self._get_email_subject(form),
                 self._get_email_body(form),
-                form.cleaned_data["email"],
+                settings.EMAIL_HOST_USER,
                 self._get_to_mails(form),
-                fail_silently=False,
-            )
+                headers={
+                    "From": self._get_from_mail(form),
+                    "Sender": settings.EMAIL_HOST_USER,
+                },
+            ).send(fail_silently=False)
         except SMTPException:
             form.add_error(None, "Sendinga av meldinga mislykkast. Prøv igjen seinare.")
             return self.form_invalid(form)
