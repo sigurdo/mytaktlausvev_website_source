@@ -20,10 +20,10 @@ class FileTypeValidator(object):
         content_type = magic.from_buffer(data.read(), mime=True)
         data.seek(0)
         if content_type not in self.allowed_types:
-            raise ValidationError(f"Filtype {content_type} ikkje lovleg")
+            raise ValidationError(f"{data.name}: Filtype {content_type} ikkje lovleg")
         if extension not in self.allowed_types[content_type]:
             raise ValidationError(
-                f"Filending {extension} ikkje lovleg for {content_type}"
+                f"{data.name}: Filending {extension} ikkje lovleg for {content_type}"
             )
 
     def __eq__(self, other):
