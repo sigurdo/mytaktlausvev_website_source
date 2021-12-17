@@ -1,17 +1,29 @@
 <div>
     {{ formset.management_form }}
 
-    {% for form in formset %}
     <ol class="list-unstyled">
-        <li class="card shadow d-flex justify-content-center align-items-center m-3 h-96">
-            {% include "pictures/includes/image.html" with image=form.instance only %}
+        {% for form in formset %}
+        <li class="card shadow my-4">
+            <div class="card-body d-flex justify-content-center align-items-center m-0 p-0 h-96">
+                {% include "pictures/includes/image.html" with image=form.instance only %}
+            </div>
+
+            <div class="card-footer p-0">
+                <input
+                    type="text"
+                    class="bg-transparent border-0 text-white p-3 fs-5 w-100"
+                    placeholder="Skriv ein beskrivelse her..."
+                    name="{{ formset.prefix }}-{{ forloop.counter0 }}-description"
+                    value="{{ form.instance.description }}"
+                />
+            </div>
 
             <div class="d-none">
-                {% for field in form %}
-                    {{ field }}
-                {% endfor %}
+                {{ form.image }}
+                {{ form.gallery }}
+                {{ form.id }}
             </div>
         </li>
+        {% endfor %}
     </ol>
-    {% endfor %}
 </div>
