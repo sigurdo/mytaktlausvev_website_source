@@ -1,5 +1,5 @@
 from smtplib import SMTPException
-from django.core.mail import send_mail, EmailMessage
+from django.core.mail import EmailMessage
 from django.conf import settings
 from django.views.generic import FormView
 from django.shortcuts import render
