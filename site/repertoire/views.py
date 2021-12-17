@@ -57,6 +57,5 @@ class RepertoirePdf(LoginRequiredMixin, DetailView):
         return FileResponse(
             pdf_stream,
             content_type=self.content_type,
-            as_attachment=True,
             filename=filename,
         )
