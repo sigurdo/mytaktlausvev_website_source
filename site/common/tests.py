@@ -1,5 +1,4 @@
 from django.test import TestCase
-from django.core.files.uploadedfile import SimpleUploadedFile
 from django.forms import ValidationError
 from .templatetags.utils import verbose_name
 from .validators import FileTypeValidator
