@@ -5,23 +5,41 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from web.settings import BASE_DIR
 
 
-def test_image_gif_2x2():
-    """Returns a temporary image file (2x2 black pixels) that can be used in tests."""
-    gif = b"GIF89a\x02\x00\x02\x00p\x00\x00,\x00\x00\x00\x00\x02\x00\x02\x00\x81\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x02\x84Q\x00;"
+def test_txt_file(name="test.txt", content="test", content_type="text/plain"):
     return SimpleUploadedFile(
-        name="test_image.gif",
-        content=gif,
-        content_type="image/gif",
+        name=name,
+        content=bytes(content, "utf-8"),
+        content_type=content_type,
     )
 
 
-def test_pdf():
+def test_image(name="test_image.gif", content_type="image/gif"):
+    """Returns a temporary image file that can be used in tests."""
+    gif = b"GIF89a\x01\x00\x01\x00\x00\xff\x00,\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02\x00;"
+    return SimpleUploadedFile(
+        name=name,
+        content=gif,
+        content_type=content_type,
+    )
+
+
+def test_image_gif_2x2(name="test_image.gif", content_type="image/gif"):
+    """Returns a temporary image file (2x2 black pixels) that can be used in tests."""
+    gif = b"GIF89a\x02\x00\x02\x00p\x00\x00,\x00\x00\x00\x00\x02\x00\x02\x00\x81\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x02\x84Q\x00;"
+    return SimpleUploadedFile(
+        name=name,
+        content=gif,
+        content_type=content_type,
+    )
+
+
+def test_pdf(name="test.pdf", content_type="application/pdf"):
     """Returns a temporary pdf file with 1 page and the text Tuba written on it that can be used in tests."""
     pdf = open(os.path.join(BASE_DIR, "common", "test_data", "test.pdf"), "rb").read()
     return SimpleUploadedFile(
-        name="test.pdf",
+        name=name,
         content=pdf,
-        content_type="application/pdf",
+        content_type=content_type,
     )
 
 
