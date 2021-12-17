@@ -23,7 +23,6 @@ class ContactView(FormView):
         """
         Returns the email subject in the form
         "[<category_name>] <subject>".
-        ...
         """
         category_name = form.cleaned_data["category"].name
         subject = form.cleaned_data["subject"]
@@ -38,26 +37,13 @@ class ContactView(FormView):
         """Returns the from mail, including the sender's name."""
         return f'"{form.cleaned_data["name"]}" <{form.cleaned_data["email"]}>'
 
-    def _get_to_mails(self, form):
-        """
-        Returns the emails to send the message to.
-        Always includes the category's email.
-        Includes the sender's email if `send_to_self` is true.
-        """
-        mail_self = form.cleaned_data["email"]
-        mail_category = form.cleaned_data["category"].email
-
-        if form.cleaned_data["send_to_self"]:
-            return [mail_category, mail_self]
-        return [mail_category]
-
     def form_valid(self, form):
         try:
             EmailMessage(
                 self._get_email_subject(form),
                 self._get_email_body(form),
                 settings.EMAIL_HOST_USER,
-                self._get_to_mails(form),
+                [form.cleaned_data["category"].email],
                 headers={
                     "From": self._get_from_mail(form),
                     "Sender": settings.EMAIL_HOST_USER,
@@ -67,8 +53,4 @@ class ContactView(FormView):
             form.add_error(None, "Sendinga av meldinga mislykkast. Prøv igjen seinare.")
             return self.form_invalid(form)
 
-        return render(
-            self.request,
-            self.template_success_name,
-            {"copy_sent_to_self": form.cleaned_data["send_to_self"]},
-        )
+        return render(self.request, self.template_success_name)

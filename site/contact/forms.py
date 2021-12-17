@@ -23,6 +23,3 @@ class ContactForm(forms.Form):
         required=True,
     )
     message = forms.CharField(label="Melding", max_length=5000, widget=forms.Textarea)
-    send_to_self = forms.BooleanField(
-        label="Send ein kopi til deg sjølv", required=False
-    )
