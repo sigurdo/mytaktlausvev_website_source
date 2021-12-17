@@ -45,7 +45,7 @@
 
                     <td>
                         {% load has_favorite_part %}
-                        {% has_favorite_part score as has_favorite_part %}
+                        {% has_favorite_part user score as has_favorite_part %}
                         {% if has_favorite_part %}
                             <a href="{% url "sheetmusic:FavoritePartPdf" score.slug %}"> Favorittstemme </a>
                         {% endif %}

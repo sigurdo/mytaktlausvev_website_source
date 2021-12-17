@@ -17,7 +17,6 @@ urlpatterns = [
         "<slug:slug>/rediger/pdfar/ny/", views.PdfsUpload.as_view(), name="PdfsUpload"
     ),
     path("<slug:slug>/slett/", views.ScoreDelete.as_view(), name="ScoreDelete"),
-    # filename is not used for anything, it is just the name the pdf will be saved as at the users machine
     path(
         "<slug:slug>/favorittstemme/",
         views.FavoritePartPdf.as_view(),
