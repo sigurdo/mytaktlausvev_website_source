@@ -11,8 +11,6 @@ class JacketList(LoginRequiredMixin, ListView):
     context_object_name = "jackets"
 
 
-
-
 class JacketsUpdate(PermissionRequiredMixin, FormView):
     form_class = JacketsUpdateFormset
     template_name = "common/form.html"
@@ -24,18 +22,15 @@ class JacketsUpdate(PermissionRequiredMixin, FormView):
 
     def get_success_url(self):
         return reverse("uniforms:JacketList")
-    
+
     def get_context_data(self, **kwargs):
         kwargs["form_title"] = "Rediger jakkeoversikt"
         return super().get_context_data(**kwargs)
-    
+
     def form_valid(self, form):
         # We must explicitly save form since this a FormView and not an UpdateView
         form.save()
         return super().form_valid(form)
-    
+
     def form_invalid(self, form):
         return super().form_invalid(form)
-
-
-
