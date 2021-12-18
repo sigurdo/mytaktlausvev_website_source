@@ -1,4 +1,4 @@
-from django.http.response import HttpResponse
+from django.http import FileResponse
 from django.views.generic import ListView
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
@@ -52,5 +52,10 @@ class RepertoirePdf(LoginRequiredMixin, DetailView):
     content_type = "application/pdf"
 
     def render_to_response(self, _):
-        content = self.get_object().pdf_file(self.request.user)
-        return HttpResponse(content=content, content_type=self.content_type)
+        pdf_stream = self.get_object().favorite_parts_pdf_file(self.request.user)
+        filename = self.get_object().favorite_parts_pdf_filename(self.request.user)
+        return FileResponse(
+            pdf_stream,
+            content_type=self.content_type,
+            filename=filename,
+        )
