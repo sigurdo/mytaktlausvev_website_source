@@ -1,4 +1,5 @@
 from django.test import TestCase
+from django.conf import settings
 from django.core import mail
 from django.db import IntegrityError
 from django.urls import reverse
@@ -38,33 +39,39 @@ class ContactViewTestCase(TestCase):
             "message": "Message test.",
         }
 
-    def send_test_mail(self, to_self=False):
-        self.client.post(
-            reverse("contact:ContactView"), {**self.mail_data, "send_to_self": to_self}
-        )
+    def send_test_mail(self):
+        self.client.post(reverse("contact:ContactView"), self.mail_data)
         self.assertEqual(len(mail.outbox), 1)
         return mail.outbox[0]
 
-    def test_correct_from_mail(self):
-        """Should have the correct from mail."""
+    def test_from_mail(self):
+        """Should be the address the server sends the mail from."""
         email = self.send_test_mail()
-        self.assertEqual(email.from_email, self.mail_data["email"])
+        self.assertEqual(email.from_email, settings.EMAIL_HOST_USER)
 
-    def test_to_mail_only_category_mail_if_not_send_to_self(self):
-        """To mail should only be the category mail if `send_to_self` is false."""
+    def test_from_header(self):
+        """Should include sender's name and email."""
+        email = self.send_test_mail()
+        self.assertEqual(
+            email.extra_headers["From"],
+            f'"{self.mail_data["name"]}" <{self.mail_data["email"]}>',
+        )
+
+    def test_sender_header(self):
+        """Should be the address the server sends the mail from."""
+        email = self.send_test_mail()
+        self.assertEqual(email.extra_headers["Sender"], settings.EMAIL_HOST_USER)
+
+    def test_to_mail_is_category_mail(self):
+        """To mail should be the category mail."""
         email = self.send_test_mail()
         self.assertEqual(email.to, [self.category.email])
 
-    def test_to_mail_includes_self_mail_if_send_to_self(self):
-        """To mail should include the submitted mail if `send_to_self` is true."""
-        email = self.send_test_mail(to_self=True)
-        self.assertIn(self.category.email, email.to)
-        self.assertIn(self.mail_data["email"], email.to)
-
-    def test_body_includes_name_and_message(self):
-        """Email body should include the name and the message."""
+    def test_body_includes_name_mail_and_message(self):
+        """Email body should include the name, the mail, and the message."""
         email = self.send_test_mail()
         self.assertIn(self.mail_data["name"], email.body)
+        self.assertIn(self.mail_data["email"], email.body)
         self.assertIn(self.mail_data["message"], email.body)
 
     def test_subject_includes_subject_and_category(self):

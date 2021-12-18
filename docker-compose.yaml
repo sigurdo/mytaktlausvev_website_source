@@ -12,16 +12,6 @@ services:
 
   django:
     build: .
-    environment:
-      - DEBUG=1
-      - SECRET_KEY=)c9b-kx9169s*!v1i^era6)ez3^k*io3c9#d+(*gf52-i0wh_0
-      - ALLOWED_HOSTS=.localhost 127.0.0.1 [::1] 0.0.0.0
-      - DB_ENGINE=django.db.backends.postgresql_psycopg2
-      - DB_NAME=taktlaus_db
-      - DB_USER=taktlaus
-      - DB_PASSWORD=taktlaus
-      - DB_HOST=db
-      - DB_PORT=5432
     volumes:
       - ./site:/app/site:Z
       - ./.flake8:/app/.flake8:Z
