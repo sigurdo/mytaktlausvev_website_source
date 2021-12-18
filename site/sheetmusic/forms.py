@@ -7,7 +7,7 @@ from django.forms import modelformset_factory, ChoiceField
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 
-from .models import Score, Pdf, Part
+from .models import Score, Pdf, Part, pdf_file_validators
 
 
 class ScoreForm(forms.ModelForm):
@@ -67,7 +67,7 @@ class UploadPdfForm(forms.Form):
     files = forms.FileField(
         widget=forms.ClearableFileInput(attrs={"multiple": True}),
         label="Filer",
-        validators=Pdf.file.field._validators,
+        validators=pdf_file_validators,
     )
     part_prediction = ChoiceField(
         choices=[

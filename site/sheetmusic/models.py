@@ -84,6 +84,18 @@ def score_pre_save_receiver(sender, instance: Score, using, **kwargs):
             os.remove(old_file.path)
 
 
+pdf_file_validators = [
+    FileTypeValidator(
+        {
+            "application/pdf": [".pdf"],
+            "application/x-pdf": [".pdf"],
+            "application/x-bzpdf": [".pdf"],
+            "application/x-gzpdf": [".pdf"],
+        }
+    ),
+]
+
+
 class Pdf(models.Model):
     """Model representing an uploaded pdf"""
 
@@ -94,16 +106,7 @@ class Pdf(models.Model):
         "fil",
         upload_to="sheetmusic/original_pdfs/",
         default=None,
-        validators=[
-            FileTypeValidator(
-                {
-                    "application/pdf": [".pdf"],
-                    "application/x-pdf": [".pdf"],
-                    "application/x-bzpdf": [".pdf"],
-                    "application/x-gzpdf": [".pdf"],
-                }
-            )
-        ],
+        validators=pdf_file_validators,
     )
     processing = models.BooleanField(
         "prosessering pågår", default=False, editable=False
