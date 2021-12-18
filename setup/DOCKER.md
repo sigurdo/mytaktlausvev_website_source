@@ -9,9 +9,6 @@ The Docker setup needs [Docker](https://docs.docker.com/get-docker/) and [docker
 The initial dev database, with a superuser included, can be built with the [`init.sh`](./init.sh) script.
 The superuser will have the username "leiar" and the password "password". Users "aspirant", "medlem", and "pensjonist" are also created, with the password "password".
 
-It sometimes happens that the setup script fails, warning that the database is not connected. This is a bug in the Docker setup that should be fixed, but can be easily circumvented by rerunning the script.
-The bug is caused by a race condition between the two Docker images.
-
 ## Run the server
 
 To run the server, build the project with `docker-compose build` and run with `docker-compose up`. Stop and remove Docker containers with `docker-compose down`.
