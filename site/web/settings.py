@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     "sheetmusic",
     "repertoire",
     "instruments",
+    "uniforms",
     "advent_calendar",
     "easter_eggs",
     "pwa",

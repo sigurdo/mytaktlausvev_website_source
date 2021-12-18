@@ -32,6 +32,7 @@ urlpatterns = [
     path("buttons/", include("buttons.urls")),
     path("julekalender/", include("advent_calendar.urls")),
     path("instrument/", include("instruments.urls")),
+    path("uniformer/", include("uniforms.urls")),
     path("", include("easter_eggs.urls")),
     path("", include("articles.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
