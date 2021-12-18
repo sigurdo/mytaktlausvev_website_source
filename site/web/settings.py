@@ -79,6 +79,12 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
+# CSRF_TRUSTED_ORIGINS should be a string of space-separated trusted origins
+# e.g. CSRF_TRUSTED_ORIGINS=https://*.example.com
+CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS", "http://localhost").split(
+    " "
+)
+
 ROOT_URLCONF = "web.urls"
 
 TEMPLATES = [
