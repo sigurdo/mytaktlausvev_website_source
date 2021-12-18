@@ -9,10 +9,10 @@ from django.conf import settings
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import CharField, FileField, TextField, URLField
+from django.utils.text import slugify
 from django.db.models.signals import pre_delete, pre_save
 from django.dispatch import receiver
 from django.urls import reverse
-from django.utils.text import slugify
 from PyPDF2 import PdfFileReader, PdfFileWriter
 from sheatless import predict_parts_in_pdf
 
@@ -23,7 +23,7 @@ from web.settings import TESSDATA_DIR
 
 class Score(ArticleMixin):
     """Model representing a score"""
-
+    
     # Override content to get a more suitable verbose_name
     content = TextField(verbose_name="beskriving", blank=True)
     slug = AutoSlugField(
