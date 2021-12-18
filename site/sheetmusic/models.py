@@ -13,7 +13,7 @@ from django.conf import settings
 from django.utils.text import slugify
 from django.urls import reverse
 
-from upload_validator import FileTypeValidator
+from common.validators import FileTypeValidator
 from sheatless import predict_parts_in_pdf
 from PyPDF2 import PdfFileReader, PdfFileWriter
 from autoslug import AutoSlugField
@@ -44,22 +44,13 @@ class Score(ArticleMixin):
         default="",
         validators=[
             FileTypeValidator(
-                allowed_types=[
-                    "audio/mpeg",  # aka mp3
-                    "audio/midi",
-                    "audio/ogg",
-                    "audio/mp4",
-                    "audio/flac",
-                ],
-                allowed_extensions=[
-                    ".mp3",
-                    ".midi",
-                    ".mid",  # another extension for midi
-                    ".ogg",
-                    ".mp4",
-                    ".m4a",  # another extension for mp4
-                    ".flac",
-                ],
+                {
+                    "audio/mpeg": [".mp3"],
+                    "audio/midi": [".midi", ".mid"],
+                    "audio/ogg": [".ogg"],
+                    "audio/mp4": [".mp4", ".m4a"],
+                    "audio/flac": [".flac"],
+                },
             )
         ],
     )
@@ -121,13 +112,12 @@ class Pdf(models.Model):
         default=None,
         validators=[
             FileTypeValidator(
-                allowed_types=[
-                    "application/pdf",
-                    "application/x-pdf",
-                    "application/x-bzpdf",
-                    "application/x-gzpdf",
-                ],
-                allowed_extensions=[".pdf", ".PDF"],
+                {
+                    "application/pdf": [".pdf"],
+                    "application/x-pdf": [".pdf"],
+                    "application/x-bzpdf": [".pdf"],
+                    "application/x-gzpdf": [".pdf"],
+                }
             )
         ],
     )

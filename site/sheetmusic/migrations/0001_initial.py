@@ -5,7 +5,6 @@ from django.conf import settings
 import django.core.validators
 from django.db import migrations, models
 import django.db.models.deletion
-import upload_validator
 
 
 class Migration(migrations.Migration):
@@ -35,7 +34,7 @@ class Migration(migrations.Migration):
             name='Pdf',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('file', models.FileField(default=None, upload_to='sheetmusic/original_pdfs/', validators=[upload_validator.FileTypeValidator(allowed_extensions=['.pdf', '.PDF'], allowed_types=['application/pdf', 'application/x-pdf', 'application/x-bzpdf', 'application/x-gzpdf'])], verbose_name='fil')),
+                ('file', models.FileField(default=None, upload_to='sheetmusic/original_pdfs/', validators=[], verbose_name='fil')),
                 ('processing', models.BooleanField(default=False, editable=False, verbose_name='prosessering pågår')),
                 ('timestamp', models.DateTimeField(auto_now_add=True, verbose_name='tidsmerke')),
                 ('score', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='pdfs', to='sheetmusic.score', verbose_name='note')),

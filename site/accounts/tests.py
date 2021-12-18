@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.utils.text import slugify
 from django.templatetags.static import static
 from common.mixins import TestMixin
-from common.utils import test_image
+from common.test_utils import test_image
 from .models import UserCustom
 from .factories import UserFactory
 
