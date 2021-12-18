@@ -26,7 +26,8 @@ services:
       - ./site:/app/site:Z
       - ./.flake8:/app/.flake8:Z
       - ./pyproject.toml:/app/pyproject.toml:Z
-    command: ./site/manage.py runserver 0.0.0.0:8000
+      - ./setup/wait-for-it.sh:/app/wait-for-it.sh:Z
+    command: sh -c './wait-for-it.sh db:5432 -- ./site/manage.py runserver 0.0.0.0:8000'
     ports:
       - 8000:8000
     depends_on:
