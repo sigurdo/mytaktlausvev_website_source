@@ -1,19 +1,18 @@
 from io import BytesIO
 
+from autoslug import AutoSlugField
 from django.db.models import (
-    UniqueConstraint,
-    ForeignKey,
     CASCADE,
-    DateTimeField,
     CharField,
+    DateTimeField,
+    ForeignKey,
     Model,
+    UniqueConstraint,
 )
 from django.utils.text import slugify
-
 from PyPDF2 import PdfFileReader, PdfFileWriter
-from autoslug import AutoSlugField
 
-from sheetmusic.models import Score, Part
+from sheetmusic.models import Part, Score
 
 
 class Repertoire(Model):

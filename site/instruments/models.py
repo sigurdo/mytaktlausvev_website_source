@@ -1,13 +1,13 @@
-from django.db.models import (
-    CharField,
-    TextField,
-    TextChoices,
-    Model,
-    ForeignKey,
-    SET_NULL,
-    RESTRICT,
-)
 from django.conf import settings
+from django.db.models import (
+    RESTRICT,
+    SET_NULL,
+    CharField,
+    ForeignKey,
+    Model,
+    TextChoices,
+    TextField,
+)
 
 
 class InstrumentGroup(Model):

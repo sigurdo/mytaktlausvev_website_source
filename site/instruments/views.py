@@ -1,9 +1,9 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.views.generic import ListView, FormView
 from django.urls import reverse
+from django.views.generic import FormView, ListView
 
-from .models import Instrument
 from .forms import InstrumentUpdateFormset
+from .models import Instrument
 
 
 class InstrumentList(LoginRequiredMixin, ListView):

@@ -1,8 +1,8 @@
-from django.db import models
-from django.contrib.auth.models import AbstractUser, UserManager
-from django.urls import reverse
-from django.templatetags.static import static
 from autoslug import AutoSlugField
+from django.contrib.auth.models import AbstractUser, UserManager
+from django.db import models
+from django.templatetags.static import static
+from django.urls import reverse
 
 
 class UserManagerCustom(UserManager):

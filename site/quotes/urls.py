@@ -1,5 +1,6 @@
 """URLs for the 'quotes'-app"""
 from django.urls import path
+
 from quotes import views
 
 app_name = "quotes"

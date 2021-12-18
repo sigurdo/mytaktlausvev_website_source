@@ -1,8 +1,10 @@
 from smtplib import SMTPException
-from django.core.mail import EmailMessage
+
 from django.conf import settings
-from django.views.generic import FormView
+from django.core.mail import EmailMessage
 from django.shortcuts import render
+from django.views.generic import FormView
+
 from contact.forms import ContactForm
 
 

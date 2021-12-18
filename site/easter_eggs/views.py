@@ -1,5 +1,5 @@
-from django.views.generic import FormView
 from django.http import HttpResponse
+from django.views.generic import FormView
 
 from .forms import BrewForm
 

@@ -1,15 +1,18 @@
-from http import HTTPStatus
 from datetime import datetime
+from http import HTTPStatus
+
+from django.db import IntegrityError
 from django.http.response import Http404
 from django.test import TestCase
-from django.db import IntegrityError
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.text import slugify
-from common.mixins import TestMixin
+
 from accounts.factories import SuperUserFactory, UserFactory
-from events.models import Event, Attendance, EventAttendance
+from common.mixins import TestMixin
+from events.models import Attendance, Event, EventAttendance
 from events.views import get_event_attendance_or_404, get_event_or_404
+
 from .factories import EventAttendanceFactory, EventFactory
 
 

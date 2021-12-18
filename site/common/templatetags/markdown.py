@@ -1,7 +1,8 @@
+import bleach
+import markdown as md
 from django import template
 from django.utils.safestring import mark_safe
-import markdown as md
-import bleach
+
 from common.markdown_extensions import (
     BootstrapTableExtension,
     StrikethroughExtension,

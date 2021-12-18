@@ -1,5 +1,5 @@
-from django.test import TestCase
 from django.db import IntegrityError
+from django.test import TestCase
 from django.urls import reverse
 
 from accounts.factories import SuperUserFactory, UserFactory
@@ -7,12 +7,12 @@ from common.mixins import TestMixin
 from common.test_utils import create_formset_post_data
 
 from .factories import (
+    InstrumentFactory,
     InstrumentGroupFactory,
     InstrumentLocationFactory,
-    InstrumentFactory,
 )
-from .models import Instrument
 from .forms import InstrumentUpdateFormset
+from .models import Instrument
 
 
 class InstrumentGroupTestSuite(TestMixin, TestCase):

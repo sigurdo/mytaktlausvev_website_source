@@ -1,17 +1,19 @@
 from datetime import datetime, timedelta
+
 from django.core.management.base import BaseCommand
 from django.utils.timezone import make_aware
+
 from accounts.models import UserCustom
 from articles.factories import ArticleFactory
 from contact.factories import ContactCategoryFactory
 from events.factories import EventAttendanceFactory, EventFactory
 from events.models import Attendance
-from instruments.models import Instrument
 from instruments.factories import (
+    InstrumentFactory,
     InstrumentGroupFactory,
     InstrumentLocationFactory,
-    InstrumentFactory,
 )
+from instruments.models import Instrument
 
 
 class Command(BaseCommand):

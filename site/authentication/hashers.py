@@ -2,11 +2,12 @@
 # License terms can be found at https://djangosnippets.org/about/tos/
 # Snippet has been slightly modified.
 
+import hashlib
+from collections import OrderedDict
+
 from django.contrib.auth.hashers import BasePasswordHasher
 from django.utils.crypto import get_random_string
-from collections import OrderedDict
 from django.utils.encoding import force_bytes
-import hashlib
 
 
 class DrupalPasswordHasherInvalidHashException(Exception):

@@ -1,9 +1,10 @@
+from django.contrib.auth.mixins import PermissionRequiredMixin, UserPassesTestMixin
 from django.http.response import Http404
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
-from django.contrib.auth.mixins import PermissionRequiredMixin, UserPassesTestMixin
-from .models import Article
+
 from .forms import ArticleForm
+from .models import Article
 
 
 class SlugPathMixin:

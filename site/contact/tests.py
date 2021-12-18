@@ -1,8 +1,9 @@
-from django.test import TestCase
 from django.conf import settings
 from django.core import mail
 from django.db import IntegrityError
+from django.test import TestCase
 from django.urls import reverse
+
 from accounts.factories import UserFactory
 from contact.factories import ContactCategoryFactory
 

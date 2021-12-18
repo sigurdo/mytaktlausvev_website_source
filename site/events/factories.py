@@ -1,7 +1,10 @@
 from datetime import datetime
-from django.utils.timezone import make_aware
+
 import factory
+from django.utils.timezone import make_aware
+
 from accounts.factories import UserFactory
+
 from .models import Attendance, Event, EventAttendance
 
 

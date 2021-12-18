@@ -1,6 +1,8 @@
 import factory
 from django.contrib.contenttypes.models import ContentType
+
 from accounts.factories import UserFactory
+
 from .models import Comment
 
 

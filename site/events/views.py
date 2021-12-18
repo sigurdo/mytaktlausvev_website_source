@@ -9,8 +9,9 @@ from django.views.generic import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.views.generic.list import ListView
 from django_ical.views import ICalFeed
-from .models import Attendance, Event, EventAttendance
+
 from .forms import EventAttendanceForm, EventForm
+from .models import Attendance, Event, EventAttendance
 
 
 def get_event_or_404(year, slug):

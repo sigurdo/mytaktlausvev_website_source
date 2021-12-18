@@ -1,7 +1,8 @@
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from .models import Comment
+from django.views.generic.edit import CreateView, DeleteView, UpdateView
+
 from .forms import CommentCreateForm, CommentUpdateForm
+from .models import Comment
 
 
 class CommentCreate(LoginRequiredMixin, CreateView):

@@ -1,13 +1,11 @@
 """Forms for the 'sheetmusic'-app"""
-from django import forms
-from django.core.exceptions import ValidationError
-from django.forms import FileField
-from django.forms import modelformset_factory, ChoiceField
-
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
+from django import forms
+from django.core.exceptions import ValidationError
+from django.forms import ChoiceField, FileField, modelformset_factory
 
-from .models import Score, Pdf, Part, pdf_file_validators
+from .models import Part, Pdf, Score, pdf_file_validators
 
 
 class ScoreForm(forms.ModelForm):

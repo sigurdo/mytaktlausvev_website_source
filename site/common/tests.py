@@ -1,13 +1,15 @@
-from django.test import TestCase
-from django.forms import ValidationError
-from .templatetags.utils import verbose_name
-from .validators import FileTypeValidator
-from .test_utils import test_txt_file, test_pdf, test_image
-from articles.models import Article
-from articles.factories import ArticleFactory
-from comments.models import Comment
-from comments.factories import CommentFactory
 import magic
+from django.forms import ValidationError
+from django.test import TestCase
+
+from articles.factories import ArticleFactory
+from articles.models import Article
+from comments.factories import CommentFactory
+from comments.models import Comment
+
+from .templatetags.utils import verbose_name
+from .test_utils import test_image, test_pdf, test_txt_file
+from .validators import FileTypeValidator
 
 
 class VerboseNameTest(TestCase):

@@ -1,11 +1,11 @@
 from django.urls import path
 
 from .views import (
-    RepertoireList,
     RepertoireCreate,
-    RepertoireUpdate,
     RepertoireDelete,
+    RepertoireList,
     RepertoirePdf,
+    RepertoireUpdate,
 )
 
 app_name = "repertoire"

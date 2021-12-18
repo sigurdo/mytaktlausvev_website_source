@@ -1,8 +1,8 @@
 from typing import Any, Dict
 
-from django.views.generic.edit import UpdateView
 from django import http
 from django.core import exceptions
+from django.views.generic.edit import UpdateView
 
 
 class FormAndFormsetUpdateView(UpdateView):

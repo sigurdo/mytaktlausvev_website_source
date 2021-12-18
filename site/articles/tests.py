@@ -1,14 +1,17 @@
 from http import HTTPStatus
+
 from django.http.response import Http404
 from django.test import TestCase
 from django.urls import reverse
 from django.utils.text import slugify
 from django.views.generic.detail import SingleObjectMixin
-from accounts.factories import UserFactory, SuperUserFactory
+
+from accounts.factories import SuperUserFactory, UserFactory
 from articles.views import SlugPathMixin
 from common.mixins import TestMixin
-from .models import Article
+
 from .factories import ArticleFactory
+from .models import Article
 
 
 class ArticleTestCase(TestCase):
