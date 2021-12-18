@@ -1,11 +1,11 @@
-from http import HTTPStatus
 import shutil
 import tempfile
+from http import HTTPStatus
 
 from django.test import TestCase, override_settings
 from django.urls import reverse
-from accounts.factories import UserFactory
 
+from accounts.factories import UserFactory
 
 MEDIA_ROOT = tempfile.mkdtemp()
 

@@ -1,5 +1,7 @@
 import factory
+
 from accounts.factories import UserFactory
+
 from .models import Article
 
 

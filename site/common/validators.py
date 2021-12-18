@@ -1,9 +1,8 @@
 import os
 
-from django.utils.deconstruct import deconstructible
-from django.forms import ValidationError
-
 import magic
+from django.forms import ValidationError
+from django.utils.deconstruct import deconstructible
 
 
 @deconstructible

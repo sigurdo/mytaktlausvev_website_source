@@ -1,6 +1,6 @@
-from markdown.treeprocessors import Treeprocessor
 from markdown.extensions import Extension
 from markdown.inlinepatterns import SimpleTagPattern
+from markdown.treeprocessors import Treeprocessor
 
 
 class BootstrapTableProcessor(Treeprocessor):

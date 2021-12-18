@@ -8,10 +8,12 @@ markdown~=3.3
 bleach~=3.3
 factory-boy~=3.2
 django-autoslug~=1.9
+isort~=5.10
 black==21.12b0
 flake8~=4.0.1
 flake8-django~=1.1
 flake8-black~=0.2
+flake8-isort~=4.1
 django-tree-queries==0.6.0
 Pygments~=2.10
 Pillow~=8.3

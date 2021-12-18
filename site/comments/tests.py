@@ -1,9 +1,12 @@
 from http import HTTPStatus
+
 from django.test import TestCase
 from django.urls import reverse
+
 from accounts.factories import UserFactory
 from articles.factories import ArticleFactory
 from common.mixins import TestMixin
+
 from .factories import CommentFactory
 
 

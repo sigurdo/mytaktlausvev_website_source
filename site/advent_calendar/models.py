@@ -1,6 +1,7 @@
-from django.urls import reverse
-from django.db import models
 from django.core import validators
+from django.db import models
+from django.urls import reverse
+
 from common.models import ArticleMixin
 
 

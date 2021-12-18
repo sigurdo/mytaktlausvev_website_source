@@ -1,6 +1,7 @@
+import os.path
+
 from django.core.management.base import BaseCommand
 from pygments.formatters import HtmlFormatter
-import os.path
 
 
 class Command(BaseCommand):

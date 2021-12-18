@@ -1,10 +1,13 @@
 from http import HTTPStatus
-from django.test import TestCase
+
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
+from django.test import TestCase
 from django.urls import reverse
+
 from accounts.factories import SuperUserFactory, UserFactory
 from common.mixins import TestMixin
+
 from .factories import AdventCalendarFactory, WindowFactory
 from .models import Window
 

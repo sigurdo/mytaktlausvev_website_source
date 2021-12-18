@@ -1,12 +1,11 @@
 import multiprocessing
 
 import PIL
-
-from django.views.generic import FormView
 from django.http import HttpResponse, HttpResponseBadRequest
+from django.views.generic import FormView
 
-from .forms import ButtonsForm
 from .button_pdf_generator import button_pdf_generator
+from .forms import ButtonsForm
 
 
 class ButtonsView(FormView):

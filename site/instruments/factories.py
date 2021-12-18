@@ -1,7 +1,7 @@
-from factory.django import DjangoModelFactory
 from factory import SubFactory
+from factory.django import DjangoModelFactory
 
-from .models import InstrumentGroup, Instrument, InstrumentLocation
+from .models import Instrument, InstrumentGroup, InstrumentLocation
 
 
 class InstrumentGroupFactory(DjangoModelFactory):

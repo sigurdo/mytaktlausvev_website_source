@@ -1,8 +1,9 @@
-from django.db import models
-from django.conf import settings
-from django.urls import reverse
-from common.models import ArticleMixin
 from autoslug.fields import AutoSlugField
+from django.conf import settings
+from django.db import models
+from django.urls import reverse
+
+from common.models import ArticleMixin
 
 
 class Event(ArticleMixin):

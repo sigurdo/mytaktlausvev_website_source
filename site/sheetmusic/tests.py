@@ -1,17 +1,17 @@
 import os
-
 from http import HTTPStatus
+
 from django.test import TestCase
 from django.urls import reverse
 
-from accounts.factories import UserFactory, SuperUserFactory
+from accounts.factories import SuperUserFactory, UserFactory
 from common.mixins import TestMixin
 from common.test_utils import create_formset_post_data
 from web.settings import BASE_DIR
 
 from .factories import FavoritePartFactory, PartFactory, PdfFactory, ScoreFactory
-from .models import Score, Pdf, Part
 from .forms import EditPartFormSet, EditPdfFormset
+from .models import Part, Pdf, Score
 
 
 class ScoreViewTestSuite(TestMixin, TestCase):

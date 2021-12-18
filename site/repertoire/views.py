@@ -1,18 +1,17 @@
-from django.http import FileResponse
-from django.views.generic import ListView
-from django.urls import reverse, reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.views.generic import CreateView, DeleteView, DetailView
+from django.http import FileResponse
+from django.urls import reverse, reverse_lazy
+from django.views.generic import CreateView, DeleteView, DetailView, ListView
 
 from common.views import FormAndFormsetUpdateView
 
-from .models import Repertoire
 from .forms import (
     RepertoireCreateForm,
-    RepertoireUpdateForm,
     RepertoireEntryUpdateFormset,
     RepertoireEntryUpdateFormsetHelper,
+    RepertoireUpdateForm,
 )
+from .models import Repertoire
 
 
 class RepertoireList(LoginRequiredMixin, ListView):

@@ -1,5 +1,5 @@
-from math import ceil
 import io
+from math import ceil
 
 import PIL.Image
 import PIL.ImageDraw

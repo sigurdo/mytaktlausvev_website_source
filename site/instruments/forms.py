@@ -1,7 +1,6 @@
-from django.forms import ModelForm, modelformset_factory, TextInput
-
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
+from django.forms import ModelForm, TextInput, modelformset_factory
 
 from .models import Instrument
 

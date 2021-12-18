@@ -6,10 +6,9 @@ from django.urls import reverse
 from accounts.factories import SuperUserFactory, UserFactory
 from common.mixins import TestMixin
 from common.test_utils import create_formset_post_data
-
 from sheetmusic.factories import FavoritePartFactory
 
-from .factories import RepertoireFactory, RepertoireEntryFactory
+from .factories import RepertoireEntryFactory, RepertoireFactory
 from .forms import RepertoireEntryUpdateFormset
 from .models import Repertoire
 

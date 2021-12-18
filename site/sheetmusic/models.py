@@ -1,24 +1,23 @@
 """ Models for the sheetmusic-app """
 
-import os
-import multiprocessing
 import io
+import multiprocessing
+import os
 
+from autoslug import AutoSlugField
+from django.conf import settings
 from django.core.validators import MinValueValidator
 from django.db import models
-from django.db.models import CharField, TextField, URLField, FileField
+from django.db.models import CharField, FileField, TextField, URLField
 from django.db.models.signals import pre_delete, pre_save
 from django.dispatch import receiver
-from django.conf import settings
-from django.utils.text import slugify
 from django.urls import reverse
-
-from common.validators import FileTypeValidator
-from sheatless import predict_parts_in_pdf
+from django.utils.text import slugify
 from PyPDF2 import PdfFileReader, PdfFileWriter
-from autoslug import AutoSlugField
+from sheatless import predict_parts_in_pdf
 
 from common.models import ArticleMixin
+from common.validators import FileTypeValidator
 from web.settings import TESSDATA_DIR
 
 

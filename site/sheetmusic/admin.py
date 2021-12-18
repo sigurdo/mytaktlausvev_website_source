@@ -1,7 +1,8 @@
 """Admin settings for the 'sheetmusic'-app"""
 
-from django.contrib.admin import site, ModelAdmin
-from .models import Score, Pdf, Part
+from django.contrib.admin import ModelAdmin, site
+
+from .models import Part, Pdf, Score
 
 
 class ScoreAdmin(ModelAdmin):

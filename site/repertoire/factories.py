@@ -1,5 +1,5 @@
-from factory.django import DjangoModelFactory
 from factory import SubFactory
+from factory.django import DjangoModelFactory
 
 from sheetmusic.factories import ScoreFactory
 

@@ -1,7 +1,8 @@
+from autoslug import AutoSlugField
 from django.db import models
 from django.urls import reverse
 from tree_queries.models import TreeNode
-from autoslug import AutoSlugField
+
 from common.models import ArticleMixin
 
 

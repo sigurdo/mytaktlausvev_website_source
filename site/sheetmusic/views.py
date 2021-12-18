@@ -1,41 +1,39 @@
 """ Views for sheetmusic """
 
 # Official python packages
+import json
 import os
 import threading
-import json
 from typing import Any, Dict
 
-# Django packages
 import django
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.forms import BaseModelForm, ValidationError
+from django.http import HttpResponse
 from django.http.response import FileResponse
 from django.shortcuts import get_object_or_404
+from django.urls import reverse_lazy
+from django.views.generic import DetailView, ListView, View
 from django.views.generic.base import TemplateResponseMixin
 from django.views.generic.detail import SingleObjectMixin
-from django.http import HttpResponse
-from django.urls import reverse_lazy
-from django.forms import BaseModelForm, ValidationError
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.views.generic import DetailView, ListView, View
 from django.views.generic.edit import (
     CreateView,
+    DeleteView,
+    FormMixin,
     FormView,
     ProcessFormView,
     UpdateView,
-    DeleteView,
-    FormMixin,
 )
 
-# Modules from this app
-from .models import Score, Pdf, Part, FavoritePart
 from .forms import (
-    ScoreForm,
-    UploadPdfForm,
     EditPartFormSet,
     EditPartFormSetHelper,
     EditPdfFormset,
     EditPdfFormsetHelper,
+    ScoreForm,
+    UploadPdfForm,
 )
+from .models import FavoritePart, Part, Pdf, Score
 
 
 class ScoreView(LoginRequiredMixin, DetailView):

@@ -1,7 +1,6 @@
-from django.forms import ModelForm, inlineformset_factory
-
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
+from django.forms import ModelForm, inlineformset_factory
 
 from .models import Repertoire, RepertoireEntry
 

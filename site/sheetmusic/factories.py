@@ -1,10 +1,10 @@
-from factory.django import DjangoModelFactory
 from factory import SubFactory
+from factory.django import DjangoModelFactory
 
 from accounts.factories import UserFactory
 from common.test_utils import test_pdf
 
-from .models import Score, Pdf, Part, FavoritePart
+from .models import FavoritePart, Part, Pdf, Score
 
 
 class ScoreFactory(DjangoModelFactory):

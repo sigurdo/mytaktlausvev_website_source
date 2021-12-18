@@ -1,5 +1,6 @@
-from django.urls import include, path
 from django.contrib.auth.views import LoginView
+from django.urls import include, path
+
 from .forms import LoginForm
 
 urlpatterns = [

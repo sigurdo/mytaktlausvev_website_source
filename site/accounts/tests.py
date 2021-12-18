@@ -1,12 +1,14 @@
-from django.test import TestCase
 from django.contrib.auth import authenticate
+from django.templatetags.static import static
+from django.test import TestCase
 from django.urls import reverse
 from django.utils.text import slugify
-from django.templatetags.static import static
+
 from common.mixins import TestMixin
 from common.test_utils import test_image
-from .models import UserCustom
+
 from .factories import UserFactory
+from .models import UserCustom
 
 
 class UserCustomTest(TestMixin, TestCase):

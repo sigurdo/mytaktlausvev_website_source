@@ -27,8 +27,9 @@ A superuser with the username "leiar" and the password "password" is created aut
 
 ### Code Quality
 
-The project uses [Black](https://black.readthedocs.io/en/stable/) for formatting and [flake8](https://flake8.pycqa.org/en/latest/) for linting.
+The project uses [isort](https://pycqa.github.io/isort/index.html) to sort imports, [Black](https://black.readthedocs.io/en/stable/) for formatting, and [flake8](https://flake8.pycqa.org/en/latest/) for linting.
 
-- Run tests with `docker-compose run web site/manage.py test site/`
-- Format all files with `docker-compose run web black .`
-- Lint and verify code style with `docker-compose run web flake8`
+- Run tests with `docker-compose run django site/manage.py test site/`
+- Sort imports with `docker-compose run django isort .`
+- Format all files with `docker-compose run django black .`
+- Lint and verify code style with `docker-compose run django flake8`
