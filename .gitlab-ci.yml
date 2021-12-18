@@ -14,10 +14,25 @@ stages:
 
 test:
   stage: test
+  before_script:
+    - apk update
+    - apk add openssh-client git
+    - eval $(ssh-agent -s)
+    - echo "$LINTBOT_SSH_PRIVATE_KEY" | base64 -d | ssh-add -
+    - mkdir -p ~/.ssh
+    - echo "$SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts
+    - chmod 700 ~/.ssh
+    - git config --global user.email "lintbot@lint.police"
+    - git config --global user.name "Overlintkonstabel Lintbot"
   script:
+    - git fetch
+    - git checkout $CI_COMMIT_REF_NAME
     - sh setup/init.sh
     - docker-compose run django site/manage.py test site/
+    - docker-compose run django isort .
+    - docker-compose run django black .
     - docker-compose run django flake8
+    - if [ "`git diff`" != "" ]; then git commit --all -m "Lint"; git push git@$CI_SERVER_HOST:$CI_PROJECT_PATH.git; fi
     - docker-compose down
   only:
     - merge_requests
