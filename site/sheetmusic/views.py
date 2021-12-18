@@ -181,8 +181,7 @@ class PdfsUpload(PermissionRequiredMixin, FormView):
         return super().get_context_data(**kwargs)
 
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
-        files = self.request.FILES.getlist("files")
-        for file in files:
+        for file in form.files.getlist("files"):
             score = Score.objects.get(slug=self.kwargs["slug"])
             pdf = Pdf.objects.create(score=score, file=file)
             pdf.save()
