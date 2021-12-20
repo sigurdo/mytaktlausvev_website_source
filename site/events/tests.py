@@ -129,33 +129,6 @@ class EventListTestSuite(TestMixin, TestCase):
     def test_requires_login(self):
         self.assertLoginRequired(self.get_url())
 
-    def test_event_first_in_month_in_context(self):
-        # Create 2 events in the same month and check that just the first one has first_in_month=True
-        event_1 = EventFactory(
-            start_time=make_aware(
-                datetime.combine(date.today().replace(day=1), datetime.min.time())
-                + timedelta(days=31)
-            )
-        )
-        event_2 = EventFactory(
-            start_time=make_aware(
-                datetime.combine(date.today().replace(day=1), datetime.min.time())
-                + timedelta(days=32)
-            )
-        )
-        self.client.force_login(UserFactory())
-        response = self.client.get(self.get_url())
-        events = response.context["events"]
-        self.assertEqual(len(events), 2)
-        for event in events:
-            first_in_month = getattr(event, "first_in_month", None)
-            if event == event_1:
-                self.assertEqual(first_in_month, True)
-            elif event == event_2:
-                self.assertEqual(first_in_month, None)
-            else:
-                raise Exception("Event not recognized")
-
     def test_attendance_form_in_context(self):
         # Create 3 events and check if they have attendance_form in their context
         [

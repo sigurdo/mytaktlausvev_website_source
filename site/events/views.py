@@ -5,6 +5,8 @@ from django.contrib.auth.mixins import (
     PermissionRequiredMixin,
     UserPassesTestMixin,
 )
+from django.db.models.fields import DateField
+from django.db.models.functions import Trunc
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils.timezone import localtime, make_aware
@@ -38,21 +40,7 @@ class EventList(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
-        previous_event = None
         for event in context_data["events"]:
-            # Set event.first_in_month for events that are the first in their months
-            if (
-                previous_event is None
-                or (
-                    localtime(previous_event.start_time).year
-                    < localtime(event.start_time).year
-                )
-                or (
-                    localtime(previous_event.start_time).month
-                    < localtime(event.start_time).month
-                )
-            ):
-                event.first_in_month = True
             # Set attendance form on all events
             event.attendance_form = self.get_attendance_form(event)
             previous_event = event
@@ -74,14 +62,14 @@ class EventList(LoginRequiredMixin, ListView):
         # Set queryset based on URL kwargs
         match kwargs:
             case {"year": year}:
-                self.queryset = Event.objects.filter(start_time__year=year)
+                self.queryset = Event.objects.filter(start_time__year=year).annotate(start_month=Trunc("start_time", "month", output_field=DateField()))
                 self.extra_context = {"year": year}
             case {}:
                 self.queryset = Event.objects.filter(
                     start_time__gte=make_aware(
                         datetime.combine(date.today(), datetime.min.time())
                     )
-                )
+                ).annotate(start_month=Trunc("start_time", "month", output_field=DateField()))
 
 
 class EventDetail(LoginRequiredMixin, DetailView):
@@ -192,7 +180,6 @@ class EventAttendanceCreateFromList(EventAttendanceCreate):
     def get_success_url(self):
         return reverse("events:EventList")
 
-
 class EventAttendanceUpdate(UserPassesTestMixin, UpdateView):
     """View for updating event attendance."""
 
@@ -248,6 +235,7 @@ class EventAttendanceDelete(UserPassesTestMixin, DeleteView):
 
     def get_success_url(self):
         return self.get_object().event.get_absolute_url()
+
 
 
 class EventFeed(ICalFeed):
