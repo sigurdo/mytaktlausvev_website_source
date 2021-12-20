@@ -38,52 +38,28 @@
         </p>
     </section>
 
-    <section>
-    {% for event in events %}
-        {% if event.first_in_month %}
-            <h2> {{event.start_time|date:"F"|capfirst}} {% if not year %}{{event.start_time|date:"Y"}}{% endif %} </h2>
-            <hr>
-        {% endif %}
-		<div class="card p-3 mb-5 shadow-sm">
-			<div class="card-body">
-				<h3>
-                    <a href="{% url 'events:EventDetail' event.start_time|date:"Y" event.slug %}">
-                        {{event}}
-                    </a>
-                </h3>
-				<dl>
-					<dd>
-                        <time datetime="{{ event.start_time | date:"c" }}">
-                            {{event.start_time | date:"d.m.Y - H:i"}}
-                        </time>
-                        {% if event.end_time %}
-                            til
-                            <time datetime="{{ event.end_time | date:"c" }}">
-                                {{event.end_time | date:"d.m.Y - H:i"}}
-                            </time>
-                        {% endif %}
-					</dd>
-				</dl>
-                <p>
-                    {% load markdown %}
-                    {{event.content|truncatechars:500|markdown}}
-                </p>
 
-                {% load get_event_attendance %}
-                {% get_event_attendance user event as attendance %}
-                {% if event.is_in_future and not attendance %}
-                    <form action="{{event.attendance_form.helper.form_action}}" method="POST">
-                        {% csrf_token %}
-                        {% for field in event.attendance_form.visible_fields %}
-                            <div class="d-none">{{field}}</div>
-                        {% endfor %}
-                        <input class="btn btn-primary" type="submit" value="Meld meg på">
-                    </form>
-                {% endif %}
-			</div>
-		</div>
-    {% endfor %}
-	</section>
+    {% if events %}
+    <section>
+    {% regroup events by start_month as events_grouped %}
+    <ol class="list-unstyled">
+        {% for group in events_grouped %}
+        <li>
+            <h2> {{ group.grouper|date:"F"|capfirst }} {% if not year %}{{ group.grouper|date:"Y" }}{% endif %} </h2>
+            <hr>
+
+            <ol class="list-unstyled">
+                {% for event in group.list %}
+                <li>
+                    {% include "events/includes/event_list_card.html" with event=event user=user csrf_token=csrf_token only %}
+                </li>
+                {% endfor %}
+            </ol>
+        </li>
+        {% endfor %}
+    </ol>
+    </section>
+    {% endif %}
 </article>
 {% endblock page %}
 

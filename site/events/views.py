@@ -5,6 +5,8 @@ from django.contrib.auth.mixins import (
     PermissionRequiredMixin,
     UserPassesTestMixin,
 )
+from django.db.models.functions.datetime import TruncMonth
+from django.db.models.query_utils import Q
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils.timezone import localtime, make_aware
@@ -36,29 +38,31 @@ class EventList(LoginRequiredMixin, ListView):
     model = Event
     context_object_name = "events"
 
+    def get_queryset(self):
+        match self.kwargs:
+            case {"year": year}:
+                filter = Q(start_time__year=year)
+            case _:
+                filter = Q(
+                    start_time__gte=make_aware(
+                        datetime.combine(date.today(), datetime.min.time())
+                    )
+                )
+
+        return Event.objects.filter(filter).annotate(
+            start_month=TruncMonth("start_time")
+        )
+
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
-        previous_event = None
         for event in context_data["events"]:
-            # Set event.first_in_month for events that are the first in their months
-            if (
-                previous_event is None
-                or (
-                    localtime(previous_event.start_time).year
-                    < localtime(event.start_time).year
-                )
-                or (
-                    localtime(previous_event.start_time).month
-                    < localtime(event.start_time).month
-                )
-            ):
-                event.first_in_month = True
             # Set attendance form on all events
             event.attendance_form = self.get_attendance_form(event)
-            previous_event = event
         context_data["event_feed_absolute_url"] = self.request.build_absolute_uri(
             reverse("events:EventFeed")
         )
+        if self.kwargs.get("year"):
+            context_data["year"] = self.kwargs.get("year")
         return context_data
 
     def get_attendance_form(self, event):
@@ -68,20 +72,6 @@ class EventList(LoginRequiredMixin, ListView):
             args=[localtime(event.start_time).year, event.slug],
         )
         return form
-
-    def setup(self, request, *args, **kwargs):
-        super().setup(request, *args, **kwargs)
-        # Set queryset based on URL kwargs
-        match kwargs:
-            case {"year": year}:
-                self.queryset = Event.objects.filter(start_time__year=year)
-                self.extra_context = {"year": year}
-            case {}:
-                self.queryset = Event.objects.filter(
-                    start_time__gte=make_aware(
-                        datetime.combine(date.today(), datetime.min.time())
-                    )
-                )
 
 
 class EventDetail(LoginRequiredMixin, DetailView):
