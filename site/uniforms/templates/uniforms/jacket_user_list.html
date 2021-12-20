@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}
+    Brukarar av {{jacket|lower}}
+{% endblock title %}
+
+{% block page %}
+<article>
+    <h1> Brukarar av {{jacket|lower}} </h1>
+    <div class="table-responsive">
+        <table class="table table-striped table-sm" id="jacket_overview">
+            <thead>
+                <tr>
+                    <th> Brukar </th>
+                    <th> Fjern </th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for user in users %}
+                <tr>
+                    <td> <a href="{% url "accounts:ProfileDetail" user.slug %}">{{user}}</a> {% if jacket.owner == user %}(eigar){% endif %} </td>
+                    <td> <a class="btn btn-danger" href="{% url "uniforms:RemoveJacketUser" jacket.number user.slug %}">Fjern</a> </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% if perms.accounts.change_user %}
+    <a href="{% url "uniforms:AddJacketUser" jacket.number %}" class="btn btn-primary"> Legg til brukar </a>
+    {% endif %}
+</article>
+{% endblock page %}
