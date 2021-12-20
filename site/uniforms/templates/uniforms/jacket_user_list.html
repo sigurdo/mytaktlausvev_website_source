@@ -24,8 +24,6 @@
             </tbody>
         </table>
     </div>
-    {% if perms.accounts.change_user %}
     <a href="{% url "uniforms:AddJacketUser" jacket.number %}" class="btn btn-primary"> Legg til brukar </a>
-    {% endif %}
 </article>
 {% endblock page %}

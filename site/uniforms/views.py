@@ -38,10 +38,18 @@ class JacketsUpdate(PermissionRequiredMixin, FormView):
         return super().form_invalid(form)
 
 
-class JacketUsers(LoginRequiredMixin, ListView):
+class JacketUsers(PermissionRequiredMixin, ListView):
     model = UserCustom
     context_object_name = "users"
     template_name = "uniforms/jacket_user_list.html"
+    # This view does not really need to require any permissions since the actual
+    # operations are protected by other views, but it is clean to have it since
+    # the user won't find anything useful here at all if it does not have these
+    # permsissions
+    permission_required = (
+        "uniforms.change_jacket",
+        "accounts.change_usercustom",
+    )
 
     def get_context_data(self, **kwargs):
         kwargs["jacket"] = self.jacket
@@ -60,7 +68,7 @@ class AddJacketUser(PermissionRequiredMixin, FormView):
     template_name = "common/form.html"
     permission_required = (
         "uniforms.change_jacket",
-        "accounts.change_user",
+        "accounts.change_usercustom",
     )
 
     def setup(self, request, *args, **kwargs):
@@ -97,7 +105,7 @@ class RemoveJacketUser(PermissionRequiredMixin, FormView):
     template_name = "common/form.html"
     permission_required = (
         "uniforms.change_jacket",
-        "accounts.change_user",
+        "accounts.change_usercustom",
     )
 
     def setup(self, request, *args, **kwargs):
