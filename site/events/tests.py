@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, date
+from datetime import date, datetime, timedelta
 from http import HTTPStatus
 
 from django.db import IntegrityError
@@ -6,8 +6,8 @@ from django.http.response import Http404
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
-from django.utils.timezone import make_aware
 from django.utils.text import slugify
+from django.utils.timezone import make_aware
 
 from accounts.factories import SuperUserFactory, UserFactory
 from common.mixins import TestMixin
@@ -155,10 +155,13 @@ class EventListTestSuite(TestMixin, TestCase):
                 self.assertEqual(first_in_month, None)
             else:
                 raise Exception("Event not recognized")
-    
+
     def test_attendance_form_in_context(self):
         # Create 3 events and check if they have attendance_form in their context
-        [EventFactory(start_time=make_aware(datetime.now() + timedelta(1))) for _ in range(3)]
+        [
+            EventFactory(start_time=make_aware(datetime.now() + timedelta(1)))
+            for _ in range(3)
+        ]
         self.assertEqual(Event.objects.count(), 3)
         self.client.force_login(UserFactory())
         response = self.client.get(self.get_url())
@@ -167,13 +170,15 @@ class EventListTestSuite(TestMixin, TestCase):
         for event in events:
             attendance_form = getattr(event, "attendance_form", None)
             self.assertIsNotNone(attendance_form)
-    
+
     def test_event_feed_absolute_url_in_context(self):
         self.client.force_login(UserFactory())
         response = self.client.get(self.get_url())
         event_feed_absolute_url = response.context["event_feed_absolute_url"]
-        self.assertEquals(event_feed_absolute_url, "http://testserver/hendingar/taktlaushendingar.ics")
-    
+        self.assertEquals(
+            event_feed_absolute_url, "http://testserver/hendingar/taktlaushendingar.ics"
+        )
+
     def test_filter_future_events(self):
         # Create 1 past and 1 future event and check if the number of events in context is correct
         EventFactory(start_time=make_aware(datetime.now() - timedelta(1)))
@@ -181,7 +186,7 @@ class EventListTestSuite(TestMixin, TestCase):
         self.client.force_login(UserFactory())
         response = self.client.get(self.get_url())
         self.assertEquals(len(response.context["events"]), 1)
-    
+
     def test_filter_year_events(self):
         # Create different amount of events for 2020, 2021, 2022 and 2023 and check if the number of
         # events in the contexts for the years are correct

@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, date, time
+from datetime import date, datetime, time, timedelta
 
 from django.core.management.base import BaseCommand
 from django.utils.timezone import make_aware
