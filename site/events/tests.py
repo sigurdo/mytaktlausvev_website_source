@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta, date
 from http import HTTPStatus
-from django.contrib.auth.models import User
 
 from django.db import IntegrityError
 from django.http.response import Http404

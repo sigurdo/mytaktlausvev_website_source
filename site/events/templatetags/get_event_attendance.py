@@ -1,5 +1,4 @@
 from django import template
-from ..models import EventAttendance
 
 register = template.Library()
 
