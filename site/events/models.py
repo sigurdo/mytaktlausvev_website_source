@@ -3,7 +3,7 @@ from django.conf import settings
 from django.db import models
 from django.urls import reverse
 from datetime import datetime
-from django.utils.timezone import make_aware
+from django.utils.timezone import make_aware, localtime
 
 from common.models import ArticleMixin
 
@@ -31,7 +31,7 @@ class Event(ArticleMixin):
         return self.attendances.filter(status=Attendance.ATTENDING_NOT)
 
     def get_absolute_url(self):
-        return reverse("events:EventDetail", args=[self.start_time.year, self.slug])
+        return reverse("events:EventDetail", args=[localtime(self.start_time).year, self.slug])
     
     def get_attendance(self, user):
         """

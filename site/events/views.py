@@ -9,7 +9,7 @@ from django.views.generic import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.views.generic.list import ListView
 from django_ical.views import ICalFeed
-from django.utils.timezone import make_aware
+from django.utils.timezone import make_aware, localtime
 
 from .forms import EventAttendanceForm, EventForm
 from .models import Attendance, Event, EventAttendance
@@ -42,8 +42,8 @@ class EventList(LoginRequiredMixin, ListView):
             # Set event.first_in_month for events that are the first in their months
             if (
                 previous_event is None
-                or (previous_event.start_time.year < event.start_time.year)
-                or (previous_event.start_time.month < event.start_time.month)
+                or (localtime(previous_event.start_time).year < localtime(event.start_time).year)
+                or (localtime(previous_event.start_time).month < localtime(event.start_time).month)
             ):
                 event.first_in_month = True
             # Set attendance form on all events
@@ -56,7 +56,7 @@ class EventList(LoginRequiredMixin, ListView):
         form = EventAttendanceForm(initial={"status": Attendance.ATTENDING})
         form.helper.form_action = reverse(
             "events:EventAttendanceCreateFromList",
-            args=[event.start_time.year, event.slug],
+            args=[localtime(event.start_time).year, event.slug],
         )
         return form
 
@@ -83,7 +83,7 @@ class EventDetail(LoginRequiredMixin, DetailView):
         form = EventAttendanceForm(initial={"status": Attendance.ATTENDING})
         form.helper.form_action = reverse(
             "events:EventAttendanceCreate",
-            args=[self.object.start_time.year, self.object.slug],
+            args=[localtime(self.object.start_time).year, self.object.slug],
         )
         return form
 
