@@ -50,8 +50,9 @@ class EventList(LoginRequiredMixin, ListView):
                     )
                 )
 
-        return Event.objects.filter(filter).annotate(start_month=Trunc("start_time", "month", output_field=DateField()))
-
+        return Event.objects.filter(filter).annotate(
+            start_month=Trunc("start_time", "month", output_field=DateField())
+        )
 
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
@@ -182,6 +183,7 @@ class EventAttendanceCreateFromList(EventAttendanceCreate):
     def get_success_url(self):
         return reverse("events:EventList")
 
+
 class EventAttendanceUpdate(UserPassesTestMixin, UpdateView):
     """View for updating event attendance."""
 
@@ -237,7 +239,6 @@ class EventAttendanceDelete(UserPassesTestMixin, DeleteView):
 
     def get_success_url(self):
         return self.get_object().event.get_absolute_url()
-
 
 
 class EventFeed(ICalFeed):
