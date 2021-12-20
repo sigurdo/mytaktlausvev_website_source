@@ -9,9 +9,11 @@ from django.views.generic import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.views.generic.list import ListView
 from django_ical.views import ICalFeed
+from django.utils.timezone import make_aware
 
 from .forms import EventAttendanceForm, EventForm
 from .models import Attendance, Event, EventAttendance
+from datetime import datetime, date
 
 
 def get_event_or_404(year, slug):
@@ -27,6 +29,46 @@ def get_event_attendance_or_404(year, slug_event, slug_person):
         event=event,
         person__slug=slug_person,
     )
+
+
+class EventList(LoginRequiredMixin, ListView):
+    model = Event
+    context_object_name = "events"
+
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+        previous_event = None
+        for event in context_data["events"]:
+            # Set event.first_in_month for events that are the first in their months
+            if (
+                previous_event is None
+                or (previous_event.start_time.year < event.start_time.year)
+                or (previous_event.start_time.month < event.start_time.month)
+            ):
+                event.first_in_month = True
+            # Set attendance form on all events
+            event.attendance_form = self.get_attendance_form(event)
+            previous_event = event
+        context_data["event_feed_absolute_url"] = self.request.build_absolute_uri(reverse("events:EventFeed"))
+        return context_data
+    
+    def get_attendance_form(self, event):
+        form = EventAttendanceForm(initial={"status": Attendance.ATTENDING})
+        form.helper.form_action = reverse(
+            "events:EventAttendanceCreateFromList",
+            args=[event.start_time.year, event.slug],
+        )
+        return form
+
+    def setup(self, request, *args, **kwargs):
+        super().setup(request, *args, **kwargs)
+        # Set queryset based on URL kwargs
+        match kwargs:
+            case {"year": year}:
+                self.queryset = Event.objects.filter(start_time__year=year)
+                self.extra_context = {"year": year}
+            case {}:
+                self.queryset = Event.objects.filter(start_time__gte=make_aware(datetime.combine(date.today(), datetime.min.time())))
 
 
 class EventDetail(LoginRequiredMixin, DetailView):
@@ -129,6 +171,12 @@ class EventAttendanceCreate(LoginRequiredMixin, CreateView):
 
     def get_success_url(self):
         return self.object.event.get_absolute_url()
+
+
+class EventAttendanceCreateFromList(EventAttendanceCreate):
+    """View for registering event attendance from EventList."""
+    def get_success_url(self):
+        return reverse("events:EventList")
 
 
 class EventAttendanceUpdate(UserPassesTestMixin, UpdateView):

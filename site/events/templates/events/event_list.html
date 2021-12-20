@@ -1,0 +1,93 @@
+
+{% extends "base.html" %}
+
+{% block title %}Hendingar{% if year %} {{year}}{% endif %}{% endblock title %}
+
+{% block page %}
+<article class="mt-4">
+    <header class="mb-4">
+        <h1>Hendingar{% if year %} {{year}}{% endif %}</h1>
+    </header>
+
+    <section class="mb-3">
+        <p>
+            {% if year %}
+            <a class="btn btn-primary" href="{% url "events:EventList" year|add:"-2" %}"> {{year|add:"-2"}} </a>
+            <a class="btn btn-primary" href="{% url "events:EventList" year|add:"-1" %}"> {{year|add:"-1"}} </a>
+            <a class="btn btn-primary active" href="{% url "events:EventList" year|add:"0" %}"> {{year|add:"0"}} </a>
+            <a class="btn btn-primary" href="{% url "events:EventList" year|add:"1" %}"> {{year|add:"1"}} </a>
+            <a class="btn btn-primary" href="{% url "events:EventList" year|add:"2" %}"> {{year|add:"2"}} </a>
+        </p>
+        <p>
+            <a class="btn btn-primary" href="{% url "events:EventList" %}"> Alle framtidige </a>
+            {% else %}
+                {% now "Y" as current_year %}
+                <a class="btn btn-primary" href="{% url "events:EventList" current_year %}"> Heile året </a>
+            {% endif %}
+        </p>
+        <p>
+            <button class="btn btn-primary" id="ical-link-collapse-button" type="button">
+                Hent link til ical-feed
+            </button>
+            <span class="collapse m-3" id="ical-link-collapse">
+                <a id="ical-link" href="{{ event_feed_absolute_url }}">
+                    {{ event_feed_absolute_url }}
+                </a>
+                <span id="ical-link-collapse-clipboard-feedback"></span>
+            </span>
+        </p>
+    </section>
+
+    <section>
+    {% for event in events %}
+        {% if event.first_in_month %}
+            <h2> {{event.start_time|date:"F"|capfirst}} {% if not year %}{{event.start_time|date:"Y"}}{% endif %} </h2>
+            <hr>
+        {% endif %}
+		<div class="card p-3 mb-5 shadow-sm">
+			<div class="card-body">
+				<h3>
+                    <a href="{% url 'events:EventDetail' event.start_time.year event.slug %}">
+                        {{event}}
+                    </a>
+                </h3>
+				<dl>
+					<dd>
+                        <time datetime="{{ event.start_time | date:"c" }}">
+                            {{event.start_time | date:"d.m.Y - H:i"}}
+                        </time>
+                        {% if event.end_time %}
+                            til
+                            <time datetime="{{ event.end_time | date:"c" }}">
+                                {{event.end_time | date:"d.m.Y - H:i"}}
+                            </time>
+                        {% endif %}
+					</dd>
+				</dl>
+                <p>
+                    {% load markdown %}
+                    {{event.content|truncatechars:500|markdown}}
+                </p>
+
+                {% load get_event_attendance %}
+                {% get_event_attendance user event as attendance %}
+                {% if event.is_in_future and not attendance %}
+                    <form action="{{event.attendance_form.helper.form_action}}" method="POST">
+                        {% csrf_token %}
+                        {% for field in event.attendance_form.visible_fields %}
+                            <div class="d-none">{{field}}</div>
+                        {% endfor %}
+                        <input class="btn btn-primary" type="submit" value="Meld meg på">
+                    </form>
+                {% endif %}
+			</div>
+		</div>
+    {% endfor %}
+	</section>
+</article>
+{% endblock page %}
+
+{% block js %}
+    {% load static %}
+    <script src="{% static "events/event_list.js" %}"></script>
+{% endblock js %}

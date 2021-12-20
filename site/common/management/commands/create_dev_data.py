@@ -74,6 +74,14 @@ class Command(BaseCommand):
             created_by=superuser,
             modified_by=superuser,
         ).save()
+        ArticleFactory(
+            title="ical-tutorial",
+            content="Importer ical-feeden fra [denne](/hendingar/taktlaushendingar.ics) linken i kalender-appen din og sett den opp til å refreshe automatisk.",
+            public=True,
+            comments_allowed=False,
+            created_by=superuser,
+            modified_by=superuser,
+        )
 
         ContactCategoryFactory(name="Generelt").save()
         ContactCategoryFactory(name="Bli med!").save()
@@ -95,6 +103,34 @@ class Command(BaseCommand):
         )
         EventAttendanceFactory(
             event=event, person=retiree, status=Attendance.ATTENDING_NOT
+        )
+        EventFactory(
+            title="Brettspillkveld",
+            content="Brettspillkveld på KJL4",
+            created_by=superuser,
+            modified_by=superuser,
+            start_time=make_aware(datetime.now() + timedelta(days=10)),
+        )
+        EventFactory(
+            title="Øvelse",
+            content="Vanlig øvelse",
+            created_by=superuser,
+            modified_by=superuser,
+            start_time=make_aware(datetime.now() + timedelta(days=3)),
+        )
+        EventFactory(
+            title="Temafest",
+            content="Ikke viktig med tema, men viktig med fest",
+            created_by=superuser,
+            modified_by=superuser,
+            start_time=make_aware(datetime.now() + timedelta(weeks=12)),
+        )
+        EventFactory(
+            title="Medaljegalla som har vært",
+            content="Kult med galla",
+            created_by=superuser,
+            modified_by=superuser,
+            start_time=make_aware(datetime.now() + timedelta(weeks=-8)),
         )
         flute = InstrumentGroupFactory(name="Fløyte")
         InstrumentGroupFactory(name="Klarinett")

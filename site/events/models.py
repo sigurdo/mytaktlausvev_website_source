@@ -2,6 +2,8 @@ from autoslug.fields import AutoSlugField
 from django.conf import settings
 from django.db import models
 from django.urls import reverse
+from datetime import datetime
+from django.utils.timezone import make_aware
 
 from common.models import ArticleMixin
 
@@ -30,6 +32,18 @@ class Event(ArticleMixin):
 
     def get_absolute_url(self):
         return reverse("events:EventDetail", args=[self.start_time.year, self.slug])
+    
+    def get_attendance(self, user):
+        """
+        Returns the EventAttendance for the given user on this event.
+        Returns None if there is no EventAttendance registered for the user on this event.
+        """
+        return EventAttendance.objects.filter(person=user, event=self).first()
+    
+    def is_in_future(self):
+        """Returns True if the event is in the future."""
+        return self.start_time > make_aware(datetime.now())
+
 
     class Meta:
         ordering = ["start_time"]
