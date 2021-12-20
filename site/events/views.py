@@ -5,8 +5,7 @@ from django.contrib.auth.mixins import (
     PermissionRequiredMixin,
     UserPassesTestMixin,
 )
-from django.db.models.fields import DateField
-from django.db.models.functions import Trunc
+from django.db.models.functions.datetime import TruncMonth
 from django.db.models.query_utils import Q
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
@@ -51,7 +50,7 @@ class EventList(LoginRequiredMixin, ListView):
                 )
 
         return Event.objects.filter(filter).annotate(
-            start_month=Trunc("start_time", "month", output_field=DateField())
+            start_month=TruncMonth("start_time")
         )
 
     def get_context_data(self, **kwargs):
