@@ -21,10 +21,10 @@ class JacketUpdateForm(ModelForm):
         model = Jacket
         fields = [
             "number",
-            "state",
             "location",
             "owner",
             "comment",
+            "state",
         ]
         widgets = {"comment": TextInput}
 
