@@ -1,4 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.db import transaction
 from django.urls import reverse
 from django.views.generic import FormView, ListView
 
@@ -33,9 +34,6 @@ class JacketsUpdate(PermissionRequiredMixin, FormView):
         # We must explicitly save form since this a FormView and not an UpdateView
         form.save()
         return super().form_valid(form)
-
-    def form_invalid(self, form):
-        return super().form_invalid(form)
 
 
 class JacketUsers(PermissionRequiredMixin, ListView):
@@ -83,21 +81,18 @@ class AddJacketUser(PermissionRequiredMixin, FormView):
         return super().get_context_data(**kwargs)
 
     def form_valid(self, form):
-        user = UserCustom.objects.get(pk=form.cleaned_data["user"])
-        user.jacket = self.jacket
-        user.save()
-        if form.cleaned_data["remove_old_ownerships"]:
-            for jacket in Jacket.objects.filter(owner=user):
-                jacket.owner = None
-                jacket.save()
-        if form.cleaned_data["set_owner"]:
-            self.jacket.owner = user
-            self.jacket.save()
+        with transaction.atomic():
+            user = UserCustom.objects.get(pk=form.cleaned_data["user"])
+            user.jacket = self.jacket
+            user.save()
+            if form.cleaned_data["remove_old_ownerships"]:
+                for jacket in Jacket.objects.filter(owner=user):
+                    jacket.owner = None
+                    jacket.save()
+            if form.cleaned_data["set_owner"]:
+                self.jacket.owner = user
+                self.jacket.save()
         return super().form_valid(form)
-
-    def form_invalid(self, form):
-        print("form invalid:", form.errors)
-        return super().form_invalid(form)
 
 
 class RemoveJacketUser(PermissionRequiredMixin, FormView):
@@ -123,10 +118,11 @@ class RemoveJacketUser(PermissionRequiredMixin, FormView):
         return reverse("uniforms:JacketList")
 
     def form_valid(self, form):
-        self.user.jacket = None
-        self.user.save()
-        if form.cleaned_data["remove_owner"]:
-            if self.jacket.owner == self.user:
-                self.jacket.owner = None
-                self.jacket.save()
+        with transaction.atomic():
+            self.user.jacket = None
+            self.user.save()
+            if form.cleaned_data["remove_owner"]:
+                if self.jacket.owner == self.user:
+                    self.jacket.owner = None
+                    self.jacket.save()
         return super().form_valid(form)

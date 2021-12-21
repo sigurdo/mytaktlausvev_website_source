@@ -67,4 +67,4 @@ class RemoveJacketUserForm(Form):
     remove_owner = BooleanField(label="Fjern eigarskap", required=False, initial=True)
 
     helper = FormHelper()
-    helper.add_input(Submit("submit", "Fjern", css_class="btn btn-danger"))
+    helper.add_input(Submit("submit", "Fjern", css_class="btn-danger"))
