@@ -22,7 +22,7 @@ urlpatterns = [
         name="AddJacketUser",
     ),
     path(
-        "jakkebrukarar/<int:jacket_number>/fjern/<str:user_slug>/",
+        "jakkebrukarar/<int:jacket_number>/fjern/<slug:user_slug>/",
         RemoveJacketUser.as_view(),
         name="RemoveJacketUser",
     ),
