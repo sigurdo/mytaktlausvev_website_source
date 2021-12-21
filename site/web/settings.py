@@ -31,7 +31,7 @@ DEBUG = int(os.environ.get("DEBUG", "1"))
 # ALLOWED_HOSTS should be a string of space-separated hosts
 # e.g. ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
 ALLOWED_HOSTS = os.environ.get(
-    "ALLOWED_HOSTS", ".localhost 127.0.0.1 [::1] 0.0.0.0"
+    "ALLOWED_HOSTS", ".localhost 127.0.0.1 [::1] 0.0.0.0 192.168.10.104"
 ).split(" ")
 
 # Simplifies management stuff like deleting output files from the code editor on the host system.
@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     "sheetmusic",
     "repertoire",
     "instruments",
+    "uniforms",
     "advent_calendar",
     "easter_eggs",
     "pwa",

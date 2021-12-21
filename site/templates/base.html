@@ -41,6 +41,10 @@
 							href="{% url 'instruments:InstrumentList' %}">Instrument</a>
 					</li>
 					<li class="nav-item">
+						<a class="nav-link {% if 'uniformer' in request.path %} active {% endif %}"
+							href="{% url 'uniforms:JacketList' %}">Uniformer</a>
+					</li>
+					<li class="nav-item">
 						<a class="nav-link {% if 'songar' in request.path %} active {% endif %}"
 							href="{% url 'articles:ArticleDetail' 'songar' %}">Songar</a>
 					</li>

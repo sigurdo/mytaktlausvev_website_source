@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}
+    Jakkeoversikt
+{% endblock title %}
+
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs5/jq-3.6.0/dt-1.11.3/datatables.min.css"/>
+{% endblock css %}
+
+{% block page %}
+<article>
+    <h1> Jakkeoversikt </h1>
+    <div class="table-responsive">
+        <table class="table table-striped table-sm" id="jacket_overview">
+            <thead>
+                <tr>
+                    <th> Jakkenummer </th>
+                    <th> Stad </th>
+                    <th> Eigar </th>
+                    <th> Brukast av </th>
+                    {% if perms.uniforms.change_jacket and perms.accounts.change_usercustom %}
+                    <th> Rediger brukarar </th>
+                    {% endif %}
+                    <th> Kommentar </th>
+                    <th> Tilstand </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for jacket in jackets %}
+                <tr data-state="{{ jacket.state }}">
+                    <td class="
+                        {% if jacket.get_state_order == 0 %}
+                            bg-success
+                        {% elif jacket.get_state_order == 1 %}
+                            bg-info
+                        {% elif jacket.get_state_order == 2 %}
+                            bg-warning
+                        {% elif jacket.get_state_order == 3 %}
+                            bg-danger
+                        {% endif %}
+                        "> {{ jacket.number }} </td>
+                    <td> {{ jacket.location }} </td>
+                    <td>
+                        {% if jacket.owner %}
+                            <a href="{% url "accounts:ProfileDetail" jacket.owner.slug %}"> {{ jacket.owner }} </a>
+                            {% if jacket.owner.membership_status != "ACTIVE" %}
+                                ({{ jacket.owner.get_membership_status_display }})
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% for user in jacket.users.all %}
+                            <a href="{% url "accounts:ProfileDetail" user.slug %}">{{ user }}</a>{% if forloop.counter < jacket.users.all|length %},{% endif %}
+                        {% endfor %}
+                    </td>
+                    {% if perms.uniforms.change_jacket and perms.accounts.change_usercustom %}
+                    <td>
+                        <a class="btn btn-sm btn-primary" href="{% url "uniforms:JacketUsers" jacket.number %}"> Rediger brukarar </a>
+                    </td>
+                    {% endif %}
+                    <td> {{ jacket.comment }} </td>
+                    <td data-order="{{ jacket.get_state_order }}"
+                    class="
+                        {% if jacket.get_state_order == 0 %}
+                            bg-success
+                        {% elif jacket.get_state_order == 1 %}
+                            bg-info
+                        {% elif jacket.get_state_order == 2 %}
+                            bg-warning
+                        {% elif jacket.get_state_order == 3 %}
+                            bg-danger
+                        {% endif %}
+                        ">
+                        {{ jacket.get_state_display }}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% if perms.uniforms.add_jacket and perms.uniforms.change_jacket and perms.uniforms.delete_jacket %}
+    <a href="{% url "uniforms:JacketsUpdate" %}" class="btn btn-primary"> Rediger jakker </a>
+    {% endif %}
+</article>
+{% endblock page %}
+
+{% block js %}
+    <script src="https://cdn.datatables.net/v/bs5/jq-3.6.0/dt-1.11.3/datatables.min.js"></script>
+    {% load static %}
+    <script src="{% static "uniforms/jacket_list.js" %}"></script>
+{% endblock js %}

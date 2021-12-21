@@ -45,6 +45,14 @@ class UserCustom(AbstractUser):
         null=True,
         blank=True,
     )
+    jacket = models.ForeignKey(
+        "uniforms.Jacket",
+        verbose_name="jakkenummer",
+        related_name="users",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
 
     class MembershipStatus(models.TextChoices):
         ACTIVE = "ACTIVE", "Aktiv"
