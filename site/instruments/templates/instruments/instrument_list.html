@@ -26,7 +26,19 @@
             <tbody>
                 {% for instrument in instruments %}
                 <tr data-state="{{ instrument.state }}">
-                    <td> {{ instrument }} </td>
+                    <td class="
+                        {% if instrument.get_state_order == 0 %}
+                            bg-success
+                        {% elif instrument.get_state_order == 1 %}
+                            bg-info
+                        {% elif instrument.get_state_order == 2 %}
+                            bg-warning
+                        {% elif instrument.get_state_order == 3 %}
+                            bg-danger
+                        {% endif %}
+                        ">
+                        {{ instrument }}
+                    </td>
                     <td> {{ instrument.group }} </td>
                     <td> {{ instrument.location }} </td>
                     <td>
