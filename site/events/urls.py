@@ -25,7 +25,7 @@ urlpatterns = [
         name="EventAttendanceCreate",
     ),
     path(
-        "<int:year>/<slug:slug>/svar/ny/fra-oversikt/",
+        "<int:year>/<slug:slug>/svar/ny/frå-oversikt/",
         views.EventAttendanceCreateFromList.as_view(),
         name="EventAttendanceCreateFromList",
     ),

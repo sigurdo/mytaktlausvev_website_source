@@ -37,7 +37,7 @@
                 {% if perms.events.change_event %}
                 <li class="me-3">
                     <a
-                        href="{% url 'events:EventUpdate' event.start_time.year event.slug %}"
+                        href="{% url 'events:EventUpdate' event.start_time|date:"Y" event.slug %}"
                         class="btn btn-primary"
                     >
                         Rediger hending
@@ -47,7 +47,7 @@
                 {% if perms.events.view_eventattendance %}
                 <li>
                     <a
-                        href="{% url 'events:EventAttendanceList' event.start_time.year event.slug %}"
+                        href="{% url 'events:EventAttendanceList' event.start_time|date:"Y" event.slug %}"
                         class="btn btn-primary"
                     >
                         Sjå svar

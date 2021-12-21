@@ -130,7 +130,9 @@ class EventListTestSuite(TestMixin, TestCase):
         self.assertLoginRequired(self.get_url())
 
     def test_attendance_form_in_context(self):
-        # Create 3 events and check if they have attendance_form in their context
+        """
+        Create 3 events and check if they have attendance_form in their context.
+        """
         [
             EventFactory(start_time=make_aware(datetime.now() + timedelta(1)))
             for _ in range(3)
@@ -153,7 +155,9 @@ class EventListTestSuite(TestMixin, TestCase):
         )
 
     def test_filter_future_events(self):
-        # Create 1 past and 1 future event and check if the number of events in context is correct
+        """
+        Create 1 past and 1 future event and check if the number of events in context is correct.
+        """
         EventFactory(start_time=make_aware(datetime.now() - timedelta(1)))
         EventFactory(start_time=make_aware(datetime.now() + timedelta(1)))
         self.client.force_login(UserFactory())
@@ -161,8 +165,10 @@ class EventListTestSuite(TestMixin, TestCase):
         self.assertEquals(len(response.context["events"]), 1)
 
     def test_filter_year_events(self):
-        # Create different amount of events for 2020, 2021, 2022 and 2023 and check if the number of
-        # events in the contexts for the years are correct
+        """
+        Create different amount of events for 2020, 2021, 2022 and 2023 and check if the number of
+        events in the contexts for the years are correct.
+        """
         EventFactory(start_time=make_aware(datetime(2021, 1, 1)))
         EventFactory(start_time=make_aware(datetime(2022, 1, 1)))
         EventFactory(start_time=make_aware(datetime(2022, 2, 1)))

@@ -10,31 +10,35 @@
     </header>
 
     <section class="mb-3">
-        <p>
+        <nav class="mb-3">
             {% if year %}
-            <a class="btn btn-primary" href="{% url "events:EventList" year|add:"-2" %}"> {{year|add:"-2"}} </a>
-            <a class="btn btn-primary" href="{% url "events:EventList" year|add:"-1" %}"> {{year|add:"-1"}} </a>
-            <a class="btn btn-primary active" href="{% url "events:EventList" year|add:"0" %}"> {{year|add:"0"}} </a>
-            <a class="btn btn-primary" href="{% url "events:EventList" year|add:"1" %}"> {{year|add:"1"}} </a>
-            <a class="btn btn-primary" href="{% url "events:EventList" year|add:"2" %}"> {{year|add:"2"}} </a>
-        </p>
-        <p>
+            <ol class="list-unstyled">
+                <li class="d-inline">
+                    <a class="btn btn-primary" href="{% url "events:EventList" year|add:"-2" %}"> {{year|add:"-2"}} </a>
+                </li>
+                <li class="d-inline">
+                    <a class="btn btn-primary" href="{% url "events:EventList" year|add:"-1" %}"> {{year|add:"-1"}} </a>
+                </li>
+                <li class="d-inline">
+                    <a class="btn btn-primary active" href="{% url "events:EventList" year|add:"0" %}"> {{year|add:"0"}} </a>
+                </li>
+                <li class="d-inline">
+                    <a class="btn btn-primary" href="{% url "events:EventList" year|add:"1" %}"> {{year|add:"1"}} </a>
+                </li>
+                <li class="d-inline">
+                    <a class="btn btn-primary" href="{% url "events:EventList" year|add:"2" %}"> {{year|add:"2"}} </a>
+                </li>
+            </ol>
+        </nav>
+        <nav class="mb-3">
             <a class="btn btn-primary" href="{% url "events:EventList" %}"> Alle framtidige </a>
             {% else %}
                 {% now "Y" as current_year %}
                 <a class="btn btn-primary" href="{% url "events:EventList" current_year %}"> Heile året </a>
             {% endif %}
-        </p>
+        </nav>
         <p>
-            <button class="btn btn-primary" id="ical-link-collapse-button" type="button">
-                Hent link til ical-feed
-            </button>
-            <span class="collapse m-3" id="ical-link-collapse">
-                <a id="ical-link" href="{{ event_feed_absolute_url }}">
-                    {{ event_feed_absolute_url }}
-                </a>
-                <span id="ical-link-collapse-clipboard-feedback"></span>
-            </span>
+            {% include "events/includes/ical_button.html" with event_feed_absolute_url=event_feed_absolute_url %}
         </p>
     </section>
 
@@ -65,5 +69,5 @@
 
 {% block js %}
     {% load static %}
-    <script src="{% static "events/event_list.js" %}"></script>
+    <script src="{% static "events/ical_button.js" %}"></script>
 {% endblock js %}

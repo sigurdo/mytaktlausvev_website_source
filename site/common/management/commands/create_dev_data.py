@@ -75,8 +75,8 @@ class Command(BaseCommand):
             modified_by=superuser,
         ).save()
         ArticleFactory(
-            title="ical-tutorial",
-            content="Importer ical-feeden fra [denne](/hendingar/taktlaushendingar.ics) linken i kalender-appen din og sett den opp til å refreshe automatisk.",
+            title="Kalenderfeed-vegvisar",
+            content="Importer kalenderfeeden frå [denne](/hendingar/taktlaushendingar.ics) lenkja i kalender-appen din og sett han opp til å oppdatere seg automatisk.",
             public=True,
             comments_allowed=False,
             created_by=superuser,
@@ -110,21 +110,21 @@ class Command(BaseCommand):
                 + timedelta(days=31)
             ),
             title="Nyttårsfest",
-            content="Nyttig for å studere edge-caser for starttid",
+            content="Nyttig for å studere kanttilfelle for starttider.",
         )
         first_wednesday = datetime.combine(date.today(), time(hour=18))
         while first_wednesday.weekday() != 2:
             first_wednesday += timedelta(days=1)
         EventFactory(
-            title="Øvelse",
-            content="Vanlig øvelse",
+            title="Øving",
+            content="Vanleg øving.",
             created_by=superuser,
             modified_by=superuser,
             start_time=make_aware(first_wednesday),
         )
         EventFactory(
-            title="Brettspillkveld",
-            content="Brettspillkveld på KJL4",
+            title="Brettspelkveld",
+            content="Brettspelkveld i KJL4.",
             created_by=superuser,
             modified_by=superuser,
             start_time=make_aware(first_wednesday + timedelta(days=1)),
@@ -137,7 +137,7 @@ class Command(BaseCommand):
         datetime_theme_party += timedelta(days=7)
         EventFactory(
             title="Temafest",
-            content="Ikke viktig med tema, men viktig med fest",
+            content="Ikkje så viktig med tema, men viktig med fest.",
             created_by=superuser,
             modified_by=superuser,
             start_time=make_aware(datetime_theme_party),
@@ -146,8 +146,8 @@ class Command(BaseCommand):
         while medal_galla_datetime.weekday() != 5:
             medal_galla_datetime += timedelta(days=1)
         EventFactory(
-            title="Medaljegalla som har vært",
-            content="Kult med galla",
+            title="Medaljegalla",
+            content="Ete lasagne, drikke ulike drikkar og danse.",
             created_by=superuser,
             modified_by=superuser,
             start_time=make_aware(medal_galla_datetime),
