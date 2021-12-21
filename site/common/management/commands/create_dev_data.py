@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import date, datetime, time, timedelta
 
 from django.core.management.base import BaseCommand
 from django.utils.timezone import make_aware
@@ -76,6 +76,14 @@ class Command(BaseCommand):
             created_by=superuser,
             modified_by=superuser,
         ).save()
+        ArticleFactory(
+            title="Kalenderfeed-vegvisar",
+            content="Importer kalenderfeeden frå [denne](/hendingar/taktlaushendingar.ics) lenkja i kalender-appen din og sett han opp til å oppdatere seg automatisk.",
+            public=True,
+            comments_allowed=False,
+            created_by=superuser,
+            modified_by=superuser,
+        )
 
         ContactCategoryFactory(name="Generelt").save()
         ContactCategoryFactory(name="Bli med!").save()
@@ -97,6 +105,51 @@ class Command(BaseCommand):
         )
         EventAttendanceFactory(
             event=event, person=retiree, status=Attendance.ATTENDING_NOT
+        )
+        EventFactory(
+            start_time=make_aware(datetime(datetime.now().year + 1, 1, 1)),
+            title="Nyttårsfest",
+            content="Nyttig for å studere kanttilfelle for starttider.",
+        )
+        first_wednesday = datetime.combine(date.today(), time(hour=18))
+        while first_wednesday.weekday() != 2:
+            first_wednesday += timedelta(days=1)
+        EventFactory(
+            title="Øving",
+            content="Vanleg øving.",
+            created_by=superuser,
+            modified_by=superuser,
+            start_time=make_aware(first_wednesday),
+        )
+        EventFactory(
+            title="Brettspelkveld",
+            content="Brettspelkveld i KJL4.",
+            created_by=superuser,
+            modified_by=superuser,
+            start_time=make_aware(first_wednesday + timedelta(days=1)),
+        )
+        month = datetime.now().month
+        year = datetime.now().year
+        datetime_theme_party = datetime(year if month < 8 else year + 1, 3, 1, 18)
+        while datetime_theme_party.weekday() != 5:
+            datetime_theme_party += timedelta(days=1)
+        datetime_theme_party += timedelta(days=7)
+        EventFactory(
+            title="Temafest",
+            content="Ikkje så viktig med tema, men viktig med fest.",
+            created_by=superuser,
+            modified_by=superuser,
+            start_time=make_aware(datetime_theme_party),
+        )
+        medal_galla_datetime = datetime(year - 1 if month < 8 else year, 11, 1, 18)
+        while medal_galla_datetime.weekday() != 5:
+            medal_galla_datetime += timedelta(days=1)
+        EventFactory(
+            title="Medaljegalla",
+            content="Ete lasagne, drikke ulike drikkar og danse.",
+            created_by=superuser,
+            modified_by=superuser,
+            start_time=make_aware(medal_galla_datetime),
         )
         flute = InstrumentGroupFactory(name="Fløyte")
         InstrumentGroupFactory(name="Klarinett")

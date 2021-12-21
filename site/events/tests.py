@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from http import HTTPStatus
 
 from django.db import IntegrityError
@@ -7,6 +7,7 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.text import slugify
+from django.utils.timezone import make_aware
 
 from accounts.factories import SuperUserFactory, UserFactory
 from common.mixins import TestMixin
@@ -119,6 +120,66 @@ class GetterTestCase(TestCase):
         """Should raise 404 if attendance doesn't exist."""
         with self.assertRaises(Http404):
             get_event_attendance_or_404(1913, "not-exist", "also-not-exist")
+
+
+class EventListTestSuite(TestMixin, TestCase):
+    def get_url(self, *args):
+        return reverse("events:EventList", args=args)
+
+    def test_requires_login(self):
+        self.assertLoginRequired(self.get_url())
+
+    def test_attendance_form_in_context(self):
+        """
+        Create 3 events and check if they have attendance_form in their context.
+        """
+        [
+            EventFactory(start_time=make_aware(datetime.now() + timedelta(1)))
+            for _ in range(3)
+        ]
+        self.assertEqual(Event.objects.count(), 3)
+        self.client.force_login(UserFactory())
+        response = self.client.get(self.get_url())
+        events = response.context["events"]
+        self.assertEqual(len(events), 3)
+        for event in events:
+            attendance_form = getattr(event, "attendance_form", None)
+            self.assertIsNotNone(attendance_form)
+
+    def test_event_feed_absolute_url_in_context(self):
+        self.client.force_login(UserFactory())
+        response = self.client.get(self.get_url())
+        event_feed_absolute_url = response.context["event_feed_absolute_url"]
+        self.assertEquals(
+            event_feed_absolute_url, "http://testserver/hendingar/taktlaushendingar.ics"
+        )
+
+    def test_filter_future_events(self):
+        """
+        Create 1 past and 1 future event and check if the number of events in context is correct.
+        """
+        EventFactory(start_time=make_aware(datetime.now() - timedelta(1)))
+        EventFactory(start_time=make_aware(datetime.now() + timedelta(1)))
+        self.client.force_login(UserFactory())
+        response = self.client.get(self.get_url())
+        self.assertEquals(len(response.context["events"]), 1)
+
+    def test_filter_year_events(self):
+        """
+        Create different amount of events for 2020, 2021, 2022 and 2023 and check if the number of
+        events in the contexts for the years are correct.
+        """
+        EventFactory(start_time=make_aware(datetime(2021, 1, 1)))
+        EventFactory(start_time=make_aware(datetime(2022, 1, 1)))
+        EventFactory(start_time=make_aware(datetime(2022, 2, 1)))
+        EventFactory(start_time=make_aware(datetime(2023, 1, 1)))
+        EventFactory(start_time=make_aware(datetime(2023, 2, 1)))
+        EventFactory(start_time=make_aware(datetime(2023, 3, 1)))
+        self.client.force_login(UserFactory())
+        self.assertEquals(len(self.client.get(self.get_url(2020)).context["events"]), 0)
+        self.assertEquals(len(self.client.get(self.get_url(2021)).context["events"]), 1)
+        self.assertEquals(len(self.client.get(self.get_url(2022)).context["events"]), 2)
+        self.assertEquals(len(self.client.get(self.get_url(2023)).context["events"]), 3)
 
 
 class EventDetailTestCase(TestMixin, TestCase):

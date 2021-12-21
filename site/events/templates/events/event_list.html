@@ -1,0 +1,73 @@
+
+{% extends "base.html" %}
+
+{% block title %}Hendingar{% if year %} {{year}}{% endif %}{% endblock title %}
+
+{% block page %}
+<article class="mt-4">
+    <header class="mb-4">
+        <h1>Hendingar{% if year %} {{year}}{% endif %}</h1>
+    </header>
+
+    <section class="mb-3">
+        <nav class="mb-3">
+            {% if year %}
+            <ol class="list-unstyled">
+                <li class="d-inline">
+                    <a class="btn btn-primary" href="{% url "events:EventList" year|add:"-2" %}"> {{year|add:"-2"}} </a>
+                </li>
+                <li class="d-inline">
+                    <a class="btn btn-primary" href="{% url "events:EventList" year|add:"-1" %}"> {{year|add:"-1"}} </a>
+                </li>
+                <li class="d-inline">
+                    <a class="btn btn-primary active" href="{% url "events:EventList" year|add:"0" %}"> {{year|add:"0"}} </a>
+                </li>
+                <li class="d-inline">
+                    <a class="btn btn-primary" href="{% url "events:EventList" year|add:"1" %}"> {{year|add:"1"}} </a>
+                </li>
+                <li class="d-inline">
+                    <a class="btn btn-primary" href="{% url "events:EventList" year|add:"2" %}"> {{year|add:"2"}} </a>
+                </li>
+            </ol>
+        </nav>
+        <nav class="mb-3">
+            <a class="btn btn-primary" href="{% url "events:EventList" %}"> Alle framtidige </a>
+            {% else %}
+                {% now "Y" as current_year %}
+                <a class="btn btn-primary" href="{% url "events:EventList" current_year %}"> Heile året </a>
+            {% endif %}
+        </nav>
+        <p>
+            {% include "events/includes/ical_button.html" with event_feed_absolute_url=event_feed_absolute_url %}
+        </p>
+    </section>
+
+
+    {% if events %}
+    <section>
+    {% regroup events by start_month as events_grouped %}
+    <ol class="list-unstyled">
+        {% for group in events_grouped %}
+        <li>
+            <h2> {{ group.grouper|date:"F"|capfirst }} {% if not year %}{{ group.grouper|date:"Y" }}{% endif %} </h2>
+            <hr>
+
+            <ol class="list-unstyled">
+                {% for event in group.list %}
+                <li>
+                    {% include "events/includes/event_list_card.html" with event=event user=user csrf_token=csrf_token only %}
+                </li>
+                {% endfor %}
+            </ol>
+        </li>
+        {% endfor %}
+    </ol>
+    </section>
+    {% endif %}
+</article>
+{% endblock page %}
+
+{% block js %}
+    {% load static %}
+    <script src="{% static "events/ical_button.js" %}"></script>
+{% endblock js %}

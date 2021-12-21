@@ -1,10 +1,15 @@
+from datetime import date, datetime
+
 from django.contrib.auth.mixins import (
     LoginRequiredMixin,
     PermissionRequiredMixin,
     UserPassesTestMixin,
 )
+from django.db.models.functions.datetime import TruncMonth
+from django.db.models.query_utils import Q
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
+from django.utils.timezone import localtime, make_aware
 from django.views.generic import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.views.generic.list import ListView
@@ -29,6 +34,46 @@ def get_event_attendance_or_404(year, slug_event, slug_person):
     )
 
 
+class EventList(LoginRequiredMixin, ListView):
+    model = Event
+    context_object_name = "events"
+
+    def get_queryset(self):
+        match self.kwargs:
+            case {"year": year}:
+                filter = Q(start_time__year=year)
+            case _:
+                filter = Q(
+                    start_time__gte=make_aware(
+                        datetime.combine(date.today(), datetime.min.time())
+                    )
+                )
+
+        return Event.objects.filter(filter).annotate(
+            start_month=TruncMonth("start_time")
+        )
+
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+        for event in context_data["events"]:
+            # Set attendance form on all events
+            event.attendance_form = self.get_attendance_form(event)
+        context_data["event_feed_absolute_url"] = self.request.build_absolute_uri(
+            reverse("events:EventFeed")
+        )
+        if self.kwargs.get("year"):
+            context_data["year"] = self.kwargs.get("year")
+        return context_data
+
+    def get_attendance_form(self, event):
+        form = EventAttendanceForm(initial={"status": Attendance.ATTENDING})
+        form.helper.form_action = reverse(
+            "events:EventAttendanceCreateFromList",
+            args=[localtime(event.start_time).year, event.slug],
+        )
+        return form
+
+
 class EventDetail(LoginRequiredMixin, DetailView):
     """View for viewing an event."""
 
@@ -41,7 +86,7 @@ class EventDetail(LoginRequiredMixin, DetailView):
         form = EventAttendanceForm(initial={"status": Attendance.ATTENDING})
         form.helper.form_action = reverse(
             "events:EventAttendanceCreate",
-            args=[self.object.start_time.year, self.object.slug],
+            args=[localtime(self.object.start_time).year, self.object.slug],
         )
         return form
 
@@ -129,6 +174,13 @@ class EventAttendanceCreate(LoginRequiredMixin, CreateView):
 
     def get_success_url(self):
         return self.object.event.get_absolute_url()
+
+
+class EventAttendanceCreateFromList(EventAttendanceCreate):
+    """View for registering event attendance from EventList."""
+
+    def get_success_url(self):
+        return reverse("events:EventList")
 
 
 class EventAttendanceUpdate(UserPassesTestMixin, UpdateView):

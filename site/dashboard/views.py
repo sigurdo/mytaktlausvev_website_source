@@ -17,6 +17,6 @@ def dashboard(request):
             "quotes": Quote.objects.all()[:2],
             "events": Event.objects.filter(
                 start_time__gte=make_aware(datetime.now() - timedelta(1))
-            )[:10],
+            )[:4],
         },
     )
