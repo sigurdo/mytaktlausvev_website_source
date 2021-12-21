@@ -105,10 +105,7 @@ class Command(BaseCommand):
             event=event, person=retiree, status=Attendance.ATTENDING_NOT
         )
         EventFactory(
-            start_time=make_aware(
-                datetime.combine(date.today().replace(day=1), datetime.min.time())
-                + timedelta(days=31)
-            ),
+            start_time=make_aware(datetime(datetime.now().year + 1, 1, 1)),
             title="Nyttårsfest",
             content="Nyttig for å studere kanttilfelle for starttider.",
         )
