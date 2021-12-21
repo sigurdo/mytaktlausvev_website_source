@@ -5,19 +5,17 @@
                 {{ event }}
             </a>
         </h3>
-        <dl>
-            <dd>
-                <time datetime="{{ event.start_time | date:"c" }}">
-                    {{ event.start_time | date:"d.m.Y - H:i" }}
+        <p>
+            <time datetime="{{ event.start_time | date:"c" }}">
+                {{ event.start_time | date:"d.m.Y - H:i" }}
+            </time>
+            {% if event.end_time %}
+                til
+                <time datetime="{{ event.end_time | date:"c" }}">
+                    {{ event.end_time | date:"d.m.Y - H:i" }}
                 </time>
-                {% if event.end_time %}
-                    til
-                    <time datetime="{{ event.end_time | date:"c" }}">
-                        {{ event.end_time | date:"d.m.Y - H:i" }}
-                    </time>
-                {% endif %}
-            </dd>
-        </dl>
+            {% endif %}
+        </p>
         <p>
             {% load markdown %}
             {{ event.content|truncatechars:500|markdown }}
