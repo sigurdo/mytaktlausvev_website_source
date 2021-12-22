@@ -1,5 +1,8 @@
-import bleach
+from functools import partial
+
 import markdown as md
+from bleach import Cleaner
+from bleach.linkifier import LinkifyFilter, build_url_re
 from django import template
 from django.utils.safestring import mark_safe
 
@@ -8,8 +11,10 @@ from common.markdown_extensions import (
     StrikethroughExtension,
     UnderlineExtension,
 )
+from common.tlds import TLDS
 
 register = template.Library()
+
 
 ALLOWED_TAGS = [
     "h1",
@@ -73,5 +78,11 @@ def markdown(string):
             UnderlineExtension(),
         ],
     )
-    bleached = bleach.clean(converted, tags=ALLOWED_TAGS, attributes=ALLOWED_ATTRIBUTES)
+
+    cleaner = Cleaner(
+        tags=ALLOWED_TAGS,
+        attributes=ALLOWED_ATTRIBUTES,
+        filters=[partial(LinkifyFilter, url_re=build_url_re(tlds=TLDS))],
+    )
+    bleached = cleaner.clean(converted)
     return mark_safe(bleached)
