@@ -19,7 +19,7 @@
             <tr>
                 <td>
                     <div class="mb-1 fs-5">
-                        {{ topic.title }}
+                        <a href="{{ topic.get_absolute_url }}">{{ topic.title }}</a>
                     </div>
                     <div>av
                         <a href="{{ topic.created_by.get_absolute_url }}">

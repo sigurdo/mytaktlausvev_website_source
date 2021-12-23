@@ -1,0 +1,34 @@
+<article class="d-flex my-4">
+    <div class="mx-2 my-1 h-12 w-12 flex-shrink-1">
+        <a
+            href="{{ post.created_by.get_absolute_url }}"
+            class="d-flex justify-content-center w-100 h-100"
+        >
+            <img
+                src="{{ post.created_by.get_avatar_url }}"
+                class="object-fit-cover mw-100 mh-100"
+            />
+        </a>
+    </div>
+
+    <div class="p-margin-last-0 mx-1 flex-1 overflow-auto">
+        <header class="d-flex">
+            <h2 class="fw-bold fs-6 mb-0">
+                <a
+                    href="{{ post.created_by.get_absolute_url }}"
+                    class="text-decoration-none color-unset"
+                >
+                    {{ post.created_by.get_name }}
+                </a>
+            </h2>
+
+            <time class="ms-auto" datetime="{{ post.submitted | date:"c" }}">
+                {{ post.submitted | date:"d.m.Y - H:i" }}
+            </time>
+        </header>
+
+
+        {% load markdown %}
+        {{ post.content | markdown }}
+    </div>
+</article>

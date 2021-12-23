@@ -1,10 +1,12 @@
 from datetime import datetime
+from http import HTTPStatus
 
 from django.test import TestCase
 from django.urls import reverse
 from django.utils.text import slugify
 from django.utils.timezone import make_aware
 
+from accounts.factories import SuperUserFactory
 from common.mixins import TestMixin
 
 from .factories import ForumFactory, PostFactory, TopicFactory
@@ -77,7 +79,10 @@ class TopicTestSuite(TestCase):
 
     def test_get_absolute_url(self):
         """Should link to the topic's detail page."""
-        pass
+        self.assertEqual(
+            self.topic.get_absolute_url(),
+            reverse("forum:TopicDetail", args=[self.topic.forum.slug, self.topic.slug]),
+        )
 
     def test_creates_slug_from_title_automatically(self):
         """Should create a slug from the title automatically during creation."""
@@ -167,3 +172,22 @@ class ForumDetailTestSuite(TestMixin, TestCase):
 
     def test_requires_login(self):
         self.assertLoginRequired(self.get_url())
+
+
+class TopicDetailTestSuite(TestMixin, TestCase):
+    def setUp(self):
+        self.topic = TopicFactory()
+
+    def get_url(self, args=None):
+        return reverse(
+            "forum:TopicDetail", args=args or [self.topic.forum.slug, self.topic.slug]
+        )
+
+    def test_requires_login(self):
+        self.assertLoginRequired(self.get_url())
+
+    def test_returns_404_if_topic_not_exist(self):
+        """Should return 404 if the topic doesn't exist."""
+        self.client.force_login(SuperUserFactory())
+        response = self.client.get(self.get_url(["forum-not-exist", "topic-not-exist"]))
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)

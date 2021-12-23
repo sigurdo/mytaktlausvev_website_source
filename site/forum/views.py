@@ -1,9 +1,10 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models.aggregates import Count, Max
 from django.db.models.expressions import F
+from django.shortcuts import get_object_or_404
 from django.views.generic import DetailView, ListView
 
-from .models import Forum
+from .models import Forum, Topic
 
 
 class ForumList(LoginRequiredMixin, ListView):
@@ -32,3 +33,12 @@ class ForumDetail(LoginRequiredMixin, DetailView):
             .order_by("-latest_submitted")
         )
         return context
+
+
+class TopicDetail(LoginRequiredMixin, DetailView):
+    model = Topic
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(
+            Topic, slug=self.kwargs["slug_topic"], forum__slug=self.kwargs["slug_forum"]
+        )

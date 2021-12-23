@@ -45,6 +45,9 @@ class Topic(ArticleMixin):
         editable=True,
     )
 
+    def get_absolute_url(self):
+        return reverse("forum:TopicDetail", args=[self.forum.slug, self.slug])
+
     class Meta:
         verbose_name = "emne"
         verbose_name_plural = "emne"
@@ -66,7 +69,7 @@ class Post(ArticleMixin):
         return self.content_short()
 
     class Meta:
-        ordering = ["-submitted"]
+        ordering = ["submitted"]
         get_latest_by = "submitted"
         verbose_name = "innlegg"
         verbose_name_plural = "innlegg"
