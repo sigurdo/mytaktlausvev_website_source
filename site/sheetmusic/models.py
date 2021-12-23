@@ -148,7 +148,7 @@ class Pdf(models.Model):
 
     def get_absolute_url(self):
         return reverse("sheetmusic:ScoreView", kwargs={"slug": self.score.slug})
-    
+
     def get_base_filename(self):
         """Returns the base filename of the pdf file without file extension."""
         filepath = str(self.file)
