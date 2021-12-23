@@ -6,9 +6,9 @@
     {% for comment in comments %}
         <li id="comment-{{ comment.pk }}" class="mb-4">
             <article class="d-flex">
-                <div class="mx-2 my-1" style="width: 40px; height: 40px;">
+                <div class="mx-2 my-1 w-12 h-12">
                     <a
-                        href="{% url 'accounts:ProfileDetail' comment.created_by.slug %}"
+                        href="{{ comment.created_by.get_absolute_url }}"
                         class="d-flex justify-content-center w-100 h-100"
                     >
                         <img
@@ -18,10 +18,10 @@
                     </a>
                 </div>
 
-                <div class="p-margin-last-0 mx-1">
-                    <h3 class="fw-bold h6 m-0">
+                <div class="p-margin-last-0 mx-1 flex-1">
+                    <h3 class="fw-bold fs-6 m-0">
                         <a
-                            href="{% url 'accounts:ProfileDetail' comment.created_by.slug %}"
+                            href="{{ comment.created_by.get_absolute_url }}"
                             class="text-decoration-none color-unset"
                         >
                             {{ comment.created_by.get_name }}

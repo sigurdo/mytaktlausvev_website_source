@@ -32,6 +32,13 @@
   );
 }
 
+.flex-1 {
+  flex: 1 !important;
+}
+.flex-0 {
+  flex: 0 !important;
+}
+
 .w-0 {
   width: 0px;
 }
