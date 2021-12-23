@@ -85,7 +85,7 @@ class ScoreDeleteTestSuite(TestMixin, TestCase):
 
 class PartsUpdateOverviewTestSuite(TestMixin, TestCase):
     def get_url(self):
-        return reverse("sheetmusic:PartsUpdateOverview", args=[self.score.slug])
+        return reverse("sheetmusic:PartsUpdateIndex", args=[self.score.slug])
 
     def setUp(self):
         self.score = ScoreFactory()
@@ -137,7 +137,7 @@ class PartsUpdateTestSuite(TestMixin, TestCase):
         self.client.force_login(user)
         response = self.client.post(self.get_url(), self.test_data)
         self.assertRedirects(
-            response, reverse("sheetmusic:PartsUpdateOverview", args=[self.score.slug])
+            response, reverse("sheetmusic:PartsUpdateIndex", args=[self.score.slug])
         )
 
     def test_modify(self):

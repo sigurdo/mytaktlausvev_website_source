@@ -16,8 +16,8 @@ urlpatterns = [
     ),
     path(
         "<slug:slug>/rediger/stemmer/",
-        views.PartsUpdateOverview.as_view(),
-        name="PartsUpdateOverview",
+        views.PartsUpdateIndex.as_view(),
+        name="PartsUpdateIndex",
     ),
     path(
         "<slug:score_slug>/rediger/stemmer/<slug:slug>/",

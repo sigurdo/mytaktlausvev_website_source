@@ -10,7 +10,7 @@
             <a class="btn btn-primary btn-sm" href="{% url 'sheetmusic:ScoreUpdate' score.slug %}" class="fs-6"> Rediger </a>
         {% endif %}
         {% if perms.sheetmusic.add_part and perms.sheetmusic.change_part and perms.sheetmusic.delete_part %}
-            <a class="btn btn-primary btn-sm" href="{% url 'sheetmusic:PartsUpdateOverview' score.slug %}" class="fs-6"> Rediger stemmer </a>
+            <a class="btn btn-primary btn-sm" href="{% url 'sheetmusic:PartsUpdateIndex' score.slug %}" class="fs-6"> Rediger stemmer </a>
         {% endif %}
     </h1>
 

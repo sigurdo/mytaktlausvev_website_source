@@ -69,7 +69,7 @@ class ScoreDelete(PermissionRequiredMixin, DeleteView):
     permission_required = "sheetmusic.delete_score"
 
 
-class PartsUpdateOverview(PermissionRequiredMixin, ListView):
+class PartsUpdateIndex(PermissionRequiredMixin, ListView):
     model = Pdf
     context_object_name = "pdfs"
     template_name = "sheetmusic/parts_update_overview.html"
@@ -114,7 +114,7 @@ class PartsUpdate(
 
     def get_success_url(self) -> str:
         return reverse(
-            "sheetmusic:PartsUpdateOverview", args=[self.get_object().score.slug]
+            "sheetmusic:PartsUpdateIndex", args=[self.get_object().score.slug]
         )
 
     def get_context_data(self, **kwargs):
