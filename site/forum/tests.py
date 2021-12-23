@@ -28,7 +28,10 @@ class ForumTestSuite(TestCase):
 
     def test_get_absolute_url(self):
         """Should link to the forum's detail page."""
-        pass
+        self.assertEqual(
+            self.forum.get_absolute_url(),
+            reverse("forum:ForumDetail", args=[self.forum.slug]),
+        )
 
     def test_creates_slug_from_title_automatically(self):
         """Should create a slug from the title automatically during creation."""
@@ -143,6 +146,17 @@ class PostTestSuite(TestCase):
 class ForumListTestSuite(TestMixin, TestCase):
     def get_url(self):
         return reverse("forum:ForumList")
+
+    def test_requires_login(self):
+        self.assertLoginRequired(self.get_url())
+
+
+class ForumDetailTestSuite(TestMixin, TestCase):
+    def setUp(self):
+        self.forum = ForumFactory()
+
+    def get_url(self):
+        return reverse("forum:ForumDetail", args=[self.forum.slug])
 
     def test_requires_login(self):
         self.assertLoginRequired(self.get_url())

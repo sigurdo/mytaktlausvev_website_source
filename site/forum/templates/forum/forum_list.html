@@ -19,7 +19,9 @@
             {% for forum in forums %}
             <tr>
                 <td>
-                    <div class="mb-1 fs-5">{{ forum.title }}</div>
+                    <div class="mb-1 fs-5">
+                        <a href="{{ forum.get_absolute_url }}">{{ forum.title }}</a>
+                    </div>
                     <div>{{ forum.description }}</div>
                 </td>
                 <td>{{ forum.topics.count }}</td>

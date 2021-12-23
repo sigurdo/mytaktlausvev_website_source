@@ -1,6 +1,7 @@
 from autoslug.fields import AutoSlugField
 from django.db import models
 from django.template.defaultfilters import truncatechars
+from django.urls import reverse
 
 from common.models import ArticleMixin
 
@@ -17,6 +18,9 @@ class Forum(models.Model):
 
     def __str__(self):
         return self.title
+
+    def get_absolute_url(self):
+        return reverse("forum:ForumDetail", args=[self.slug])
 
     def latest_post(self):
         return Post.objects.filter(topic__in=self.topics.all()).latest()
