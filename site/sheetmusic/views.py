@@ -72,7 +72,7 @@ class ScoreDelete(PermissionRequiredMixin, DeleteView):
 class PartsUpdateIndex(PermissionRequiredMixin, ListView):
     model = Pdf
     context_object_name = "pdfs"
-    template_name = "sheetmusic/parts_update_overview.html"
+    template_name = "sheetmusic/parts_update_index.html"
     # This view does not really need to require any permissions since the actual
     # operations are protected by other views, but it is clean to have it since
     # the user won't find anything useful here at all if it does not have these
