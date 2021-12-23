@@ -90,10 +90,17 @@ class TopicTestSuite(TestCase):
         self.topic.save()
         self.assertEqual(self.topic.slug, slug_before)
 
-    def test_unique_slugs(self):
-        """Should create unique slugs."""
-        topic_same_title = TopicFactory(title=self.topic.title)
-        self.assertNotEqual(self.topic.slug, topic_same_title.slug)
+    def test_creates_unique_slugs_for_topics_in_same_forum(self):
+        """Should create unique slugs for topics in the same forum."""
+        topic_same_forum = TopicFactory(title=self.topic.title, forum=self.topic.forum)
+        self.assertNotEqual(self.topic.slug, topic_same_forum.slug)
+
+    def test_topics_in_different_forums_can_have_equal_slugs(self):
+        """Should allow topics in different forums to have equal slugs."""
+        topic_different_forum = TopicFactory(
+            title=self.topic.title, forum=ForumFactory()
+        )
+        self.assertEqual(self.topic.slug, topic_different_forum.slug)
 
     def test_does_not_override_provided_slug(self):
         """Should not override the slug if provided during creation."""

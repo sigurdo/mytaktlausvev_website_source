@@ -41,7 +41,7 @@ class Topic(ArticleMixin):
     slug = AutoSlugField(
         verbose_name="lenkjenamn",
         populate_from="title",
-        unique=True,
+        unique_with="forum",
         editable=True,
     )
 
