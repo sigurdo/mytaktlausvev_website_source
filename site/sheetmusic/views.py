@@ -26,10 +26,9 @@ from django.views.generic.edit import (
 )
 
 from .forms import (
-    EditPartFormSet,
-    EditPartFormSetHelper,
     EditPdfFormset,
     EditPdfFormsetHelper,
+    PartsUpdateFormset,
     ScoreForm,
     UploadPdfForm,
 )
@@ -70,6 +69,32 @@ class ScoreDelete(PermissionRequiredMixin, DeleteView):
     permission_required = "sheetmusic.delete_score"
 
 
+class PartsUpdateOverview(PermissionRequiredMixin, ListView):
+    model = Pdf
+    context_object_name = "pdfs"
+    template_name = "sheetmusic/parts_update_overview.html"
+    # This view does not really need to require any permissions since the actual
+    # operations are protected by other views, but it is clean to have it since
+    # the user won't find anything useful here at all if it does not have these
+    # permsissions
+    permission_required = (
+        "sheetmusic.add_part",
+        "sheetmusic.change_part",
+        "sheetmusic.delete_part",
+    )
+
+    def get_context_data(self, **kwargs):
+        kwargs["score"] = self.score
+        return super().get_context_data(**kwargs)
+
+    def setup(self, request, *args, **kwargs):
+        self.score = Score.objects.get(slug=kwargs["slug"])
+        return super().setup(request, *args, **kwargs)
+
+    def get_queryset(self):
+        return Pdf.objects.filter(score=self.score)
+
+
 class PartsUpdate(
     PermissionRequiredMixin,
     FormMixin,
@@ -77,9 +102,10 @@ class PartsUpdate(
     TemplateResponseMixin,
     ProcessFormView,
 ):
-    model = Score
-    form_class = EditPartFormSet
-    template_name = "sheetmusic/score_edit.html"
+    model = Pdf
+    form_class = PartsUpdateFormset
+    template_name = "common/form.html"
+    context_object_name = "pdf"
     permission_required = (
         "sheetmusic.add_part",
         "sheetmusic.change_part",
@@ -89,22 +115,24 @@ class PartsUpdate(
     def get_success_url(self) -> str:
         return self.get_object().get_absolute_url()
 
+    def get_context_data(self, **kwargs):
+        kwargs["form_title"] = f"Rediger stemmer for {self.get_object()}"
+        return super().get_context_data(**kwargs)
+
     def get_form_kwargs(self) -> Dict[str, Any]:
         # We have to override get_form_kwargs() to restrict the queryset of the formset to only
         # the parts that are related to the current score.
         kwargs = super().get_form_kwargs()
-        kwargs["queryset"] = Part.objects.filter(pdf__score=self.get_object())
+        kwargs["queryset"] = self.get_object().parts.all()
         return kwargs
 
-    def get_form(self, **kwargs) -> BaseModelForm:
-        # Here we have to modify the queryset of each subform of the formset
-        formset = super().get_form(**kwargs)
-        for form in formset.forms:
-            form.fields["pdf"].queryset = self.get_object().pdfs
-        return formset
+    def get_queryset(self):
+        return Pdf.objects.filter(score__slug=self.kwargs["score_slug"])
 
     def form_valid(self, form):
         # We must explicitly save the form because it is not done automatically by any ancestors
+        for subform in form.forms:
+            subform.instance.pdf = self.get_object()
         form.save()
         return super().form_valid(form)
 
@@ -117,11 +145,6 @@ class PartsUpdate(
         # We must set self.object here to be compatible with SingleObjectMixin
         self.object = self.get_object()
         return super().get(*args, **kwargs)
-
-    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
-        # Here we have to inject the formset helper
-        kwargs["helper"] = EditPartFormSetHelper
-        return super().get_context_data(**kwargs)
 
 
 class PdfsUpdate(

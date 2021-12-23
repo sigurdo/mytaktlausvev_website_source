@@ -111,6 +111,13 @@ pdf_file_validators = [
 ]
 
 
+def pdf_slug_populate_from(pdf):
+    filepath = str(pdf.file)
+    filename = os.path.basename(filepath)
+    filename_no_ext = os.path.splitext(filename)[0]
+    return filename_no_ext
+
+
 class Pdf(models.Model):
     """Model representing an uploaded pdf"""
 
@@ -122,6 +129,12 @@ class Pdf(models.Model):
         upload_to="sheetmusic/original_pdfs/",
         default=None,
         validators=pdf_file_validators,
+    )
+    slug = AutoSlugField(
+        verbose_name="lenkjenamn",
+        populate_from=pdf_slug_populate_from,
+        unique_with="score__slug",
+        editable=True,
     )
     processing = models.BooleanField(
         "prosessering pågår", default=False, editable=False

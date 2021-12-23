@@ -17,16 +17,6 @@
             </a>
         </li>
         {% endif %}
-        {% if perms.sheetmusic.add_part and perms.sheetmusic.change_part and perms.sheetmusic.delete_part %}
-        <li class="nav-item">
-            <a
-                class="nav-link {% if request.resolver_match.view_name == 'sheetmusic:PartsUpdate' %} active {% endif %}"
-                href="{% url 'sheetmusic:PartsUpdate' score.slug %}"
-            >
-                Stemmer
-            </a>
-        </li>
-        {% endif %}
         {% if perms.sheetmusic.delete_pdf %}
         <li class="nav-item">
             <a

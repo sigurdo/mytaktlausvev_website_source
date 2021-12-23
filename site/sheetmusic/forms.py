@@ -26,21 +26,22 @@ class ScoreForm(forms.ModelForm):
         ]
 
 
-class EditPartForm(forms.ModelForm):
-    """Form for editing a part"""
+class PartsUpdateForm(forms.ModelForm):
+    """Form for editing a part for a given pdf"""
 
     helper = FormHelper()
 
     class Meta:
         model = Part
-        fields = ["name", "from_page", "to_page", "pdf"]
+        fields = ["name", "from_page", "to_page"]
         widgets = {
-            "from_page": forms.NumberInput(attrs={"size": 3}),
-            "to_page": forms.NumberInput(attrs={"size": 3}),
+            "name": forms.TextInput(attrs={"size": 40}),
+            "from_page": forms.NumberInput(attrs={"size": 5}),
+            "to_page": forms.NumberInput(attrs={"size": 5}),
         }
 
 
-class EditPartFormSetHelper(FormHelper):
+class PartsUpdateFormsetHelper(FormHelper):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.render_required_fields = True
@@ -48,15 +49,15 @@ class EditPartFormSetHelper(FormHelper):
         self.add_input(Submit("submit", "Lagre"))
 
 
-EditPartFormSet = modelformset_factory(
+PartsUpdateFormset = modelformset_factory(
     Part,
-    form=EditPartForm,
+    form=PartsUpdateForm,
     can_delete=True,
-    extra=1,
+    extra=20,
 )
 
 
-EditPartFormSet.helper = EditPartFormSetHelper()
+PartsUpdateFormset.helper = PartsUpdateFormsetHelper()
 
 
 class UploadPdfForm(forms.Form):

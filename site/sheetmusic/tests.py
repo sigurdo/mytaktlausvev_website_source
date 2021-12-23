@@ -10,7 +10,7 @@ from common.test_utils import create_formset_post_data
 from web.settings import BASE_DIR
 
 from .factories import FavoritePartFactory, PartFactory, PdfFactory, ScoreFactory
-from .forms import EditPartFormSet, EditPdfFormset
+from .forms import EditPdfFormset, PartsUpdateFormset
 from .models import Part, Pdf, Score
 
 
@@ -83,6 +83,22 @@ class ScoreDeleteTestSuite(TestMixin, TestCase):
         self.assertRedirects(response, reverse("sheetmusic:ScoreList"))
 
 
+class PartsUpdateOverviewTestSuite(TestMixin, TestCase):
+    def get_url(self):
+        return reverse("sheetmusic:PartsUpdateOverview", args=[self.score.slug])
+
+    def setUp(self):
+        self.score = ScoreFactory()
+
+    def test_requires_permission(self):
+        self.assertPermissionRequired(
+            self.get_url(),
+            "sheetmusic.add_part",
+            "sheetmusic.change_part",
+            "sheetmusic.delete_part",
+        )
+
+
 class PartsUpdateTestSuite(TestMixin, TestCase):
     def create_post_data(self, data):
         return create_formset_post_data(
@@ -90,12 +106,14 @@ class PartsUpdateTestSuite(TestMixin, TestCase):
                 "name": "name",
                 "from_page": "1",
                 "to_page": "1",
-                "pdf": str(self.pdf.pk),
                 "id": str(self.part.pk),
             },
-            formset_class=EditPartFormSet,
+            formset_class=PartsUpdateFormset,
             data=data,
         )
+
+    def get_url(self):
+        return reverse("sheetmusic:PartsUpdate", args=[self.score.slug, self.pdf.slug])
 
     def setUp(self):
         self.score = ScoreFactory()
@@ -104,13 +122,11 @@ class PartsUpdateTestSuite(TestMixin, TestCase):
         self.test_data = self.create_post_data([])
 
     def test_requires_login(self):
-        self.assertLoginRequired(
-            reverse("sheetmusic:PartsUpdate", args=[self.score.slug])
-        )
+        self.assertLoginRequired(self.get_url())
 
     def test_requires_permission(self):
         self.assertPermissionRequired(
-            reverse("sheetmusic:PartsUpdate", args=[self.score.slug]),
+            self.get_url(),
             "sheetmusic.add_part",
             "sheetmusic.change_part",
             "sheetmusic.delete_part",
@@ -119,9 +135,7 @@ class PartsUpdateTestSuite(TestMixin, TestCase):
     def test_success_redirect(self):
         user = SuperUserFactory()
         self.client.force_login(user)
-        response = self.client.post(
-            reverse("sheetmusic:PartsUpdate", args=[self.score.slug]), self.test_data
-        )
+        response = self.client.post(self.get_url(), self.test_data)
         self.assertRedirects(
             response, reverse("sheetmusic:ScoreView", args=[self.score.slug])
         )
@@ -130,7 +144,7 @@ class PartsUpdateTestSuite(TestMixin, TestCase):
         user = SuperUserFactory()
         self.client.force_login(user)
         self.client.post(
-            reverse("sheetmusic:PartsUpdate", args=[self.score.slug]),
+            self.get_url(),
             self.create_post_data([{"name": "another name"}]),
         )
         part = Part.objects.get(pk=self.part.pk)
@@ -140,7 +154,7 @@ class PartsUpdateTestSuite(TestMixin, TestCase):
         user = SuperUserFactory()
         self.client.force_login(user)
         self.client.post(
-            reverse("sheetmusic:PartsUpdate", args=[self.score.slug]),
+            self.get_url(),
             self.create_post_data(
                 [
                     {},
@@ -148,7 +162,6 @@ class PartsUpdateTestSuite(TestMixin, TestCase):
                         "name": "new name",
                         "from_page": "1",
                         "to_page": "1",
-                        "pdf": str(self.pdf.pk),
                     },
                 ]
             ),
@@ -162,7 +175,7 @@ class PartsUpdateTestSuite(TestMixin, TestCase):
         user = SuperUserFactory()
         self.client.force_login(user)
         self.client.post(
-            reverse("sheetmusic:PartsUpdate", args=[self.score.slug]),
+            self.get_url(),
             self.create_post_data([{"DELETE": "on"}]),
         )
         count = self.pdf.parts.count()
