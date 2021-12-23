@@ -32,9 +32,9 @@
 
         <tbody>
             {% for score in scores %}
-                <tr class="linkify-tr">
+                <tr id="{{score.slug}}-tr">
                     <td>
-                        <a class="linkify-tr" href="{% url "sheetmusic:ScoreView" score.slug %}">
+                        <a class="larger-link" data-larger-link-target="#{{score.slug}}-tr" href="{% url "sheetmusic:ScoreView" score.slug %}">
                             {{ score.title }}
                         </a>
                     </td>
@@ -74,5 +74,5 @@
 
 {% block js %}
     {% load static %}
-    <script src="{% static "common/js/linkify_tr.js" %}"></script>
+    <script src="{% static "common/js/larger_link.js" %}"></script>
 {% endblock js %}
