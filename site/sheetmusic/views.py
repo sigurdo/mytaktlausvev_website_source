@@ -12,7 +12,7 @@ from django.forms import BaseModelForm, ValidationError
 from django.http import HttpResponse
 from django.http.response import FileResponse
 from django.shortcuts import get_object_or_404
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse, reverse_lazy
 from django.views.generic import DetailView, ListView, View
 from django.views.generic.base import TemplateResponseMixin
 from django.views.generic.detail import SingleObjectMixin
@@ -113,7 +113,9 @@ class PartsUpdate(
     )
 
     def get_success_url(self) -> str:
-        return reverse("sheetmusic:PartsUpdateOverview", args=[self.get_object().score.slug])
+        return reverse(
+            "sheetmusic:PartsUpdateOverview", args=[self.get_object().score.slug]
+        )
 
     def get_context_data(self, **kwargs):
         kwargs["form_title"] = f"Rediger stemmer for {self.get_object()}"

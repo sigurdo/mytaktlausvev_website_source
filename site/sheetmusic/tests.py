@@ -137,7 +137,7 @@ class PartsUpdateTestSuite(TestMixin, TestCase):
         self.client.force_login(user)
         response = self.client.post(self.get_url(), self.test_data)
         self.assertRedirects(
-            response, reverse("sheetmusic:ScoreView", args=[self.score.slug])
+            response, reverse("sheetmusic:PartsUpdateOverview", args=[self.score.slug])
         )
 
     def test_modify(self):
