@@ -68,6 +68,7 @@ INSTALLED_APPS = [
     "advent_calendar",
     "easter_eggs",
     "pwa",
+    "forum",
 ]
 
 MIDDLEWARE = [
