@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Forum{% endblock title %}
+
+{% block page %}
+<article>
+    <h1>Forum</h1>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Forum</th>
+                <th>Emne</th>
+                <th>Innlegg</th>
+                <th>Siste innlegg</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for forum in forums %}
+            <tr>
+                <td>
+                    <div class="mb-1 fs-5">{{ forum.title }}</div>
+                    <div>{{ forum.description }}</div>
+                </td>
+                <td>{{ forum.topics.count }}</td>
+                <td>{{ forum.post_count }}</td>
+                <td>
+                    {% with forum.latest_post as latest_post %}
+                    {% if latest_post %}
+                        <div>{{ latest_post.content_short }}</div>
+                        <div>av
+                            <a href="{{ latest_post.created_by.get_absolute_url }}">
+                                {{ latest_post.created_by.username }}
+                            </a>
+                        </div>
+                        <div>
+                            <time datetime="{{ latest_post.submitted | date:"c" }}">
+                                {{ latest_post.submitted | date:"d.m.Y - H:i" }}
+                            </time>
+                        </div>
+                    {% else %}
+                        <i>Inga innlegg funne</i>
+                    {% endif %}
+                    {% endwith %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</article>
+{% endblock page %}

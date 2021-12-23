@@ -1,7 +1,25 @@
+from datetime import datetime
+
 from django.test import TestCase
+from django.urls import reverse
 from django.utils.text import slugify
+from django.utils.timezone import make_aware
+
+from common.mixins import TestMixin
 
 from .factories import ForumFactory, PostFactory, TopicFactory
+from .models import Post
+
+
+def create_post_override_submitted(submitted, **kwargs):
+    """
+    Creates a post and overrides `submitted`.
+    `submitted` must be set after creation to override `auto_now_add`.
+    """
+    post = PostFactory(**kwargs)
+    post.submitted = submitted
+    post.save()
+    return post
 
 
 class ForumTestSuite(TestCase):
@@ -35,6 +53,19 @@ class ForumTestSuite(TestCase):
             title="Title that is very different from the slug", slug=slug
         )
         self.assertEqual(forum.slug, slug)
+
+    def test_latest_post_returns_latest_in_forum_topics(self):
+        """`latest_post()` should return the latest post in the forum's topics."""
+        topic_in_forum = TopicFactory(forum=self.forum)
+        topic_in_different_forum = TopicFactory()
+        latest_in_forum = create_post_override_submitted(
+            make_aware(datetime(2200, 1, 1)), topic=topic_in_forum
+        )
+        create_post_override_submitted(
+            make_aware(datetime(2250, 1, 1)), topic=topic_in_different_forum
+        )
+
+        self.assertEqual(self.forum.latest_post(), latest_in_forum)
 
 
 class TopicTestSuite(TestCase):
@@ -99,3 +130,19 @@ class PostTestSuite(TestCase):
         self.assertEqual(str(self.post), self.post.content_short())
         self.post.content = "Ya ya ya"
         self.assertEqual(str(self.post), self.post.content_short())
+
+    def test_latest_by_submitted(self):
+        """`latest()` should return the latest post by `submitted`."""
+        post_far_in_future = create_post_override_submitted(
+            make_aware(datetime(2250, 5, 5))
+        )
+        PostFactory(submitted=datetime(1950, 5, 5))
+        self.assertEqual(Post.objects.latest().pk, post_far_in_future.pk)
+
+
+class ForumListTestSuite(TestMixin, TestCase):
+    def get_url(self):
+        return reverse("forum:ForumList")
+
+    def test_requires_login(self):
+        self.assertLoginRequired(self.get_url())

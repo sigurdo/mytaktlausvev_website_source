@@ -18,6 +18,9 @@ class Forum(models.Model):
     def __str__(self):
         return self.title
 
+    def latest_post(self):
+        return Post.objects.filter(topic__in=self.topics.all()).latest()
+
     class Meta:
         ordering = ["title"]
         verbose_name = "forum"
@@ -60,5 +63,6 @@ class Post(ArticleMixin):
 
     class Meta:
         ordering = ["-submitted"]
+        get_latest_by = "submitted"
         verbose_name = "innlegg"
         verbose_name_plural = "innlegg"
