@@ -18,7 +18,7 @@
         </p>
         <p>
             {% load markdown %}
-            {{ event.content|truncatechars:500|markdown }}
+            {{ event.content|truncatechars:400|markdown }}
         </p>
 
         {% load get_event_attendance %}

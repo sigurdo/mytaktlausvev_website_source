@@ -77,6 +77,7 @@ class EventAttendance(models.Model):
     status = models.CharField("status", max_length=255, choices=Attendance.choices)
 
     created = models.DateTimeField("laga", auto_now_add=True)
+    modified = models.DateTimeField("redigert", auto_now=True)
 
     def __str__(self):
         return f"{self.event} - {self.person} - {self.get_status_display()}"

@@ -28,7 +28,11 @@
                     </a>
                 </td>
                 <td>{{ attendance.get_status_display }}</td>
-                <td>{{ attendance.created }}</td>
+                <td>
+                    <time datetime="{{ attendance.created | date:"c" }}">
+                        {{ attendance.created }}
+                    </time>
+                </td>
             </tr>
             {% endfor %}
         </tbody>
