@@ -2,7 +2,6 @@
 
 import autoslug.fields
 from django.db import migrations
-from ..models import pdf_slug_populate_from
 
 
 def populate_pdf_slugs(apps, schema_editor):
@@ -24,7 +23,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='pdf',
             name='slug',
-            field=autoslug.fields.AutoSlugField(default='nothing', editable=True, populate_from=pdf_slug_populate_from, unique_with=('score__slug',), verbose_name='lenkjenamn'),
+            field=autoslug.fields.AutoSlugField(default='nothing', editable=True, populate_from=lambda pdf: pdf.get_base_filename(), unique_with=('score__slug',), verbose_name='lenkjenamn'),
             preserve_default=False,
         ),
         migrations.RunPython(populate_pdf_slugs),

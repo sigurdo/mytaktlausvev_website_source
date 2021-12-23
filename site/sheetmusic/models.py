@@ -111,10 +111,6 @@ pdf_file_validators = [
 ]
 
 
-def pdf_slug_populate_from(pdf):
-    return pdf.get_base_filename()
-
-
 class Pdf(models.Model):
     """Model representing an uploaded pdf"""
 
@@ -129,7 +125,7 @@ class Pdf(models.Model):
     )
     slug = AutoSlugField(
         verbose_name="lenkjenamn",
-        populate_from=pdf_slug_populate_from,
+        populate_from=lambda pdf: pdf.get_base_filename(),
         unique_with="score__slug",
         editable=True,
     )
