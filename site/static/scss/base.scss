@@ -28,6 +28,11 @@ th {
   display: none;
 }
 
-.make-link {
+tr.linkify-tr {
   cursor: pointer;
+}
+
+a.linkify-tr {
+  color: $body-color;
+  text-decoration: none;
 }

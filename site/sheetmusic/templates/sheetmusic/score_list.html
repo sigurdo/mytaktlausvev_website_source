@@ -32,9 +32,11 @@
 
         <tbody>
             {% for score in scores %}
-                <tr class="make-link" href="{% url "sheetmusic:ScoreView" score.slug %}">
+                <tr class="linkify-tr">
                     <td>
-                        {{ score.title }}
+                        <a class="linkify-tr" href="{% url "sheetmusic:ScoreView" score.slug %}">
+                            {{ score.title }}
+                        </a>
                     </td>
 
                     <td>
@@ -72,5 +74,5 @@
 
 {% block js %}
     {% load static %}
-    <script src="{% static "common/js/make_link.js" %}"></script>
+    <script src="{% static "common/js/linkify_tr.js" %}"></script>
 {% endblock js %}
