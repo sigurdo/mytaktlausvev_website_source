@@ -22,12 +22,6 @@
                     Dato oppretta
                 </th>
 
-                {% if perms.sheetmusic.change_score %}
-                <th class="col-form-label">
-                    Rediger
-                </th>
-                {% endif %}
-
                 {% if perms.sheetmusic.delete_score %}
                 <th class="col-form-label">
                     Slett
@@ -38,9 +32,11 @@
 
         <tbody>
             {% for score in scores %}
-                <tr>
+                <tr id="{{score.slug}}-tr">
                     <td>
-                        <a href="{% url 'sheetmusic:ScoreView' score.slug %}"> {{ score.title }} </a>
+                        <a class="larger-link" data-larger-link-target="#{{score.slug}}-tr" href="{% url "sheetmusic:ScoreView" score.slug %}">
+                            {{ score.title }}
+                        </a>
                     </td>
 
                     <td>
@@ -55,15 +51,9 @@
                         <time datetime="{{ score.submitted | date:"c" }}">{{ score.submitted | date }}</time>
                     </td>
 
-                    {% if perms.sheetmusic.change_score %}
-                    <td>
-                        <a href="{% url 'sheetmusic:ScoreUpdate' score.slug %}"> Rediger </a>
-                    </td>
-                    {% endif %}
-
                     {% if perms.sheetmusic.delete_score %}
                     <td>
-                        <a href="{% url 'sheetmusic:ScoreDelete' score.slug %}"> Slett </a>
+                        <a class="btn btn-danger btn-sm" href="{% url 'sheetmusic:ScoreDelete' score.slug %}"> Slett </a>
                     </td>
                     {% endif %}
                 </tr>
@@ -81,3 +71,8 @@
     {% endif %}
 </article>
 {% endblock page %}
+
+{% block js %}
+    {% load static %}
+    <script src="{% static "common/js/larger_link.js" %}"></script>
+{% endblock js %}

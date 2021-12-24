@@ -10,12 +10,19 @@ urlpatterns = [
     path("ny/", views.ScoreCreate.as_view(), name="ScoreCreate"),
     path("<slug:slug>/", views.ScoreView.as_view(), name="ScoreView"),
     path("<slug:slug>/rediger/", views.ScoreUpdate.as_view(), name="ScoreUpdate"),
-    path(
-        "<slug:slug>/rediger/stemmer/", views.PartsUpdate.as_view(), name="PartsUpdate"
-    ),
     path("<slug:slug>/rediger/pdfar/", views.PdfsUpdate.as_view(), name="PdfsUpdate"),
     path(
         "<slug:slug>/rediger/pdfar/ny/", views.PdfsUpload.as_view(), name="PdfsUpload"
+    ),
+    path(
+        "<slug:slug>/rediger/stemmer/",
+        views.PartsUpdateIndex.as_view(),
+        name="PartsUpdateIndex",
+    ),
+    path(
+        "<slug:score_slug>/rediger/stemmer/<slug:slug>/",
+        views.PartsUpdate.as_view(),
+        name="PartsUpdate",
     ),
     path("<slug:slug>/slett/", views.ScoreDelete.as_view(), name="ScoreDelete"),
     path(

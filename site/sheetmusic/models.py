@@ -123,6 +123,12 @@ class Pdf(models.Model):
         default=None,
         validators=pdf_file_validators,
     )
+    slug = AutoSlugField(
+        verbose_name="lenkjenamn",
+        populate_from=lambda pdf: pdf.get_base_filename(),
+        unique_with="score__slug",
+        editable=True,
+    )
     processing = models.BooleanField(
         "prosessering pågår", default=False, editable=False
     )
@@ -138,6 +144,13 @@ class Pdf(models.Model):
 
     def get_absolute_url(self):
         return reverse("sheetmusic:ScoreView", kwargs={"slug": self.score.slug})
+
+    def get_base_filename(self):
+        """Returns the base filename of the pdf file without file extension."""
+        filepath = str(self.file)
+        filename = os.path.basename(filepath)
+        filename_no_ext = os.path.splitext(filename)[0]
+        return filename_no_ext
 
     def num_of_pages(self):
         pdf_reader = PdfFileReader(self.file.path)
