@@ -29,10 +29,10 @@ class ForumTestSuite(TestCase):
         self.forum = ForumFactory()
 
     def test_get_absolute_url(self):
-        """Should link to the forum's detail page."""
+        """Should link to the forum's topic list page."""
         self.assertEqual(
             self.forum.get_absolute_url(),
-            reverse("forum:ForumDetail", args=[self.forum.slug]),
+            reverse("forum:TopicList", args=[self.forum.slug]),
         )
 
     def test_creates_slug_from_title_automatically(self):
@@ -78,10 +78,10 @@ class TopicTestSuite(TestCase):
         self.topic = TopicFactory()
 
     def test_get_absolute_url(self):
-        """Should link to the topic's detail page."""
+        """Should link to the topic's post list page."""
         self.assertEqual(
             self.topic.get_absolute_url(),
-            reverse("forum:TopicDetail", args=[self.topic.forum.slug, self.topic.slug]),
+            reverse("forum:PostList", args=[self.topic.forum.slug, self.topic.slug]),
         )
 
     def test_creates_slug_from_title_automatically(self):
@@ -163,24 +163,24 @@ class ForumListTestSuite(TestMixin, TestCase):
         self.assertLoginRequired(self.get_url())
 
 
-class ForumDetailTestSuite(TestMixin, TestCase):
+class TopicListTestSuite(TestMixin, TestCase):
     def setUp(self):
         self.forum = ForumFactory()
 
     def get_url(self):
-        return reverse("forum:ForumDetail", args=[self.forum.slug])
+        return reverse("forum:TopicList", args=[self.forum.slug])
 
     def test_requires_login(self):
         self.assertLoginRequired(self.get_url())
 
 
-class TopicDetailTestSuite(TestMixin, TestCase):
+class PostListTestSuite(TestMixin, TestCase):
     def setUp(self):
         self.topic = TopicFactory()
 
     def get_url(self, args=None):
         return reverse(
-            "forum:TopicDetail", args=args or [self.topic.forum.slug, self.topic.slug]
+            "forum:PostList", args=args or [self.topic.forum.slug, self.topic.slug]
         )
 
     def test_requires_login(self):

@@ -20,7 +20,7 @@ class Forum(models.Model):
         return self.title
 
     def get_absolute_url(self):
-        return reverse("forum:ForumDetail", args=[self.slug])
+        return reverse("forum:TopicList", args=[self.slug])
 
     def latest_post(self):
         return Post.objects.filter(topic__in=self.topics.all()).latest()
@@ -46,7 +46,7 @@ class Topic(ArticleMixin):
     )
 
     def get_absolute_url(self):
-        return reverse("forum:TopicDetail", args=[self.forum.slug, self.slug])
+        return reverse("forum:PostList", args=[self.forum.slug, self.slug])
 
     class Meta:
         verbose_name = "emne"

@@ -6,10 +6,10 @@ app_name = "forum"
 
 urlpatterns = [
     path("", views.ForumList.as_view(), name="ForumList"),
-    path("<slug:slug>/", views.ForumDetail.as_view(), name="ForumDetail"),
+    path("<slug:slug_forum>/", views.TopicList.as_view(), name="TopicList"),
     path(
         "<slug:slug_forum>/<slug:slug_topic>/",
-        views.TopicDetail.as_view(),
-        name="TopicDetail",
+        views.PostList.as_view(),
+        name="PostList",
     ),
 ]

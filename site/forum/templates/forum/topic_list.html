@@ -4,8 +4,21 @@
 
 {% block page %}
 <article>
-    <h1>{{ forum.title }}</h1>
+    <header>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{% url 'forum:ForumList' %}">
+                        Alle forum
+                    </a>
+                </li>
+            </ol>
+        </nav>
 
+        <h1>{{ forum.title }}</h1>
+    </hedaer>
+
+    {% if topics %}
     <table class="table table-striped">
         <thead>
             <tr>
@@ -50,5 +63,8 @@
             {% endfor %}
         </tbody>
     </table>
+    {% endif %}
+
+    {% include "common/includes/pagination.html" with pagination_label="Topic pages" %}
 </article>
 {% endblock page %}
