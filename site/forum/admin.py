@@ -1,5 +1,4 @@
 from django.contrib import admin
-from django.db.models import Max
 
 from .models import Forum, Post, Topic
 
