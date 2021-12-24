@@ -68,6 +68,9 @@ class Post(ArticleMixin):
     def __str__(self):
         return self.content_short()
 
+    def get_absolute_url(self):
+        return reverse("forum:PostList", args=[self.topic.forum.slug, self.topic.slug])
+
     class Meta:
         ordering = ["submitted"]
         get_latest_by = "submitted"

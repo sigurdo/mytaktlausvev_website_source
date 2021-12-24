@@ -121,8 +121,14 @@ class PostTestSuite(TestCase):
         self.post = PostFactory()
 
     def test_get_absolute_url(self):
-        """Should link to the post in the topic."""
-        pass
+        """Should link to the post's topic's post list page."""
+        self.assertEqual(
+            self.post.get_absolute_url(),
+            reverse(
+                "forum:PostList",
+                args=[self.post.topic.forum.slug, self.post.topic.slug],
+            ),
+        )
 
     def test_content_short_truncated_when_long(self):
         """

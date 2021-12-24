@@ -27,17 +27,21 @@
                 <td>{{ forum.topics.count }}</td>
                 <td>{{ forum.post_count }}</td>
                 <td>
-                    {% with forum.latest_post as latest_post %}
-                    {% if latest_post %}
-                        <div>{{ latest_post.content_short }}</div>
+                    {% with forum.latest_post as latest %}
+                    {% if latest %}
+                        <div>
+                            <a href="{{ latest.get_absolute_url }}">
+                                {{ latest.content_short }}
+                            </a>
+                        </div>
                         <div>av
-                            <a href="{{ latest_post.created_by.get_absolute_url }}">
-                                {{ latest_post.created_by.username }}
+                            <a href="{{ latest.created_by.get_absolute_url }}">
+                                {{ latest.created_by.username }}
                             </a>
                         </div>
                         <div>
-                            <time datetime="{{ latest_post.submitted | date:"c" }}">
-                                {{ latest_post.submitted | date:"d.m.Y - H:i" }}
+                            <time datetime="{{ latest.submitted | date:"c" }}">
+                                {{ latest.submitted | date:"d.m.Y - H:i" }}
                             </time>
                         </div>
                     {% else %}
