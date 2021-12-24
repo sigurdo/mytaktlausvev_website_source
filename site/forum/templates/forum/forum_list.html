@@ -27,27 +27,7 @@
                 <td>{{ forum.topics.count }}</td>
                 <td>{{ forum.post_count }}</td>
                 <td>
-                    {% with forum.latest_post as latest %}
-                    {% if latest %}
-                        <div>
-                            <a href="{{ latest.get_absolute_url }}">
-                                {{ latest.content_short }}
-                            </a>
-                        </div>
-                        <div>av
-                            <a href="{{ latest.created_by.get_absolute_url }}">
-                                {{ latest.created_by.username }}
-                            </a>
-                        </div>
-                        <div>
-                            <time datetime="{{ latest.submitted | date:"c" }}">
-                                {{ latest.submitted | date:"d.m.Y - H:i" }}
-                            </time>
-                        </div>
-                    {% else %}
-                        <i>Inga innlegg funne</i>
-                    {% endif %}
-                    {% endwith %}
+                    {% include "forum/includes/latest_post.html" with post=forum.latest_post only %}
                 </td>
             </tr>
             {% endfor %}

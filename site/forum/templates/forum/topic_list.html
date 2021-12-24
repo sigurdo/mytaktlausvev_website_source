@@ -46,18 +46,7 @@
                 </td>
                 <td>{{ topic.posts.count }}</td>
                 <td>
-                {% with topic.posts.latest|default:topic as latest %}
-                    <div>av
-                        <a href="{{ latest.created_by.get_absolute_url }}">
-                            {{ latest.created_by.username }}
-                        </a>
-                    </div>
-                    <div>
-                        <time datetime="{{ latest.submitted | date:"c" }}">
-                            {{ latest.submitted | date:"d.m.Y - H:i" }}
-                        </time>
-                    </div>
-                {% endwith %}
+                    {% include "forum/includes/latest_post.html" with post=topic.posts.latest only %}
                 </td>
             </tr>
             {% endfor %}

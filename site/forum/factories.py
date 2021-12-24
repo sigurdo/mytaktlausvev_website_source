@@ -18,7 +18,6 @@ class TopicFactory(factory.django.DjangoModelFactory):
         model = Topic
 
     title = "Read only?"
-    content = "Why is the forum read-only all of the sudden?"
     created_by = factory.SubFactory(UserFactory)
     modified_by = factory.SubFactory(UserFactory)
     forum = factory.SubFactory(ForumFactory)

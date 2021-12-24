@@ -32,6 +32,7 @@ class Forum(models.Model):
 
 
 class Topic(ArticleMixin):
+    content = None
     forum = models.ForeignKey(
         Forum,
         on_delete=models.CASCADE,
