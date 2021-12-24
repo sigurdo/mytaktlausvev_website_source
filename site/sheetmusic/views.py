@@ -88,7 +88,7 @@ class PartsUpdateIndex(PermissionRequiredMixin, ListView):
         return super().get_context_data(**kwargs)
 
     def setup(self, request, *args, **kwargs):
-        self.score = Score.objects.get(slug=kwargs["slug"])
+        self.score = get_object_or_404(Score, slug=kwargs["slug"])
         return super().setup(request, *args, **kwargs)
 
     def get_queryset(self):
