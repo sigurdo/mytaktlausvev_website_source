@@ -8,7 +8,7 @@ from common.models import ArticleMixin
 
 class Forum(models.Model):
     title = models.CharField("tittel", max_length=255)
-    description = models.CharField("innhald", max_length=255)
+    description = models.CharField("beskriving", max_length=255)
     slug = AutoSlugField(
         verbose_name="lenkjenamn",
         populate_from="title",
