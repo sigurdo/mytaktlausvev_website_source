@@ -48,6 +48,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.humanize",
+    "django.contrib.sites",
+    "django.contrib.redirects",
     "crispy_forms",
     "crispy_bootstrap5",
     "sass_processor",
@@ -79,7 +81,9 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "common.middleware.RedirectFallbackMiddleware",
 ]
+
 
 # CSRF_TRUSTED_ORIGINS should be a string of space-separated trusted origins
 # e.g. CSRF_TRUSTED_ORIGINS=https://*.example.com
@@ -158,6 +162,11 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
+
+# Sites framework
+# https://docs.djangoproject.com/en/3.2/ref/contrib/sites/
+
+SITE_ID = 1
 
 # Email
 # https://docs.djangoproject.com/en/3.2/topics/email/
