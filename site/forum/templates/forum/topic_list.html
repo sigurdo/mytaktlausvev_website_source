@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}{{ forum.title }}{% endblock title %}
+
+{% block page %}
+<article>
+    <header>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{% url 'forum:ForumList' %}">
+                        Alle forum
+                    </a>
+                </li>
+            </ol>
+        </nav>
+
+        <h1>{{ forum.title }}</h1>
+    </hedaer>
+
+    {% if topics %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Emne</th>
+                <th>Svar</th>
+                <th>Siste innlegg</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for topic in topics %}
+            <tr>
+                <td>
+                    <div class="mb-1 fs-5">
+                        <a href="{{ topic.get_absolute_url }}">{{ topic.title }}</a>
+                    </div>
+                    <div>av
+                        <a href="{{ topic.created_by.get_absolute_url }}">
+                            {{ topic.created_by.username }}
+                        </a>
+                        |
+                        <time datetime="{{ topic.submitted | date:"c" }}">
+                            {{ topic.submitted | date:"d.m.Y - H:i" }}
+                        </time>
+                    </div>
+                </td>
+                <td>{{ topic.posts.count }}</td>
+                <td>
+                    {% include "forum/includes/latest_post.html" with post=topic.posts.latest only %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+
+    {% include "common/includes/pagination.html" with pagination_label="Topic pages" %}
+</article>
+{% endblock page %}

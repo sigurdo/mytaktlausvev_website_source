@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Forum{% endblock title %}
+
+{% block page %}
+<article>
+    <h1>Forum</h1>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Forum</th>
+                <th>Emne</th>
+                <th>Innlegg</th>
+                <th>Siste innlegg</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for forum in forums %}
+            <tr>
+                <td>
+                    <div class="mb-1 fs-5">
+                        <a href="{{ forum.get_absolute_url }}">{{ forum.title }}</a>
+                    </div>
+                    <div>{{ forum.description }}</div>
+                </td>
+                <td>{{ forum.topics.count }}</td>
+                <td>{{ forum.post_count }}</td>
+                <td>
+                    {% include "forum/includes/latest_post.html" with post=forum.latest_post only %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</article>
+{% endblock page %}

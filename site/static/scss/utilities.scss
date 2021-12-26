@@ -8,15 +8,6 @@
   object-fit: cover;
 }
 
-.breadcrumb {
-  background-color: unset;
-  margin: 0;
-  padding: 0;
-}
-.breadcrumb-item a {
-  text-decoration: none;
-}
-
 .p-margin-last-0 > p:last-of-type {
   margin-bottom: 0 !important;
 }
@@ -30,6 +21,13 @@
     lighten($button-color-advent-calendar, 10%),
     darken($button-color-advent-calendar, 30%)
   );
+}
+
+.flex-1 {
+  flex: 1 !important;
+}
+.flex-0 {
+  flex: 0 !important;
 }
 
 .w-0 {

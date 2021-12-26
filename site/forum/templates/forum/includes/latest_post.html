@@ -1,0 +1,19 @@
+{% if post %}
+    <div>
+        <a href="{{ post.get_absolute_url }}">
+            {{ post.content_short }}
+        </a>
+    </div>
+    <div>av
+        <a href="{{ post.created_by.get_absolute_url }}">
+            {{ post.created_by.username }}
+        </a>
+    </div>
+    <div>
+        <time datetime="{{ post.submitted | date:"c" }}">
+            {{ post.submitted | date:"d.m.Y - H:i" }}
+        </time>
+    </div>
+{% else %}
+    <i>Inga innlegg funne</i>
+{% endif %}

@@ -8,6 +8,7 @@ from articles.factories import ArticleFactory
 from contact.factories import ContactCategoryFactory
 from events.factories import EventAttendanceFactory, EventFactory
 from events.models import Attendance
+from forum.factories import ForumFactory, PostFactory, TopicFactory
 from instruments.factories import (
     InstrumentFactory,
     InstrumentGroupFactory,
@@ -209,3 +210,13 @@ class Command(BaseCommand):
             state=Jacket.State.OK,
             location=jacket_at_storage,
         )
+
+        general = ForumFactory(title="General", description="For general stuff.")
+        ForumFactory(
+            title="Www",
+            description="List of things that don't work on the new website.",
+        )
+        truths = TopicFactory(title="Truths", forum=general, created_by=superuser)
+        the_device = TopicFactory(title="The Device", forum=general, created_by=member)
+        PostFactory(content="2+2=5", topic=truths, created_by=superuser)
+        PostFactory(content="???", topic=the_device, created_by=member)
