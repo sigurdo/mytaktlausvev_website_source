@@ -17,7 +17,7 @@
                     <th> Jakkenummer </th>
                     <th> Stad </th>
                     <th> Eigar </th>
-                    <th> Brukast av </th>
+                    <th> Ekstra brukarar </th>
                     {% if perms.uniforms.change_jacket and perms.accounts.change_usercustom %}
                     <th> Rediger brukarar </th>
                     {% endif %}
@@ -41,17 +41,21 @@
                         "> {{ jacket.number }} </td>
                     <td> {{ jacket.location }} </td>
                     <td>
-                        {% if jacket.owner %}
-                            <a href="{% url "accounts:ProfileDetail" jacket.owner.slug %}"> {{ jacket.owner }} </a>
-                            {% if jacket.owner.membership_status != "ACTIVE" %}
-                                ({{ jacket.owner.get_membership_status_display }})
+                        {% with jacket.get_owner as owner %}
+                            {% if owner %}
+                                <a href="{% url "accounts:ProfileDetail" owner.slug %}"> {{ owner }} </a>
+                                {% if owner.membership_status != "ACTIVE" %}
+                                    ({{ owner.get_membership_status_display }})
+                                {% endif %}
                             {% endif %}
-                        {% endif %}
+                        {% endwith %}
                     </td>
                     <td>
-                        {% for user in jacket.users.all %}
-                            <a href="{% url "accounts:ProfileDetail" user.slug %}">{{ user }}</a>{% if forloop.counter < jacket.users.all|length %},{% endif %}
-                        {% endfor %}
+                        {% with jacket.get_extra_users as users %}
+                            {% for user in users %}
+                                <a href="{% url "accounts:ProfileDetail" user.slug %}">{{ user }}</a>{% if forloop.counter < users|length %},{% endif %}
+                            {% endfor %}
+                        {% endwith %}
                     </td>
                     {% if perms.uniforms.change_jacket and perms.accounts.change_usercustom %}
                     <td>

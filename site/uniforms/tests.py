@@ -1,3 +1,4 @@
+from http import HTTPStatus
 from django.db import IntegrityError
 from django.test import TestCase
 from django.urls import reverse
@@ -6,9 +7,9 @@ from accounts.factories import SuperUserFactory, UserFactory
 from common.mixins import TestMixin
 from common.test_utils import create_formset_post_data
 
-from .factories import JacketFactory, JacketLocationFactory
+from .factories import JacketFactory, JacketLocationFactory, JacketUserFactory
 from .forms import JacketsUpdateFormset
-from .models import Jacket
+from .models import Jacket, JacketUser
 
 
 class JacketTestSuite(TestMixin, TestCase):
@@ -35,6 +36,25 @@ class JacketLocationTestSuite(TestMixin, TestCase):
         self.assertEqual(str(self.jacket_location), "Hjemme")
 
 
+class JacketUserTestSuite(TestMixin, TestCase):
+    def setUp(self):
+        self.jacket = JacketFactory(number=42)
+        self.user = UserFactory(name="Mikkel Jakkeson")
+        self.jacket_user = JacketUserFactory(jacket=self.jacket, user=self.user)
+    
+    def test_to_str(self):
+        self.assertEqual(str(self.jacket_user), "Mikkel Jakkeson - Jakke 42")
+    
+    def test_max_one_owner_per_jacket(self):
+        JacketUserFactory(jacket=self.jacket, is_owner=False)
+        with self.assertRaises(IntegrityError):
+            JacketUserFactory(jacket=self.jacket, is_owner=True)
+        
+    def test_max_one_jacket_per_user(self):
+        with self.assertRaises(IntegrityError):
+            JacketUserFactory(user=self.user)
+
+
 class JacketListTestSuite(TestMixin, TestCase):
     def get_url(self):
         return reverse("uniforms:JacketList")
@@ -56,14 +76,12 @@ class JacketsUpdateTestSuite(TestMixin, TestCase):
         )
 
     def setUp(self):
-        self.user = UserFactory()
-        self.jacket = JacketFactory(owner=self.user)
+        self.jacket = JacketFactory()
         self.formset_post_data = [
             {
                 "number": self.jacket.number,
                 "comment": self.jacket.comment,
                 "state": self.jacket.state,
-                "owner": self.jacket.owner.pk,
                 "location": self.jacket.location.pk,
                 "id": self.jacket.pk,
             }
@@ -81,14 +99,12 @@ class JacketsUpdateTestSuite(TestMixin, TestCase):
         number = self.jacket.number + 1
         comment = "mangler en knapp"
         state = Jacket.State.GOOD
-        owner = UserFactory()
         location = JacketLocationFactory()
         self.formset_post_data.append(
             {
                 "number": number,
                 "comment": comment,
                 "state": state,
-                "owner": owner.pk,
                 "location": location.pk,
             }
         )
@@ -99,19 +115,16 @@ class JacketsUpdateTestSuite(TestMixin, TestCase):
         self.assertEqual(jacket.number, number)
         self.assertEqual(jacket.comment, comment)
         self.assertEqual(jacket.state, state)
-        self.assertEqual(jacket.owner, owner)
         self.assertEqual(jacket.location, location)
 
     def test_update_jacket(self):
         number = self.jacket.number + 10
         comment = "mangler en knapp"
         state = Jacket.State.GOOD
-        owner = UserFactory()
         location = JacketLocationFactory()
         self.formset_post_data[0]["number"] = number
         self.formset_post_data[0]["comment"] = comment
         self.formset_post_data[0]["state"] = state
-        self.formset_post_data[0]["owner"] = owner.pk
         self.formset_post_data[0]["location"] = location.pk
         self.client.force_login(SuperUserFactory())
         self.client.post(self.get_url(), self.create_post_data())
@@ -120,7 +133,6 @@ class JacketsUpdateTestSuite(TestMixin, TestCase):
         self.assertEqual(jacket.number, number)
         self.assertEqual(jacket.comment, comment)
         self.assertEqual(jacket.state, state)
-        self.assertEqual(jacket.owner, owner)
         self.assertEqual(jacket.location, location)
 
     def test_delete_jacket(self):
@@ -140,8 +152,9 @@ class JacketUsersTestSuite(TestMixin, TestCase):
     def test_requires_permission(self):
         self.assertPermissionRequired(
             self.get_url(),
-            "uniforms.change_jacket",
-            "accounts.change_usercustom",
+            "uniforms.add_jacketuser",
+            "uniforms.change_jacketuser",
+            "uniforms.delete_jacketuser",
         )
 
     def test_jacket_in_context(self):
@@ -157,106 +170,107 @@ class AddJacketUserTestSuite(TestMixin, TestCase):
     def get_url(self):
         return reverse("uniforms:AddJacketUser", args=[self.jacket.number])
 
-    def post(self, user, set_owner=False, remove_old_ownerships=False):
+    def post(self, user, set_owner=False):
         self.client.force_login(SuperUserFactory())
         return self.client.post(
             self.get_url(),
             {
                 "user": user.pk,
                 "set_owner": set_owner,
-                "remove_old_ownerships": remove_old_ownerships,
             },
         )
 
     def test_requires_permission(self):
-        self.assertPermissionRequired(
-            self.get_url(), "uniforms.change_jacket", "accounts.change_usercustom"
-        )
+        self.assertPermissionRequired(self.get_url(), "uniforms.add_jacketuser")
 
     def test_add_user(self):
         user = UserFactory()
         self.post(user)
-        user.refresh_from_db()
-        self.jacket.refresh_from_db()
-        self.assertEqual(user.jacket, self.jacket)
-        self.assertEqual(self.jacket.owner, None)
+        jacket_user = JacketUser.objects.get(jacket=self.jacket, user=user)
+        self.assertEqual(jacket_user.jacket, self.jacket)
+        self.assertEqual(jacket_user.user, user)
+        self.assertEqual(jacket_user.is_owner, False)
 
     def test_add_user_set_owner(self):
         user = UserFactory()
         self.post(user, set_owner=True)
-        user.refresh_from_db()
-        self.jacket.refresh_from_db()
-        self.assertEqual(user.jacket, self.jacket)
-        self.assertEqual(self.jacket.owner, user)
-
-    def test_add_user_remove_old_ownerships(self):
-        user = UserFactory()
-        self.jacket.owner = user
-        self.jacket.save()
-        other_jacket = JacketFactory(owner=user)
-        self.post(user, remove_old_ownerships=True)
-        user.refresh_from_db()
-        self.jacket.refresh_from_db()
-        other_jacket.refresh_from_db()
-        self.assertEqual(user.jacket, self.jacket)
-        self.assertEqual(self.jacket.owner, None)
-        self.assertEqual(other_jacket.owner, None)
-
-    def test_add_user_set_owner_remove_old_ownerships(self):
-        user = UserFactory()
-        self.jacket.owner = user
-        self.jacket.save()
-        other_jacket = JacketFactory(owner=user)
-        self.post(user, set_owner=True, remove_old_ownerships=True)
-        user.refresh_from_db()
-        self.jacket.refresh_from_db()
-        other_jacket.refresh_from_db()
-        self.assertEqual(user.jacket, self.jacket)
-        self.assertEqual(self.jacket.owner, user)
-        self.assertEqual(other_jacket.owner, None)
+        jacket_user = JacketUser.objects.get(jacket=self.jacket, user=user)
+        self.assertEqual(jacket_user.jacket, self.jacket)
+        self.assertEqual(jacket_user.user, user)
+        self.assertEqual(jacket_user.is_owner, True)
 
 
 class RemoveJacketUserTestSuite(TestMixin, TestCase):
     def setUp(self):
-        self.jacket = JacketFactory()
-        self.user = UserFactory(jacket=self.jacket)
-        self.jacket.owner = self.user
-        self.jacket.save()
+        self.jacket_user = JacketUserFactory()
+        self.jacket = self.jacket_user.jacket
+        self.user = self.jacket_user.user
 
     def get_url(self):
         return reverse(
             "uniforms:RemoveJacketUser", args=[self.jacket.number, self.user.slug]
         )
 
-    def post(self, remove_owner=False):
+    def post(self, transfer_ownership=False):
         self.client.force_login(SuperUserFactory())
-        return self.client.post(self.get_url(), {"remove_owner": remove_owner})
+        return self.client.post(
+            self.get_url(), {"transfer_ownership": transfer_ownership}
+        )
 
     def test_requires_permission(self):
-        self.assertPermissionRequired(
-            self.get_url(), "uniforms.change_jacket", "accounts.change_usercustom"
-        )
+        self.assertPermissionRequired(self.get_url(), "uniforms.delete_jacketuser")
 
     def test_remove_user(self):
         self.post()
-        self.jacket.refresh_from_db()
-        self.user.refresh_from_db()
-        self.assertEqual(self.jacket.owner, self.user)
-        self.assertEqual(self.user.jacket, None)
+        self.assertEqual(JacketUser.objects.filter(jacket=self.jacket, user=self.user).exists(), False)
 
-    def test_remove_user_remove_owner(self):
-        self.post(remove_owner=True)
-        self.jacket.refresh_from_db()
-        self.user.refresh_from_db()
-        self.assertEqual(self.jacket.owner, None)
-        self.assertEqual(self.user.jacket, None)
+    def test_remove_user_transfer_ownership(self):
+        extra_jacket_user = JacketUserFactory(jacket=self.jacket, is_owner=False)
+        self.post(transfer_ownership=True)
+        extra_jacket_user.refresh_from_db()
+        self.assertEqual(JacketUser.objects.filter(jacket=self.jacket, user=self.user).exists(), False)
+        self.assertEqual(extra_jacket_user.is_owner, True)
 
-    def test_remove_user_not_remove_other_owner(self):
-        owner = UserFactory()
-        self.jacket.owner = owner
-        self.jacket.save()
-        self.post(remove_owner=True)
-        self.jacket.refresh_from_db()
-        self.user.refresh_from_db()
-        self.assertEqual(self.jacket.owner, owner)
-        self.assertEqual(self.user.jacket, None)
+    def test_remove_user_no_transfer_ownership(self):
+        extra_jacket_user = JacketUserFactory(jacket=self.jacket, is_owner=False)
+        self.post(transfer_ownership=False)
+        extra_jacket_user.refresh_from_db()
+        self.assertEqual(JacketUser.objects.filter(jacket=self.jacket, user=self.user).exists(), False)
+        self.assertEqual(extra_jacket_user.is_owner, False)
+
+
+class JacketUserMakeOwnerTestSuite(TestMixin, TestCase):
+    def get_url(self):
+        return reverse("uniforms:JacketUserMakeOwner", args=[self.jacket.number, self.user.slug])
+
+    def setUp(self):
+        self.jacket_user = JacketUserFactory(is_owner=False)
+        self.jacket = self.jacket_user.jacket
+        self.user = self.jacket_user.user
+
+    def test_requires_permission(self):
+        self.assertPermissionRequired(
+            self.get_url(),
+            "uniforms.change_jacketuser",
+            method="post",
+            status_ok=HTTPStatus.FOUND,
+        )
+    
+    def post(self):
+        self.client.force_login(SuperUserFactory())
+        return self.client.post(self.get_url())
+    
+    def test_make_owner(self):
+        """Make user owner."""
+        self.post()
+        self.jacket_user.refresh_from_db()
+        self.assertEqual(self.jacket_user.is_owner, True)
+    
+    def test_remove_old_owner(self):
+        """Make user owner when other user already is owner."""
+        old_owner = JacketUserFactory(jacket=self.jacket, is_owner=True)
+        self.post()
+        self.jacket_user.refresh_from_db()
+        old_owner.refresh_from_db()
+        self.assertEqual(self.jacket_user.is_owner, True)
+        self.assertEqual(old_owner.is_owner, False)

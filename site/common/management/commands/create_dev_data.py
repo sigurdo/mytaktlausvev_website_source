@@ -15,7 +15,7 @@ from instruments.factories import (
     InstrumentLocationFactory,
 )
 from instruments.models import Instrument
-from uniforms.factories import JacketFactory, JacketLocationFactory
+from uniforms.factories import JacketFactory, JacketLocationFactory, JacketUserFactory
 from uniforms.models import Jacket
 
 
@@ -186,30 +186,43 @@ class Command(BaseCommand):
         jacket_at_storage = JacketLocationFactory(
             name="Jakkeskapet",
         )
-        JacketFactory(
+        jacket_1 = JacketFactory(
             number=1,
             comment="",
             state=Jacket.State.BAD,
-            owner=aspirant,
             location=jacket_at_storage,
         )
-        JacketFactory(
+        jacket_2 = JacketFactory(
             number=2,
             comment="Mangler 3 knapper og en lomme",
             state=Jacket.State.UNUSABLE,
             location=jacket_at_storage,
         )
-        JacketFactory(
+        jacket_42 = JacketFactory(
             number=42,
             state=Jacket.State.GOOD,
-            owner=superuser,
             location=jacket_at_home,
         )
-        JacketFactory(
+        jacket_65 = JacketFactory(
             number=65,
             state=Jacket.State.OK,
             location=jacket_at_storage,
         )
+        JacketUserFactory(
+            user=member,
+            jacket=jacket_42,
+        )
+        JacketUserFactory(
+            user=aspirant,
+            jacket=jacket_1,
+        )
+        JacketUserFactory(
+            user=retiree,
+            jacket=jacket_1,
+            is_owner=False,
+        )
+        JacketUserFactory()
+        JacketUserFactory()
 
         general = ForumFactory(title="General", description="For general stuff.")
         ForumFactory(

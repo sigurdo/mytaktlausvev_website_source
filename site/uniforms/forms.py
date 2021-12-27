@@ -1,5 +1,6 @@
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
+from django.core.exceptions import ValidationError
 from django.forms import (
     BooleanField,
     ChoiceField,
@@ -22,7 +23,6 @@ class JacketUpdateForm(ModelForm):
         fields = [
             "number",
             "location",
-            "owner",
             "comment",
             "state",
         ]
@@ -50,21 +50,33 @@ JacketsUpdateFormset.helper = JacketsUpdateFormsetHelper()
 
 class AddJacketUserForm(Form):
     def user_choices():
+        """Returns a list of choice tuples for all users in the database."""
         users = UserCustom.objects.all()
         return [(user.pk, str(user)) for user in users]
+    
+    def validator_user_does_not_have_jacket(user_pk):
+        """Validates that a user does not already have a jacket."""
+        user = UserCustom.objects.get(pk=user_pk)
+        if user.jacket_users.exists():
+            raise ValidationError(f"{str(user).capitalize()} har allereie {str(user.jacket_users.first().jacket).lower()}")
+    
+    def clean(self):
+        """Validate that the jacket does not already have an owner if set_owner=True."""
+        cleaned_data = super().clean()
+        set_owner = cleaned_data["set_owner"]
+        if set_owner and self.jacket.jacket_users.filter(is_owner=True).exists():
+            self.add_error("set_owner", ValidationError(f"{self.jacket} har allereie ein eigar"))
+        return cleaned_data
 
-    user = ChoiceField(label="Brukar", choices=user_choices)
+    user = ChoiceField(label="Brukar", choices=user_choices, validators=[validator_user_does_not_have_jacket])
     set_owner = BooleanField(label="Sett som eigar", required=False, initial=True)
-    remove_old_ownerships = BooleanField(
-        label="Fjern gamle eigarskap", required=False, initial=True
-    )
 
     helper = FormHelper()
     helper.add_input(Submit("submit", "Lagre"))
 
 
 class RemoveJacketUserForm(Form):
-    remove_owner = BooleanField(label="Fjern eigarskap", required=False, initial=True)
+    transfer_ownership = BooleanField(label="Om brukaren var eigar, finn ein ny eigar fra ekstrabrukarane automatisk", required=False, initial=True)
 
     helper = FormHelper()
     helper.add_input(Submit("submit", "Fjern", css_class="btn-danger"))

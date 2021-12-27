@@ -1,6 +1,8 @@
 from autoslug import AutoSlugField
 from django.contrib.auth.models import AbstractUser, UserManager
 from django.db import models
+from django.db.models import UniqueConstraint, constraints
+from django.db.models.query_utils import Q
 from django.templatetags.static import static
 from django.urls import reverse
 
@@ -40,14 +42,6 @@ class UserCustom(AbstractUser):
     instrument_group = models.ForeignKey(
         "instruments.InstrumentGroup",
         verbose_name="instrumentgruppe",
-        related_name="users",
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-    )
-    jacket = models.ForeignKey(
-        "uniforms.Jacket",
-        verbose_name="jakkenummer",
         related_name="users",
         on_delete=models.SET_NULL,
         null=True,
@@ -95,6 +89,12 @@ class UserCustom(AbstractUser):
             return self.avatar.url
         else:
             return static("accounts/default-avatar.svg")
+    
+    def get_jacket(self):
+        jacket_user = self.jacket_users.first()
+        if jacket_user:
+            return jacket_user.jacket
+        return None
 
     def get_absolute_url(self):
         return reverse("accounts:ProfileDetail", args=[self.slug])
