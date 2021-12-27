@@ -1,8 +1,6 @@
 from autoslug import AutoSlugField
 from django.contrib.auth.models import AbstractUser, UserManager
 from django.db import models
-from django.db.models import UniqueConstraint, constraints
-from django.db.models.query_utils import Q
 from django.templatetags.static import static
 from django.urls import reverse
 

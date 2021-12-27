@@ -1,7 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.db import transaction
 from django.urls import reverse
-from django.views.generic import FormView, ListView, CreateView, DeleteView, View
+from django.views.generic import FormView, ListView, View
 from django.http import HttpResponseRedirect
 
 from accounts.models import UserCustom

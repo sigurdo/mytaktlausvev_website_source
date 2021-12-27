@@ -192,7 +192,7 @@ class Command(BaseCommand):
             state=Jacket.State.BAD,
             location=jacket_at_storage,
         )
-        jacket_2 = JacketFactory(
+        JacketFactory(
             number=2,
             comment="Mangler 3 knapper og en lomme",
             state=Jacket.State.UNUSABLE,
@@ -203,7 +203,7 @@ class Command(BaseCommand):
             state=Jacket.State.GOOD,
             location=jacket_at_home,
         )
-        jacket_65 = JacketFactory(
+        JacketFactory(
             number=65,
             state=Jacket.State.OK,
             location=jacket_at_storage,

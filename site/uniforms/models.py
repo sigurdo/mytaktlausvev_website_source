@@ -1,7 +1,5 @@
-from django.conf import settings
 from django.db.models import (
     RESTRICT,
-    SET_NULL,
     CharField,
     ForeignKey,
     IntegerField,
