@@ -1,4 +1,5 @@
 from http import HTTPStatus
+
 from django.db import IntegrityError
 from django.test import TestCase
 from django.urls import reverse
@@ -41,15 +42,15 @@ class JacketUserTestSuite(TestMixin, TestCase):
         self.jacket = JacketFactory(number=42)
         self.user = UserFactory(name="Mikkel Jakkeson")
         self.jacket_user = JacketUserFactory(jacket=self.jacket, user=self.user)
-    
+
     def test_to_str(self):
         self.assertEqual(str(self.jacket_user), "Mikkel Jakkeson - Jakke 42")
-    
+
     def test_max_one_owner_per_jacket(self):
         JacketUserFactory(jacket=self.jacket, is_owner=False)
         with self.assertRaises(IntegrityError):
             JacketUserFactory(jacket=self.jacket, is_owner=True)
-        
+
     def test_max_one_jacket_per_user(self):
         with self.assertRaises(IntegrityError):
             JacketUserFactory(user=self.user)
@@ -222,26 +223,37 @@ class RemoveJacketUserTestSuite(TestMixin, TestCase):
 
     def test_remove_user(self):
         self.post()
-        self.assertEqual(JacketUser.objects.filter(jacket=self.jacket, user=self.user).exists(), False)
+        self.assertEqual(
+            JacketUser.objects.filter(jacket=self.jacket, user=self.user).exists(),
+            False,
+        )
 
     def test_remove_user_transfer_ownership(self):
         extra_jacket_user = JacketUserFactory(jacket=self.jacket, is_owner=False)
         self.post(transfer_ownership=True)
         extra_jacket_user.refresh_from_db()
-        self.assertEqual(JacketUser.objects.filter(jacket=self.jacket, user=self.user).exists(), False)
+        self.assertEqual(
+            JacketUser.objects.filter(jacket=self.jacket, user=self.user).exists(),
+            False,
+        )
         self.assertEqual(extra_jacket_user.is_owner, True)
 
     def test_remove_user_no_transfer_ownership(self):
         extra_jacket_user = JacketUserFactory(jacket=self.jacket, is_owner=False)
         self.post(transfer_ownership=False)
         extra_jacket_user.refresh_from_db()
-        self.assertEqual(JacketUser.objects.filter(jacket=self.jacket, user=self.user).exists(), False)
+        self.assertEqual(
+            JacketUser.objects.filter(jacket=self.jacket, user=self.user).exists(),
+            False,
+        )
         self.assertEqual(extra_jacket_user.is_owner, False)
 
 
 class JacketUserMakeOwnerTestSuite(TestMixin, TestCase):
     def get_url(self):
-        return reverse("uniforms:JacketUserMakeOwner", args=[self.jacket.number, self.user.slug])
+        return reverse(
+            "uniforms:JacketUserMakeOwner", args=[self.jacket.number, self.user.slug]
+        )
 
     def setUp(self):
         self.jacket_user = JacketUserFactory(is_owner=False)
@@ -255,17 +267,17 @@ class JacketUserMakeOwnerTestSuite(TestMixin, TestCase):
             method="post",
             status_ok=HTTPStatus.FOUND,
         )
-    
+
     def post(self):
         self.client.force_login(SuperUserFactory())
         return self.client.post(self.get_url())
-    
+
     def test_make_owner(self):
         """Make user owner."""
         self.post()
         self.jacket_user.refresh_from_db()
         self.assertEqual(self.jacket_user.is_owner, True)
-    
+
     def test_remove_old_owner(self):
         """Make user owner when other user already is owner."""
         old_owner = JacketUserFactory(jacket=self.jacket, is_owner=True)

@@ -105,12 +105,12 @@ class UserCustomTest(TestMixin, TestCase):
         """
         user = UserFactory()
         self.assertEqual(user.get_avatar_url(), static("accounts/default-avatar.svg"))
-    
+
     def test_get_jacket(self):
         user = UserFactory()
         jacket_user = JacketUserFactory(user=user)
         self.assertEqual(user.get_jacket(), jacket_user.jacket)
-    
+
     def test_get_jacket_not_exist(self):
         user = UserFactory()
         self.assertEqual(user.get_jacket(), None)

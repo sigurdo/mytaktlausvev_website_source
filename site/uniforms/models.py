@@ -6,12 +6,13 @@ from django.db.models import (
     Model,
     TextChoices,
     TextField,
+    UniqueConstraint,
 )
 from django.db.models.deletion import CASCADE
 from django.db.models.fields import BooleanField
-from accounts.models import UserCustom
-from django.db.models import UniqueConstraint
 from django.db.models.query_utils import Q
+
+from accounts.models import UserCustom
 
 
 class JacketLocation(Model):
@@ -52,15 +53,17 @@ class Jacket(Model):
     def get_state_order(self):
         ordering = ["GOOD", "OK", "BAD", "UNUSABLE"]
         return ordering.index(self.state)
-    
+
     def get_owner(self):
         try:
             return self.jacket_users.get(is_owner=True).user
         except:
             return None
-    
+
     def get_extra_users(self):
-        return UserCustom.objects.filter(jacket_users__jacket=self, jacket_users__is_owner=False).all()
+        return UserCustom.objects.filter(
+            jacket_users__jacket=self, jacket_users__is_owner=False
+        ).all()
 
     def __str__(self):
         return f"Jakke {self.number}"

@@ -4,8 +4,8 @@ from .views import (
     AddJacketUser,
     JacketList,
     JacketsUpdate,
-    JacketUsers,
     JacketUserMakeOwner,
+    JacketUsers,
     RemoveJacketUser,
 )
 

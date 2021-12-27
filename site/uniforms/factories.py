@@ -2,6 +2,7 @@ from factory import SubFactory, sequence
 from factory.django import DjangoModelFactory
 
 from accounts.factories import UserFactory
+
 from .models import Jacket, JacketLocation, JacketUser
 
 
