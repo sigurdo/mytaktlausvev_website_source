@@ -71,6 +71,7 @@ INSTALLED_APPS = [
     "easter_eggs",
     "pwa",
     "forum",
+    "polls",
 ]
 
 MIDDLEWARE = [
