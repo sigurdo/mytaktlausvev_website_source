@@ -6,6 +6,7 @@ from django.utils.text import slugify
 
 from common.mixins import TestMixin
 from common.test_utils import test_image
+from uniforms.factories import JacketUserFactory
 
 from .factories import UserFactory
 from .models import UserCustom
@@ -104,6 +105,15 @@ class UserCustomTest(TestMixin, TestCase):
         """
         user = UserFactory()
         self.assertEqual(user.get_avatar_url(), static("accounts/default-avatar.svg"))
+
+    def test_get_jacket(self):
+        user = UserFactory()
+        jacket_user = JacketUserFactory(user=user)
+        self.assertEqual(user.get_jacket(), jacket_user.jacket)
+
+    def test_get_jacket_not_exist(self):
+        user = UserFactory()
+        self.assertIsNone(user.get_jacket())
 
 
 class ProfileDetailTest(TestMixin, TestCase):

@@ -45,14 +45,6 @@ class UserCustom(AbstractUser):
         null=True,
         blank=True,
     )
-    jacket = models.ForeignKey(
-        "uniforms.Jacket",
-        verbose_name="jakkenummer",
-        related_name="users",
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-    )
 
     class MembershipStatus(models.TextChoices):
         ACTIVE = "ACTIVE", "Aktiv"
@@ -95,6 +87,12 @@ class UserCustom(AbstractUser):
             return self.avatar.url
         else:
             return static("accounts/default-avatar.svg")
+
+    def get_jacket(self):
+        jacket_user = getattr(self, "jacket_user", None)
+        if jacket_user:
+            return jacket_user.jacket
+        return None
 
     def get_absolute_url(self):
         return reverse("accounts:ProfileDetail", args=[self.slug])

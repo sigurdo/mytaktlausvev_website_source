@@ -4,6 +4,7 @@ from .views import (
     AddJacketUser,
     JacketList,
     JacketsUpdate,
+    JacketUserMakeOwner,
     JacketUsers,
     RemoveJacketUser,
 )
@@ -25,5 +26,10 @@ urlpatterns = [
         "jakkebrukarar/<int:jacket_number>/fjern/<slug:user_slug>/",
         RemoveJacketUser.as_view(),
         name="RemoveJacketUser",
+    ),
+    path(
+        "jakkebrukarar/<int:jacket_number>/gjer_eigar/<slug:user_slug>/",
+        JacketUserMakeOwner.as_view(),
+        name="JacketUserMakeOwner",
     ),
 ]

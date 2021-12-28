@@ -15,5 +15,12 @@
         Lånte instrument: {% for instrument in profile.instruments.all %}{{ instrument }}{% if not forloop.last %}, {% else %}.{% endif %}{% endfor %}
     </p>
     {% endif %}
+    {% with profile.get_jacket as jacket %}
+        {% if jacket %}
+            <p>
+                Jakkenummer: {{ jacket.number }}
+            </p>
+        {% endif %}
+    {% endwith %}
 </article>
 {% endblock page %}
