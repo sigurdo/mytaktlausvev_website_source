@@ -13,10 +13,16 @@ class ContactCategory(models.Model):
 
     name = models.CharField("namn", max_length=255, unique=True)
     email = models.EmailField("e-post")
+    order = models.IntegerField(
+        "ordning",
+        default=0,
+        help_text="Definerer rekkjefølgja til kategoriar. Kategoriar med lik ordning blir sortert etter namn.",
+    )
 
     def __str__(self):
         return self.name
 
     class Meta:
+        ordering = ["order", "name"]
         verbose_name = "kontaktkategori"
         verbose_name_plural = "kontaktkategoriar"
