@@ -75,14 +75,6 @@ class PartsUpdateAllForm(forms.ModelForm):
         }
 
 
-class PartsUpdateAllFormsetHelper(FormHelper):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.render_required_fields = True
-        self.template = "common/table_inline_formset_shade_delete.html"
-        self.add_input(Submit("submit", "Lagre"))
-
-
 PartsUpdateAllFormset = modelformset_factory(
     Part,
     form=PartsUpdateAllForm,
@@ -91,7 +83,7 @@ PartsUpdateAllFormset = modelformset_factory(
 )
 
 
-PartsUpdateAllFormset.helper = PartsUpdateAllFormsetHelper()
+PartsUpdateAllFormset.helper = PartsUpdateFormsetHelper()
 
 
 class UploadPdfForm(forms.Form):
