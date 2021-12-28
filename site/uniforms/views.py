@@ -143,9 +143,7 @@ class JacketUserMakeOwner(PermissionRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         """Remove all old ownerships on self.jacket and make self.user owner instead."""
         with transaction.atomic():
-            for jacket_user in self.jacket.jacket_users.filter(is_owner=True):
-                jacket_user.is_owner = False
-                jacket_user.save()
+            self.jacket.jacket_users.filter(is_owner=True).update(is_owner=False)
             self.jacket_user.is_owner = True
             self.jacket_user.save()
         return HttpResponseRedirect(self.get_succes_url())

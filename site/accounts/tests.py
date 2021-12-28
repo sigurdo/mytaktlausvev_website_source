@@ -113,7 +113,7 @@ class UserCustomTest(TestMixin, TestCase):
 
     def test_get_jacket_not_exist(self):
         user = UserFactory()
-        self.assertEqual(user.get_jacket(), None)
+        self.assertIsNone(user.get_jacket())
 
 
 class ProfileDetailTest(TestMixin, TestCase):

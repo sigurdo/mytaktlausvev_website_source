@@ -9,6 +9,7 @@ from .models import Jacket, JacketLocation, JacketUser
 class JacketLocationFactory(DjangoModelFactory):
     class Meta:
         model = JacketLocation
+        django_get_or_create = ["name"]
 
     name = "Jakkeskapet"
 
