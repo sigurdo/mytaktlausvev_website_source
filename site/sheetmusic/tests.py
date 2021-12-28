@@ -10,7 +10,7 @@ from common.test_utils import create_formset_post_data
 from web.settings import BASE_DIR
 
 from .factories import FavoritePartFactory, PartFactory, PdfFactory, ScoreFactory
-from .forms import EditPdfFormset, PartsUpdateFormset
+from .forms import EditPdfFormset, PartsUpdateAllFormset, PartsUpdateFormset
 from .models import Part, Pdf, Score
 
 
@@ -162,6 +162,91 @@ class PartsUpdateTestSuite(TestMixin, TestCase):
                         "name": "new name",
                         "from_page": "1",
                         "to_page": "1",
+                    },
+                ]
+            ),
+        )
+        count = self.pdf.parts.count()
+        self.assertEqual(count, 2)
+        part = self.pdf.parts.last()
+        self.assertEqual(part.name, "new name")
+
+    def test_delete(self):
+        user = SuperUserFactory()
+        self.client.force_login(user)
+        self.client.post(
+            self.get_url(),
+            self.create_post_data([{"DELETE": "on"}]),
+        )
+        count = self.pdf.parts.count()
+        self.assertEqual(count, 0)
+
+
+class PartsUpdateAllTestSuite(TestMixin, TestCase):
+    def create_post_data(self, data):
+        return create_formset_post_data(
+            defaults={
+                "name": "name",
+                "from_page": "1",
+                "to_page": "1",
+                "pdf": str(self.pdf.pk),
+                "id": str(self.part.pk),
+            },
+            formset_class=PartsUpdateAllFormset,
+            data=data,
+        )
+
+    def get_url(self):
+        return reverse("sheetmusic:PartsUpdateAll", args=[self.score.slug])
+
+    def setUp(self):
+        self.score = ScoreFactory()
+        self.pdf = PdfFactory(score=self.score)
+        self.part = PartFactory(pdf=self.pdf)
+        self.test_data = self.create_post_data([])
+
+    def test_requires_login(self):
+        self.assertLoginRequired(self.get_url())
+
+    def test_requires_permission(self):
+        self.assertPermissionRequired(
+            self.get_url(),
+            "sheetmusic.add_part",
+            "sheetmusic.change_part",
+            "sheetmusic.delete_part",
+        )
+
+    def test_success_redirect(self):
+        user = SuperUserFactory()
+        self.client.force_login(user)
+        response = self.client.post(self.get_url(), self.test_data)
+        self.assertRedirects(
+            response, reverse("sheetmusic:PartsUpdateIndex", args=[self.score.slug])
+        )
+
+    def test_modify(self):
+        user = SuperUserFactory()
+        self.client.force_login(user)
+        self.client.post(
+            self.get_url(),
+            self.create_post_data([{"name": "another name"}]),
+        )
+        part = Part.objects.get(pk=self.part.pk)
+        self.assertEqual(part.name, "another name")
+
+    def test_add(self):
+        user = SuperUserFactory()
+        self.client.force_login(user)
+        self.client.post(
+            self.get_url(),
+            self.create_post_data(
+                [
+                    {},
+                    {
+                        "name": "new name",
+                        "from_page": "1",
+                        "to_page": "1",
+                        "pdf": str(self.pdf.pk),
                     },
                 ]
             ),

@@ -28,6 +28,7 @@ from django.views.generic.edit import (
 from .forms import (
     EditPdfFormset,
     EditPdfFormsetHelper,
+    PartsUpdateAllFormset,
     PartsUpdateFormset,
     ScoreForm,
     UploadPdfForm,
@@ -123,9 +124,9 @@ class PartsUpdate(
 
     def get_form_kwargs(self) -> Dict[str, Any]:
         # We have to override get_form_kwargs() to restrict the queryset of the formset to only
-        # the parts that are related to the current score.
+        # the parts that are related to the current pdf.
         kwargs = super().get_form_kwargs()
-        kwargs["queryset"] = self.get_object().parts.all()
+        kwargs["queryset"] = Part.objects.filter(pdf=self.get_object())
         return kwargs
 
     def get_queryset(self):
@@ -135,6 +136,59 @@ class PartsUpdate(
         # We must explicitly save the form because it is not done automatically by any ancestors
         for subform in form.forms:
             subform.instance.pdf = self.get_object()
+        form.save()
+        return super().form_valid(form)
+
+    def post(self, *args, **kwargs):
+        # We must set self.object here to be compatible with SingleObjectMixin
+        self.object = self.get_object()
+        return super().post(*args, **kwargs)
+
+    def get(self, *args, **kwargs):
+        # We must set self.object here to be compatible with SingleObjectMixin
+        self.object = self.get_object()
+        return super().get(*args, **kwargs)
+
+
+class PartsUpdateAll(
+    PermissionRequiredMixin,
+    FormMixin,
+    SingleObjectMixin,
+    TemplateResponseMixin,
+    ProcessFormView,
+):
+    model = Score
+    form_class = PartsUpdateAllFormset
+    template_name = "common/form.html"
+    permission_required = (
+        "sheetmusic.add_part",
+        "sheetmusic.change_part",
+        "sheetmusic.delete_part",
+    )
+
+    def get_success_url(self) -> str:
+        return reverse("sheetmusic:PartsUpdateIndex", args=[self.get_object().slug])
+
+    def get_form_kwargs(self) -> Dict[str, Any]:
+        # We have to override get_form_kwargs() to restrict the queryset of the formset to only
+        # the parts that are related to the current score.
+        kwargs = super().get_form_kwargs()
+        kwargs["queryset"] = Part.objects.filter(pdf__score=self.get_object())
+        return kwargs
+
+    def get_context_data(self, **kwargs):
+        kwargs["form_title"] = f"Rediger alle stemmer for {self.get_object()}"
+        return super().get_context_data(**kwargs)
+
+    def get_form(self, **kwargs) -> BaseModelForm:
+        # Here we have to modify the queryset of each subform of the formset
+        formset = super().get_form(**kwargs)
+        for form in formset.forms:
+            form.fields["pdf"].queryset = self.get_object().pdfs
+        return formset
+
+    def form_valid(self, form):
+        # We must explicitly save the form because it is not done automatically by any ancestors
         form.save()
         return super().form_valid(form)
 

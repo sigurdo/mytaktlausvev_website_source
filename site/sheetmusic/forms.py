@@ -35,9 +35,9 @@ class PartsUpdateForm(forms.ModelForm):
         model = Part
         fields = ["name", "from_page", "to_page"]
         widgets = {
-            "name": forms.TextInput(attrs={"size": 40}),
-            "from_page": forms.NumberInput(attrs={"size": 5}),
-            "to_page": forms.NumberInput(attrs={"size": 5}),
+            "name": forms.TextInput(attrs={"size": 50}),
+            "from_page": forms.NumberInput(attrs={"size": 4}),
+            "to_page": forms.NumberInput(attrs={"size": 4}),
         }
 
 
@@ -58,6 +58,32 @@ PartsUpdateFormset = modelformset_factory(
 
 
 PartsUpdateFormset.helper = PartsUpdateFormsetHelper()
+
+
+class PartsUpdateAllForm(forms.ModelForm):
+    """Form for editing a part"""
+
+    helper = FormHelper()
+
+    class Meta:
+        model = Part
+        fields = ["name", "from_page", "to_page", "pdf"]
+        widgets = {
+            "name": forms.TextInput(attrs={"size": 50}),
+            "from_page": forms.NumberInput(attrs={"size": 4}),
+            "to_page": forms.NumberInput(attrs={"size": 4}),
+        }
+
+
+PartsUpdateAllFormset = modelformset_factory(
+    Part,
+    form=PartsUpdateAllForm,
+    can_delete=True,
+    extra=20,
+)
+
+
+PartsUpdateAllFormset.helper = PartsUpdateFormsetHelper()
 
 
 class UploadPdfForm(forms.Form):

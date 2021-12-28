@@ -20,6 +20,11 @@ urlpatterns = [
         name="PartsUpdateIndex",
     ),
     path(
+        "<slug:slug>/rediger/stemmer/alle/",
+        views.PartsUpdateAll.as_view(),
+        name="PartsUpdateAll",
+    ),
+    path(
         "<slug:score_slug>/rediger/stemmer/<slug:slug>/",
         views.PartsUpdate.as_view(),
         name="PartsUpdate",

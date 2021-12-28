@@ -32,6 +32,10 @@
                 </tr>
             </thead>
             <tbody>
+                <tr>
+                    <td> Alle </td>
+                    <td> <a class="btn btn-primary" href="{% url "sheetmusic:PartsUpdateAll" score.slug %}">Rediger stemmer</a> </td>
+                </tr>
             {% for pdf in pdfs %}
                 <tr>
                     <td> <a href="{{pdf.file.url}}">{{pdf}}</a> </td>
