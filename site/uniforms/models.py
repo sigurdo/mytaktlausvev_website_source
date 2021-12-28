@@ -4,6 +4,7 @@ from django.db.models import (
     ForeignKey,
     IntegerField,
     Model,
+    OneToOneField,
     TextChoices,
     TextField,
     UniqueConstraint,
@@ -62,7 +63,7 @@ class Jacket(Model):
 
     def get_extra_users(self):
         return UserCustom.objects.filter(
-            jacket_users__jacket=self, jacket_users__is_owner=False
+            jacket_user__jacket=self, jacket_user__is_owner=False
         ).all()
 
     def __str__(self):
@@ -74,10 +75,10 @@ class Jacket(Model):
 
 
 class JacketUser(Model):
-    user = ForeignKey(
+    user = OneToOneField(
         UserCustom,
         verbose_name="brukar",
-        related_name="jacket_users",
+        related_name="jacket_user",
         on_delete=CASCADE,
     )
     jacket = ForeignKey(
@@ -103,9 +104,5 @@ class JacketUser(Model):
                 name="one_owner_per_jacket",
                 fields=["jacket"],
                 condition=Q(is_owner=True),
-            ),
-            UniqueConstraint(
-                name="one_jacket_per_user",
-                fields=["user"],
             ),
         ]

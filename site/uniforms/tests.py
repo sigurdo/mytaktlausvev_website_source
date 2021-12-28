@@ -265,7 +265,7 @@ class JacketUserMakeOwnerTestSuite(TestMixin, TestCase):
             self.get_url(),
             "uniforms.change_jacketuser",
             method="post",
-            status_ok=HTTPStatus.FOUND,
+            status_success=HTTPStatus.FOUND,
         )
 
     def post(self):

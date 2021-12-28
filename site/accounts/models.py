@@ -89,7 +89,7 @@ class UserCustom(AbstractUser):
             return static("accounts/default-avatar.svg")
 
     def get_jacket(self):
-        jacket_user = self.jacket_users.first()
+        jacket_user = getattr(self, "jacket_user", None)
         if jacket_user:
             return jacket_user.jacket
         return None

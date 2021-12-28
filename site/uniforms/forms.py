@@ -57,9 +57,10 @@ class AddJacketUserForm(Form):
     def validator_user_does_not_have_jacket(user_pk):
         """Validates that a user does not already have a jacket."""
         user = UserCustom.objects.get(pk=user_pk)
-        if user.jacket_users.exists():
+        jacket = user.get_jacket()
+        if jacket:
             raise ValidationError(
-                f"{str(user).capitalize()} har allereie {str(user.jacket_users.first().jacket).lower()}"
+                f"{str(user).capitalize()} har allereie {str(jacket).lower()}"
             )
 
     def clean(self):

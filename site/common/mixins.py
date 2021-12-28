@@ -28,13 +28,18 @@ class TestMixin(TestCase):
         self.assertTrue(response.url.startswith(reverse("login")))
 
     def assertPermissionRequired(
-        self, url, *permissions, method="get", status_ok=HTTPStatus.OK
+        self,
+        url,
+        *permissions,
+        method="get",
+        status_success=HTTPStatus.OK,
+        status_no_permission=HTTPStatus.FORBIDDEN,
     ):
         """Asserts that `url` requires `permission`."""
         self.client.force_login(UserFactory())
         response = getattr(self.client, method)(url)
-        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+        self.assertEqual(response.status_code, status_no_permission)
 
         self.client.force_login(UserFactory(permissions=permissions))
         response = getattr(self.client, method)(url)
-        self.assertEqual(response.status_code, status_ok)
+        self.assertEqual(response.status_code, status_success)
