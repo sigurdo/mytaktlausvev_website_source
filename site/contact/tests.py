@@ -9,17 +9,17 @@ from contact.factories import ContactCategoryFactory
 
 
 class ContactCategoryTestCase(TestCase):
+    def setUp(self) -> None:
+        self.category = ContactCategoryFactory()
+
     def test_to_str(self):
         """Should be the category's name."""
-        category = ContactCategoryFactory()
-        self.assertEqual(str(category), category.name)
+        self.assertEqual(str(self.category), self.category.name)
 
     def test_name_is_unique(self):
         """Category name should be unique."""
-        name = "This is a name"
-        ContactCategoryFactory(name=name)
         with self.assertRaises(IntegrityError):
-            ContactCategoryFactory(name=name)
+            ContactCategoryFactory(name=self.category.name)
 
     def test_multiple_categories_with_same_email(self):
         """Multiple categories should be able to have the same email."""
@@ -27,6 +27,10 @@ class ContactCategoryTestCase(TestCase):
         a = ContactCategoryFactory(email=email)
         b = ContactCategoryFactory(email=email)
         self.assertEqual(a.email, b.email)
+
+    def test_order_defaults_to_0(self):
+        """Should set `order` to 0 by default."""
+        self.assertEqual(self.category.order, 0)
 
 
 class ContactViewTestCase(TestCase):
