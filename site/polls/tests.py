@@ -1,8 +1,10 @@
 from django.db import IntegrityError
 from django.test import TestCase
+from django.urls import reverse
 from django.utils.text import slugify
 
 from accounts.factories import UserFactory
+from common.mixins import TestMixin
 
 from .factories import ChoiceFactory, PollFactory, VoteFactory
 from .models import PollType
@@ -108,3 +110,32 @@ class VoteTestSuite(TestCase):
         """Should only allow one vote per user per choice"""
         with self.assertRaises(IntegrityError):
             VoteFactory(choice=self.choice, user=self.vote.user)
+
+
+class PollUpdateTestSuite(TestMixin, TestCase):
+    def setUp(self):
+        self.poll = PollFactory()
+
+    def get_url(self):
+        return reverse("polls:PollUpdate", args=[self.poll.slug])
+
+    def test_requires_login(self):
+        """Should require login."""
+        self.assertLoginRequired(self.get_url())
+
+    def test_requires_permission(self):
+        """
+        Should require permissions for changing polls,
+        and for adding, changing, and deleting choices.
+        """
+        self.assertPermissionRequired(
+            self.get_url(),
+            "polls.change_poll",
+            "polls.add_choice",
+            "polls.change_choice",
+            "polls.delete_choice",
+        )
+
+    def test_redirects_to_poll(self):
+        """Should redirect to the updated poll."""
+        pass

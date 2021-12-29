@@ -34,6 +34,7 @@ urlpatterns = [
     path("instrument/", include("instruments.urls")),
     path("uniformer/", include("uniforms.urls")),
     path("forum/", include("forum.urls")),
+    path("avstemmingar/", include("polls.urls")),
     path("", include("easter_eggs.urls")),
     path("", include("articles.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

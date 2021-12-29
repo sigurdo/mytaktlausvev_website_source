@@ -1,10 +1,7 @@
-import pgtrigger
 from autoslug import AutoSlugField
 from django.conf import settings
 from django.db import models
-from django.db.models import constraints
 from django.db.models.constraints import UniqueConstraint
-from django.db.models.query_utils import Q
 
 from common.models import ArticleMixin
 
