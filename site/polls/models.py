@@ -1,8 +1,17 @@
+import pgtrigger
 from autoslug import AutoSlugField
 from django.conf import settings
 from django.db import models
+from django.db.models import constraints
+from django.db.models.constraints import UniqueConstraint
+from django.db.models.query_utils import Q
 
 from common.models import ArticleMixin
+
+
+class PollType(models.TextChoices):
+    SINGLE_CHOICE = "SINGLE_CHOICE", "Einval"
+    MULTIPLE_CHOICE = "MULTIPLE_CHOICE", "Fleirval"
 
 
 class Poll(ArticleMixin):
@@ -20,6 +29,12 @@ class Poll(ArticleMixin):
         help_text="Om avstemminga er open for ålmente.",
         default=False,
     )
+    type = models.CharField(
+        "type",
+        max_length=255,
+        choices=PollType.choices,
+        default=PollType.SINGLE_CHOICE,
+    )
 
     def get_absolute_url(self):
         pass
@@ -27,8 +42,15 @@ class Poll(ArticleMixin):
     def __str__(self):
         return self.question
 
-    def total_votes(self):
-        return 0
+    @property
+    def num_votes(self):
+        """Returns the total amount of votes for this poll."""
+        return Vote.objects.filter(choice__poll=self).count()
+
+    @property
+    def num_voting(self):
+        """Returns the amount of people who have voted for this people."""
+        return Vote.objects.filter(choice__poll=self).distinct("user").count()
 
     class Meta:
         ordering = ["-submitted"]
@@ -73,3 +95,8 @@ class Vote(models.Model):
     class Meta:
         verbose_name = "stemme"
         verbose_name_plural = "stemmer"
+        constraints = [
+            UniqueConstraint(
+                name="one_vote_per_user_per_choice", fields=["choice", "user"]
+            )
+        ]

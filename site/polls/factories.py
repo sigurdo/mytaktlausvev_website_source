@@ -2,7 +2,7 @@ import factory
 
 from accounts.factories import UserFactory
 
-from .models import Choice, Poll
+from .models import Choice, Poll, Vote
 
 
 class PollFactory(factory.django.DjangoModelFactory):
@@ -20,3 +20,11 @@ class ChoiceFactory(factory.django.DjangoModelFactory):
 
     text = "This one"
     poll = factory.SubFactory(PollFactory)
+
+
+class VoteFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Vote
+
+    choice = factory.SubFactory(ChoiceFactory)
+    user = factory.SubFactory(UserFactory)
