@@ -126,7 +126,9 @@ class Pdf(models.Model):
         upload_to="sheetmusic/original_pdfs/",
         default=None,
         validators=pdf_file_validators,
-        max_length=175,
+        # We need a larger max file path length
+        # because some of our PDFs have really long names
+        max_length=255,
     )
     slug = AutoSlugField(
         verbose_name="lenkjenamn",
