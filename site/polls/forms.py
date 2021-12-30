@@ -1,10 +1,11 @@
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 from django import forms
-from django.forms import modelformset_factory
+from django.core.exceptions import ValidationError
+from django.forms import modelformset_factory, widgets
 from django.forms.models import inlineformset_factory
 
-from .models import Choice, Poll
+from .models import Choice, Poll, Vote
 
 
 class PollForm(forms.ModelForm):
@@ -46,3 +47,25 @@ ChoiceFormset = inlineformset_factory(
 
 
 ChoiceFormset.helper = ChoiceFormsetHelper()
+
+
+class VoteCreateForm(forms.ModelForm):
+    """Form for voting on a poll."""
+
+    helper = FormHelper()
+    helper.add_input(Submit("submit", "Stem"))
+
+    def __init__(self, poll=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.poll = poll
+        self.fields["choice"].queryset = Choice.objects.filter(poll=self.poll)
+
+    def clean(self):
+        super().clean()
+        if self.poll.has_voted(self.instance.user):
+            raise ValidationError("Du har allereie stemt.")
+
+    class Meta:
+        model = Vote
+        fields = ["choice"]
+        widgets = {"choice": forms.widgets.RadioSelect}

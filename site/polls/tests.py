@@ -1,13 +1,20 @@
+from datetime import datetime
+from http import HTTPStatus
+
+from django.core.exceptions import NON_FIELD_ERRORS, ValidationError
 from django.db import IntegrityError
+from django.http.response import Http404
 from django.test import TestCase
 from django.urls import reverse
 from django.utils.text import slugify
+from django.utils.timezone import make_aware
 
 from accounts.factories import UserFactory
 from common.mixins import TestMixin
 
 from .factories import ChoiceFactory, PollFactory, VoteFactory
-from .models import PollType
+from .forms import VoteCreateForm
+from .models import Choice, Poll, PollType, Vote
 
 
 class ForumTestSuite(TestCase):
@@ -85,6 +92,23 @@ class ForumTestSuite(TestCase):
             VoteFactory(choice__poll=poll_multiple_choice, user=user)
         self.assertEqual(poll_multiple_choice.num_voting, 1)
 
+    def test_latest_by_submitted(self):
+        """Should get latest poll by `submitted`."""
+        poll_early = PollFactory()
+        poll_early.submitted = make_aware(datetime(1950, 5, 5))
+        poll_early.save()
+        self.assertEqual(Poll.objects.latest(), self.poll)
+
+    def test_has_voted_returns_true_if_user_has_voted(self):
+        """`has_voted` should return `True` if the user has voted for the poll."""
+        user = UserFactory()
+        VoteFactory(user=user, choice__poll=self.poll)
+        self.assertTrue(self.poll.has_voted(user))
+
+    def test_has_voted_returns_false_if_user_has_not_voted(self):
+        """`has_voted` should return `False` if the user hasn't voted for the poll."""
+        self.assertFalse(self.poll.has_voted(UserFactory()))
+
 
 class ChoiceTestSuite(TestCase):
     def setUp(self):
@@ -110,6 +134,30 @@ class VoteTestSuite(TestCase):
         """Should only allow one vote per user per choice"""
         with self.assertRaises(IntegrityError):
             VoteFactory(choice=self.choice, user=self.vote.user)
+
+
+class VoteCreateFormTestSuite(TestCase):
+    def setUp(self):
+        self.poll = PollFactory()
+
+    def test_limits_choice_queryset_to_poll(self):
+        """Should only include choices related to the poll."""
+        form = VoteCreateForm(poll=self.poll)
+        self.assertQuerysetEqual(
+            form.fields["choice"].queryset, Choice.objects.filter(poll=self.poll)
+        )
+
+    def test_can_only_vote_once_on_each_poll(self):
+        """Should only be able to vote once on a poll."""
+        user = UserFactory()
+        VoteFactory(choice__poll=self.poll, user=user)
+
+        form = VoteCreateForm(
+            poll=self.poll, data={"choice": ChoiceFactory(poll=self.poll)}
+        )
+        form.instance.user = user
+        self.assertFalse(form.is_valid())
+        self.assertIn("Du har allereie stemt.", form.errors[NON_FIELD_ERRORS])
 
 
 class PollUpdateTestSuite(TestMixin, TestCase):
@@ -138,4 +186,51 @@ class PollUpdateTestSuite(TestMixin, TestCase):
 
     def test_redirects_to_poll(self):
         """Should redirect to the updated poll."""
+        pass
+
+
+class VoteCreateTestSuite(TestMixin, TestCase):
+    def setUp(self):
+        self.poll = PollFactory()
+
+    def get_url(self):
+        return reverse("polls:VoteCreate", args=[self.poll.slug])
+
+    def vote(self, choice=None):
+        return self.client.post(
+            self.get_url(), {"choice": (choice or ChoiceFactory(poll=self.poll)).pk}
+        )
+
+    def test_requires_login(self):
+        """Should require login."""
+        self.assertLoginRequired(self.get_url())
+
+    def test_404_if_poll_not_found(self):
+        """Should return a 404 if the poll isn't found."""
+        self.client.force_login(UserFactory())
+        response = self.client.get(reverse("polls:VoteCreate", args=["poll-not-exist"]))
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
+
+    def test_vote_registered_for_logged_in_user(self):
+        """Should register the vote for the logged in user."""
+        user = UserFactory()
+        self.client.force_login(user)
+        response = self.vote()
+
+        self.assertEqual(Vote.objects.count(), 1)
+        vote = Vote.objects.last()
+        self.assertEqual(vote.user, user)
+
+    def test_can_only_vote_once_on_each_poll(self):
+        """Should only be able to vote once on a poll."""
+        user = UserFactory()
+        VoteFactory(choice__poll=self.poll, user=user)
+
+        self.client.force_login(user)
+        response = self.vote()
+        self.assertFormError(response, "form", None, "Du har allereie stemt.")
+        self.assertEqual(Vote.objects.count(), 1)
+
+    def test_success_redirect(self):
+        """Should ..."""
         pass

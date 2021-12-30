@@ -49,8 +49,13 @@ class Poll(ArticleMixin):
         """Returns the amount of people who have voted for this people."""
         return Vote.objects.filter(choice__poll=self).distinct("user").count()
 
+    def has_voted(self, user):
+        """Returns whether or not `user` has voted for this poll."""
+        return Vote.objects.filter(user=user, choice__poll=self).exists()
+
     class Meta:
         ordering = ["-submitted"]
+        get_latest_by = "submitted"
         verbose_name = "avstemming"
         verbose_name_plural = "avstemmingar"
 
@@ -87,7 +92,7 @@ class Vote(models.Model):
     )
 
     def __str__(self):
-        pass
+        return ""
 
     class Meta:
         verbose_name = "stemme"
