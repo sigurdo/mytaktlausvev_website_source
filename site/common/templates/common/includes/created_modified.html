@@ -1,0 +1,11 @@
+<p class="fs-7">
+    Lagt ut av
+    <a href="{{ object.created_by.get_absolute_url }}">{{ object.created_by }}</a>
+    den
+    <time datetime="{{ object.submitted | date:"c" }}">{{ object.submitted | date }}</time>.
+
+    Sist redigert av
+    <a href="{{ object.modified_by.get_absolute_url }}">{{ object.modified_by }}</a>
+    den
+    <time datetime="{{ object.modified | date:"c" }}">{{ object.modified | date }}</time>.
+</p>
