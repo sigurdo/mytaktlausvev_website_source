@@ -13,11 +13,11 @@ from accounts.factories import UserFactory
 from common.mixins import TestMixin
 
 from .factories import ChoiceFactory, PollFactory, VoteFactory
-from .forms import VoteCreateForm
+from .forms import MultiVoteForm, SingleVoteForm
 from .models import Choice, Poll, PollType, Vote
 
 
-class ForumTestSuite(TestCase):
+class PollTestSuite(TestCase):
     def setUp(self):
         self.poll = PollFactory()
 
@@ -136,28 +136,61 @@ class VoteTestSuite(TestCase):
             VoteFactory(choice=self.choice, user=self.vote.user)
 
 
-class VoteCreateFormTestSuite(TestCase):
+class SingleVoteFormTestSuite(TestCase):
     def setUp(self):
         self.poll = PollFactory()
+        self.user = UserFactory()
 
     def test_limits_choice_queryset_to_poll(self):
         """Should only include choices related to the poll."""
-        form = VoteCreateForm(poll=self.poll)
+        form = SingleVoteForm(poll=self.poll, user=self.user)
         self.assertQuerysetEqual(
-            form.fields["choice"].queryset, Choice.objects.filter(poll=self.poll)
+            form.fields["choices"].queryset, Choice.objects.filter(poll=self.poll)
         )
 
     def test_can_only_vote_once_on_each_poll(self):
         """Should only be able to vote once on a poll."""
-        user = UserFactory()
-        VoteFactory(choice__poll=self.poll, user=user)
+        VoteFactory(choice__poll=self.poll, user=self.user)
 
-        form = VoteCreateForm(
-            poll=self.poll, data={"choice": ChoiceFactory(poll=self.poll)}
+        form = SingleVoteForm(
+            poll=self.poll,
+            user=self.user,
+            data={"choices": ChoiceFactory(poll=self.poll)},
         )
-        form.instance.user = user
         self.assertFalse(form.is_valid())
         self.assertIn("Du har allereie stemt.", form.errors[NON_FIELD_ERRORS])
+
+    def test_creates_vote_on_save(self):
+        """Should create the vote for the user on `save()`."""
+        choice = ChoiceFactory(poll=self.poll)
+        form = SingleVoteForm(poll=self.poll, user=self.user, data={"choices": choice})
+
+        self.assertTrue(form.is_valid())
+        form.save()
+
+        self.assertEqual(Vote.objects.count(), 1)
+        vote = Vote.objects.last()
+        self.assertEqual(vote.choice, choice)
+        self.assertEqual(vote.user, self.user)
+
+
+class MultiVoteFormTestSuite(TestCase):
+    def setUp(self):
+        self.poll = PollFactory(type=PollType.SINGLE_CHOICE)
+        self.user = UserFactory()
+
+    def test_creates_votes_on_save(self):
+        """Should create votes for the user on `save()`."""
+        choices = [ChoiceFactory(poll=self.poll) for _ in range(3)]
+        form = MultiVoteForm(poll=self.poll, user=self.user, data={"choices": choices})
+
+        self.assertTrue(form.is_valid())
+        form.save()
+
+        self.assertEqual(Vote.objects.count(), 3)
+        for vote, choice in zip(Vote.objects.all(), choices):
+            self.assertEqual(vote.choice, choice)
+            self.assertEqual(vote.user, self.user)
 
 
 class PollUpdateTestSuite(TestMixin, TestCase):
@@ -193,12 +226,12 @@ class VoteCreateTestSuite(TestMixin, TestCase):
     def setUp(self):
         self.poll = PollFactory()
 
-    def get_url(self):
-        return reverse("polls:VoteCreate", args=[self.poll.slug])
+    def get_url(self, poll=None):
+        return reverse("polls:VoteCreate", args=[(poll or self.poll).slug])
 
-    def vote(self, choice=None):
+    def vote(self):
         return self.client.post(
-            self.get_url(), {"choice": (choice or ChoiceFactory(poll=self.poll)).pk}
+            self.get_url(), {"choices": ChoiceFactory(poll=self.poll).pk}
         )
 
     def test_requires_login(self):
@@ -215,7 +248,7 @@ class VoteCreateTestSuite(TestMixin, TestCase):
         """Should register the vote for the logged in user."""
         user = UserFactory()
         self.client.force_login(user)
-        response = self.vote()
+        self.vote()
 
         self.assertEqual(Vote.objects.count(), 1)
         vote = Vote.objects.last()
@@ -230,6 +263,17 @@ class VoteCreateTestSuite(TestMixin, TestCase):
         response = self.vote()
         self.assertFormError(response, "form", None, "Du har allereie stemt.")
         self.assertEqual(Vote.objects.count(), 1)
+
+    def test_vote_multiple_choice_poll(self):
+        user = UserFactory()
+        self.client.force_login(user)
+
+        poll_multiple = PollFactory(type=PollType.MULTIPLE_CHOICE)
+        self.client.post(
+            self.get_url(poll_multiple),
+            {"choices": [ChoiceFactory(poll=poll_multiple).pk for _ in range(3)]},
+        )
+        self.assertEqual(Vote.objects.count(), 3)
 
     def test_success_redirect(self):
         """Should ..."""

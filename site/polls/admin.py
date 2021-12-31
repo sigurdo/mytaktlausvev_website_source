@@ -3,10 +3,16 @@ from django.contrib import admin
 from .models import Choice, Poll, Vote
 
 
+class ChoiceInline(admin.TabularInline):
+    model = Choice
+    extra = 3
+
+
 class PollAdmin(admin.ModelAdmin):
     list_display = ["question", "submitted"]
     search_fields = ["question"]
     prepopulated_fields = {"slug": ("question",)}
+    inlines = [ChoiceInline]
 
 
 class ChoiceAdmin(admin.ModelAdmin):
