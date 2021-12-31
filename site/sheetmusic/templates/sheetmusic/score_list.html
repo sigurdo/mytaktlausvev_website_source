@@ -19,22 +19,20 @@
                 </th>
 
                 <th class="col-form-label">
-                    Dato oppretta
+                    Arrangement
                 </th>
 
-                {% if perms.sheetmusic.delete_score %}
                 <th class="col-form-label">
-                    Slett
+                    Opphaveleg ifrå
                 </th>
-                {% endif %}
             </tr>
         </thead>
 
         <tbody>
             {% for score in scores %}
-                <tr id="{{score.slug}}-tr">
+                <tr id="tr-{{score.slug}}">
                     <td>
-                        <a class="larger-link" data-larger-link-target="#{{score.slug}}-tr" href="{% url "sheetmusic:ScoreView" score.slug %}">
+                        <a class="larger-link" data-larger-link-target="#tr-{{score.slug}}" href="{% url "sheetmusic:ScoreView" score.slug %}">
                             {{ score.title }}
                         </a>
                     </td>
@@ -48,19 +46,17 @@
                     </td>
 
                     <td>
-                        <time datetime="{{ score.submitted | date:"c" }}">{{ score.submitted | date }}</time>
+                        {{ score.arrangement }}
                     </td>
 
-                    {% if perms.sheetmusic.delete_score %}
                     <td>
-                        <a class="btn btn-danger btn-sm" href="{% url 'sheetmusic:ScoreDelete' score.slug %}"> Slett </a>
+                        {{ score.originally_from }}
                     </td>
-                    {% endif %}
                 </tr>
             {% endfor %}
         </tbody>
     </table>
-    
+
     <p>
         ({{ scores|length }} not{{ scores|length|pluralize:"e,ar" }})
     </p>

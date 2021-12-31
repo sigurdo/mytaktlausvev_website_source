@@ -126,7 +126,9 @@ class PartsUpdate(
         # We have to override get_form_kwargs() to restrict the queryset of the formset to only
         # the parts that are related to the current pdf.
         kwargs = super().get_form_kwargs()
-        kwargs["queryset"] = Part.objects.filter(pdf=self.get_object())
+        kwargs["queryset"] = Part.objects.filter(pdf=self.get_object()).order_by(
+            "from_page", "to_page", "name"
+        )
         return kwargs
 
     def get_queryset(self):
@@ -173,7 +175,9 @@ class PartsUpdateAll(
         # We have to override get_form_kwargs() to restrict the queryset of the formset to only
         # the parts that are related to the current score.
         kwargs = super().get_form_kwargs()
-        kwargs["queryset"] = Part.objects.filter(pdf__score=self.get_object())
+        kwargs["queryset"] = Part.objects.filter(pdf__score=self.get_object()).order_by(
+            "pdf", "from_page", "to_page", "name"
+        )
         return kwargs
 
     def get_context_data(self, **kwargs):

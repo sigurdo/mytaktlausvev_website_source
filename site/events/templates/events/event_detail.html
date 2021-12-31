@@ -6,19 +6,9 @@
 {% block page %}
 <article class="mt-4">
     <header class="mb-4">
-        <h1>{{ event.title }}</h1>
+        <h1 class="mb-0">{{ event.title }}</h1>
 
-        <p class="fs-7">
-            Lagt ut av
-            <a href="{% url 'accounts:ProfileDetail' event.created_by.slug %}">{{ event.created_by }}</a>
-            den
-            <time datetime="{{ event.submitted | date:"c" }}">{{ event.submitted | date }}</time>.
-
-            Sist redigert av
-            <a href="{% url 'accounts:ProfileDetail' event.modified_by.slug %}">{{ event.modified_by }}</a>
-            den
-            <time datetime="{{ event.modified | date:"c" }}">{{ event.modified | date }}</time>.
-        </p>
+        {% include "common/includes/created_modified.html" with object=event only %}
     </header>
 
     <p>
