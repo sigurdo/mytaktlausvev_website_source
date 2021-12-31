@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Avstemmingar{% endblock title %}
+
+{% block page %}
+<article>
+    <h1>Avstemmingar</h1>
+
+    <ul>
+        {% for poll in polls %}
+        <li>
+            {{ poll }} - {{ poll.num_voting }} har stemt
+        </li>
+        {% endfor %}
+    </ul>
+
+    {% include "common/includes/pagination.html" with pagination_label="Avstemmingsider" %}
+</article>
+{% endblock page %}

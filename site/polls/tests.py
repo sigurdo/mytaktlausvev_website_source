@@ -193,6 +193,29 @@ class MultiVoteFormTestSuite(TestCase):
             self.assertEqual(vote.user, self.user)
 
 
+class PollListTestSuite(TestCase):
+    def setUp(self):
+        for _ in range(3):
+            PollFactory()
+            PollFactory(public=True)
+
+    def get_url(self):
+        return reverse("polls:PollList")
+
+    def test_shows_all_polls_when_logged_in(self):
+        """Should show all existing polls when logged in."""
+        self.client.force_login(UserFactory())
+        response = self.client.get(self.get_url())
+        self.assertQuerysetEqual(response.context["polls"], Poll.objects.all())
+
+    def test_show_only_public_polls_when_not_logged_in(self):
+        """Should show only public polls when not logged in."""
+        response = self.client.get(self.get_url())
+        self.assertQuerysetEqual(
+            response.context["polls"], Poll.objects.filter(public=True)
+        )
+
+
 class PollUpdateTestSuite(TestMixin, TestCase):
     def setUp(self):
         self.poll = PollFactory()

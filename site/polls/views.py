@@ -2,8 +2,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.core.exceptions import ViewDoesNotExist
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, DetailView
-from django.views.generic.edit import FormView
+from django.views.generic import CreateView, DetailView, FormView, ListView
 
 from common.views import FormAndFormsetUpdateView
 
@@ -15,6 +14,17 @@ from .forms import (
     SingleVoteForm,
 )
 from .models import Poll, PollType, Vote
+
+
+class PollList(ListView):
+    model = Poll
+    context_object_name = "polls"
+    paginate_by = 25
+
+    def get_queryset(self):
+        if self.request.user.is_authenticated:
+            return super().get_queryset()
+        return super().get_queryset().filter(public=True)
 
 
 class PollUpdate(PermissionRequiredMixin, FormAndFormsetUpdateView):
