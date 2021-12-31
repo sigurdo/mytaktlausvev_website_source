@@ -273,6 +273,44 @@ class PollRedirectTestSuite(TestMixin, TestCase):
         )
 
 
+class PollVotesTestSuite(TestMixin, TestCase):
+    def setUp(self):
+        self.poll = PollFactory()
+        for _ in range(3):
+            VoteFactory(choice__poll=self.poll)
+
+    def get_url(self, slug=None):
+        return reverse("polls:PollVotes", args=[slug or self.poll.slug])
+
+    def test_requires_login(self):
+        """Should require login."""
+        self.assertLoginRequired(self.get_url())
+
+    def test_404_if_poll_not_found(self):
+        """Should return a 404 if the poll doesn't exist."""
+        self.client.force_login(UserFactory())
+        response = self.client.get(self.get_url(slug="poll-not-exist"))
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
+
+    def test_queryset_limited_to_poll_votes_sorted_by_created(self):
+        """Should limit the queryset to votes for the poll and sort by `created`."""
+        for _ in range(3):
+            VoteFactory()
+
+        self.client.force_login(UserFactory())
+        response = self.client.get(self.get_url())
+        self.assertQuerysetEqual(
+            response.context["votes"],
+            Vote.objects.filter(choice__poll=self.poll).order_by("-created"),
+        )
+
+    def test_adds_poll_to_response_context(self):
+        """Should add the poll to the response context."""
+        self.client.force_login(UserFactory())
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.context["poll"], self.poll)
+
+
 class PollUpdateTestSuite(TestMixin, TestCase):
     def setUp(self):
         self.poll = PollFactory()

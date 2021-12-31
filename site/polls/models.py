@@ -91,6 +91,7 @@ class Vote(models.Model):
         related_name="poll_votes",
         verbose_name="brukar",
     )
+    created = models.DateTimeField("lagt ut", auto_now_add=True)
 
     def __str__(self):
         return ""

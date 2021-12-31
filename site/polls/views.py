@@ -58,6 +58,32 @@ class PollResults(DetailView):
     model = Poll
 
 
+class PollVotes(LoginRequiredMixin, ListView):
+    model = Vote
+    template_name = "polls/poll_votes.html"
+    context_object_name = "votes"
+
+    poll = None
+
+    def get_poll(self):
+        if not self.poll:
+            self.poll = get_object_or_404(Poll, slug=self.kwargs["slug_poll"])
+        return self.poll
+
+    def get_queryset(self):
+        """Limit queryset to poll votes and sort by `created` descending."""
+        return (
+            super()
+            .get_queryset()
+            .filter(choice__poll=self.get_poll())
+            .order_by("-created")
+        )
+
+    def get_context_data(self, **kwargs):
+        kwargs["poll"] = self.get_poll()
+        return super().get_context_data(**kwargs)
+
+
 class PollUpdate(PermissionRequiredMixin, FormAndFormsetUpdateView):
     model = Poll
     form_class = PollForm
