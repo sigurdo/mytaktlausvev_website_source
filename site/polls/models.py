@@ -2,6 +2,7 @@ from autoslug import AutoSlugField
 from django.conf import settings
 from django.db import models
 from django.db.models.constraints import UniqueConstraint
+from django.urls.base import reverse
 
 from common.models import ArticleMixin
 
@@ -34,7 +35,7 @@ class Poll(ArticleMixin):
     )
 
     def get_absolute_url(self):
-        pass
+        return reverse("polls:PollRedirect", args=[self.slug])
 
     def __str__(self):
         return self.question

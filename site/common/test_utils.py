@@ -45,8 +45,8 @@ def test_pdf(name="test.pdf", content_type="application/pdf"):
 
 def create_formset_post_data(
     formset_class=None,
-    defaults=None,
-    data=None,
+    defaults={},
+    data={},
     total_forms=2,
     initial_forms=1,
     min_num_forms=0,
@@ -88,9 +88,9 @@ def create_formset_post_data(
     """
     if formset_class is not None:
         fields = list(formset_class.form.base_fields.keys())
-    elif defaults is not None:
+    elif defaults:
         fields = list(defaults.keys())
-    elif data is not None and len(data) > 0:
+    elif data:
         fields = list(data[0].keys())
     else:
         raise Exception("Must configure either formset_class, defaults or forms")

@@ -9,11 +9,12 @@ from django.urls import reverse
 from django.utils.text import slugify
 from django.utils.timezone import make_aware
 
-from accounts.factories import UserFactory
+from accounts.factories import SuperUserFactory, UserFactory
 from common.mixins import TestMixin
+from common.test_utils import create_formset_post_data
 
 from .factories import ChoiceFactory, PollFactory, VoteFactory
-from .forms import MultiVoteForm, SingleVoteForm
+from .forms import ChoiceForm, ChoiceFormset, MultiVoteForm, SingleVoteForm
 from .models import Choice, Poll, PollType, Vote
 
 
@@ -22,8 +23,11 @@ class PollTestSuite(TestCase):
         self.poll = PollFactory()
 
     def test_get_absolute_url(self):
-        """..."""
-        pass
+        """Absolute URL should be the poll redirect view."""
+        self.assertEqual(
+            self.poll.get_absolute_url(),
+            reverse("polls:PollRedirect", args=[self.poll.slug]),
+        )
 
     def test_to_str(self):
         """`__str__` should be the question."""
@@ -216,12 +220,81 @@ class PollListTestSuite(TestCase):
         )
 
 
+class PollRedirectTestSuite(TestMixin, TestCase):
+    def setUp(self):
+        self.poll = PollFactory()
+        self.poll_public = PollFactory(public=True)
+
+    def get_url(self, slug=None):
+        return reverse("polls:PollRedirect", args=[slug or self.poll.slug])
+
+    def test_404_if_poll_not_found(self):
+        """Should return a 404 if the poll doesn't exist."""
+        response = self.client.get(self.get_url(slug="poll-not-exist"))
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
+
+    def test_login_required_if_poll_not_public(self):
+        """Should require login if the poll isn't public."""
+        self.assertLoginRequired(self.get_url())
+
+    def test_logged_in_not_voted(self):
+        """
+        Should redirect to vote view if
+        user is logged in and hasn't voted.
+        """
+        self.client.force_login(UserFactory())
+        response = self.client.get(self.get_url())
+        self.assertRedirects(
+            response, reverse("polls:VoteCreate", args=[self.poll.slug])
+        )
+
+    def test_logged_in_not_voted(self):
+        """
+        Should redirect to poll results view if
+        user is logged in and has voted.
+        """
+        user = UserFactory()
+        VoteFactory(choice__poll=self.poll, user=user)
+
+        self.client.force_login(user)
+        response = self.client.get(self.get_url())
+        self.assertRedirects(
+            response, reverse("polls:PollResults", args=[self.poll.slug])
+        )
+
+    def test_not_logged_in_public_poll(self):
+        """
+        Should redirect to the poll results view if
+        user isn't logged in and the poll is public.
+        """
+        response = self.client.get(self.get_url(slug=self.poll_public.slug))
+        self.assertRedirects(
+            response, reverse("polls:PollResults", args=[self.poll_public.slug])
+        )
+
+
 class PollUpdateTestSuite(TestMixin, TestCase):
     def setUp(self):
         self.poll = PollFactory()
 
     def get_url(self):
         return reverse("polls:PollUpdate", args=[self.poll.slug])
+
+    def post(self):
+        return self.client.post(
+            self.get_url(),
+            {
+                "question": self.poll.question,
+                "type": self.poll.type,
+                "public": self.poll.public,
+                **create_formset_post_data(
+                    ChoiceFormset,
+                    total_forms=0,
+                    initial_forms=0,
+                    subform_prefix=ChoiceFormset.get_default_prefix(),
+                ),
+            },
+        )
 
     def test_requires_login(self):
         """Should require login."""
@@ -242,7 +315,11 @@ class PollUpdateTestSuite(TestMixin, TestCase):
 
     def test_redirects_to_poll(self):
         """Should redirect to the updated poll."""
-        pass
+        self.client.force_login(SuperUserFactory())
+        response = self.post()
+        self.assertRedirects(
+            response, self.poll.get_absolute_url(), fetch_redirect_response=False
+        )
 
 
 class VoteCreateTestSuite(TestMixin, TestCase):
@@ -299,5 +376,9 @@ class VoteCreateTestSuite(TestMixin, TestCase):
         self.assertEqual(Vote.objects.count(), 3)
 
     def test_success_redirect(self):
-        """Should ..."""
-        pass
+        """Should redirect to the poll results page."""
+        self.client.force_login(UserFactory())
+        response = self.vote()
+        self.assertRedirects(
+            response, reverse("polls:PollResults", args=[self.poll.slug])
+        )

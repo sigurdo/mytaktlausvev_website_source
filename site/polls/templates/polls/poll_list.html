@@ -9,7 +9,8 @@
     <ul>
         {% for poll in polls %}
         <li>
-            {{ poll }} - {{ poll.num_voting }} har stemt
+            <a href="{{ poll.get_absolute_url }}">{{ poll }}</a>
+            - {{ poll.num_voting }} har stemt
         </li>
         {% endfor %}
     </ul>
