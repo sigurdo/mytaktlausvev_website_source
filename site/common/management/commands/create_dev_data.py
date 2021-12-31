@@ -16,6 +16,7 @@ from instruments.factories import (
 )
 from instruments.models import Instrument
 from polls.factories import ChoiceFactory, PollFactory, VoteFactory
+from navbar.factories import NavbarItemFactory
 from uniforms.factories import JacketFactory, JacketLocationFactory, JacketUserFactory
 from uniforms.models import Jacket
 
@@ -244,3 +245,8 @@ class Command(BaseCommand):
         VoteFactory(choice=choice_juff, user=member)
         VoteFactory(choice=choice_juff, user=aspirant)
         VoteFactory(choice=choice_tuba, user=retiree)
+        NavbarItemFactory()
+        NavbarItemFactory(text="Om oss", link="/om-oss", order=1)
+        NavbarItemFactory(text="Hendingar", link="/hendingar", order=1.5)
+        NavbarItemFactory(text="Notar", link="/notar", order=2)
+        NavbarItemFactory(text="Wiki", link="/wiki", order=10)

@@ -75,6 +75,7 @@ INSTALLED_APPS = [
     "pwa",
     "forum",
     "polls",
+    "navbar",
 ]
 
 MIDDLEWARE = [
