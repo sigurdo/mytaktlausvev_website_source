@@ -17,6 +17,7 @@ from instruments.factories import (
 from instruments.models import Instrument
 from polls.factories import ChoiceFactory, PollFactory, VoteFactory
 from navbar.factories import NavbarItemFactory
+from navbar.models import NavbarItem
 from uniforms.factories import JacketFactory, JacketLocationFactory, JacketUserFactory
 from uniforms.models import Jacket
 
@@ -245,8 +246,70 @@ class Command(BaseCommand):
         VoteFactory(choice=choice_juff, user=member)
         VoteFactory(choice=choice_juff, user=aspirant)
         VoteFactory(choice=choice_tuba, user=retiree)
-        NavbarItemFactory()
-        NavbarItemFactory(text="Om oss", link="/om-oss", order=1)
-        NavbarItemFactory(text="Hendingar", link="/hendingar", order=1.5)
-        NavbarItemFactory(text="Notar", link="/notar", order=2)
-        NavbarItemFactory(text="Wiki", link="/wiki", order=10)
+        NavbarItemFactory(
+            text="Om oss",
+            link="/om-oss/",
+            order=1,
+        )
+        NavbarItemFactory(
+            text="Hendingar",
+            link="/hendingar/",
+            order=1.5,
+        )
+        sheetmusic_dropdown = NavbarItemFactory(
+            text="Notar",
+            order=2,
+            type=NavbarItem.Type.DROPDOWN,
+        )
+        NavbarItemFactory(
+            text="Alle notar",
+            link="/notar/",
+            order=2.1,
+            parent=sheetmusic_dropdown,
+        )
+        NavbarItemFactory(
+            text="Repertoar",
+            link="/repertoar/",
+            order=2.2,
+            parent=sheetmusic_dropdown,
+        )
+        admin_dropdown = NavbarItemFactory(
+            text="Administrasjon",
+            order=3,
+            type=NavbarItem.Type.DROPDOWN,
+        )
+        NavbarItemFactory(
+            text="Administrasjonspanel",
+            link="/admin/",
+            order=3.1,
+            parent=admin_dropdown,
+        )
+        NavbarItemFactory(
+            text="Instrument",
+            link="/instrument/",
+            order=3.2,
+            parent=admin_dropdown,
+        )
+        NavbarItemFactory(
+            text="Uniformar",
+            link="/uniformer/",
+            order=3.2,
+            parent=admin_dropdown,
+        )
+        other_dropdown = NavbarItemFactory(
+            text="Anna",
+            order=4,
+            type=NavbarItem.Type.DROPDOWN,
+        )
+        NavbarItemFactory(
+            text="Wiki",
+            link="/wiki/",
+            order=4.1,
+            parent=other_dropdown,
+        )
+        NavbarItemFactory(
+            text="Buttonpdfgenerator",
+            link="/buttons/",
+            order=4.2,
+            parent=other_dropdown,
+        )

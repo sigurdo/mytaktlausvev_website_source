@@ -11,7 +11,7 @@ from django.db.models import (
 
 class NavbarItem(Model):
     text = CharField(verbose_name="tekst", max_length=255)
-    link = URLField(verbose_name="lenkjepeikar")
+    link = CharField(verbose_name="lenkjepeikar", max_length=255)
     order = FloatField(verbose_name="rekkjefølgje")
 
     class Type(TextChoices):
@@ -24,7 +24,17 @@ class NavbarItem(Model):
         choices=Type.choices,
         default=Type.LINK,
     )
-    parent = ForeignKey("self", blank=True, null=True, on_delete=SET_NULL)
+    parent = ForeignKey(
+        "self",
+        verbose_name="underpunkt av",
+        related_name="children",
+        blank=True,
+        null=True,
+        on_delete=SET_NULL,
+    )
+
+    def get_sub_items(self):
+        return self.children.all()
 
     def __str__(self):
         match self.type:
@@ -36,6 +46,6 @@ class NavbarItem(Model):
                 return f"{self.text} ({self.type})"
 
     class Meta:
-        verbose_name = "navigasjonslineelement"
-        verbose_name_plural = "navigasjonslineelement"
+        verbose_name = "navigasjonslinepunkt"
+        verbose_name_plural = "navigasjonslinepunkt"
         ordering = ["order", "text"]
