@@ -3,26 +3,17 @@ from django.contrib.auth.mixins import (
     PermissionRequiredMixin,
     UserPassesTestMixin,
 )
-from django.core.exceptions import ViewDoesNotExist
-from django.db import transaction
 from django.forms import Form
 from django.http.response import Http404
 from django.shortcuts import get_object_or_404
-from django.urls import reverse_lazy
-from django.urls.base import reverse
-from django.views.generic import CreateView, DetailView, FormView, ListView
+from django.urls.base import reverse, reverse_lazy
+from django.views.generic import DeleteView, DetailView, FormView, ListView
 from django.views.generic.base import RedirectView
 
 from common.views import InlineFormsetCreateView, InlineFormsetUpdateView
 
-from .forms import (
-    ChoiceFormset,
-    ChoiceFormsetHelper,
-    MultiVoteForm,
-    PollForm,
-    SingleVoteForm,
-)
-from .models import Choice, Poll, PollType, Vote
+from .forms import ChoiceFormset, MultiVoteForm, PollForm, SingleVoteForm
+from .models import Poll, PollType, Vote
 
 
 class PollMixin:
@@ -134,6 +125,16 @@ class PollUpdate(PermissionRequiredMixin, InlineFormsetUpdateView):
     def form_valid(self, form):
         form.instance.modified_by = self.request.user
         super().form_valid(form)
+
+
+class PollDelete(PermissionRequiredMixin, DeleteView):
+    model = Poll
+    template_name = "common/confirm_delete.html"
+    success_url = reverse_lazy("polls:PollList")
+    permission_required = (
+        "polls.delete_poll",
+        "polls.delete_choice",
+    )
 
 
 class VoteCreate(LoginRequiredMixin, PollMixin, FormView):

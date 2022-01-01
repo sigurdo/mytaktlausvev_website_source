@@ -13,4 +13,5 @@ urlpatterns = [
     path("<slug:slug>/stem/fjern/", views.VoteDelete.as_view(), name="VoteDelete"),
     path("<slug:slug>/stemmer/", views.PollVotes.as_view(), name="PollVotes"),
     path("<slug:slug>/rediger/", views.PollUpdate.as_view(), name="PollUpdate"),
+    path("<slug:slug>/slett/", views.PollDelete.as_view(), name="PollDelete"),
 ]

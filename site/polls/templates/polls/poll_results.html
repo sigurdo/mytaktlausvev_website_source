@@ -24,6 +24,11 @@
                 <a href="{% url 'polls:PollUpdate' poll.slug %}" class="btn btn-primary">Rediger avstemming</a>
             </li>
             {% endif %}
+            {% if perms.polls.delete_poll and perms.polls.delete_choice %}
+            <li class="mx-1">
+                <a href="{% url 'polls:PollDelete' poll.slug %}" class="btn btn-primary">Slett avstemming</a>
+            </li>
+            {% endif %}
         </ul>
     </footer>
     {% endif %}

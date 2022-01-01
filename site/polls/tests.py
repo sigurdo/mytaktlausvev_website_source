@@ -475,6 +475,35 @@ class PollUpdateTestSuite(TestMixin, TestCase):
         self.assertEqual(self.poll.modified_by, user)
 
 
+class PollDeleteTestSuite(TestMixin, TestCase):
+    def setUp(self):
+        self.poll = PollFactory()
+
+    def get_url(self):
+        return reverse("polls:PollDelete", args=[self.poll.slug])
+
+    def test_redirects_to_poll_list_on_success(self):
+        """Should redirect to the poll list on success."""
+        self.client.force_login(SuperUserFactory())
+        response = self.client.post(self.get_url())
+        self.assertRedirects(response, reverse("polls:PollList"))
+
+    def test_requires_login(self):
+        """Should require login."""
+        self.assertLoginRequired(self.get_url())
+
+    def test_requires_permission(self):
+        """
+        Should require permissions for
+        deleting polls and deleting choicees.
+        """
+        self.assertPermissionRequired(
+            self.get_url(),
+            "polls.delete_poll",
+            "polls.delete_choice",
+        )
+
+
 class VoteCreateTestSuite(TestMixin, TestCase):
     def setUp(self):
         self.poll = PollFactory()
