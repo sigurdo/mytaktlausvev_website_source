@@ -3,7 +3,7 @@ from django.http import FileResponse
 from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, DeleteView, DetailView, ListView
 
-from common.views import FormAndFormsetUpdateView
+from common.views import InlineFormsetUpdateView
 
 from .forms import (
     RepertoireCreateForm,
@@ -29,11 +29,10 @@ class RepertoireCreate(PermissionRequiredMixin, CreateView):
         return reverse("repertoire:RepertoireUpdate", args=[self.object.slug])
 
 
-class RepertoireUpdate(PermissionRequiredMixin, FormAndFormsetUpdateView):
+class RepertoireUpdate(PermissionRequiredMixin, InlineFormsetUpdateView):
     model = Repertoire
     form_class = RepertoireUpdateForm
     formset_class = RepertoireEntryUpdateFormset
-    formset_helper = RepertoireEntryUpdateFormsetHelper
     template_name = "common/form.html"
     success_url = reverse_lazy("repertoire:RepertoireList")
     permission_required = "repertoire.change_repertoire"
