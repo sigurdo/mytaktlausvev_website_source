@@ -9,8 +9,7 @@ from common.test_utils import create_formset_post_data
 from sheetmusic.factories import FavoritePartFactory
 
 from .factories import RepertoireEntryFactory, RepertoireFactory
-from .forms import RepertoireEntryUpdateFormset
-from .models import Repertoire
+from .forms import RepertoireEntryFormset
 
 
 class RepertoireTestSuite(TestMixin, TestCase):
@@ -55,7 +54,15 @@ class RepertoireListTestSuite(TestMixin, TestCase):
 
 class RepertoireCreateTestSuite(TestMixin, TestCase):
     def setUp(self):
-        self.test_data = {"name": "Repertoire"}
+        self.test_data = {
+            "name": "Repertoire",
+            **create_formset_post_data(
+                RepertoireEntryFormset,
+                total_forms=0,
+                initial_forms=0,
+                subform_prefix="entries",
+            ),
+        }
 
     def test_requires_login(self):
         self.assertLoginRequired(reverse("repertoire:RepertoireCreate"))
@@ -72,16 +79,13 @@ class RepertoireCreateTestSuite(TestMixin, TestCase):
         response = self.client.post(
             reverse("repertoire:RepertoireCreate"), self.test_data
         )
-        repertoire = Repertoire.objects.last()
-        self.assertRedirects(
-            response, reverse("repertoire:RepertoireUpdate", args=[repertoire.slug])
-        )
+        self.assertRedirects(response, reverse("repertoire:RepertoireList"))
 
 
 class RepertoireUpdateTestSuite(TestMixin, TestCase):
     def create_post_data(self, data=[]):
         return create_formset_post_data(
-            formset_class=RepertoireEntryUpdateFormset,
+            formset_class=RepertoireEntryFormset,
             defaults={},
             data=data,
             subform_prefix="entries",

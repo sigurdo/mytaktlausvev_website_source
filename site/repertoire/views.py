@@ -1,16 +1,11 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.http import FileResponse
-from django.urls import reverse, reverse_lazy
-from django.views.generic import CreateView, DeleteView, DetailView, ListView
+from django.urls import reverse_lazy
+from django.views.generic import DeleteView, DetailView, ListView
 
-from common.views import InlineFormsetUpdateView
+from common.views import InlineFormsetCreateView, InlineFormsetUpdateView
 
-from .forms import (
-    RepertoireCreateForm,
-    RepertoireEntryUpdateFormset,
-    RepertoireEntryUpdateFormsetHelper,
-    RepertoireUpdateForm,
-)
+from .forms import RepertoireEntryFormset, RepertoireForm
 from .models import Repertoire
 
 
@@ -19,20 +14,19 @@ class RepertoireList(LoginRequiredMixin, ListView):
     context_object_name = "repertoires"
 
 
-class RepertoireCreate(PermissionRequiredMixin, CreateView):
+class RepertoireCreate(PermissionRequiredMixin, InlineFormsetCreateView):
     model = Repertoire
-    form_class = RepertoireCreateForm
+    form_class = RepertoireForm
+    formset_class = RepertoireEntryFormset
     template_name = "common/form.html"
+    success_url = reverse_lazy("repertoire:RepertoireList")
     permission_required = "repertoire.add_repertoire"
-
-    def get_success_url(self):
-        return reverse("repertoire:RepertoireUpdate", args=[self.object.slug])
 
 
 class RepertoireUpdate(PermissionRequiredMixin, InlineFormsetUpdateView):
     model = Repertoire
-    form_class = RepertoireUpdateForm
-    formset_class = RepertoireEntryUpdateFormset
+    form_class = RepertoireForm
+    formset_class = RepertoireEntryFormset
     template_name = "common/form.html"
     success_url = reverse_lazy("repertoire:RepertoireList")
     permission_required = "repertoire.change_repertoire"
