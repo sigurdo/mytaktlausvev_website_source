@@ -41,18 +41,23 @@ class Poll(ArticleMixin):
         return self.question
 
     @property
+    def votes(self):
+        """Returns the votes for this poll."""
+        return Vote.objects.filter(choice__poll=self)
+
+    @property
     def num_votes(self):
         """Returns the total amount of votes for this poll."""
-        return Vote.objects.filter(choice__poll=self).count()
+        return self.votes.count()
 
     @property
     def num_voting(self):
         """Returns the amount of people who have voted for this people."""
-        return Vote.objects.filter(choice__poll=self).distinct("user").count()
+        return self.votes.distinct("user").count()
 
     def has_voted(self, user):
         """Returns whether or not `user` has voted for this poll."""
-        return Vote.objects.filter(user=user, choice__poll=self).exists()
+        return self.votes.filter(user=user).exists()
 
     class Meta:
         ordering = ["-submitted"]

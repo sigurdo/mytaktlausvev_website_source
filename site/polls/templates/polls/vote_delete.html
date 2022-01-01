@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Fjern di stemme for {{ poll }}
+{% endblock %}
+
+{% block page %}
+<article>
+    <h1>Fjern di stemme for {{ poll }}</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        <p>Er du sikker på at du vil fjerne di stemme for {{ poll }}?</p>
+        <p class="mb-0">Du har stemt:</p>
+        <ul>
+            {% for vote in votes %}
+            <li>
+                {{ vote.choice }}
+            </li>
+            {% endfor %}
+        </ul>
+        <input type="submit" value="Fjern di stemme" class="btn btn-danger">
+    </form>
+</article>
+{% endblock %}

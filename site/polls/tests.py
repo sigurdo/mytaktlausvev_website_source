@@ -1,9 +1,8 @@
 from datetime import datetime
 from http import HTTPStatus
 
-from django.core.exceptions import NON_FIELD_ERRORS, ValidationError
+from django.core.exceptions import NON_FIELD_ERRORS
 from django.db import IntegrityError
-from django.http.response import Http404
 from django.test import TestCase
 from django.urls import reverse
 from django.utils.text import slugify
@@ -14,7 +13,7 @@ from common.mixins import TestMixin
 from common.test_utils import create_formset_post_data
 
 from .factories import ChoiceFactory, PollFactory, VoteFactory
-from .forms import ChoiceForm, ChoiceFormset, MultiVoteForm, SingleVoteForm
+from .forms import ChoiceFormset, MultiVoteForm, SingleVoteForm
 from .models import Choice, Poll, PollType, Vote
 
 
@@ -49,6 +48,15 @@ class PollTestSuite(TestCase):
     def test_type_single_choice_by_default(self):
         """Should set `type` to `SINGLE_CHOICE` by default."""
         self.assertEqual(self.poll.type, PollType.SINGLE_CHOICE)
+
+    def test_votes(self):
+        """Should return the poll's votes."""
+        for _ in range(3):
+            VoteFactory(choice__poll=self.poll)
+            VoteFactory()
+        self.assertEqual(self.poll.votes.count(), 3)
+        for vote in self.poll.votes:
+            self.assertEqual(vote.choice.poll, self.poll)
 
     def test_num_votes(self):
         """Should return the total number of votes."""
@@ -301,7 +309,7 @@ class PollVotesTestSuite(TestMixin, TestCase):
         response = self.client.get(self.get_url())
         self.assertQuerysetEqual(
             response.context["votes"],
-            Vote.objects.filter(choice__poll=self.poll).order_by("-created"),
+            self.poll.votes.order_by("-created"),
         )
 
     def test_adds_poll_to_response_context(self):
@@ -419,4 +427,80 @@ class VoteCreateTestSuite(TestMixin, TestCase):
         response = self.vote()
         self.assertRedirects(
             response, reverse("polls:PollResults", args=[self.poll.slug])
+        )
+
+
+class VoteDeleteTestSuite(TestMixin, TestCase):
+    def setUp(self):
+        self.poll = PollFactory()
+        self.user = UserFactory()
+        VoteFactory(choice__poll=self.poll, user=self.user)
+
+    def get_url(self, slug=None):
+        return reverse("polls:VoteDelete", args=[slug or self.poll.slug])
+
+    def test_requires_login(self):
+        """Should require login."""
+        self.assertLoginRequired(self.get_url())
+
+    def test_404_if_poll_not_found(self):
+        """Should return a 404 if the poll isn't found."""
+        self.client.force_login(self.user)
+        response = self.client.get(self.get_url("poll-not-exist"))
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
+
+    def test_404_if_has_not_voted(self):
+        """Should return a 404 if the user hasn't voted for the poll."""
+        self.client.force_login(UserFactory())
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
+
+    def test_adds_poll_to_context_data(self):
+        """Should add the poll to the context data."""
+        self.client.force_login(self.user)
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.context["poll"], self.poll)
+
+    def test_adds_user_votes_to_context_data(self):
+        """Should add the user's votes to the context data."""
+        self.client.force_login(self.user)
+        response = self.client.get(self.get_url())
+        self.assertQuerysetEqual(
+            response.context["votes"], self.poll.votes.filter(user=self.user)
+        )
+
+    def test_deletes_user_vote(self):
+        """Should delete the user's vote."""
+        self.client.force_login(self.user)
+        self.client.post(self.get_url())
+        self.assertEqual(Vote.objects.count(), 0)
+        self.assertFalse(self.poll.has_voted(self.user))
+
+    def test_deletes_all_user_votes_if_multi_choice_poll(self):
+        """
+        Should delete all of a user's votes if
+        the poll is multiple choice.
+        """
+        poll_multiple_choice = PollFactory(type=PollType.MULTIPLE_CHOICE)
+        for _ in range(3):
+            VoteFactory(choice__poll=poll_multiple_choice, user=self.user)
+        self.client.force_login(self.user)
+        self.client.post(self.get_url(poll_multiple_choice.slug))
+        self.assertEqual(Vote.objects.count(), 1)
+        self.assertFalse(poll_multiple_choice.has_voted(self.user))
+
+    def test_does_not_delete_other_user_votes(self):
+        """Should not delete the votes of other users."""
+        for _ in range(3):
+            VoteFactory(choice__poll=self.poll)
+        self.client.force_login(self.user)
+        self.client.post(self.get_url())
+        self.assertEqual(Vote.objects.count(), 3)
+
+    def test_redirects_to_poll_redirect(self):
+        """Should redirect to the poll redirect page on success."""
+        self.client.force_login(self.user)
+        response = self.client.post(self.get_url())
+        self.assertRedirects(
+            response, self.poll.get_absolute_url(), fetch_redirect_response=False
         )

@@ -4,6 +4,8 @@ from django.contrib.auth.mixins import (
     UserPassesTestMixin,
 )
 from django.core.exceptions import ViewDoesNotExist
+from django.forms import Form
+from django.http.response import Http404
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.urls.base import reverse
@@ -133,3 +135,35 @@ class VoteCreate(LoginRequiredMixin, FormView):
 
     def get_success_url(self) -> str:
         return reverse("polls:PollResults", args=[self.get_poll().slug])
+
+
+class VoteDelete(LoginRequiredMixin, FormView):
+    template_name = "polls/vote_delete.html"
+    form_class = Form
+
+    poll = None
+    votes = None
+
+    def get_poll(self):
+        if not self.poll:
+            self.poll = get_object_or_404(Poll, slug=self.kwargs["slug_poll"])
+        return self.poll
+
+    def get_votes(self):
+        if not self.votes:
+            self.votes = self.get_poll().votes.filter(user=self.request.user)
+        if not self.votes.exists():
+            raise Http404("Du har ikkje stemt på denne avstemminga.")
+        return self.votes
+
+    def get_context_data(self, **kwargs):
+        kwargs["poll"] = self.get_poll()
+        kwargs["votes"] = self.get_votes()
+        return super().get_context_data(**kwargs)
+
+    def form_valid(self, form):
+        self.get_votes().delete()
+        return super().form_valid(form)
+
+    def get_success_url(self) -> str:
+        return self.get_poll().get_absolute_url()
