@@ -281,6 +281,36 @@ class PollRedirectTestSuite(TestMixin, TestCase):
         )
 
 
+class PollResultsTestSuite(TestMixin, TestCase):
+    def setUp(self):
+        self.poll = PollFactory()
+
+    def get_url(self, slug=None):
+        return reverse("polls:PollResults", args=[slug or self.poll.slug])
+
+    def test_login_required_if_poll_not_public(self):
+        """Should require login if the poll isn't public."""
+        self.assertLoginRequired(self.get_url())
+
+    def test_login_not_required_if_poll_public(self):
+        """Should not require login if the poll is public."""
+        poll_public = PollFactory(public=True)
+        response = self.client.get(self.get_url(poll_public.slug))
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+    def test_adds_user_has_voted_to_context_data(self):
+        """Should add whether the user has voted to context data."""
+        user = UserFactory()
+        self.client.force_login(user)
+
+        response = self.client.get(self.get_url())
+        self.assertFalse(response.context["user_has_voted"])
+
+        VoteFactory(choice__poll=self.poll, user=user)
+        response = self.client.get(self.get_url())
+        self.assertTrue(response.context["user_has_voted"])
+
+
 class PollVotesTestSuite(TestMixin, TestCase):
     def setUp(self):
         self.poll = PollFactory()

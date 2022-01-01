@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}{{ poll }}{% endblock title %}
+
+{% block page %}
+<article>
+    <h1>{{ poll }}</h1>
+
+    {% if user.is_authenticated %}
+    <footer>
+        <ul class="list-unstyled d-flex">
+            <li class="mx-1">
+                {% if user_has_voted %}
+                <a href="{% url 'polls:VoteDelete' poll.slug %}" class="btn btn-danger">Fjern di stemme</a>
+                {% else %}
+                <a href="{% url 'polls:VoteCreate' poll.slug %}" class="btn btn-primary">Stem</a>
+                {% endif %}
+            </li>
+            <li class="mx-1">
+                <a href="{% url 'polls:PollVotes' poll.slug %}" class="btn btn-primary">Stemmer</a>
+            </li>
+            {% if perms.polls.change_poll and perms.polls.add_choice and perms.polls.change_choice and perms.polls.delete_choice %}
+            <li class="mx-1">
+                <a href="{% url 'polls:PollUpdate' poll.slug %}" class="btn btn-primary">Rediger avstemming</a>
+            </li>
+            {% endif %}
+        </ul>
+    </footer>
+    {% endif %}
+
+    {% with poll.num_votes as num_votes %}
+    <dl>
+        {% for choice in poll.choices.all %}
+        <dt>{{ choice }}</dt>
+        <dd>{{ choice.votes.count }} </dt>
+        {% endfor %}
+    </dl>
+    {% endwith %}
+    <p>{{ poll.num_votes }}</p>
+</article>
+{% endblock page %}

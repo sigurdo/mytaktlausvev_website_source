@@ -65,8 +65,20 @@ class PollRedirect(UserPassesTestMixin, PollMixin, RedirectView):
         return reverse(url_name, args=[poll.slug])
 
 
-class PollResults(DetailView):
+class PollResults(UserPassesTestMixin, DetailView):
     model = Poll
+    template_name_suffix = "_results"
+
+    def test_func(self):
+        return self.get_object().public or self.request.user.is_authenticated
+
+    def get_context_data(self, **kwargs):
+        kwargs[
+            "user_has_voted"
+        ] = self.request.user.is_authenticated and self.object.has_voted(
+            self.request.user
+        )
+        return super().get_context_data(**kwargs)
 
 
 class PollVotes(LoginRequiredMixin, PollMixin, ListView):
