@@ -349,6 +349,65 @@ class PollVotesTestSuite(TestMixin, TestCase):
         self.assertEqual(response.context["poll"], self.poll)
 
 
+class PollCreateTestSuite(TestMixin, TestCase):
+    def get_url(self):
+        return reverse("polls:PollCreate")
+
+    def post(self):
+        return self.client.post(
+            self.get_url(),
+            {
+                "question": "Que?",
+                "type": PollType.SINGLE_CHOICE,
+                "public": False,
+                **create_formset_post_data(
+                    ChoiceFormset,
+                    total_forms=0,
+                    initial_forms=0,
+                    subform_prefix=ChoiceFormset.get_default_prefix(),
+                ),
+            },
+        )
+
+    def test_requires_login(self):
+        """Should require login."""
+        self.assertLoginRequired(self.get_url())
+
+    def test_requires_permission(self):
+        """
+        Should require permissions for adding polls,
+        and for adding, changing, and deleting choices.
+        """
+        self.assertPermissionRequired(
+            self.get_url(),
+            "polls.add_poll",
+            "polls.add_choice",
+            "polls.change_choice",
+            "polls.delete_choice",
+        )
+
+    def test_redirects_to_poll(self):
+        """Should redirect to the created poll."""
+        self.client.force_login(SuperUserFactory())
+        response = self.post()
+        self.assertEqual(Poll.objects.count(), 1)
+        poll = Poll.objects.last()
+        self.assertRedirects(
+            response, poll.get_absolute_url(), fetch_redirect_response=False
+        )
+
+    def test_created_by_modified_by_set_to_current_user(self):
+        """Should set `created_by` and `modified_by` to the current user on creation."""
+        user = SuperUserFactory()
+        self.client.force_login(user)
+        self.post()
+
+        self.assertEqual(Poll.objects.count(), 1)
+        poll = Poll.objects.last()
+        self.assertEqual(poll.created_by, user)
+        self.assertEqual(poll.modified_by, user)
+
+
 class PollUpdateTestSuite(TestMixin, TestCase):
     def setUp(self):
         self.poll = PollFactory()
@@ -396,6 +455,24 @@ class PollUpdateTestSuite(TestMixin, TestCase):
         self.assertRedirects(
             response, self.poll.get_absolute_url(), fetch_redirect_response=False
         )
+
+    def test_created_by_not_changed(self):
+        """Should not change `created_by` when updating poll."""
+        self.client.force_login(SuperUserFactory())
+        self.post()
+
+        created_by_previous = self.poll.created_by
+        self.poll.refresh_from_db()
+        self.assertEqual(self.poll.created_by, created_by_previous)
+
+    def test_modified_by_set_to_current_user(self):
+        """Should set `modified_by` to the current user on update."""
+        user = SuperUserFactory()
+        self.client.force_login(user)
+        self.post()
+
+        self.poll.refresh_from_db()
+        self.assertEqual(self.poll.modified_by, user)
 
 
 class VoteCreateTestSuite(TestMixin, TestCase):

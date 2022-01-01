@@ -15,6 +15,13 @@
         {% endfor %}
     </ul>
 
-    {% include "common/includes/pagination.html" with pagination_label="Avstemmingsider" %}
+    <footer>
+        {% if perms.polls.add_poll and perms.polls.add_choice and perms.polls.change_choice and perms.polls.delete_choice %}
+        <a href="{% url 'polls:PollCreate' %}" class="btn btn-primary">Ny avstemming</a>
+        {% endif %}
+
+        {% include "common/includes/pagination.html" with pagination_label="Avstemmingsider" %}
+    </footer>
+
 </article>
 {% endblock page %}

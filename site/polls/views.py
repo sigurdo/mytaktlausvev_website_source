@@ -4,6 +4,7 @@ from django.contrib.auth.mixins import (
     UserPassesTestMixin,
 )
 from django.core.exceptions import ViewDoesNotExist
+from django.db import transaction
 from django.forms import Form
 from django.http.response import Http404
 from django.shortcuts import get_object_or_404
@@ -12,7 +13,7 @@ from django.urls.base import reverse
 from django.views.generic import CreateView, DetailView, FormView, ListView
 from django.views.generic.base import RedirectView
 
-from common.views import FormAndFormsetUpdateView
+from common.views import InlineFormsetCreateView, InlineFormsetUpdateView
 
 from .forms import (
     ChoiceFormset,
@@ -21,7 +22,7 @@ from .forms import (
     PollForm,
     SingleVoteForm,
 )
-from .models import Poll, PollType, Vote
+from .models import Choice, Poll, PollType, Vote
 
 
 class PollMixin:
@@ -100,11 +101,28 @@ class PollVotes(LoginRequiredMixin, PollMixin, ListView):
         return super().get_context_data(**kwargs)
 
 
-class PollUpdate(PermissionRequiredMixin, FormAndFormsetUpdateView):
+class PollCreate(PermissionRequiredMixin, InlineFormsetCreateView):
     model = Poll
     form_class = PollForm
     formset_class = ChoiceFormset
-    formset_helper = ChoiceFormsetHelper
+    template_name = "common/form.html"
+    permission_required = (
+        "polls.add_poll",
+        "polls.add_choice",
+        "polls.change_choice",
+        "polls.delete_choice",
+    )
+
+    def form_valid(self, form):
+        form.instance.created_by = self.request.user
+        form.instance.modified_by = self.request.user
+        super().form_valid(form)
+
+
+class PollUpdate(PermissionRequiredMixin, InlineFormsetUpdateView):
+    model = Poll
+    form_class = PollForm
+    formset_class = ChoiceFormset
     template_name = "common/form.html"
     permission_required = (
         "polls.change_poll",
@@ -113,8 +131,9 @@ class PollUpdate(PermissionRequiredMixin, FormAndFormsetUpdateView):
         "polls.delete_choice",
     )
 
-    def get_success_url(self) -> str:
-        return self.get_object().get_absolute_url()
+    def form_valid(self, form):
+        form.instance.modified_by = self.request.user
+        super().form_valid(form)
 
 
 class VoteCreate(LoginRequiredMixin, PollMixin, FormView):
