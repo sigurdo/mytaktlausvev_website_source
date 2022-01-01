@@ -24,6 +24,22 @@ from .forms import (
 from .models import Poll, PollType, Vote
 
 
+class PollMixin:
+    """
+    Provides a function for getting a poll
+    based on a slug URL kwarg.
+
+    Returns 404 if the poll doesn't exist.
+    """
+
+    poll = None
+
+    def get_poll(self):
+        if not self.poll:
+            self.poll = get_object_or_404(Poll, slug=self.kwargs["slug"])
+        return self.poll
+
+
 class PollList(ListView):
     model = Poll
     context_object_name = "polls"
@@ -35,14 +51,7 @@ class PollList(ListView):
         return super().get_queryset().filter(public=True)
 
 
-class PollRedirect(UserPassesTestMixin, RedirectView):
-    poll = None
-
-    def get_poll(self):
-        if not self.poll:
-            self.poll = get_object_or_404(Poll, slug=self.kwargs["slug"])
-        return self.poll
-
+class PollRedirect(UserPassesTestMixin, PollMixin, RedirectView):
     def test_func(self):
         return self.get_poll().public or self.request.user.is_authenticated
 
@@ -60,17 +69,10 @@ class PollResults(DetailView):
     model = Poll
 
 
-class PollVotes(LoginRequiredMixin, ListView):
+class PollVotes(LoginRequiredMixin, PollMixin, ListView):
     model = Vote
     template_name = "polls/poll_votes.html"
     context_object_name = "votes"
-
-    poll = None
-
-    def get_poll(self):
-        if not self.poll:
-            self.poll = get_object_or_404(Poll, slug=self.kwargs["slug_poll"])
-        return self.poll
 
     def get_queryset(self):
         """Limit queryset to poll votes and sort by `created` descending."""
@@ -103,15 +105,8 @@ class PollUpdate(PermissionRequiredMixin, FormAndFormsetUpdateView):
         return self.get_object().get_absolute_url()
 
 
-class VoteCreate(LoginRequiredMixin, FormView):
+class VoteCreate(LoginRequiredMixin, PollMixin, FormView):
     template_name = "common/form.html"
-
-    poll = None
-
-    def get_poll(self):
-        if not self.poll:
-            self.poll = get_object_or_404(Poll, slug=self.kwargs["slug_poll"])
-        return self.poll
 
     def get_form_class(self):
         return (
@@ -137,17 +132,11 @@ class VoteCreate(LoginRequiredMixin, FormView):
         return reverse("polls:PollResults", args=[self.get_poll().slug])
 
 
-class VoteDelete(LoginRequiredMixin, FormView):
+class VoteDelete(LoginRequiredMixin, PollMixin, FormView):
     template_name = "polls/vote_delete.html"
     form_class = Form
 
-    poll = None
     votes = None
-
-    def get_poll(self):
-        if not self.poll:
-            self.poll = get_object_or_404(Poll, slug=self.kwargs["slug_poll"])
-        return self.poll
 
     def get_votes(self):
         if not self.votes:
