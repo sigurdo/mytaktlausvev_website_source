@@ -170,8 +170,13 @@ class VoteTestSuite(TestCase):
         self.vote = VoteFactory(choice=self.choice)
 
     def test_to_str(self):
-        """`__str__` should be ???."""
-        pass
+        """
+        `__str__` should include
+        choice, poll, and username.
+        """
+        self.assertIn(str(self.vote.choice), str(self.vote))
+        self.assertIn(str(self.vote.choice.poll), str(self.vote))
+        self.assertIn(self.vote.user.username, str(self.vote))
 
     def test_one_vote_per_user_per_choice(self):
         """Should only allow one vote per user per choice"""
@@ -287,7 +292,7 @@ class PollRedirectTestSuite(TestMixin, TestCase):
             response, reverse("polls:VoteCreate", args=[self.poll.slug])
         )
 
-    def test_logged_in_not_voted(self):
+    def test_logged_in_has_voted(self):
         """
         Should redirect to poll results view if
         user is logged in and has voted.

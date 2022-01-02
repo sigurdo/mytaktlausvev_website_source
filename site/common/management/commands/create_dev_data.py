@@ -15,6 +15,7 @@ from instruments.factories import (
     InstrumentLocationFactory,
 )
 from instruments.models import Instrument
+from polls.factories import ChoiceFactory, PollFactory, VoteFactory
 from uniforms.factories import JacketFactory, JacketLocationFactory, JacketUserFactory
 from uniforms.models import Jacket
 
@@ -233,3 +234,13 @@ class Command(BaseCommand):
         the_device = TopicFactory(title="The Device", forum=general, created_by=member)
         PostFactory(content="2+2=5", topic=truths, created_by=superuser)
         PostFactory(content="???", topic=the_device, created_by=member)
+
+        poll = PollFactory(
+            question="Beste instrument?", created_by=superuser, modified_by=superuser
+        )
+        choice_juff = ChoiceFactory(text="Juff", poll=poll)
+        choice_tuba = ChoiceFactory(text="Mindre tuba", poll=poll)
+        VoteFactory(choice=choice_juff, user=superuser)
+        VoteFactory(choice=choice_juff, user=member)
+        VoteFactory(choice=choice_juff, user=aspirant)
+        VoteFactory(choice=choice_tuba, user=retiree)

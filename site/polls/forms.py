@@ -2,7 +2,6 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 from django import forms
 from django.core.exceptions import ValidationError
-from django.forms import modelformset_factory, widgets
 from django.forms.models import inlineformset_factory
 
 from .models import Choice, Poll, Vote

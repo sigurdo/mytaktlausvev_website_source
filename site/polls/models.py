@@ -25,7 +25,7 @@ class PollType(models.TextChoices):
 class Poll(ArticleMixin):
     title = None
     content = None
-    question = models.CharField("spørsmål", max_length=50)
+    question = models.CharField("spørsmål", max_length=255)
     slug = AutoSlugField(
         verbose_name="lenkjenamn",
         populate_from="question",
@@ -77,7 +77,7 @@ class Poll(ArticleMixin):
 
 
 class Choice(models.Model):
-    text = models.CharField("tekst", max_length=50)
+    text = models.CharField("tekst", max_length=255)
     poll = models.ForeignKey(
         Poll,
         on_delete=models.CASCADE,
@@ -121,7 +121,7 @@ class Vote(models.Model):
     created = models.DateTimeField("lagt ut", auto_now_add=True)
 
     def __str__(self):
-        return ""
+        return f"{self.choice} - {self.choice.poll} {self.user}"
 
     class Meta:
         verbose_name = "stemme"
