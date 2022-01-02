@@ -4,7 +4,11 @@
 
 {% block page %}
 <article>
-    <h1>{{ poll }}</h1>
+    <header>
+        {% include "common/includes/breadcrumbs.html" with breadcrumbs=breadcrumbs only %}
+
+        <h1>{{ poll }}</h1>
+    </header>
 
     {% if user.is_authenticated %}
     <footer>

@@ -28,6 +28,12 @@ class Article(ArticleMixin, TreeNode):
         slugs = [ancestor.slug for ancestor in self.ancestors(include_self=True)]
         return "/".join(slugs)
 
+    def breadcrumbs(self, include_self=False):
+        return [
+            {"url": ancestor.get_absolute_url(), "name": ancestor.title}
+            for ancestor in self.ancestors(include_self=include_self)
+        ]
+
     def get_absolute_url(self):
         return reverse("articles:ArticleDetail", args=[self.path()])
 

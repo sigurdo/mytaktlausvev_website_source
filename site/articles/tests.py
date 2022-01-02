@@ -85,6 +85,33 @@ class ArticleTestCase(TestCase):
         article = Article.objects.create(**self.article_data)
         self.assertTrue(article.comments_allowed)
 
+    def test_breadcrumbs(self):
+        """Should return a list of ancestor breadcrumbs."""
+        self.assertEqual(
+            self.grandchild.breadcrumbs(),
+            [
+                {"url": self.article.get_absolute_url(), "name": self.article.title},
+                {"url": self.child.get_absolute_url(), "name": self.child.title},
+            ],
+        )
+
+    def test_breadcrumbs_include_self(self):
+        """
+        Should return a list of ancestor breadcrumbs,
+        including self, when `include_self=True`.
+        """
+        self.assertEqual(
+            self.grandchild.breadcrumbs(include_self=True),
+            [
+                {"url": self.article.get_absolute_url(), "name": self.article.title},
+                {"url": self.child.get_absolute_url(), "name": self.child.title},
+                {
+                    "url": self.grandchild.get_absolute_url(),
+                    "name": self.grandchild.title,
+                },
+            ],
+        )
+
 
 class SlugPathMixinTest(TestCase):
     class DummyView(SlugPathMixin, SingleObjectMixin):

@@ -4,7 +4,11 @@
 
 {% block page %}
 <article>
-    <h1 class="mb-3">Stemmer for {{ poll }}</h1>
+    <header>
+        {% include "common/includes/breadcrumbs.html" with breadcrumbs=breadcrumbs only %}
+
+        <h1 class="mb-3">Stemmer for {{ poll }}</h1>
+    </header>
 
     <table class="table table-striped">
         <thead>

@@ -22,6 +22,14 @@ from .forms import (
 from .models import Poll, PollType, Vote
 
 
+def breadcrumbs(poll=None):
+    """Returns breadcrumbs for the poll views."""
+    breadcrumbs = [{"url": reverse("polls:PollList"), "name": "Alle avstemmingar"}]
+    if poll:
+        breadcrumbs.append({"url": poll.get_absolute_url(), "name": poll})
+    return breadcrumbs
+
+
 class PollMixin:
     """
     Provides a function for getting a poll
@@ -76,6 +84,7 @@ class PollResults(UserPassesTestMixin, DetailView):
         ] = self.request.user.is_authenticated and self.object.has_voted(
             self.request.user
         )
+        kwargs["breadcrumbs"] = breadcrumbs()
         return super().get_context_data(**kwargs)
 
 
@@ -95,6 +104,7 @@ class PollVotes(LoginRequiredMixin, PollMixin, ListView):
 
     def get_context_data(self, **kwargs):
         kwargs["poll"] = self.get_poll()
+        kwargs["breadcrumbs"] = breadcrumbs(self.get_poll())
         return super().get_context_data(**kwargs)
 
 
@@ -109,6 +119,10 @@ class PollCreate(PermissionRequiredMixin, InlineFormsetCreateView):
         "polls.change_choice",
         "polls.delete_choice",
     )
+
+    def get_context_data(self, **kwargs):
+        kwargs["breadcrumbs"] = breadcrumbs()
+        return super().get_context_data(**kwargs)
 
     def form_valid(self, form):
         form.instance.created_by = self.request.user
@@ -128,6 +142,10 @@ class PollUpdate(PermissionRequiredMixin, InlineFormsetUpdateView):
         "polls.delete_choice",
     )
 
+    def get_context_data(self, **kwargs):
+        kwargs["breadcrumbs"] = breadcrumbs(self.object)
+        return super().get_context_data(**kwargs)
+
     def form_valid(self, form):
         form.instance.modified_by = self.request.user
         super().form_valid(form)
@@ -141,6 +159,10 @@ class PollDelete(PermissionRequiredMixin, DeleteView):
         "polls.delete_poll",
         "polls.delete_choice",
     )
+
+    def get_context_data(self, **kwargs):
+        kwargs["breadcrumbs"] = breadcrumbs(self.object)
+        return super().get_context_data(**kwargs)
 
 
 class VoteCreate(LoginRequiredMixin, PollMixin, FormView):
@@ -160,6 +182,7 @@ class VoteCreate(LoginRequiredMixin, PollMixin, FormView):
 
     def get_context_data(self, **kwargs):
         kwargs["form_title"] = self.get_poll().question
+        kwargs["breadcrumbs"] = breadcrumbs()
         return super().get_context_data(**kwargs)
 
     def form_valid(self, form):
@@ -186,6 +209,7 @@ class VoteDelete(LoginRequiredMixin, PollMixin, FormView):
     def get_context_data(self, **kwargs):
         kwargs["poll"] = self.get_poll()
         kwargs["votes"] = self.get_votes()
+        kwargs["breadcrumbs"] = breadcrumbs(self.get_poll())
         return super().get_context_data(**kwargs)
 
     def form_valid(self, form):
