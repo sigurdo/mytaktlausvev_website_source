@@ -8,10 +8,28 @@
         {% include "common/includes/breadcrumbs.html" with breadcrumbs=breadcrumbs only %}
 
         <h1>{{ poll }}</h1>
+
+        {% include "common/includes/created_modified.html" with object=poll only %}
     </header>
 
+    <dl>
+        {% for choice in poll.choices.all %}
+        <dt class="mb-2">{{ choice }}</dt>
+        <dd class="d-flex mb-3">
+            {% with choice.percentage as percentage %}
+                <span class="w-10">{{ choice.percentage }}</span>
+                <div
+                    style="width: {{ choice.percentage }};"
+                    class="d-block ms-2 rounded bg-primary">
+                </div>
+            {% endwith %}
+        </dd>
+        {% endfor %}
+    </dl>
+    <p>{{ poll.num_votes }} har stemt</p>
+
     {% if user.is_authenticated %}
-    <footer>
+    <footer class="mt-5">
         <ul class="list-unstyled d-flex">
             <li class="mx-1">
                 {% if user_has_voted %}
@@ -36,15 +54,5 @@
         </ul>
     </footer>
     {% endif %}
-
-    {% with poll.num_votes as num_votes %}
-    <dl>
-        {% for choice in poll.choices.all %}
-        <dt>{{ choice }}</dt>
-        <dd>{{ choice.votes.count }} </dt>
-        {% endfor %}
-    </dl>
-    {% endwith %}
-    <p>{{ poll.num_votes }}</p>
 </article>
 {% endblock page %}

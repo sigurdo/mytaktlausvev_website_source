@@ -138,6 +138,30 @@ class ChoiceTestSuite(TestCase):
         """`__str__` should be the text."""
         self.assertEqual(str(self.choice), self.choice.text)
 
+    def test_percentage(self):
+        """
+        `percentage` should return the choice's vote count
+        as a percentage of the poll vote count,
+        with 0 decimals.
+        """
+        self.assertEqual(self.choice.percentage, "0%")
+
+        VoteFactory(choice=self.choice)
+        self.assertEqual(self.choice.percentage, "100%")
+
+        VoteFactory(choice__poll=self.poll)
+        self.assertEqual(self.choice.percentage, "50%")
+
+    def test_percentage_excludes_other_polls(self):
+        """
+        `percentage` should not count votes
+        for other polls.
+        """
+        VoteFactory(choice=self.choice)
+        for _ in range(3):
+            VoteFactory()
+        self.assertEqual(self.choice.percentage, "100%")
+
 
 class VoteTestSuite(TestCase):
     def setUp(self):

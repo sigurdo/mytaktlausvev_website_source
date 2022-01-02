@@ -88,6 +88,18 @@ class Choice(models.Model):
     def __str__(self):
         return self.text
 
+    @property
+    def percentage(self):
+        """
+        Returns the number of votes for this choice
+        as a percentage of the poll's total amount of votes.
+        """
+        if self.poll.num_votes:
+            ratio = self.votes.count() / self.poll.num_votes
+        else:
+            ratio = 0
+        return f"{ratio:.0%}"
+
     class Meta:
         verbose_name = "val"
         verbose_name_plural = "val"
