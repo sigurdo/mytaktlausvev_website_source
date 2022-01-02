@@ -7,10 +7,15 @@ from django.views.generic.edit import CreateView, UpdateView
 
 class InlineFormsetCreateView(CreateView):
     """
-    View for creating a model and multiple related models with an inline formset.
+    View for creating a model and multiple related models in the same view,
+    with an inline formset.
 
-    Inherits methods and attributes from `CreateView`
-    Implementors must also define the `formset_class` attribute.
+    Extends `CreateView` and inherits all of its functionality.
+    The only difference is that the success response is
+    returned from `form_and_formset_valid()` rather than `form_valid()`.
+
+    Formset functionality is almost identical to form functionality.
+    The implementor must define `formset_class`.
     """
 
     def get_context_data(self, **kwargs):
@@ -79,35 +84,15 @@ class InlineFormsetCreateView(CreateView):
 
 class InlineFormsetUpdateView(UpdateView):
     """
-    Generic example:
-    Practical view when you have an instance a of a model A with multiple related instances of a model B,
-    and you want to edit both a and a's B instances in one single view. This view therefore has
-    bot a form for a and a formset for all it's B's.
+    View for updating a model and multiple related models in the same view,
+    with an inline formset.
 
-    How to use:
-    - Write a form class for A called AUpdateForm
-    - Write a form class for the subform of the formset for the B's of A called BUpdateForm
-    - Make a formset based on this form class using inlineformset_factory called BUpdateFormset
-    - Write a form helper for the BUpdateFormset called BUpdateFormsetHelper
-      - The template of this helper should be common/table_inline_formset_shade_delete.html
-        to improve the UX and fix a weird bug.
+    Extends `UpdateView` and inherits all of its functionality.
+    The only difference is that the success response is
+    returned from `form_and_formset_valid()` rather than `form_valid()`.
 
-    - Define the following attributes on the view class:
-    - model = A
-    - form_class = AUpdateForm
-    - formset_class = BUpdateFormset
-    - formset_helper = BUpdateFormsetHelper
-    - template_name_suffix = "_update_form"
-
-    - Override the following methods:
-    - get_success_url - will typically return reverse("name of view in urls.py", kwargs={...})
-
-    - Write a template called A_update_form.html, and insert this little snippet to insert the form:
-      {% load crispy_forms_tags %}
-      <form method="post">
-          {% crispy form %}
-          {% crispy formset formset_helper %}
-      </form>
+    Formset functionality is almost identical to form functionality.
+    The implementor must define `formset_class`.
     """
 
     def get_context_data(self, **kwargs):
