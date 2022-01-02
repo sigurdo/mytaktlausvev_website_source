@@ -14,6 +14,16 @@ class PollAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("question",)}
     inlines = [ChoiceInline]
 
+    def get_fields(self, request, obj=None):
+        """
+        Remove `type` when editing a poll
+        since changing it invalidates votes.
+        """
+        fields = super().get_fields(request, obj)
+        if obj:
+            fields.remove("type")
+        return fields
+
 
 class ChoiceAdmin(admin.ModelAdmin):
     list_display = ["text", "poll"]

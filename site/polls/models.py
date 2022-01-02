@@ -1,3 +1,4 @@
+import pgtrigger
 from autoslug import AutoSlugField
 from django.conf import settings
 from django.db import models
@@ -12,6 +13,15 @@ class PollType(models.TextChoices):
     MULTIPLE_CHOICE = "MULTIPLE_CHOICE", "Fleirval"
 
 
+# Changing a poll's type
+# invalidates votes.
+@pgtrigger.register(
+    pgtrigger.Protect(
+        name="protect_poll_type_update",
+        operation=pgtrigger.Update,
+        condition=pgtrigger.Q(old__type__df=pgtrigger.F("new__type")),
+    )
+)
 class Poll(ArticleMixin):
     title = None
     content = None

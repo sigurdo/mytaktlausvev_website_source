@@ -12,7 +12,13 @@ from django.views.generic.base import RedirectView
 
 from common.views import InlineFormsetCreateView, InlineFormsetUpdateView
 
-from .forms import ChoiceFormset, MultiVoteForm, PollForm, SingleVoteForm
+from .forms import (
+    ChoiceFormset,
+    MultiVoteForm,
+    PollCreateForm,
+    PollUpdateForm,
+    SingleVoteForm,
+)
 from .models import Poll, PollType, Vote
 
 
@@ -94,7 +100,7 @@ class PollVotes(LoginRequiredMixin, PollMixin, ListView):
 
 class PollCreate(PermissionRequiredMixin, InlineFormsetCreateView):
     model = Poll
-    form_class = PollForm
+    form_class = PollCreateForm
     formset_class = ChoiceFormset
     template_name = "common/form.html"
     permission_required = (
@@ -112,7 +118,7 @@ class PollCreate(PermissionRequiredMixin, InlineFormsetCreateView):
 
 class PollUpdate(PermissionRequiredMixin, InlineFormsetUpdateView):
     model = Poll
-    form_class = PollForm
+    form_class = PollUpdateForm
     formset_class = ChoiceFormset
     template_name = "common/form.html"
     permission_required = (

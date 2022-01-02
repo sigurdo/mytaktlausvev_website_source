@@ -3,6 +3,7 @@ from http import HTTPStatus
 
 from django.core.exceptions import NON_FIELD_ERRORS
 from django.db import IntegrityError
+from django.db.utils import InternalError
 from django.test import TestCase
 from django.urls import reverse
 from django.utils.text import slugify
@@ -48,6 +49,12 @@ class PollTestSuite(TestCase):
     def test_type_single_choice_by_default(self):
         """Should set `type` to `SINGLE_CHOICE` by default."""
         self.assertEqual(self.poll.type, PollType.SINGLE_CHOICE)
+
+    def test_changing_type_not_allowed(self):
+        """Should not be able to change a poll's type."""
+        with self.assertRaises(InternalError):
+            self.poll.type = PollType.MULTIPLE_CHOICE
+            self.poll.save()
 
     def test_votes(self):
         """Should return the poll's votes."""

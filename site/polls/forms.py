@@ -8,8 +8,8 @@ from django.forms.models import inlineformset_factory
 from .models import Choice, Poll, Vote
 
 
-class PollForm(forms.ModelForm):
-    """Form for creating or editing a poll."""
+class PollCreateForm(forms.ModelForm):
+    """Form for creating a poll."""
 
     helper = FormHelper()
     helper.form_tag = False
@@ -17,6 +17,21 @@ class PollForm(forms.ModelForm):
     class Meta:
         model = Poll
         fields = ["question", "public", "type"]
+
+
+class PollUpdateForm(forms.ModelForm):
+    """
+    Form for updating a poll.
+    Excludes `type` since changing this
+    invalidates votes.
+    """
+
+    helper = FormHelper()
+    helper.form_tag = False
+
+    class Meta:
+        model = Poll
+        fields = ["question", "public"]
 
 
 class ChoiceForm(forms.ModelForm):
