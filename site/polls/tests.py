@@ -400,7 +400,6 @@ class PollCreateTestSuite(TestMixin, TestCase):
                     ChoiceFormset,
                     total_forms=0,
                     initial_forms=0,
-                    subform_prefix=ChoiceFormset.get_default_prefix(),
                 ),
             },
         )
@@ -462,7 +461,6 @@ class PollUpdateTestSuite(TestMixin, TestCase):
                     ChoiceFormset,
                     total_forms=0,
                     initial_forms=0,
-                    subform_prefix=ChoiceFormset.get_default_prefix(),
                 ),
             },
         )
