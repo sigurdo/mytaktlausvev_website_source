@@ -247,6 +247,11 @@ class Command(BaseCommand):
         VoteFactory(choice=choice_juff, user=aspirant)
         VoteFactory(choice=choice_tuba, user=retiree)
         NavbarItemFactory(
+            text="Julekalender",
+            link="/julekalender/",
+            order=0,
+        )
+        NavbarItemFactory(
             text="Om oss",
             link="/om-oss/",
             order=1,
@@ -293,7 +298,7 @@ class Command(BaseCommand):
         NavbarItemFactory(
             text="Uniformar",
             link="/uniformer/",
-            order=3.2,
+            order=3.3,
             parent=admin_dropdown,
         )
         other_dropdown = NavbarItemFactory(
@@ -302,14 +307,32 @@ class Command(BaseCommand):
             type=NavbarItem.Type.DROPDOWN,
         )
         NavbarItemFactory(
+            text="Songar",
+            link="/songar/",
+            order=4.1,
+            parent=other_dropdown,
+        )
+        NavbarItemFactory(
+            text="Sitat",
+            link="/sitat/",
+            order=4.2,
+            parent=other_dropdown,
+        )
+        NavbarItemFactory(
             text="Wiki",
             link="/wiki/",
-            order=4.1,
+            order=4.3,
+            parent=other_dropdown,
+        )
+        NavbarItemFactory(
+            text="Forum",
+            link="/forum/",
+            order=4.4,
             parent=other_dropdown,
         )
         NavbarItemFactory(
             text="Buttonpdfgenerator",
             link="/buttons/",
-            order=4.2,
+            order=4.5,
             parent=other_dropdown,
         )

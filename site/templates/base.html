@@ -1,24 +1,6 @@
 {% extends 'base_base.html' %}
 {% block navbar %}
-	<nav class="navbar navbar-expand-xl fixed-top navbar-dark bg-primary">
-		<div class="container-fluid">
-			<a
-				class="navbar-brand"
-				href="{% if user.is_authenticated %} {% url 'dashboard:dashboard' %} {% else %} {% url 'articles:ArticleDetail' 'om-oss' %} {% endif %}"
-			>
-				{% load static %}
-				<img class="w-16 me-2" src="{% static 'images/logo.svg' %}">
-				<span class="d-none d-sm-inline fw-bold">Studentorchesteret Dei Taktlause</span>
-			</a>
-
-			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapsable"
-				aria-controls="collapsable" aria-expanded="false" aria-label="Toggle navigation">
-				<span class="navbar-toggler-icon"></span>
-			</button>
-
-			{% include "navbar/includes/navbar.html" %}
-		</div>
-	</nav>
+	{% include "navbar/includes/navbar.html" %}
 {% endblock navbar %}
 
 {% block body %}

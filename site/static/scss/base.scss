@@ -30,10 +30,18 @@ thead tr {
 th {
   border-bottom-style: none;
 }
+table {
+  caption-side: top;
+}
 
 .form-label {
   font-weight: bold;
 }
 .asteriskField {
   display: none;
+}
+
+.navbar-dropdown-menu {
+  background-color: $primary;
+  border: none;
 }
