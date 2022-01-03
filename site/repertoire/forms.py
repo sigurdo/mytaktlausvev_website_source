@@ -5,19 +5,8 @@ from django.forms import ModelForm, inlineformset_factory
 from .models import Repertoire, RepertoireEntry
 
 
-class RepertoireCreateForm(ModelForm):
-    """Form for creating a new repertoire"""
-
-    helper = FormHelper()
-    helper.add_input(Submit("submit", "Lagre"))
-
-    class Meta:
-        model = Repertoire
-        fields = ["name"]
-
-
-class RepertoireUpdateForm(ModelForm):
-    """Form for editing a repertoire"""
+class RepertoireForm(ModelForm):
+    """Form for creating and editing repertoires."""
 
     helper = FormHelper()
     helper.form_tag = False
@@ -27,15 +16,15 @@ class RepertoireUpdateForm(ModelForm):
         fields = ["name"]
 
 
-class RepertoireEntryUpdateForm(ModelForm):
-    """Form for creating a repertoire entry"""
+class RepertoireEntryForm(ModelForm):
+    """Form for creating and editing a repertoire entry."""
 
     class Meta:
         model = RepertoireEntry
         fields = ["score"]
 
 
-class RepertoireEntryUpdateFormsetHelper(FormHelper):
+class RepertoireEntryFormsetHelper(FormHelper):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.render_required_fields = True
@@ -44,11 +33,11 @@ class RepertoireEntryUpdateFormsetHelper(FormHelper):
         self.template = "common/table_inline_formset_shade_delete.html"
 
 
-RepertoireEntryUpdateFormset = inlineformset_factory(
+RepertoireEntryFormset = inlineformset_factory(
     Repertoire,
     RepertoireEntry,
-    form=RepertoireEntryUpdateForm,
-    extra=5,
+    form=RepertoireEntryForm,
+    extra=20,
 )
 
-RepertoireEntryUpdateFormset.helper = RepertoireEntryUpdateFormsetHelper()
+RepertoireEntryFormset.helper = RepertoireEntryFormsetHelper()
