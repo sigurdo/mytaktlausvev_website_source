@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block page %}
+    <h1 class="fs-2"> {{form_title}}</h2>
+    <iframe class="fixed-bottom" id="pdf-iframe" src="{{pdf.file.url}}"></iframe>
+    <div class="d-flex">
+        <div class="container w-half"></div>
+        <section class="container w-half">
+            {% load crispy_forms_tags %}
+            {% crispy form %}
+        </section>
+    </div>
+{% endblock page %}
+
+{% block css %}
+    {% load sass_tags %}
+	<link href="{% sass_src 'sheetmusic/parts_update_form.scss' %}" rel="stylesheet" type="text/css">
+{% endblock css %}

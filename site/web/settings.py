@@ -93,6 +93,8 @@ CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS", "http://localhost"
     " "
 )
 
+X_FRAME_OPTIONS = "SAMEORIGIN"
+
 ROOT_URLCONF = "web.urls"
 
 TEMPLATES = [

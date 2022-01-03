@@ -105,7 +105,7 @@ class PartsUpdate(
 ):
     model = Pdf
     form_class = PartsUpdateFormset
-    template_name = "common/form.html"
+    template_name = "sheetmusic/parts_update_form.html"
     context_object_name = "pdf"
     permission_required = (
         "sheetmusic.add_part",
