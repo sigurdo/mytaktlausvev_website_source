@@ -110,6 +110,9 @@ class DrupalPasswordHasher(BasePasswordHasher):
 
     def safe_summary(self, encoded):
         encoded = encoded.split("$", 1)[1]
+        if encoded[0] == "U":
+            # Imported passwords from old Drupal versions, see user_update_7000()
+            encoded = encoded[1:]
         settings = self._get_settings(encoded)
         return OrderedDict(
             [
