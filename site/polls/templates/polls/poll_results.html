@@ -17,37 +17,36 @@
         <dt class="mb-2">{{ choice }}</dt>
         <dd class="d-flex mb-3">
             {% with choice.percentage as percentage %}
-                <span class="w-10">{{ choice.percentage }}</span>
+                <span class="w-10">{{ percentage }}</span>
                 <div
-                    style="width: {{ choice.percentage }};"
+                    style="width: {{ percentage }};"
                     class="d-block ms-2 rounded bg-primary">
                 </div>
             {% endwith %}
         </dd>
         {% endfor %}
     </dl>
-    <p>{{ poll.num_votes }} har stemt</p>
+    <p>{{ poll.num_voting }} har stemt</p>
 
     {% if user.is_authenticated %}
-    <footer class="mt-5">
-        <ul class="list-unstyled d-flex">
-            <li class="mx-1">
-                {% if user_has_voted %}
-                <a href="{% url 'polls:VoteDelete' poll.slug %}" class="btn btn-danger">Fjern di stemme</a>
-                {% else %}
-                <a href="{% url 'polls:VoteCreate' poll.slug %}" class="btn btn-primary">Stem</a>
-                {% endif %}
-            </li>
-            <li class="mx-1">
+    {% if user_has_voted %}
+        <a href="{% url 'polls:VoteDelete' poll.slug %}" class="btn btn-danger">Fjern di stemme</a>
+    {% else %}
+        <a href="{% url 'polls:VoteCreate' poll.slug %}" class="btn btn-primary">Stem på avstemminga</a>
+    {% endif %}
+
+    <footer class="mt-4">
+        <ul class="list-inline">
+            <li class="list-inline-item">
                 <a href="{% url 'polls:PollVotes' poll.slug %}" class="btn btn-primary">Stemmer</a>
             </li>
             {% if perms.polls.change_poll and perms.polls.add_choice and perms.polls.change_choice and perms.polls.delete_choice %}
-            <li class="mx-1">
+            <li class="list-inline-item">
                 <a href="{% url 'polls:PollUpdate' poll.slug %}" class="btn btn-primary">Rediger avstemming</a>
             </li>
             {% endif %}
             {% if perms.polls.delete_poll and perms.polls.delete_choice %}
-            <li class="mx-1">
+            <li class="list-inline-item">
                 <a href="{% url 'polls:PollDelete' poll.slug %}" class="btn btn-primary">Slett avstemming</a>
             </li>
             {% endif %}

@@ -166,7 +166,7 @@ class PollDelete(PermissionRequiredMixin, DeleteView):
 
 
 class VoteCreate(LoginRequiredMixin, PollMixin, FormView):
-    template_name = "common/form.html"
+    template_name = "polls/vote_form.html"
 
     def get_form_class(self):
         return (
@@ -181,7 +181,7 @@ class VoteCreate(LoginRequiredMixin, PollMixin, FormView):
         return kwargs
 
     def get_context_data(self, **kwargs):
-        kwargs["form_title"] = self.get_poll().question
+        kwargs["poll"] = self.get_poll()
         kwargs["breadcrumbs"] = breadcrumbs()
         return super().get_context_data(**kwargs)
 
@@ -201,7 +201,7 @@ class VoteDelete(LoginRequiredMixin, PollMixin, FormView):
 
     def get_votes(self):
         if not self.votes:
-            self.votes = self.get_poll().votes.filter(user=self.request.user)
+            self.votes = self.get_poll().votes().filter(user=self.request.user)
         if not self.votes.exists():
             raise Http404("Du har ikkje stemt på denne avstemminga.")
         return self.votes

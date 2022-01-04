@@ -13,8 +13,7 @@ class PollType(models.TextChoices):
     MULTIPLE_CHOICE = "MULTIPLE_CHOICE", "Fleirval"
 
 
-# Changing a poll's type
-# invalidates votes.
+# Restricts changing a poll's type since that would invalidate votes.
 @pgtrigger.register(
     pgtrigger.Protect(
         name="protect_poll_type_update",
@@ -50,24 +49,21 @@ class Poll(ArticleMixin):
     def __str__(self):
         return self.question
 
-    @property
     def votes(self):
         """Returns the votes for this poll."""
         return Vote.objects.filter(choice__poll=self)
 
-    @property
     def num_votes(self):
         """Returns the total amount of votes for this poll."""
-        return self.votes.count()
+        return self.votes().count()
 
-    @property
     def num_voting(self):
         """Returns the amount of people who have voted for this people."""
-        return self.votes.distinct("user").count()
+        return self.votes().distinct("user").count()
 
     def has_voted(self, user):
         """Returns whether or not `user` has voted for this poll."""
-        return self.votes.filter(user=user).exists()
+        return self.votes().filter(user=user).exists()
 
     class Meta:
         ordering = ["-submitted"]
@@ -88,14 +84,14 @@ class Choice(models.Model):
     def __str__(self):
         return self.text
 
-    @property
     def percentage(self):
         """
         Returns the number of votes for this choice
         as a percentage of the poll's total amount of votes.
         """
-        if self.poll.num_votes:
-            ratio = self.votes.count() / self.poll.num_votes
+        num_votes = self.poll.num_votes()
+        if num_votes:
+            ratio = self.votes.count() / num_votes
         else:
             ratio = 0
         return f"{ratio:.0%}"

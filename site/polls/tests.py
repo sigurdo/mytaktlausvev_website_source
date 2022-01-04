@@ -61,15 +61,15 @@ class PollTestSuite(TestCase):
         for _ in range(3):
             VoteFactory(choice__poll=self.poll)
             VoteFactory()
-        self.assertEqual(self.poll.votes.count(), 3)
-        for vote in self.poll.votes:
+        self.assertEqual(self.poll.votes().count(), 3)
+        for vote in self.poll.votes():
             self.assertEqual(vote.choice.poll, self.poll)
 
     def test_num_votes(self):
         """Should return the total number of votes."""
         for _ in range(3):
             VoteFactory(choice__poll=self.poll)
-        self.assertEqual(self.poll.num_votes, 3)
+        self.assertEqual(self.poll.num_votes(), 3)
 
     def test_num_votes_excludes_votes_for_other_polls(self):
         """`num_votes` should exclude votes from other polls."""
@@ -78,7 +78,7 @@ class PollTestSuite(TestCase):
             VoteFactory(choice__poll=poll_different)
 
         VoteFactory(choice__poll=self.poll)
-        self.assertEqual(self.poll.num_votes, 1)
+        self.assertEqual(self.poll.num_votes(), 1)
 
     def test_num_votes_counts_multiple_votes_from_same_user(self):
         """`num_votes` should count multiple votes from the same user."""
@@ -86,13 +86,13 @@ class PollTestSuite(TestCase):
         user = UserFactory()
         for _ in range(3):
             VoteFactory(choice__poll=poll_multiple_choice, user=user)
-        self.assertEqual(poll_multiple_choice.num_votes, 3)
+        self.assertEqual(poll_multiple_choice.num_votes(), 3)
 
     def test_num_voting(self):
         """Should return the amount of people voting."""
         for _ in range(3):
             VoteFactory(choice__poll=self.poll)
-        self.assertEqual(self.poll.num_voting, 3)
+        self.assertEqual(self.poll.num_voting(), 3)
 
     def test_num_voting_excludes_votes_for_other_polls(self):
         """`num_voting` should exclude votes from other polls."""
@@ -101,7 +101,7 @@ class PollTestSuite(TestCase):
             VoteFactory(choice__poll=poll_different)
 
         VoteFactory(choice__poll=self.poll)
-        self.assertEqual(self.poll.num_voting, 1)
+        self.assertEqual(self.poll.num_voting(), 1)
 
     def test_num_voting_counts_only_single_vote_from_same_user(self):
         """`num_voting` should only count a single vote from the same user."""
@@ -109,7 +109,7 @@ class PollTestSuite(TestCase):
         user = UserFactory()
         for _ in range(3):
             VoteFactory(choice__poll=poll_multiple_choice, user=user)
-        self.assertEqual(poll_multiple_choice.num_voting, 1)
+        self.assertEqual(poll_multiple_choice.num_voting(), 1)
 
     def test_latest_by_submitted(self):
         """Should get latest poll by `submitted`."""
@@ -144,13 +144,13 @@ class ChoiceTestSuite(TestCase):
         as a percentage of the poll vote count,
         with 0 decimals.
         """
-        self.assertEqual(self.choice.percentage, "0%")
+        self.assertEqual(self.choice.percentage(), "0%")
 
         VoteFactory(choice=self.choice)
-        self.assertEqual(self.choice.percentage, "100%")
+        self.assertEqual(self.choice.percentage(), "100%")
 
         VoteFactory(choice__poll=self.poll)
-        self.assertEqual(self.choice.percentage, "50%")
+        self.assertEqual(self.choice.percentage(), "50%")
 
     def test_percentage_excludes_other_polls(self):
         """
@@ -160,7 +160,7 @@ class ChoiceTestSuite(TestCase):
         VoteFactory(choice=self.choice)
         for _ in range(3):
             VoteFactory()
-        self.assertEqual(self.choice.percentage, "100%")
+        self.assertEqual(self.choice.percentage(), "100%")
 
 
 class VoteTestSuite(TestCase):
@@ -375,7 +375,7 @@ class PollVotesTestSuite(TestMixin, TestCase):
         response = self.client.get(self.get_url())
         self.assertQuerysetEqual(
             response.context["votes"],
-            self.poll.votes.order_by("-created"),
+            self.poll.votes().order_by("-created"),
         )
 
     def test_adds_poll_to_response_context(self):
@@ -542,8 +542,8 @@ class VoteCreateTestSuite(TestMixin, TestCase):
     def setUp(self):
         self.poll = PollFactory()
 
-    def get_url(self, poll=None):
-        return reverse("polls:VoteCreate", args=[(poll or self.poll).slug])
+    def get_url(self, slug=None):
+        return reverse("polls:VoteCreate", args=[slug or self.poll.slug])
 
     def vote(self):
         return self.client.post(
@@ -557,8 +557,14 @@ class VoteCreateTestSuite(TestMixin, TestCase):
     def test_404_if_poll_not_found(self):
         """Should return a 404 if the poll isn't found."""
         self.client.force_login(UserFactory())
-        response = self.client.get(reverse("polls:VoteCreate", args=["poll-not-exist"]))
+        response = self.client.get(self.get_url("poll-not-exist"))
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
+
+    def test_adds_poll_to_context_data(self):
+        """Should add the poll to the context data."""
+        self.client.force_login(UserFactory())
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.context["poll"], self.poll)
 
     def test_vote_registered_for_logged_in_user(self):
         """Should register the vote for the logged in user."""
@@ -586,7 +592,7 @@ class VoteCreateTestSuite(TestMixin, TestCase):
 
         poll_multiple = PollFactory(type=PollType.MULTIPLE_CHOICE)
         self.client.post(
-            self.get_url(poll_multiple),
+            self.get_url(poll_multiple.slug),
             {"choices": [ChoiceFactory(poll=poll_multiple).pk for _ in range(3)]},
         )
         self.assertEqual(Vote.objects.count(), 3)
@@ -636,7 +642,7 @@ class VoteDeleteTestSuite(TestMixin, TestCase):
         self.client.force_login(self.user)
         response = self.client.get(self.get_url())
         self.assertQuerysetEqual(
-            response.context["votes"], self.poll.votes.filter(user=self.user)
+            response.context["votes"], self.poll.votes().filter(user=self.user)
         )
 
     def test_deletes_user_vote(self):
