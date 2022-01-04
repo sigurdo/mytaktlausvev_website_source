@@ -9,7 +9,7 @@ from common.models import ArticleMixin
 
 
 class PollType(models.TextChoices):
-    SINGLE_CHOICE = "SINGLE_CHOICE", "Einval"
+    SINGLE_CHOICE = "SINGLE_CHOICE", "Eitt val"
     MULTIPLE_CHOICE = "MULTIPLE_CHOICE", "Fleirval"
 
 
