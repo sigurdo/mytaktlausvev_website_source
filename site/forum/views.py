@@ -2,6 +2,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models.aggregates import Count, Max
 from django.db.models.expressions import F
 from django.shortcuts import get_object_or_404
+from django.urls.base import reverse
 from django.views.generic import ListView
 
 from .models import Forum, Post, Topic
@@ -40,6 +41,9 @@ class TopicList(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         kwargs["forum"] = self.forum
+        kwargs["breadcrumbs"] = [
+            {"url": reverse("forum:ForumList"), "name": "Alle forum"}
+        ]
         return super().get_context_data(**kwargs)
 
 
@@ -59,4 +63,8 @@ class PostList(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         kwargs["topic"] = self.topic
+        kwargs["breadcrumbs"] = [
+            {"url": reverse("forum:ForumList"), "name": "Alle forum"},
+            {"url": self.topic.forum.get_absolute_url(), "name": self.topic.forum},
+        ]
         return super().get_context_data(**kwargs)

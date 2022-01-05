@@ -21,3 +21,4 @@ sheatless~=1.0.1
 PyPDF2~=1.26.0
 django-ical~=1.8.0
 python-magic~=0.4.24
+django-pgtrigger~=2.4

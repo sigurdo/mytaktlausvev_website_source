@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Stemmer for {{ poll }}{% endblock title %}
+
+{% block page %}
+<article>
+    <header>
+        {% include "common/includes/breadcrumbs.html" with breadcrumbs=breadcrumbs only %}
+
+        <h1 class="mb-3">Stemmer for {{ poll }}</h1>
+    </header>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Brukar</th>
+                <th>Stemme</th>
+                <th>Tidspunkt</th>
+            </tr>
+        </thead>
+
+        <tbody>
+        {% if poll.type == "SINGLE_CHOICE" %}
+            {% for vote in votes %}
+                <tr>
+                    <td>
+                        {{ vote.user }}
+                    </td>
+                    <td>
+                        {{ vote.choice }}
+                    </td>
+                    <td>
+                        <time datetime="{{ vote.created | date:"c" }}">
+                            {{ vote.created | date:"l, j. F, Y - H:i" }}
+                        </time>
+                    </td>
+                </tr>
+            {% endfor %}
+        {% else %}
+            {% regroup votes by user as votes_by_user %}
+            {% for user, votes in votes_by_user %}
+                <tr>
+                    <td>
+                        {{ user }}
+                    </td>
+                    <td>
+                        <ul class="m-0">
+                            {% for vote in votes %}
+                            <li>{{ vote.choice }}</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                    <td>
+                        <time datetime="{{ votes.0.created | date:"c" }}">
+                            {{ votes.0.created | date:"j. F, Y - H:i" }}
+                        </time>
+                    </td>
+                </tr>
+            {% endfor %}
+        {% endif %}
+    </tbody>
+    </table>
+</article>
+{% endblock page %}

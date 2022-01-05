@@ -57,7 +57,7 @@ class InstrumentsUpdateTestSuite(TestMixin, TestCase):
 
     def create_post_data(self, num_of_new=0):
         return create_formset_post_data(
-            formset_class=InstrumentUpdateFormset,
+            InstrumentUpdateFormset,
             data=self.formset_data,
             total_forms=1 + num_of_new,
             initial_forms=1,

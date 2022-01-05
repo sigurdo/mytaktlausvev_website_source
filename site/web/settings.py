@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     "crispy_forms",
     "crispy_bootstrap5",
     "sass_processor",
+    "pgtrigger",
     "authentication",
     "accounts",
     "common",
@@ -71,6 +72,7 @@ INSTALLED_APPS = [
     "easter_eggs",
     "pwa",
     "forum",
+    "polls",
 ]
 
 MIDDLEWARE = [

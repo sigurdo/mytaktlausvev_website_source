@@ -36,6 +36,7 @@ class ArticleDetail(UserPassesTestMixin, SlugPathMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context["breadcrumbs"] = self.object.breadcrumbs()
         if self.request.user.is_authenticated:
             context["subarticles"] = self.object.children.all()
         else:
@@ -76,6 +77,10 @@ class ArticleUpdate(PermissionRequiredMixin, SlugPathMixin, UpdateView):
     form_class = ArticleForm
     template_name = "common/form.html"
     permission_required = "articles.change_article"
+
+    def get_context_data(self, **kwargs):
+        kwargs["breadcrumbs"] = self.object.breadcrumbs(include_self=True)
+        return super().get_context_data(**kwargs)
 
     def form_valid(self, form):
         form.instance.modified_by = self.request.user

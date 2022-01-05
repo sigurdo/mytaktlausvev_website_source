@@ -102,13 +102,13 @@ class PartsUpdateOverviewTestSuite(TestMixin, TestCase):
 class PartsUpdateTestSuite(TestMixin, TestCase):
     def create_post_data(self, data):
         return create_formset_post_data(
+            PartsUpdateFormset,
             defaults={
                 "name": "name",
                 "from_page": "1",
                 "to_page": "1",
                 "id": str(self.part.pk),
             },
-            formset_class=PartsUpdateFormset,
             data=data,
         )
 
@@ -185,6 +185,7 @@ class PartsUpdateTestSuite(TestMixin, TestCase):
 class PartsUpdateAllTestSuite(TestMixin, TestCase):
     def create_post_data(self, data):
         return create_formset_post_data(
+            PartsUpdateAllFormset,
             defaults={
                 "name": "name",
                 "from_page": "1",
@@ -192,7 +193,6 @@ class PartsUpdateAllTestSuite(TestMixin, TestCase):
                 "pdf": str(self.pdf.pk),
                 "id": str(self.part.pk),
             },
-            formset_class=PartsUpdateAllFormset,
             data=data,
         )
 
@@ -270,10 +270,10 @@ class PartsUpdateAllTestSuite(TestMixin, TestCase):
 class PdfsUpdateTestSuite(TestMixin, TestCase):
     def create_post_data(self, data):
         return create_formset_post_data(
+            EditPdfFormset,
             defaults={
                 "id": str(self.pdf.pk),
             },
-            formset_class=EditPdfFormset,
             data=data,
         )
 

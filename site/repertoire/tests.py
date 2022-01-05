@@ -60,7 +60,6 @@ class RepertoireCreateTestSuite(TestMixin, TestCase):
                 RepertoireEntryFormset,
                 total_forms=0,
                 initial_forms=0,
-                subform_prefix="entries",
             ),
         }
 
@@ -85,10 +84,8 @@ class RepertoireCreateTestSuite(TestMixin, TestCase):
 class RepertoireUpdateTestSuite(TestMixin, TestCase):
     def create_post_data(self, data=[]):
         return create_formset_post_data(
-            formset_class=RepertoireEntryFormset,
-            defaults={},
+            RepertoireEntryFormset,
             data=data,
-            subform_prefix="entries",
         )
 
     def get_url(self):

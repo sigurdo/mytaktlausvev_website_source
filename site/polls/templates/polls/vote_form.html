@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load utils %}
+
+{% block title %}{{ poll }}{% endblock %}
+
+{% block page %}
+<article>
+    <header>
+        {% include "common/includes/breadcrumbs.html" with breadcrumbs=breadcrumbs only %}
+
+        <h1>{{ poll }}</h1>
+    </header>
+
+    {% load crispy_forms_tags %}
+    {% crispy form %}
+
+    <footer class="mt-4">
+        <ul class="list-inline">
+            <li class="list-inline-item">
+                <a href="{% url 'polls:PollResults' poll.slug %}" class="btn btn-primary">Resultat</a>
+            </li>
+            {% if perms.polls.change_poll and perms.polls.add_choice and perms.polls.change_choice and perms.polls.delete_choice %}
+            <li class="list-inline-item">
+                <a href="{% url 'polls:PollUpdate' poll.slug %}" class="btn btn-primary">Rediger avstemming</a>
+            </li>
+            {% endif %}
+            {% if perms.polls.delete_poll and perms.polls.delete_choice %}
+            <li class="list-inline-item">
+                <a href="{% url 'polls:PollDelete' poll.slug %}" class="btn btn-primary">Slett avstemming</a>
+            </li>
+            {% endif %}
+        </ul>
+    </footer>
+</article>
+{% endblock %}

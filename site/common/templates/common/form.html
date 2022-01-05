@@ -15,18 +15,25 @@
 {% endblock %}
 
 {% block page %}
-    <h2>
-        {% if form_title %}
-            {{ form_title }}
-        {% elif object %}
-            Rediger {{ object | verbose_name }} "{{ object }}"
-        {% elif view.model %}
-            Opprett
-            {{ view.model | verbose_name }}
-        {% else %}
-            Skjema
+<article>
+    <header>
+        {% if breadcrumbs %}
+            {% include "common/includes/breadcrumbs.html" with breadcrumbs=breadcrumbs only %}
         {% endif %}
-    </h2>
+
+        <h1>
+            {% if form_title %}
+                {{ form_title }}
+            {% elif object %}
+                Rediger {{ object | verbose_name }} "{{ object }}"
+            {% elif view.model %}
+                Opprett
+                {{ view.model | verbose_name }}
+            {% else %}
+                Skjema
+            {% endif %}
+        </h1>
+    </header>
 
     {% if form and formset %}
     <form method="post">
@@ -42,4 +49,5 @@
     {% if form and formset %}
     </form>
     {% endif %}
+</article>
 {% endblock %}

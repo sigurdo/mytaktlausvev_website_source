@@ -5,20 +5,7 @@
 {% block page %}
 <article>
     <header>
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item">
-                    <a href="{% url 'forum:ForumList' %}">
-                        Alle forum
-                    </a>
-                </li>
-                <li class="breadcrumb-item">
-                    <a href="{{ topic.forum.get_absolute_url }}">
-                        {{ topic.forum.title }}
-                    </a>
-                </li>
-            </ol>
-        </nav>
+        {% include "common/includes/breadcrumbs.html" with breadcrumbs=breadcrumbs only %}
 
         <h1 class="mb-4">{{ topic.title }}</h1>
     </hedaer>
@@ -34,6 +21,6 @@
     </ol>
     {% endif %}
 
-    {% include "common/includes/pagination.html" with pagination_label="Post pages" %}
+    {% include "common/includes/pagination.html" with pagination_label="Innleggsider" %}
 </article>
 {% endblock page %}
