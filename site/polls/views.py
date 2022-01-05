@@ -177,7 +177,8 @@ class VoteCreate(LoginRequiredMixin, PollMixin, FormView):
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs.update({"poll": self.get_poll(), "user": self.request.user})
+        kwargs["poll"] = self.get_poll()
+        kwargs["user"] = self.request.user
         return kwargs
 
     def get_context_data(self, **kwargs):
