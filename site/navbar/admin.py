@@ -1,4 +1,5 @@
-from django.contrib.admin import site, ModelAdmin, TabularInline, SimpleListFilter
+from django.contrib.admin import ModelAdmin, SimpleListFilter, TabularInline, site
+
 from .models import NavbarItem, NavbarItemPermissionRequirement
 
 
@@ -19,6 +20,7 @@ class PermissionInline(TabularInline):
 
 class NavbarItemListFilter(SimpleListFilter):
     """Makes the NavbarItemAdmin only display items that have no parent item by default."""
+
     title = "underpunkt"
     parameter_name = "underpunkt"
 
@@ -26,7 +28,7 @@ class NavbarItemListFilter(SimpleListFilter):
         return [
             ["vis", "Vis underpunkt"],
         ]
-    
+
     def choices(self, request):
         """
         Discards the first element of super().choices, because that element is an automatically
@@ -37,7 +39,7 @@ class NavbarItemListFilter(SimpleListFilter):
             if i == 0:
                 continue
             yield choice
-    
+
     def queryset(self, request, queryset):
         match self.value():
             case "vis":
@@ -51,11 +53,13 @@ class NavbarItemAdmin(ModelAdmin):
     list_filter = [NavbarItemListFilter]
     ordering = ["order", "text"]
     inlines = [SubitemInline, PermissionInline]
-    
+
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         """Makes only the NavbarItems of type DROPDOWN selectable for parent."""
         if db_field.name == "parent":
-            kwargs["queryset"] = NavbarItem.objects.filter(type=NavbarItem.Type.DROPDOWN)
+            kwargs["queryset"] = NavbarItem.objects.filter(
+                type=NavbarItem.Type.DROPDOWN
+            )
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 

@@ -1,8 +1,9 @@
-from factory.django import DjangoModelFactory
 from factory import SubFactory
+from factory.django import DjangoModelFactory
+
+from authentication.utils import find_permission_instance
 
 from .models import NavbarItem, NavbarItemPermissionRequirement
-from authentication.utils import find_permission_instance
 
 
 class NavbarItemFactory(DjangoModelFactory):
@@ -33,4 +34,6 @@ class NavbarItemPermissionRequirementFactory(DjangoModelFactory):
 
     @classmethod
     def _create(self, *args, permission="navbar.add_navbaritem", **kwargs):
-        return super()._create(*args, permission=find_permission_instance(permission), **kwargs)
+        return super()._create(
+            *args, permission=find_permission_instance(permission), **kwargs
+        )

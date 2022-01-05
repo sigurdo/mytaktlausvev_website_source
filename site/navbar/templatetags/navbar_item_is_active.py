@@ -13,7 +13,9 @@ def navbar_item_is_active(navbar_item, request):
         case NavbarItem.Type.LINK:
             item_paths = [navbar_item.link.split("/")]
         case NavbarItem.Type.DROPDOWN:
-            item_paths = [subitem.link.split("/") for subitem in navbar_item.children.all()]
+            item_paths = [
+                subitem.link.split("/") for subitem in navbar_item.children.all()
+            ]
         case _:
             item_paths = []
 

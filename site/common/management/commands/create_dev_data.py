@@ -15,10 +15,9 @@ from instruments.factories import (
     InstrumentLocationFactory,
 )
 from instruments.models import Instrument
-from polls.factories import ChoiceFactory, PollFactory, VoteFactory
 from navbar.factories import NavbarItemFactory
-from navbar.factories import NavbarItemFactory, NavbarItemPermissionRequirementFactory
 from navbar.models import NavbarItem
+from polls.factories import ChoiceFactory, PollFactory, VoteFactory
 from uniforms.factories import JacketFactory, JacketLocationFactory, JacketUserFactory
 from uniforms.models import Jacket
 

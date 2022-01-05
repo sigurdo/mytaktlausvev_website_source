@@ -13,7 +13,10 @@ def navbar_item_is_permitted(navbar_item, user):
         permission_string = f"{permission.content_type.app_label}.{permission.codename}"
         if not user.has_perm(permission_string):
             return False
-    if navbar_item.type == NavbarItem.Type.DROPDOWN and navbar_item.children.count() > 0:
+    if (
+        navbar_item.type == NavbarItem.Type.DROPDOWN
+        and navbar_item.children.count() > 0
+    ):
         for subitem in navbar_item.children.all():
             if navbar_item_is_permitted(subitem, user):
                 return True

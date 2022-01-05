@@ -1,13 +1,13 @@
+from django.contrib.auth.models import Permission
 from django.db.models import (
-    Model,
+    CASCADE,
+    SET_NULL,
     CharField,
     FloatField,
-    TextChoices,
     ForeignKey,
-    SET_NULL,
-    CASCADE,
+    Model,
+    TextChoices,
 )
-from django.contrib.auth.models import Permission
 
 
 class NavbarItem(Model):
