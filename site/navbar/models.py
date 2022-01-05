@@ -1,12 +1,13 @@
 from django.db.models import (
     Model,
     CharField,
-    URLField,
     FloatField,
     TextChoices,
     ForeignKey,
     SET_NULL,
+    CASCADE,
 )
+from django.contrib.auth.models import Permission
 
 
 class NavbarItem(Model):
@@ -47,3 +48,25 @@ class NavbarItem(Model):
         verbose_name = "navigasjonslinepunkt"
         verbose_name_plural = "navigasjonslinepunkt"
         ordering = ["order", "text"]
+
+
+class NavbarItemPermissionRequirement(Model):
+    navbar_item = ForeignKey(
+        NavbarItem,
+        verbose_name="navigasjonslinepunkt",
+        related_name="permission_requirements",
+        on_delete=CASCADE,
+    )
+    permission = ForeignKey(
+        Permission,
+        verbose_name="løyve",
+        related_name="navbar_items",
+        on_delete=CASCADE,
+    )
+
+    def __str__(self):
+        return f"{self.navbar_item} - {self.permission}"
+
+    class Meta:
+        verbose_name = "navigasjonslinepunktløyvekrav"
+        verbose_name_plural = "navigasjonslinepunktløyvekrav"

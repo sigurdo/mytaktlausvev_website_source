@@ -17,6 +17,7 @@ from instruments.factories import (
 from instruments.models import Instrument
 from polls.factories import ChoiceFactory, PollFactory, VoteFactory
 from navbar.factories import NavbarItemFactory
+from navbar.factories import NavbarItemFactory, NavbarItemPermissionRequirementFactory
 from navbar.models import NavbarItem
 from uniforms.factories import JacketFactory, JacketLocationFactory, JacketUserFactory
 from uniforms.models import Jacket
@@ -300,6 +301,13 @@ class Command(BaseCommand):
             link="/uniformer/",
             order=3,
             parent=admin_dropdown,
+        )
+        NavbarItemFactory(
+            text="Opprett artikkel",
+            link="/artiklar/ny/",
+            order=4,
+            parent=admin_dropdown,
+            permissions=["articles.add_article"],
         )
         other_dropdown = NavbarItemFactory(
             text="Anna",
