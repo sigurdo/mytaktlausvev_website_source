@@ -8,7 +8,6 @@ class NavbarItemFactory(DjangoModelFactory):
         model = NavbarItem
 
     text = "Heim"
-    link = "/"
     order = 0
     type = NavbarItem.Type.LINK
     parent = None

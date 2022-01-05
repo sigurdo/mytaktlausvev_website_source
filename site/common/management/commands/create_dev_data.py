@@ -269,13 +269,13 @@ class Command(BaseCommand):
         NavbarItemFactory(
             text="Alle notar",
             link="/notar/",
-            order=2.1,
+            order=1,
             parent=sheetmusic_dropdown,
         )
         NavbarItemFactory(
             text="Repertoar",
             link="/repertoar/",
-            order=2.2,
+            order=2,
             parent=sheetmusic_dropdown,
         )
         admin_dropdown = NavbarItemFactory(
@@ -286,19 +286,19 @@ class Command(BaseCommand):
         NavbarItemFactory(
             text="Administrasjonspanel",
             link="/admin/",
-            order=3.1,
+            order=1,
             parent=admin_dropdown,
         )
         NavbarItemFactory(
             text="Instrument",
             link="/instrument/",
-            order=3.2,
+            order=2,
             parent=admin_dropdown,
         )
         NavbarItemFactory(
             text="Uniformar",
             link="/uniformer/",
-            order=3.3,
+            order=3,
             parent=admin_dropdown,
         )
         other_dropdown = NavbarItemFactory(
@@ -309,30 +309,30 @@ class Command(BaseCommand):
         NavbarItemFactory(
             text="Songar",
             link="/songar/",
-            order=4.1,
+            order=1,
             parent=other_dropdown,
         )
         NavbarItemFactory(
             text="Sitat",
             link="/sitat/",
-            order=4.2,
+            order=2,
             parent=other_dropdown,
         )
         NavbarItemFactory(
             text="Wiki",
             link="/wiki/",
-            order=4.3,
+            order=2.5,
             parent=other_dropdown,
         )
         NavbarItemFactory(
             text="Forum",
             link="/forum/",
-            order=4.4,
+            order=2.6,
             parent=other_dropdown,
         )
         NavbarItemFactory(
             text="Buttonpdfgenerator",
             link="/buttons/",
-            order=4.5,
+            order=3,
             parent=other_dropdown,
         )

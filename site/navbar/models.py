@@ -11,7 +11,7 @@ from django.db.models import (
 
 class NavbarItem(Model):
     text = CharField(verbose_name="tekst", max_length=255)
-    link = CharField(verbose_name="lenkjepeikar", max_length=255)
+    link = CharField(verbose_name="lenkjepeikar", max_length=255, blank=True)
     order = FloatField(verbose_name="rekkjefølgje")
 
     class Type(TextChoices):
@@ -40,10 +40,8 @@ class NavbarItem(Model):
         match self.type:
             case self.Type.LINK:
                 return f"{self.text} ({self.link})"
-            # case NavbarItemType.DROPDOWN:
-            #     return f"{self.text} (nedfallsmeny)"
             case _:
-                return f"{self.text} ({self.type})"
+                return f"{self.text} ({self.get_type_display()})"
 
     class Meta:
         verbose_name = "navigasjonslinepunkt"
