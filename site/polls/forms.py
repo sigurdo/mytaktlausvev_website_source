@@ -1,13 +1,20 @@
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
-from django import forms
 from django.core.exceptions import ValidationError
+from django.forms import (
+    CheckboxSelectMultiple,
+    Form,
+    ModelChoiceField,
+    ModelForm,
+    ModelMultipleChoiceField,
+    RadioSelect,
+)
 from django.forms.models import inlineformset_factory
 
 from .models import Choice, Poll, Vote
 
 
-class PollCreateForm(forms.ModelForm):
+class PollCreateForm(ModelForm):
     """Form for creating a poll."""
 
     helper = FormHelper()
@@ -18,7 +25,7 @@ class PollCreateForm(forms.ModelForm):
         fields = ["question", "public", "type"]
 
 
-class PollUpdateForm(forms.ModelForm):
+class PollUpdateForm(ModelForm):
     """
     Form for updating a poll.
     Excludes `type` since changing this
@@ -33,7 +40,7 @@ class PollUpdateForm(forms.ModelForm):
         fields = ["question", "public"]
 
 
-class ChoiceForm(forms.ModelForm):
+class ChoiceForm(ModelForm):
     """Form for creating or editing a choice in a poll."""
 
     helper = FormHelper()
@@ -63,10 +70,10 @@ ChoiceFormset = inlineformset_factory(
 ChoiceFormset.helper = ChoiceFormsetHelper()
 
 
-class SingleVoteForm(forms.Form):
+class SingleVoteForm(Form):
     """Form for voting on a single-choice poll."""
 
-    choices = forms.ModelChoiceField(None, label="Val", widget=forms.RadioSelect)
+    choices = ModelChoiceField(None, label="Val", widget=RadioSelect)
 
     helper = FormHelper()
     helper.add_input(Submit("submit", "Stem"))
@@ -94,9 +101,7 @@ class SingleVoteForm(forms.Form):
 class MultiVoteForm(SingleVoteForm):
     """Form for voting on a multiple-choice poll."""
 
-    choices = forms.ModelMultipleChoiceField(
-        None, label="Val", widget=forms.CheckboxSelectMultiple
-    )
+    choices = ModelMultipleChoiceField(None, label="Val", widget=CheckboxSelectMultiple)
 
     def save(self):
         choices = self.cleaned_data["choices"]

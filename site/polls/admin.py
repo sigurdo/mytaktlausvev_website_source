@@ -1,36 +1,36 @@
-from django.contrib import admin
+from django.contrib.admin import ModelAdmin, TabularInline, site
 
 from .models import Choice, Poll, Vote
 
 
-class ChoiceInline(admin.TabularInline):
+class ChoiceInline(TabularInline):
     model = Choice
     extra = 3
 
 
-class PollAdmin(admin.ModelAdmin):
+class PollAdmin(ModelAdmin):
     list_display = ["question", "submitted"]
     search_fields = ["question"]
     prepopulated_fields = {"slug": ("question",)}
     inlines = [ChoiceInline]
 
-    def get_fields(self, request, obj=None):
+    def get_readonly_fields(self, request, obj=None):
         """
-        Remove `type` when editing a poll
+        Make `type` read-only when editing a poll
         since changing it invalidates votes.
         """
-        fields = super().get_fields(request, obj)
         if obj:
-            fields.remove("type")
-        return fields
+            return ["type"]
+        else:
+            return []
 
 
-class ChoiceAdmin(admin.ModelAdmin):
+class ChoiceAdmin(ModelAdmin):
     list_display = ["text", "poll"]
     search_fields = ["text", "poll__question"]
 
 
-class VoteAdmin(admin.ModelAdmin):
+class VoteAdmin(ModelAdmin):
     list_display = ["choice", "poll", "user"]
     search_fields = ["choice__text", "choice__poll__question", "user__username"]
 
@@ -38,6 +38,6 @@ class VoteAdmin(admin.ModelAdmin):
         return vote.choice.poll
 
 
-admin.site.register(Poll, PollAdmin)
-admin.site.register(Choice, ChoiceAdmin)
-admin.site.register(Vote, VoteAdmin)
+site.register(Poll, PollAdmin)
+site.register(Choice, ChoiceAdmin)
+site.register(Vote, VoteAdmin)

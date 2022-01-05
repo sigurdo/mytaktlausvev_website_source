@@ -1,14 +1,22 @@
 import pgtrigger
 from autoslug import AutoSlugField
 from django.conf import settings
-from django.db import models
+from django.db.models import (
+    CASCADE,
+    BooleanField,
+    CharField,
+    DateTimeField,
+    ForeignKey,
+    Model,
+    TextChoices,
+)
 from django.db.models.constraints import UniqueConstraint
 from django.urls.base import reverse
 
 from common.models import ArticleMixin
 
 
-class PollType(models.TextChoices):
+class PollType(TextChoices):
     SINGLE_CHOICE = "SINGLE_CHOICE", "Eitt val"
     MULTIPLE_CHOICE = "MULTIPLE_CHOICE", "Fleirval"
 
@@ -24,19 +32,19 @@ class PollType(models.TextChoices):
 class Poll(ArticleMixin):
     title = None
     content = None
-    question = models.CharField("spørsmål", max_length=255)
+    question = CharField("spørsmål", max_length=255)
     slug = AutoSlugField(
         verbose_name="lenkjenamn",
         populate_from="question",
         unique=True,
         editable=True,
     )
-    public = models.BooleanField(
+    public = BooleanField(
         "offentleg",
         help_text="Om avstemminga er open for ålmente.",
         default=False,
     )
-    type = models.CharField(
+    type = CharField(
         "type",
         max_length=255,
         choices=PollType.choices,
@@ -72,11 +80,11 @@ class Poll(ArticleMixin):
         verbose_name_plural = "avstemmingar"
 
 
-class Choice(models.Model):
-    text = models.CharField("tekst", max_length=255)
-    poll = models.ForeignKey(
+class Choice(Model):
+    text = CharField("val", max_length=255)
+    poll = ForeignKey(
         Poll,
-        on_delete=models.CASCADE,
+        on_delete=CASCADE,
         related_name="choices",
         verbose_name="avstemming",
     )
@@ -101,20 +109,20 @@ class Choice(models.Model):
         verbose_name_plural = "val"
 
 
-class Vote(models.Model):
-    choice = models.ForeignKey(
+class Vote(Model):
+    choice = ForeignKey(
         Choice,
-        on_delete=models.CASCADE,
+        on_delete=CASCADE,
         related_name="votes",
         verbose_name="val",
     )
-    user = models.ForeignKey(
+    user = ForeignKey(
         settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
+        on_delete=CASCADE,
         related_name="poll_votes",
         verbose_name="brukar",
     )
-    created = models.DateTimeField("lagt ut", auto_now_add=True)
+    created = DateTimeField("lagt ut", auto_now_add=True)
 
     def __str__(self):
         return f"{self.choice} - {self.choice.poll} {self.user}"

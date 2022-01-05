@@ -347,14 +347,14 @@ class PollResultsTestSuite(TestMixin, TestCase):
         self.assertTrue(response.context["user_has_voted"])
 
 
-class PollVotesTestSuite(TestMixin, TestCase):
+class PollVoteListTestSuite(TestMixin, TestCase):
     def setUp(self):
         self.poll = PollFactory()
         for _ in range(3):
             VoteFactory(choice__poll=self.poll)
 
     def get_url(self, slug=None):
-        return reverse("polls:PollVotes", args=[slug or self.poll.slug])
+        return reverse("polls:PollVoteList", args=[slug or self.poll.slug])
 
     def test_requires_login(self):
         """Should require login."""
@@ -410,15 +410,12 @@ class PollCreateTestSuite(TestMixin, TestCase):
 
     def test_requires_permission(self):
         """
-        Should require permissions for adding polls,
-        and for adding, changing, and deleting choices.
+        Should require permissions for adding polls and for adding choices.
         """
         self.assertPermissionRequired(
             self.get_url(),
             "polls.add_poll",
             "polls.add_choice",
-            "polls.change_choice",
-            "polls.delete_choice",
         )
 
     def test_redirects_to_poll(self):
@@ -472,7 +469,8 @@ class PollUpdateTestSuite(TestMixin, TestCase):
     def test_requires_permission(self):
         """
         Should require permissions for changing polls,
-        and for adding, changing, and deleting choices.
+        for adding, changing, and deleting choices,
+        and for deleting votes.
         """
         self.assertPermissionRequired(
             self.get_url(),
@@ -480,6 +478,7 @@ class PollUpdateTestSuite(TestMixin, TestCase):
             "polls.add_choice",
             "polls.change_choice",
             "polls.delete_choice",
+            "polls.delete_vote",
         )
 
     def test_redirects_to_poll(self):
@@ -528,13 +527,13 @@ class PollDeleteTestSuite(TestMixin, TestCase):
 
     def test_requires_permission(self):
         """
-        Should require permissions for
-        deleting polls and deleting choicees.
+        Should require permissions for deleting polls, choices, and votes.
         """
         self.assertPermissionRequired(
             self.get_url(),
             "polls.delete_poll",
             "polls.delete_choice",
+            "polls.delete_vote",
         )
 
 

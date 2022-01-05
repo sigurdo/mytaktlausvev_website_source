@@ -35,6 +35,8 @@ class PollMixin:
     Provides a function for getting a poll
     based on a slug URL kwarg.
 
+    Adds the poll to context data.
+
     Returns 404 if the poll doesn't exist.
     """
 
@@ -44,6 +46,10 @@ class PollMixin:
         if not self.poll:
             self.poll = get_object_or_404(Poll, slug=self.kwargs["slug"])
         return self.poll
+
+    def get_context_data(self, **kwargs):
+        kwargs["poll"] = self.get_poll()
+        return super().get_context_data(**kwargs)
 
 
 class PollList(ListView):
@@ -88,9 +94,9 @@ class PollResults(UserPassesTestMixin, DetailView):
         return super().get_context_data(**kwargs)
 
 
-class PollVotes(LoginRequiredMixin, PollMixin, ListView):
+class PollVoteList(LoginRequiredMixin, PollMixin, ListView):
     model = Vote
-    template_name = "polls/poll_votes.html"
+    template_name = "polls/poll_vote_list.html"
     context_object_name = "votes"
 
     def get_queryset(self):
@@ -103,7 +109,6 @@ class PollVotes(LoginRequiredMixin, PollMixin, ListView):
         )
 
     def get_context_data(self, **kwargs):
-        kwargs["poll"] = self.get_poll()
         kwargs["breadcrumbs"] = breadcrumbs(self.get_poll())
         return super().get_context_data(**kwargs)
 
@@ -113,12 +118,7 @@ class PollCreate(PermissionRequiredMixin, InlineFormsetCreateView):
     form_class = PollCreateForm
     formset_class = ChoiceFormset
     template_name = "common/form.html"
-    permission_required = (
-        "polls.add_poll",
-        "polls.add_choice",
-        "polls.change_choice",
-        "polls.delete_choice",
-    )
+    permission_required = ("polls.add_poll", "polls.add_choice")
 
     def get_context_data(self, **kwargs):
         kwargs["breadcrumbs"] = breadcrumbs()
@@ -140,6 +140,7 @@ class PollUpdate(PermissionRequiredMixin, InlineFormsetUpdateView):
         "polls.add_choice",
         "polls.change_choice",
         "polls.delete_choice",
+        "polls.delete_vote",
     )
 
     def get_context_data(self, **kwargs):
@@ -158,6 +159,7 @@ class PollDelete(PermissionRequiredMixin, DeleteView):
     permission_required = (
         "polls.delete_poll",
         "polls.delete_choice",
+        "polls.delete_vote",
     )
 
     def get_context_data(self, **kwargs):
@@ -182,7 +184,6 @@ class VoteCreate(LoginRequiredMixin, PollMixin, FormView):
         return kwargs
 
     def get_context_data(self, **kwargs):
-        kwargs["poll"] = self.get_poll()
         kwargs["breadcrumbs"] = breadcrumbs()
         return super().get_context_data(**kwargs)
 
@@ -208,7 +209,6 @@ class VoteDelete(LoginRequiredMixin, PollMixin, FormView):
         return self.votes
 
     def get_context_data(self, **kwargs):
-        kwargs["poll"] = self.get_poll()
         kwargs["votes"] = self.get_votes()
         kwargs["breadcrumbs"] = breadcrumbs(self.get_poll())
         return super().get_context_data(**kwargs)
