@@ -2,6 +2,7 @@ from django.contrib.auth.models import Permission
 from django.db.models import (
     CASCADE,
     SET_NULL,
+    BooleanField,
     CharField,
     FloatField,
     ForeignKey,
@@ -14,6 +15,7 @@ class NavbarItem(Model):
     text = CharField(verbose_name="tekst", max_length=255)
     link = CharField(verbose_name="lenkjepeikar", max_length=255, blank=True)
     order = FloatField(verbose_name="rekkjefølgje")
+    requires_login = BooleanField(verbose_name="krev innlogging", default=False)
 
     class Type(TextChoices):
         LINK = "LINK", "lenkje"

@@ -250,6 +250,7 @@ class Command(BaseCommand):
             text="Julekalender",
             link="/julekalender/",
             order=0,
+            requires_login=True,
         )
         NavbarItemFactory(
             text="Om oss",
@@ -260,6 +261,7 @@ class Command(BaseCommand):
             text="Hendingar",
             link="/hendingar/",
             order=1.5,
+            requires_login=True,
         )
         sheetmusic_dropdown = NavbarItemFactory(
             text="Notar",
@@ -270,12 +272,14 @@ class Command(BaseCommand):
             text="Alle notar",
             link="/notar/",
             order=1,
+            requires_login=True,
             parent=sheetmusic_dropdown,
         )
         NavbarItemFactory(
             text="Repertoar",
             link="/repertoar/",
             order=2,
+            requires_login=True,
             parent=sheetmusic_dropdown,
         )
         admin_dropdown = NavbarItemFactory(
@@ -287,18 +291,21 @@ class Command(BaseCommand):
             text="Administrasjonspanel",
             link="/admin/",
             order=1,
+            requires_login=True,
             parent=admin_dropdown,
         )
         NavbarItemFactory(
             text="Instrument",
             link="/instrument/",
             order=2,
+            requires_login=True,
             parent=admin_dropdown,
         )
         NavbarItemFactory(
             text="Uniformar",
             link="/uniformer/",
             order=3,
+            requires_login=True,
             parent=admin_dropdown,
         )
         NavbarItemFactory(
@@ -323,18 +330,21 @@ class Command(BaseCommand):
             text="Sitat",
             link="/sitat/",
             order=2,
+            requires_login=True,
             parent=other_dropdown,
         )
         NavbarItemFactory(
             text="Wiki",
             link="/wiki/",
             order=2.5,
+            requires_login=True,
             parent=other_dropdown,
         )
         NavbarItemFactory(
             text="Forum",
             link="/forum/",
             order=2.6,
+            requires_login=True,
             parent=other_dropdown,
         )
         NavbarItemFactory(
