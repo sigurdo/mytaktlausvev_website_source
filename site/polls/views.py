@@ -3,14 +3,19 @@ from django.contrib.auth.mixins import (
     PermissionRequiredMixin,
     UserPassesTestMixin,
 )
+from django.contrib.messages.views import SuccessMessageMixin
 from django.forms import Form
 from django.http.response import Http404
 from django.shortcuts import get_object_or_404
 from django.urls.base import reverse, reverse_lazy
-from django.views.generic import DeleteView, DetailView, FormView, ListView
+from django.views.generic import DetailView, FormView, ListView
 from django.views.generic.base import RedirectView
 
-from common.views import InlineFormsetCreateView, InlineFormsetUpdateView
+from common.views import (
+    DeleteViewCustom,
+    InlineFormsetCreateView,
+    InlineFormsetUpdateView,
+)
 
 from .forms import (
     ChoiceFormset,
@@ -152,9 +157,8 @@ class PollUpdate(PermissionRequiredMixin, InlineFormsetUpdateView):
         super().form_valid(form)
 
 
-class PollDelete(PermissionRequiredMixin, DeleteView):
+class PollDelete(PermissionRequiredMixin, DeleteViewCustom):
     model = Poll
-    template_name = "common/confirm_delete.html"
     success_url = reverse_lazy("polls:PollList")
     permission_required = (
         "polls.delete_poll",
@@ -195,9 +199,10 @@ class VoteCreate(LoginRequiredMixin, PollMixin, FormView):
         return reverse("polls:PollResults", args=[self.get_poll().slug])
 
 
-class VoteDelete(LoginRequiredMixin, PollMixin, FormView):
+class VoteDelete(LoginRequiredMixin, PollMixin, SuccessMessageMixin, FormView):
     template_name = "polls/vote_delete.html"
     form_class = Form
+    success_message = "Stemma di blei fjerna."
 
     votes = None
 

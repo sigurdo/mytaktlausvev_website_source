@@ -1,9 +1,13 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.http import FileResponse
 from django.urls import reverse_lazy
-from django.views.generic import DeleteView, DetailView, ListView
+from django.views.generic import DetailView, ListView
 
-from common.views import InlineFormsetCreateView, InlineFormsetUpdateView
+from common.views import (
+    DeleteViewCustom,
+    InlineFormsetCreateView,
+    InlineFormsetUpdateView,
+)
 
 from .forms import RepertoireEntryFormset, RepertoireForm
 from .models import Repertoire
@@ -32,9 +36,8 @@ class RepertoireUpdate(PermissionRequiredMixin, InlineFormsetUpdateView):
     permission_required = "repertoire.change_repertoire"
 
 
-class RepertoireDelete(PermissionRequiredMixin, DeleteView):
+class RepertoireDelete(PermissionRequiredMixin, DeleteViewCustom):
     model = Repertoire
-    template_name = "common/confirm_delete.html"
     success_url = reverse_lazy("repertoire:RepertoireList")
     permission_required = "repertoire.delete_repertoire"
 

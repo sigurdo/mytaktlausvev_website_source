@@ -1,4 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.messages.views import SuccessMessageMixin
 from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.urls import reverse
@@ -94,7 +95,7 @@ class AddJacketUser(PermissionRequiredMixin, FormView):
         return super().form_valid(form)
 
 
-class RemoveJacketUser(PermissionRequiredMixin, FormView):
+class RemoveJacketUser(PermissionRequiredMixin, SuccessMessageMixin, FormView):
     form_class = RemoveJacketUserForm
     template_name = "common/form.html"
     permission_required = "uniforms.delete_jacketuser"
@@ -125,6 +126,9 @@ class RemoveJacketUser(PermissionRequiredMixin, FormView):
                     new_owner.is_owner = True
                     new_owner.save()
         return super().form_valid(form)
+
+    def get_success_message(self, cleaned_data):
+        return f"{self.jacket_user.user} blei fjerna som brukar av {self.jacket_user.jacket}."
 
 
 class JacketUserMakeOwner(PermissionRequiredMixin, View):

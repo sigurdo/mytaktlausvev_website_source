@@ -10,10 +10,10 @@ from django.db.models.query_utils import Q
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils.timezone import localtime, make_aware
-from django.views.generic import DetailView
-from django.views.generic.edit import CreateView, DeleteView, UpdateView
-from django.views.generic.list import ListView
+from django.views.generic import CreateView, DetailView, ListView, UpdateView
 from django_ical.views import ICalFeed
+
+from common.views import DeleteViewCustom
 
 from .forms import EventAttendanceForm, EventForm
 from .models import Attendance, Event, EventAttendance
@@ -212,11 +212,11 @@ class EventAttendanceUpdate(UserPassesTestMixin, UpdateView):
         return self.get_object().event.get_absolute_url()
 
 
-class EventAttendanceDelete(UserPassesTestMixin, DeleteView):
+class EventAttendanceDelete(UserPassesTestMixin, DeleteViewCustom):
     """View for deleting event attendance."""
 
     model = EventAttendance
-    template_name = "common/confirm_delete.html"
+    success_message = "Deltakinga blei fjerna."
 
     object = None
 

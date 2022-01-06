@@ -18,12 +18,13 @@ from django.views.generic.base import TemplateResponseMixin
 from django.views.generic.detail import SingleObjectMixin
 from django.views.generic.edit import (
     CreateView,
-    DeleteView,
     FormMixin,
     FormView,
     ProcessFormView,
     UpdateView,
 )
+
+from common.views import DeleteViewCustom
 
 from .forms import (
     EditPdfFormset,
@@ -63,9 +64,8 @@ class ScoreUpdate(PermissionRequiredMixin, UpdateView):
         return super().form_valid(form)
 
 
-class ScoreDelete(PermissionRequiredMixin, DeleteView):
+class ScoreDelete(PermissionRequiredMixin, DeleteViewCustom):
     model = Score
-    template_name = "common/confirm_delete.html"
     success_url = reverse_lazy("sheetmusic:ScoreList")
     permission_required = "sheetmusic.delete_score"
 
