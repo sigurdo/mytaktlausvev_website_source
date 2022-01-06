@@ -35,7 +35,7 @@ class PartsUpdateForm(forms.ModelForm):
         model = Part
         fields = ["name", "from_page", "to_page"]
         widgets = {
-            "name": forms.TextInput(attrs={"size": 50}),
+            "name": forms.TextInput(attrs={"size": 30}),
             "from_page": forms.NumberInput(attrs={"size": 4}),
             "to_page": forms.NumberInput(attrs={"size": 4}),
         }

@@ -1,0 +1,6 @@
+@import "variables";
+
+#pdf-iframe {
+  top: $navbar-padding;
+  height: calc(100vh - #{$navbar-padding});
+}
