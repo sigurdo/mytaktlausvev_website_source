@@ -35,19 +35,21 @@
         </h1>
     </header>
 
-    {% if form and formset %}
-    <form method="post">
-    {% endif %}
-        {% if form %}
-            {% load crispy_forms_tags %}
-            {% crispy form %}
+    {% block form %}
+        {% if form and formset %}
+        <form method="post">
         {% endif %}
-        {% if formset %}
-            {% load crispy_forms_tags %}
-            {% crispy formset %}
+            {% if form %}
+                {% load crispy_forms_tags %}
+                {% crispy form %}
+            {% endif %}
+            {% if formset %}
+                {% load crispy_forms_tags %}
+                {% crispy formset %}
+            {% endif %}
+        {% if form and formset %}
+        </form>
         {% endif %}
-    {% if form and formset %}
-    </form>
-    {% endif %}
+    {% endblock form %}
 </article>
 {% endblock %}

@@ -2,5 +2,5 @@
 
 #pdf-iframe {
   top: $navbar-padding;
-  height: calc(100vh - 200px);
+  height: calc(100vh - #{$navbar-padding});
 }
