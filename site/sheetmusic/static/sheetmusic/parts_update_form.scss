@@ -1,5 +1,6 @@
+@import "variables";
+
 #pdf-iframe {
-    height: calc(100vh - 177px);
-    width: calc(50vw - 30px);
-    left: 15px;
+  top: $navbar-padding;
+  height: calc(100vh - 200px);
 }

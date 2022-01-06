@@ -79,7 +79,7 @@
 {% endblock navbar %}
 
 {% block body %}
-	<div class="container overflow-auto">
+	<div class="{% block container_class %}container{% endblock container_class %}">
 		<div class="row">
 			<div class="col-md">
 				{% block page %}
