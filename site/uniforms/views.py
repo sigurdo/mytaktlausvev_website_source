@@ -128,7 +128,7 @@ class RemoveJacketUser(PermissionRequiredMixin, SuccessMessageMixin, FormView):
         return super().form_valid(form)
 
     def get_success_message(self, cleaned_data):
-        return f"{self.jacket_user.user} blei fjerna som brukar av {self.jacket_user.jacket}."
+        return f"{self.jacket_user.user} vart fjerna som brukar av {self.jacket_user.jacket}."
 
 
 class JacketUserMakeOwner(PermissionRequiredMixin, View):

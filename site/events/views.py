@@ -216,7 +216,7 @@ class EventAttendanceDelete(UserPassesTestMixin, DeleteViewCustom):
     """View for deleting event attendance."""
 
     model = EventAttendance
-    success_message = "Deltakinga blei fjerna."
+    success_message = "Deltakinga vart fjerna."
 
     object = None
 
