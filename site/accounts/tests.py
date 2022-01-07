@@ -1,4 +1,5 @@
 from django.contrib.auth import authenticate
+from django.core import mail
 from django.db import IntegrityError
 from django.templatetags.static import static
 from django.test import TestCase
@@ -10,7 +11,7 @@ from common.test_utils import test_image
 from instruments.factories import InstrumentGroupFactory
 from uniforms.factories import JacketUserFactory
 
-from .factories import UserFactory
+from .factories import SuperUserFactory, UserFactory
 from .forms import UserCustomCreateForm
 from .models import UserCustom
 
@@ -153,7 +154,7 @@ class UserCustomCreateTestSuite(TestMixin, TestCase):
             "address": "A server near you",
             "student_card_number": "6C696E74",
             "instrument_group": InstrumentGroupFactory().pk,
-            "membership_period": "2021, Spring - ",
+            "membership_period": "2022, Spring - ",
         }
 
     def get_url(self):
@@ -166,6 +167,15 @@ class UserCustomCreateTestSuite(TestMixin, TestCase):
     def test_requires_permission_for_creating_users(self):
         """Should require permission for creating users."""
         self.assertPermissionRequired(self.get_url(), "accounts.add_usercustom")
+
+    def test_sends_mail_to_created_user(self):
+        """Should send an email to the created user."""
+        self.client.force_login(SuperUserFactory())
+        self.client.post(self.get_url(), self.data_user)
+
+        self.assertEqual(len(mail.outbox), 1)
+        email = mail.outbox[0]
+        self.assertEqual(email.to, [self.data_user["email"]])
 
 
 class ProfileDetailTest(TestMixin, TestCase):
