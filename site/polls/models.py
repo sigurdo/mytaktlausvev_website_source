@@ -6,8 +6,8 @@ from django.db.models import (
     BooleanField,
     CharField,
     DateTimeField,
+    FloatField,
     ForeignKey,
-    IntegerField,
     Model,
     TextChoices,
 )
@@ -89,7 +89,7 @@ class Choice(Model):
         related_name="choices",
         verbose_name="avstemming",
     )
-    order = IntegerField(
+    order = FloatField(
         "rekkjefølgje",
         default=0,
         help_text="Definerer rekkjefølgja til val. Val med lik rekkjefølgje blir sortert etter namn.",
