@@ -41,11 +41,9 @@ class NavbarItemListFilter(SimpleListFilter):
             yield choice
 
     def queryset(self, request, queryset):
-        match self.value():
-            case "vis":
-                return queryset
-            case _:
-                return queryset.filter(parent=None)
+        if self.value() == "vis":
+            return queryset
+        return queryset.filter(parent=None)
 
 
 class NavbarItemAdmin(ModelAdmin):
