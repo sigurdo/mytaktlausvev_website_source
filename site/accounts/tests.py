@@ -1,4 +1,5 @@
 from django.contrib.auth import authenticate
+from django.db import IntegrityError
 from django.templatetags.static import static
 from django.test import TestCase
 from django.urls import reverse
@@ -76,7 +77,7 @@ class UserCustomTest(TestMixin, TestCase):
         When creating a user the username should be case insensitive.
         """
         UserCustom.objects.create_user(username="BOB")
-        with self.assertRaises(ValueError):
+        with self.assertRaises(IntegrityError):
             UserCustom.objects.create_user(username="bob")
 
     def test_slug_created_from_username(self):
