@@ -18,8 +18,8 @@ class NavbarItem(Model):
     requires_login = BooleanField(verbose_name="krev innlogging", default=False)
 
     class Type(TextChoices):
-        LINK = "LINK", "lenkje"
-        DROPDOWN = "DROPDOWN", "nedfallsmeny"
+        LINK = "LINK", "Lenkje"
+        DROPDOWN = "DROPDOWN", "Nedfallsmeny"
 
     type = CharField(
         verbose_name="type",
