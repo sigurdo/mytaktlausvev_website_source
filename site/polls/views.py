@@ -202,7 +202,7 @@ class VoteCreate(LoginRequiredMixin, PollMixin, FormView):
 class VoteDelete(LoginRequiredMixin, PollMixin, SuccessMessageMixin, FormView):
     template_name = "polls/vote_delete.html"
     form_class = Form
-    success_message = "Stemma di blei fjerna."
+    success_message = "Stemma di vart fjerna."
 
     votes = None
 

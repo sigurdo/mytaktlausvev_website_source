@@ -36,7 +36,7 @@ class CommentDelete(UserPassesTestMixin, DeleteViewCustom):
     """View for deleting a comment."""
 
     model = Comment
-    success_message = "Kommentaren blei fjerna."
+    success_message = "Kommentaren vart fjerna."
 
     def test_func(self):
         user = self.request.user
