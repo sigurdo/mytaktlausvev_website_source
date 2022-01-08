@@ -2,9 +2,10 @@
 set -e
 
 docker-compose build
+docker-compose up -d
 
-docker-compose run django ./site/manage.py migrate
-docker-compose run django ./site/manage.py create_dev_data
-docker-compose run django ./site/manage.py generate_code_styles site/static/scss default monokai
+docker-compose exec -T django ./site/manage.py migrate
+docker-compose exec -T django ./site/manage.py create_dev_data
+docker-compose exec -T django ./site/manage.py generate_code_styles site/static/scss default monokai
 
 docker-compose down
