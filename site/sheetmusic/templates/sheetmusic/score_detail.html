@@ -45,7 +45,8 @@
 
             {% if score.sound_file %}
                 <dt> Lydfil </dt>
-                <dd> <a href="{{ score.sound_file.url }}"> {{ score.sound_file.url }} </a> </dd>
+                {% load utils %}
+                <dd> <a href="{{ score.sound_file.url }}"> {{ score.sound_file | filename }} </a> </dd>
             {% endif %}
 
             {% if score.sound_link %}

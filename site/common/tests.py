@@ -1,3 +1,5 @@
+from os.path import basename
+
 import magic
 from django.forms import ValidationError
 from django.test import TestCase
@@ -6,19 +8,28 @@ from articles.factories import ArticleFactory
 from articles.models import Article
 from comments.factories import CommentFactory
 from comments.models import Comment
+from sheetmusic.factories import PdfFactory
 
-from .templatetags.utils import verbose_name
+from .mixins import TestMixin
+from .templatetags.utils import filename, verbose_name
 from .test_utils import test_image, test_pdf, test_txt_file
 from .validators import FileTypeValidator
 
 
-class VerboseNameTest(TestCase):
+class TemplateUtilsTestSuite(TestMixin, TestCase):
     def test_verbose_name(self):
         """Should return the verbose name of the instance's model."""
         article = ArticleFactory()
         self.assertEqual(verbose_name(article), Article._meta.verbose_name)
         comment = CommentFactory(content_object=article)
         self.assertEqual(verbose_name(comment), Comment._meta.verbose_name)
+
+    def test_filename(self):
+        """Should return the base filename of a file."""
+        pdf = PdfFactory()
+        expected = basename(pdf.file.name)
+        actual = filename(pdf.file)
+        self.assertEqual(expected, actual)
 
 
 class FileTypeValidatorTestSuite(TestCase):

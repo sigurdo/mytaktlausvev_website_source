@@ -1,3 +1,5 @@
+from os.path import basename
+
 from django import template
 
 register = template.Library()
@@ -13,3 +15,8 @@ def verbose_name(model_instance):
 def get_range(length):
     """Returns a range from 0 to `length`, exclusive."""
     return range(length)
+
+
+@register.filter
+def filename(file):
+    return basename(file.name)
