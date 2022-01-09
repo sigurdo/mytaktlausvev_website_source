@@ -22,6 +22,7 @@ class PdfFactory(DjangoModelFactory):
 
     score = SubFactory(ScoreFactory)
     file = test_pdf()
+    filename_original = test_pdf().name
 
 
 class PartFactory(DjangoModelFactory):

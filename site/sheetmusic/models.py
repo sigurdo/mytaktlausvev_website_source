@@ -111,8 +111,8 @@ pdf_file_validators = [
 ]
 
 
-def pdf_get_base_filename(pdf):
-    return pdf.get_base_filename()
+def pdf_filename_no_extension(pdf):
+    return pdf.filename_no_extension()
 
 
 class Pdf(models.Model):
@@ -130,9 +130,10 @@ class Pdf(models.Model):
         # because some of our PDFs have really long names
         max_length=255,
     )
+    filename_original = models.CharField("opphaveleg filnamn", max_length=255)
     slug = AutoSlugField(
         verbose_name="lenkjenamn",
-        populate_from=pdf_get_base_filename,
+        populate_from=pdf_filename_no_extension,
         unique_with="score__slug",
         editable=True,
     )
@@ -142,22 +143,19 @@ class Pdf(models.Model):
     timestamp = models.DateTimeField("tidsmerke", auto_now_add=True)
 
     class Meta:
-        ordering = ["-timestamp"]
+        ordering = ["filename_original"]
         verbose_name = "pdf"
         verbose_name_plural = "pdfar"
 
     def __str__(self):
-        return os.path.basename(self.file.path)
+        return self.filename_original
 
     def get_absolute_url(self):
         return reverse("sheetmusic:ScoreView", kwargs={"slug": self.score.slug})
 
-    def get_base_filename(self):
-        """Returns the base filename of the pdf file without file extension."""
-        filepath = str(self.file)
-        filename = os.path.basename(filepath)
-        filename_no_ext = os.path.splitext(filename)[0]
-        return filename_no_ext
+    def filename_no_extension(self):
+        """Returns the original filename of the PDF, without a file extension."""
+        return os.path.splitext(self.filename_original)[0]
 
     def num_of_pages(self):
         pdf_reader = PdfFileReader(self.file.path)
