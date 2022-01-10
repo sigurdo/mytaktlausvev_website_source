@@ -1,5 +1,8 @@
 from django.conf import settings
-from django.db import models
+from django.db import models, backends
+from django.db.models import Model
+import random
+from sheatless import predict_parts_in_pdf
 
 
 class ArticleMixin(models.Model):
