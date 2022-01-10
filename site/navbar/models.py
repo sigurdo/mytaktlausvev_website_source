@@ -110,5 +110,5 @@ class NavbarItemPermissionRequirement(Model):
         verbose_name = "navigasjonslinepunktløyvekrav"
         verbose_name_plural = "navigasjonslinepunktløyvekrav"
         constraints = [
-            UniqueConstraint(fields=["navbar_item", "permission"], name="unique")
+            UniqueConstraint(fields=["navbar_item", "permission"], name="unique_navbar_item_permission_requirement")
         ]
