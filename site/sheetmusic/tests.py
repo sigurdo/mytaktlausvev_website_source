@@ -3,15 +3,35 @@ from http import HTTPStatus
 
 from django.test import TestCase
 from django.urls import reverse
+from django.utils.text import slugify
 
 from accounts.factories import SuperUserFactory, UserFactory
 from common.mixins import TestMixin
-from common.test_utils import create_formset_post_data
-from web.settings import BASE_DIR
+from common.test_utils import create_formset_post_data, test_pdf
 
 from .factories import FavoritePartFactory, PartFactory, PdfFactory, ScoreFactory
 from .forms import EditPdfFormset, PartsUpdateAllFormset, PartsUpdateFormset
 from .models import Part, Pdf, Score
+
+
+class PdfTestSuite(TestMixin, TestCase):
+    def setUp(self):
+        self.pdf = PdfFactory()
+
+    def test_slug_derived_from_original_filename_no_extension(self):
+        """Should derive slug from original filename, without extension."""
+        self.assertEqual(self.pdf.slug, slugify(self.pdf.filename_no_extension()))
+
+    def test_to_str(self):
+        """`__str__` should be the original filename."""
+        self.assertEqual(str(self.pdf), self.pdf.filename_original)
+
+    def test_filename_no_extension(self):
+        """Should return the original filename, without an extension."""
+        self.assertEqual(
+            self.pdf.filename_no_extension(),
+            os.path.splitext(self.pdf.filename_original)[0],
+        )
 
 
 class ScoreViewTestSuite(TestMixin, TestCase):
@@ -317,46 +337,44 @@ class PdfsUpdateTestSuite(TestMixin, TestCase):
 class PdfsUploadTestSuite(TestMixin, TestCase):
     def setUp(self):
         self.score = ScoreFactory()
+        self.pdf_file = test_pdf()
         self.test_data = {
-            "files": open(
-                os.path.join(BASE_DIR, "common", "test_data", "test.pdf"), "rb"
-            ),
+            "files": self.pdf_file,
             "part_prediction": "filename",
             "plz_wait": True,
         }
 
+    def get_url(self):
+        return reverse("sheetmusic:PdfsUpload", args=[self.score.slug])
+
     def upload_pdf(self):
-        self.client.post(
-            reverse("sheetmusic:PdfsUpload", args=[self.score.slug]),
-            self.test_data,
-        )
+        return self.client.post(self.get_url(), self.test_data)
 
     def test_requires_login(self):
-        self.assertLoginRequired(
-            reverse("sheetmusic:PdfsUpload", args=[self.score.slug])
-        )
+        self.assertLoginRequired(self.get_url())
 
     def test_requires_permission(self):
         self.assertPermissionRequired(
-            reverse("sheetmusic:PdfsUpload", args=[self.score.slug]),
-            "sheetmusic.add_pdf",
-            "sheetmusic.add_part",
+            self.get_url(), "sheetmusic.add_pdf", "sheetmusic.add_part"
         )
 
     def test_success_redirect(self):
-        user = SuperUserFactory()
-        self.client.force_login(user)
-        response = self.client.post(
-            reverse("sheetmusic:PdfsUpload", args=[self.score.slug]),
-            self.test_data,
-        )
+        self.client.force_login(SuperUserFactory())
+        response = self.upload_pdf()
         self.assertRedirects(
             response, reverse("sheetmusic:ScoreView", args=[self.score.slug])
         )
 
+    def test_preserves_filename(self):
+        """Should preserve the original filename."""
+        self.client.force_login(SuperUserFactory())
+        self.upload_pdf()
+
+        pdf = Pdf.objects.last()
+        self.assertEqual(pdf.filename_original, self.pdf_file.name)
+
     def test_upload_pdf_filename(self):
-        user = SuperUserFactory()
-        self.client.force_login(user)
+        self.client.force_login(SuperUserFactory())
         self.upload_pdf()
         self.assertEqual(self.score.pdfs.count(), 1)
         self.assertEqual(self.score.pdfs.last().parts.count(), 1)
@@ -364,8 +382,7 @@ class PdfsUploadTestSuite(TestMixin, TestCase):
         self.assertEqual(Part.objects.count(), 1)
 
     def test_upload_pdf_sheatless(self):
-        user = SuperUserFactory()
-        self.client.force_login(user)
+        self.client.force_login(SuperUserFactory())
         self.test_data["part_prediction"] = "sheatless"
         self.upload_pdf()
         self.assertEqual(Pdf.objects.count(), 1)
@@ -373,28 +390,22 @@ class PdfsUploadTestSuite(TestMixin, TestCase):
         self.assertEqual(Part.objects.last().name, "Tuba")
 
     def test_upload_pdf_no_part_prediction(self):
-        user = SuperUserFactory()
-        self.client.force_login(user)
+        self.client.force_login(SuperUserFactory())
         self.test_data["part_prediction"] = "none"
         self.upload_pdf()
         self.assertEqual(Pdf.objects.count(), 1)
         self.assertEqual(Part.objects.count(), 0)
 
     def test_upload_pdf_undefined_part_prediction(self):
-        user = SuperUserFactory()
-        self.client.force_login(user)
+        self.client.force_login(SuperUserFactory())
         self.test_data["part_prediction"] = "qwertyuiopå"
         self.upload_pdf()
         self.assertEqual(Pdf.objects.count(), 0)
         self.assertEqual(Part.objects.count(), 0)
 
     def test_upload_multiple_pdfs(self):
-        user = SuperUserFactory()
-        self.client.force_login(user)
-        self.test_data["files"] = [
-            open(os.path.join(BASE_DIR, "common", "test_data", "test.pdf"), "rb")
-            for _ in range(3)
-        ]
+        self.client.force_login(SuperUserFactory())
+        self.test_data["files"] = [test_pdf() for _ in range(3)]
         self.upload_pdf()
         self.assertEqual(Pdf.objects.count(), 3)
         self.assertEqual(Part.objects.count(), 3)

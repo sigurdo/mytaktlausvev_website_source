@@ -264,8 +264,9 @@ class PdfsUpload(PermissionRequiredMixin, FormView):
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
         for file in form.files.getlist("files"):
             score = Score.objects.get(slug=self.kwargs["slug"])
-            pdf = Pdf.objects.create(score=score, file=file)
-            pdf.save()
+            pdf = Pdf.objects.create(
+                score=score, file=file, filename_original=file.name
+            )
             match form["part_prediction"].value():
                 case "sheatless":
                     # plz_wait is a simple hack used only by the test framework so that the

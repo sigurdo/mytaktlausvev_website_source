@@ -2,6 +2,7 @@
 
 import autoslug.fields
 from django.db import migrations
+
 import sheetmusic.models
 
 
@@ -15,6 +16,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='pdf',
             name='slug',
-            field=autoslug.fields.AutoSlugField(editable=True, populate_from=sheetmusic.models.pdf_get_base_filename, unique_with=('score__slug',), verbose_name='lenkjenamn'),
+            field=autoslug.fields.AutoSlugField(editable=True, populate_from=sheetmusic.models.pdf_filename_no_extension, unique_with=('score__slug',), verbose_name='lenkjenamn'),
         ),
     ]
