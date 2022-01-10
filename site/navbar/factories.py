@@ -1,4 +1,4 @@
-from factory import SubFactory, post_generation
+from factory import SubFactory, post_generation, sequence
 from factory.django import DjangoModelFactory
 
 from authentication.utils import find_permission_instance
@@ -11,23 +11,13 @@ class NavbarItemFactory(DjangoModelFactory):
         model = NavbarItem
 
     text = "Heim"
-    order = 0
+    order = sequence(lambda n: n)
     type = NavbarItem.Type.LINK
     parent = None
 
-    @classmethod
-    def _create(self, *args, permissions=[], **kwargs):
-        instance = super()._create(*args, **kwargs)
-        for permission in permissions:
-            NavbarItemPermissionRequirementFactory(
-                navbar_item=instance,
-                permission=permission,
-            )
-        return instance
-
     @post_generation
-    def post(self, create, post, permissions=[]):
-        if not create:
+    def permissions(self, create, permissions):
+        if not create or not permissions:
             return
 
         for permission in permissions:

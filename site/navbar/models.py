@@ -41,9 +41,8 @@ class NavbarItem(Model):
     def sub_items(self):
         return self.children.all()
 
-    def active(self, request):
+    def active(self, request_path):
         """Returns True if navbar_item is active and False if not."""
-        request_path = request.path
         match self.type:
             case NavbarItem.Type.LINK:
                 item_paths = [self.link]
