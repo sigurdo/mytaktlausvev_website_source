@@ -22,7 +22,9 @@ def get_navbar_items(context):
         item.is_active = item.active(request)
         item.is_dropdown = item.type == NavbarItem.Type.DROPDOWN
         item.href = "#" if item.is_dropdown else item.link
-        item.sub_items_annotated = list(filter(lambda item: item.permitted(request.user), item.sub_items()))
+        item.sub_items_annotated = list(
+            filter(lambda item: item.permitted(request.user), item.sub_items())
+        )
         for sub_item in item.sub_items_annotated:
             sub_item.is_active = sub_item.active(request)
     return items
