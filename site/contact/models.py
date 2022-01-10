@@ -1,7 +1,7 @@
-from django.db import models
+from django.db.models import CharField, EmailField, FloatField, Model
 
 
-class ContactCategory(models.Model):
+class ContactCategory(Model):
     """
     Model for a category on the contact form.
 
@@ -11,12 +11,12 @@ class ContactCategory(models.Model):
     `email` is the email the form is sent to.
     """
 
-    name = models.CharField("namn", max_length=255, unique=True)
-    email = models.EmailField("e-post")
-    order = models.IntegerField(
-        "ordning",
+    name = CharField("namn", max_length=255, unique=True)
+    email = EmailField("e-post")
+    order = FloatField(
+        "rekkjefølgje",
         default=0,
-        help_text="Definerer rekkjefølgja til kategoriar. Kategoriar med lik ordning blir sortert etter namn.",
+        help_text="Definerer rekkjefølgja til kategoriar. Kategoriar med lik rekkjefølgje blir sortert etter namn.",
     )
 
     def __str__(self):

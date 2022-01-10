@@ -1,8 +1,23 @@
 from django import http
+from django.contrib.messages.views import SuccessMessageMixin
 from django.core import exceptions
 from django.db import transaction
 from django.http.response import HttpResponseRedirect
-from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic.edit import CreateView, DeleteView, UpdateView
+
+
+class DeleteViewCustom(SuccessMessageMixin, DeleteView):
+    """
+    Custom `DeleteView` with better defaults:
+
+    - Template set to `common/confirm_delete.html`
+    - Default success message
+    """
+
+    template_name = "common/confirm_delete.html"
+
+    def get_success_message(self, cleaned_data):
+        return self.success_message or f"{self.object} vart fjerna."
 
 
 class InlineFormsetCreateView(CreateView):

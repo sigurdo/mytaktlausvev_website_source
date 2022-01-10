@@ -6,6 +6,7 @@ from django.db.models import (
     BooleanField,
     CharField,
     DateTimeField,
+    FloatField,
     ForeignKey,
     Model,
     TextChoices,
@@ -88,6 +89,11 @@ class Choice(Model):
         related_name="choices",
         verbose_name="avstemming",
     )
+    order = FloatField(
+        "rekkjefølgje",
+        default=0,
+        help_text="Definerer rekkjefølgja til val. Val med lik rekkjefølgje blir sortert etter namn.",
+    )
 
     def __str__(self):
         return self.text
@@ -107,6 +113,7 @@ class Choice(Model):
     class Meta:
         verbose_name = "val"
         verbose_name_plural = "val"
+        ordering = ["order", "text"]
 
 
 class Vote(Model):

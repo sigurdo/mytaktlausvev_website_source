@@ -1,5 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.views.generic.edit import CreateView, DeleteView, UpdateView
+from django.views.generic import CreateView, UpdateView
+
+from common.views import DeleteViewCustom
 
 from .forms import CommentCreateForm, CommentUpdateForm
 from .models import Comment
@@ -30,11 +32,11 @@ class CommentUpdate(UserPassesTestMixin, UpdateView):
         )
 
 
-class CommentDelete(UserPassesTestMixin, DeleteView):
+class CommentDelete(UserPassesTestMixin, DeleteViewCustom):
     """View for deleting a comment."""
 
     model = Comment
-    template_name = "common/confirm_delete.html"
+    success_message = "Kommentaren vart fjerna."
 
     def test_func(self):
         user = self.request.user
