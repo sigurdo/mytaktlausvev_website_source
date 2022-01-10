@@ -1,5 +1,0 @@
-/* Not really sure why this should be necessary, but there seems to be a bug in crispy forms
-   inline formset template that generates a hidden tr that is not hidden */
-.hidden {
-    display: none;
-}
