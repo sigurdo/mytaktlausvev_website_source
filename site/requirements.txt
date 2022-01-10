@@ -22,3 +22,4 @@ PyPDF2~=1.26.0
 django-ical~=1.8.0
 python-magic~=0.4.24
 django-pgtrigger~=2.4
+autoflake==1.4
