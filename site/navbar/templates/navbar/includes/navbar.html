@@ -19,15 +19,11 @@
                 {% load get_navbar_items %}
                 {% get_navbar_items as navbar_items %}
                 {% for item in navbar_items %}
-                    {% load navbar_item_is_permitted %}
-                    {% navbar_item_is_permitted item request.user as is_permitted %}
-                    {% if is_permitted %}
-                        {% load navbar_item_is_active %}
-                        {% navbar_item_is_active item request as is_active %}
+                    {% if item.is_permitted %}
                         <li class="nav-item dropdown">
                             <a class="
                                 nav-link
-                                {% if is_active %} active {% endif %}
+                                {% if item.is_active %} active {% endif %}
                                 {% if item.type == "DROPDOWN" %} dropdown-toggle {% endif %}
                                 "
                                 href="{% if item.type == "DROPDOWN" %}#{% else %}{{item.link}}{% endif %}"
@@ -35,7 +31,7 @@
                                     id="dropdown-button-{{item.pk}}"
                                     role="button"
                                     data-bs-toggle="dropdown"
-                                    {% if is_active %}
+                                    {% if item.is_active %}
                                         aria-expanded="true"
                                     {% else %}
                                         aria-expanded="false"
@@ -45,25 +41,21 @@
                             </a>
                             {% if item.type == "DROPDOWN" %}
                                 <ul class="dropdown-menu navbar-dropdown-menu" aria-labelledby="dropdown-button-{{item.pk}}">
-                                    {% with item.get_sub_items as sub_items %}
-                                        {% for sub_item in sub_items %}
-                                            {% navbar_item_is_permitted sub_item request.user as sub_is_permitted %}
-                                            {% if sub_is_permitted %}
-                                                {% navbar_item_is_active sub_item request as sub_is_active %}
-                                                <li class="nav-item">
-                                                    <a class="
-                                                        dropdown-item
-                                                        nav-link
-                                                        background-color-unset
-                                                        {% if sub_is_active %}active{% endif %}
-                                                        "
-                                                        href="{{sub_item.link}}">
-                                                        {{sub_item.text}}
-                                                    </a>
-                                                </li>
-                                            {% endif %}
-                                        {% endfor %}
-                                    {% endwith %}
+                                    {% for sub_item in item.sub_items_annotated %}
+                                        {% if sub_item.is_permitted %}
+                                            <li class="nav-item">
+                                                <a class="
+                                                    dropdown-item
+                                                    nav-link
+                                                    background-color-unset
+                                                    {% if sub_item.is_active %}active{% endif %}
+                                                    "
+                                                    href="{{sub_item.link}}">
+                                                    {{sub_item.text}}
+                                                </a>
+                                            </li>
+                                        {% endif %}
+                                    {% endfor %}
                                 </ul>
                             {% endif %}
                         </li>

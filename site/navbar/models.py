@@ -8,13 +8,14 @@ from django.db.models import (
     ForeignKey,
     Model,
     TextChoices,
+    UniqueConstraint,
 )
 
 
 class NavbarItem(Model):
     text = CharField(verbose_name="tekst", max_length=255)
     link = CharField(verbose_name="lenkjepeikar", max_length=255, blank=True)
-    order = FloatField(verbose_name="rekkjefølgje")
+    order = FloatField(verbose_name="rekkjefølgje", default=0)
     requires_login = BooleanField(verbose_name="krev innlogging", default=False)
 
     class Type(TextChoices):
@@ -34,10 +35,42 @@ class NavbarItem(Model):
         blank=True,
         null=True,
         on_delete=SET_NULL,
+        limit_choices_to={"type": Type.DROPDOWN},
     )
 
-    def get_sub_items(self):
+    def sub_items(self):
         return self.children.all()
+
+    def active(self, request):
+        """Returns True if navbar_item is active and False if not."""
+        request_path = request.path
+        match self.type:
+            case NavbarItem.Type.LINK:
+                item_paths = [self.link]
+            case NavbarItem.Type.DROPDOWN:
+                item_paths = [subitem.link for subitem in self.sub_items()]
+            case _:
+                item_paths = []
+
+        for item_path in item_paths:
+            if request_path.startswith(item_path):
+                return True
+        return False
+
+    def permitted(self, user):
+        """Returns `True` if `user` is permitted to access `navbar_item` and `False` if not."""
+        if self.requires_login and not user.is_authenticated:
+            return False
+        for permission_requirement in self.permission_requirements.all():
+            permission = permission_requirement.permission
+            permission_string = (
+                f"{permission.content_type.app_label}.{permission.codename}"
+            )
+            if not user.has_perm(permission_string):
+                return False
+        return self.type == NavbarItem.Type.LINK or all(
+            subitem.permitted(user) for subitem in self.sub_items()
+        )
 
     def __str__(self):
         match self.type:
@@ -72,3 +105,6 @@ class NavbarItemPermissionRequirement(Model):
     class Meta:
         verbose_name = "navigasjonslinepunktløyvekrav"
         verbose_name_plural = "navigasjonslinepunktløyvekrav"
+        constraints = [
+            UniqueConstraint(fields=["navbar_item", "permission"], name="unique")
+        ]

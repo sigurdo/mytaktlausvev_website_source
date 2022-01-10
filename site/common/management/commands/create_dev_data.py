@@ -313,7 +313,7 @@ class Command(BaseCommand):
             link="/artiklar/ny/",
             order=4,
             parent=admin_dropdown,
-            permissions=["articles.add_article"],
+            post__permissions=["articles.add_article"],
         )
         other_dropdown = NavbarItemFactory(
             text="Anna",

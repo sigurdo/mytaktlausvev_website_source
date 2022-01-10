@@ -52,13 +52,5 @@ class NavbarItemAdmin(ModelAdmin):
     ordering = ["order", "text"]
     inlines = [SubitemInline, PermissionInline]
 
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        """Makes only the NavbarItems of type DROPDOWN selectable for parent."""
-        if db_field.name == "parent":
-            kwargs["queryset"] = NavbarItem.objects.filter(
-                type=NavbarItem.Type.DROPDOWN
-            )
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)
-
 
 site.register(NavbarItem, NavbarItemAdmin)
