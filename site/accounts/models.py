@@ -1,16 +1,22 @@
 from autoslug import AutoSlugField
 from django.contrib.auth.models import AbstractUser, UserManager
-from django.db import models
+from django.db.models import (
+    SET_NULL,
+    CharField,
+    DateField,
+    ForeignKey,
+    ImageField,
+    TextChoices,
+    TextField,
+    UniqueConstraint,
+    URLField,
+)
+from django.db.models.functions import Lower
 from django.templatetags.static import static
 from django.urls import reverse
 
 
 class UserManagerCustom(UserManager):
-    def _create_user(self, username, email, password, **extra_fields):
-        if self.filter(username__iexact=username).exists():
-            raise ValueError("A user with that username already exists.")
-        return super()._create_user(username, email, password, **extra_fields)
-
     def get_by_natural_key(self, username):
         return self.get(username__iexact=username)
 
@@ -22,12 +28,12 @@ class UserCustom(AbstractUser):
 
     first_name = None
     last_name = None
-    name = models.CharField("navn", max_length=255, blank=True)
-    birthdate = models.DateField("fødselsdato", null=True, blank=True)
-    phone_number = models.CharField("telefonnummer", max_length=255, blank=True)
-    address = models.TextField("adresse", blank=True)
-    home_page = models.URLField("heimeside", max_length=255, blank=True)
-    student_card_number = models.CharField(
+    name = CharField("navn", max_length=255, blank=True)
+    birthdate = DateField("fødselsdato", null=True, blank=True)
+    phone_number = CharField("telefonnummer", max_length=255, blank=True)
+    address = TextField("adresse", blank=True)
+    home_page = URLField("heimeside", max_length=255, blank=True)
+    student_card_number = CharField(
         "studentkort-nummer",
         max_length=255,
         blank=True,
@@ -36,30 +42,30 @@ class UserCustom(AbstractUser):
             "du vil ha tilgang til lageret. Nummeret er det som byrjar med EM."
         ),
     )
-    avatar = models.ImageField("profilbilde", upload_to="profile/", blank=True)
-    instrument_group = models.ForeignKey(
+    avatar = ImageField("profilbilde", upload_to="profile/", blank=True)
+    instrument_group = ForeignKey(
         "instruments.InstrumentGroup",
         verbose_name="instrumentgruppe",
         related_name="users",
-        on_delete=models.SET_NULL,
+        on_delete=SET_NULL,
         null=True,
         blank=True,
     )
 
-    class MembershipStatus(models.TextChoices):
+    class MembershipStatus(TextChoices):
         ACTIVE = "ACTIVE", "Aktiv"
         INACTIVE = "INACTIVE", "Inaktiv"
         RETIRED = "RETIRED", "Pensjonist"
         HONORARY = "HONORARY", "Æresmedlem"
 
-    membership_status = models.CharField(
+    membership_status = CharField(
         "medlemsstatus",
         max_length=30,
         choices=MembershipStatus.choices,
         default=MembershipStatus.ACTIVE,
     )
     # Maybe standardize this field?
-    membership_period = models.CharField(
+    membership_period = CharField(
         "medlemsperiode",
         max_length=255,
         blank=True,
@@ -96,3 +102,8 @@ class UserCustom(AbstractUser):
 
     def get_absolute_url(self):
         return reverse("accounts:ProfileDetail", args=[self.slug])
+
+    class Meta(AbstractUser.Meta):
+        constraints = [
+            UniqueConstraint(Lower("username"), name="username_case_insensitive")
+        ]
