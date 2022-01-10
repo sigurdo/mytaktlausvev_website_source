@@ -58,7 +58,11 @@ class NavbarItem(Model):
         return False
 
     def permitted(self, user):
-        """Returns `True` if `user` is permitted to access `navbar_item` and `False` if not."""
+        """
+        Returns `True` if `user` is permitted to access this navbar item and `False` if not.
+        If the item is a dropdown and `user` does not have permission to any sub-items
+        the item is also considered unpermitted for `user`.
+        """
         if self.requires_login and not user.is_authenticated:
             return False
         for permission_requirement in self.permission_requirements.all():
@@ -68,7 +72,7 @@ class NavbarItem(Model):
             )
             if not user.has_perm(permission_string):
                 return False
-        return self.type == NavbarItem.Type.LINK or all(
+        return self.type == NavbarItem.Type.LINK or any(
             subitem.permitted(user) for subitem in self.sub_items()
         )
 

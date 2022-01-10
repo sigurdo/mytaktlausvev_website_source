@@ -19,47 +19,43 @@
                 {% load get_navbar_items %}
                 {% get_navbar_items as navbar_items %}
                 {% for item in navbar_items %}
-                    {% if item.is_permitted %}
-                        <li class="nav-item dropdown">
-                            <a class="
-                                nav-link
-                                {% if item.is_active %} active {% endif %}
-                                {% if item.type == "DROPDOWN" %} dropdown-toggle {% endif %}
-                                "
-                                href="{% if item.type == "DROPDOWN" %}#{% else %}{{item.link}}{% endif %}"
-                                {% if item.type == "DROPDOWN" %}
-                                    id="dropdown-button-{{item.pk}}"
-                                    role="button"
-                                    data-bs-toggle="dropdown"
-                                    {% if item.is_active %}
-                                        aria-expanded="true"
-                                    {% else %}
-                                        aria-expanded="false"
-                                    {% endif %}
-                                {% endif %}>
-                                {{item.text}}
-                            </a>
-                            {% if item.type == "DROPDOWN" %}
-                                <ul class="dropdown-menu navbar-dropdown-menu" aria-labelledby="dropdown-button-{{item.pk}}">
-                                    {% for sub_item in item.sub_items_annotated %}
-                                        {% if sub_item.is_permitted %}
-                                            <li class="nav-item">
-                                                <a class="
-                                                    dropdown-item
-                                                    nav-link
-                                                    background-color-unset
-                                                    {% if sub_item.is_active %}active{% endif %}
-                                                    "
-                                                    href="{{sub_item.link}}">
-                                                    {{sub_item.text}}
-                                                </a>
-                                            </li>
-                                        {% endif %}
-                                    {% endfor %}
-                                </ul>
-                            {% endif %}
-                        </li>
-                    {% endif %}
+                    <li class="nav-item dropdown">
+                        <a class="
+                            nav-link
+                            {% if item.is_active %} active {% endif %}
+                            {% if item.is_dropdown %} dropdown-toggle {% endif %}
+                            "
+                            href="{{item.href}}"
+                            {% if item.is_dropdown %}
+                                id="dropdown-button-{{item.pk}}"
+                                role="button"
+                                data-bs-toggle="dropdown"
+                                {% if item.is_active %}
+                                    aria-expanded="true"
+                                {% else %}
+                                    aria-expanded="false"
+                                {% endif %}
+                            {% endif %}>
+                            {{item.text}}
+                        </a>
+                        {% if item.is_dropdown %}
+                            <ul class="dropdown-menu navbar-dropdown-menu" aria-labelledby="dropdown-button-{{item.pk}}">
+                                {% for sub_item in item.sub_items_annotated %}
+                                    <li class="nav-item">
+                                        <a class="
+                                            dropdown-item
+                                            nav-link
+                                            background-color-unset
+                                            {% if sub_item.is_active %}active{% endif %}
+                                            "
+                                            href="{{sub_item.link}}">
+                                            {{sub_item.text}}
+                                        </a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </li>
                 {% endfor %}
             </ul>
             <ul class="nav navbar-nav">
