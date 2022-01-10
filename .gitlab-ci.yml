@@ -29,6 +29,7 @@ test:
     - git checkout $CI_COMMIT_REF_NAME
     - sh setup/init.sh
     - docker-compose run django site/manage.py test site/
+    - docker-compose run django autoflake --in-place --remove-all-unused-imports -r site/
     - docker-compose run django isort .
     - docker-compose run django black .
     - docker-compose run django flake8
