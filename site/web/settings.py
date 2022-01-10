@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     "authentication",
     "accounts",
     "common",
+    "sidebar",
     "articles",
     "comments",
     "contact",

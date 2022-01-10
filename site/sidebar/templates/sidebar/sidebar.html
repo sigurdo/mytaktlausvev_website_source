@@ -1,0 +1,7 @@
+{% if not authenticated %}
+    <section>
+        <h2 class="fs-3">Innlogging</h2>
+        {% load crispy_forms_tags %}
+        {% crispy form_login %}
+    </section>
+{% endif %}
