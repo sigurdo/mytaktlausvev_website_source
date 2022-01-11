@@ -1,7 +1,23 @@
-{% if not authenticated %}
-    <section>
-        <h2 class="fs-3">Innlogging</h2>
-        {% load crispy_forms_tags %}
-        {% crispy form_login %}
-    </section>
-{% endif %}
+
+<div class="d-flex flex-column gap-3">
+    {% if not user.is_authenticated %}
+        <section>
+            <h2 class="fs-3">Innlogging</h2>
+            {% load crispy_forms_tags %}
+            {% crispy form_login %}
+        </section>
+    {% endif %}
+
+    {% if poll %}
+        <section>
+            <h2 class="fs-3">{{ poll }}</h2>
+
+            {% load polls %}
+            {% vote_or_results poll user %}
+
+            <footer>
+                <a href="{% url "polls:PollList" %}">Eldre avstemmingar</a>
+            </footer>
+        </section>
+    {% endif %}
+</div>

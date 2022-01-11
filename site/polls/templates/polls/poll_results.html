@@ -12,21 +12,7 @@
         {% include "common/includes/created_modified.html" with object=poll only %}
     </header>
 
-    <dl>
-        {% for choice in poll.choices.all %}
-        <dt class="mb-2">{{ choice }}</dt>
-        <dd class="d-flex mb-3">
-            {% with choice.percentage as percentage %}
-                <span class="w-10">{{ percentage }}</span>
-                <div
-                    style="width: {{ percentage }};"
-                    class="d-block ms-2 rounded bg-primary">
-                </div>
-            {% endwith %}
-        </dd>
-        {% endfor %}
-    </dl>
-    <p>{{ poll.num_voting }} har stemt</p>
+    {% include "polls/includes/poll.html" with poll=poll only %}
 
     {% if user.is_authenticated %}
     {% if user_has_voted %}

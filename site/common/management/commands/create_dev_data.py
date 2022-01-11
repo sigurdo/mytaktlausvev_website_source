@@ -236,7 +236,10 @@ class Command(BaseCommand):
         PostFactory(content="???", topic=the_device, created_by=member)
 
         poll = PollFactory(
-            question="Beste instrument?", created_by=superuser, modified_by=superuser
+            question="Beste instrument?",
+            created_by=superuser,
+            modified_by=superuser,
+            public=True,
         )
         choice_juff = ChoiceFactory(text="Juff", poll=poll)
         choice_tuba = ChoiceFactory(text="Mindre tuba", poll=poll)
