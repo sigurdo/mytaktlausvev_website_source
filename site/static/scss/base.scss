@@ -5,6 +5,10 @@ body {
 
 .nav-link.active {
   font-weight: bold;
+  text-decoration: underline;
+}
+.nav-link:hover {
+  text-decoration: underline;
 }
 
 .breadcrumb {
@@ -36,4 +40,9 @@ th {
 }
 .asteriskField {
   display: none;
+}
+
+.navbar-dropdown-menu {
+  background-color: $primary;
+  border: none;
 }

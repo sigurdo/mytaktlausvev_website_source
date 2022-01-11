@@ -10,5 +10,5 @@ urlpatterns = [
         "dQw4w9WgXcQ/",
         RedirectView.as_view(url="https://www.youtube.com/watch?v=dQw4w9WgXcQ"),
     ),
-    path("brygg", BrewView.as_view(), name="BrewView"),
+    path("brygg/", BrewView.as_view(), name="BrewView"),
 ]

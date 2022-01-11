@@ -15,6 +15,8 @@ from instruments.factories import (
     InstrumentLocationFactory,
 )
 from instruments.models import Instrument
+from navbar.factories import NavbarItemFactory
+from navbar.models import NavbarItem
 from polls.factories import ChoiceFactory, PollFactory, VoteFactory
 from uniforms.factories import JacketFactory, JacketLocationFactory, JacketUserFactory
 from uniforms.models import Jacket
@@ -244,3 +246,110 @@ class Command(BaseCommand):
         VoteFactory(choice=choice_juff, user=member)
         VoteFactory(choice=choice_juff, user=aspirant)
         VoteFactory(choice=choice_tuba, user=retiree)
+        NavbarItemFactory(
+            text="Julekalender",
+            link="/julekalender/",
+            order=0,
+            requires_login=True,
+        )
+        NavbarItemFactory(
+            text="Om oss",
+            link="/om-oss/",
+            order=1,
+        )
+        NavbarItemFactory(
+            text="Hendingar",
+            link="/hendingar/",
+            order=1.5,
+            requires_login=True,
+        )
+        sheetmusic_dropdown = NavbarItemFactory(
+            text="Notar",
+            order=2,
+            type=NavbarItem.Type.DROPDOWN,
+        )
+        NavbarItemFactory(
+            text="Alle notar",
+            link="/notar/",
+            order=1,
+            requires_login=True,
+            parent=sheetmusic_dropdown,
+        )
+        NavbarItemFactory(
+            text="Repertoar",
+            link="/repertoar/",
+            order=2,
+            requires_login=True,
+            parent=sheetmusic_dropdown,
+        )
+        admin_dropdown = NavbarItemFactory(
+            text="Administrasjon",
+            order=3,
+            type=NavbarItem.Type.DROPDOWN,
+        )
+        NavbarItemFactory(
+            text="Administrasjonspanel",
+            link="/admin/",
+            order=1,
+            requires_login=True,
+            parent=admin_dropdown,
+        )
+        NavbarItemFactory(
+            text="Instrument",
+            link="/instrument/",
+            order=2,
+            requires_login=True,
+            parent=admin_dropdown,
+        )
+        NavbarItemFactory(
+            text="Uniformar",
+            link="/uniformer/",
+            order=3,
+            requires_login=True,
+            parent=admin_dropdown,
+        )
+        NavbarItemFactory(
+            text="Opprett artikkel",
+            link="/artiklar/ny/",
+            order=4,
+            parent=admin_dropdown,
+            permissions=["articles.add_article"],
+        )
+        other_dropdown = NavbarItemFactory(
+            text="Anna",
+            order=4,
+            type=NavbarItem.Type.DROPDOWN,
+        )
+        NavbarItemFactory(
+            text="Songar",
+            link="/songar/",
+            order=1,
+            parent=other_dropdown,
+        )
+        NavbarItemFactory(
+            text="Sitat",
+            link="/sitat/",
+            order=2,
+            requires_login=True,
+            parent=other_dropdown,
+        )
+        NavbarItemFactory(
+            text="Wiki",
+            link="/wiki/",
+            order=2.5,
+            requires_login=True,
+            parent=other_dropdown,
+        )
+        NavbarItemFactory(
+            text="Forum",
+            link="/forum/",
+            order=2.6,
+            requires_login=True,
+            parent=other_dropdown,
+        )
+        NavbarItemFactory(
+            text="Buttonpdfgenerator",
+            link="/buttons/",
+            order=3,
+            parent=other_dropdown,
+        )
