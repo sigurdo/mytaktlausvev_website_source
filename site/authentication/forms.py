@@ -11,6 +11,5 @@ class LoginForm(AuthenticationForm):
     next = CharField(widget=HiddenInput, required=False)
 
     helper = FormHelper()
-    helper.field_class = "col-lg-8"
     helper.form_action = reverse_lazy("login")
     helper.add_input(Submit("submit", "Logg inn"))
