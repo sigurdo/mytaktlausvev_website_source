@@ -7,12 +7,12 @@ from polls.models import Poll
 register = template.Library()
 
 
-@register.inclusion_tag("sidebar/sidebar.html", takes_context=True)
-def sidebar(context):
-    poll_filter = Q(public=True) if not context["user"].is_authenticated else Q()
+@register.inclusion_tag("sidebar/sidebar.html")
+def sidebar(user):
+    poll_filter = Q(public=True) if not user.is_authenticated else Q()
     try:
         poll = Poll.objects.filter(poll_filter).latest()
     except Poll.DoesNotExist:
         poll = None
 
-    return {"user": context["user"], "form_login": LoginForm, "poll": poll}
+    return {"user": user, "form_login": LoginForm, "poll": poll}

@@ -582,8 +582,10 @@ class VoteCreateTestSuite(TestMixin, TestCase):
 
         self.client.force_login(user)
         response = self.vote()
-        self.assertFormError(response, "form", None, "Du har allereie stemt.")
         self.assertEqual(Vote.objects.count(), 1)
+        self.assertIn(
+            "Du har allereie stemt.", response.context["form"].non_field_errors()
+        )
 
     def test_vote_multiple_choice_poll(self):
         user = UserFactory()
