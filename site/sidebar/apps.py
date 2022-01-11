@@ -4,4 +4,4 @@ from django.apps import AppConfig
 class SidebarConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
     name = "sidebar"
-    verbose_name = "sidefelt"
+    verbose_name = "sidepanel"
