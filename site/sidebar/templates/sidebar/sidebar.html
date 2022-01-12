@@ -13,7 +13,7 @@
             <h2 class="fs-3">{{ poll }}</h2>
 
             {% load polls %}
-            {% vote_or_results poll user %}
+            {% vote_or_results poll user request_path %}
 
             <footer>
                 <a href="{% url "polls:PollList" %}">Eldre avstemmingar</a>

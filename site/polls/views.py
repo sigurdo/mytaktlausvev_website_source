@@ -8,6 +8,7 @@ from django.forms import Form
 from django.http.response import Http404
 from django.shortcuts import get_object_or_404
 from django.urls.base import reverse, reverse_lazy
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.generic import DetailView, FormView, ListView
 from django.views.generic.base import RedirectView
 
@@ -195,7 +196,20 @@ class VoteCreate(LoginRequiredMixin, PollMixin, FormView):
         form.save()
         return super().form_valid(form)
 
+    def get_next_url(self):
+        """Returns the next URL if it exists and is safe, else `None`."""
+        next = self.request.GET.get(self.redirect_field_name, "")
+        url_is_safe = url_has_allowed_host_and_scheme(
+            url=next,
+            allowed_hosts=self.request.get_host(),
+            require_https=self.request.is_secure(),
+        )
+        return next if next and url_is_safe else None
+
     def get_success_url(self) -> str:
+        next = self.get_next_url()
+        if next:
+            return next
         return reverse("polls:PollResults", args=[self.get_poll().slug])
 
 
