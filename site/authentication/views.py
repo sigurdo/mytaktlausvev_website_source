@@ -9,11 +9,7 @@ class LoginViewCustom(LoginView):
 
     def get_initial(self):
         initial = super().get_initial()
-        next_url = self.request.POST.get(
-            self.redirect_field_name,
-            self.request.GET.get(self.redirect_field_name, ""),
-        )
-        initial[self.redirect_field_name] = next_url
+        initial[self.redirect_field_name] = self.get_redirect_url()
         return initial
 
     def get_context_data(self, **kwargs):
