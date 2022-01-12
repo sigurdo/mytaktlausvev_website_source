@@ -6,6 +6,7 @@ from django.db import IntegrityError
 from django.db.utils import InternalError
 from django.test import TestCase
 from django.urls import reverse
+from django.utils.http import urlencode
 from django.utils.text import slugify
 from django.utils.timezone import make_aware
 
@@ -220,6 +221,21 @@ class SingleVoteFormTestSuite(TestCase):
         vote = Vote.objects.last()
         self.assertEqual(vote.choice, choice)
         self.assertEqual(vote.user, self.user)
+
+    def test_form_action_is_vote_view(self):
+        """The form's `action` should be the vote view."""
+        form = SingleVoteForm(poll=self.poll, user=self.user)
+        self.assertEqual(
+            form.helper.form_action, reverse("polls:VoteCreate", args=[self.poll.slug])
+        )
+
+    def test_includes_next_in_form_action(self):
+        """Should include `next` in the form action, if it exists."""
+        next = "/here-next/please/"
+        form = SingleVoteForm(poll=self.poll, user=self.user, next=next)
+        self.assertTrue(
+            form.helper.form_action.endswith(f"?{urlencode({'next': next})}")
+        )
 
 
 class MultiVoteFormTestSuite(TestCase):
@@ -541,12 +557,15 @@ class VoteCreateTestSuite(TestMixin, TestCase):
     def setUp(self):
         self.poll = PollFactory()
 
-    def get_url(self, slug=None):
-        return reverse("polls:VoteCreate", args=[slug or self.poll.slug])
+    def get_url(self, slug=None, next=None):
+        url = reverse("polls:VoteCreate", args=[slug or self.poll.slug])
+        if next:
+            url += f"?{urlencode({'next': next})}"
+        return url
 
-    def vote(self):
+    def vote(self, url=None):
         return self.client.post(
-            self.get_url(), {"choices": ChoiceFactory(poll=self.poll).pk}
+            url or self.get_url(), {"choices": ChoiceFactory(poll=self.poll).pk}
         )
 
     def test_requires_login(self):
@@ -582,8 +601,10 @@ class VoteCreateTestSuite(TestMixin, TestCase):
 
         self.client.force_login(user)
         response = self.vote()
-        self.assertFormError(response, "form", None, "Du har allereie stemt.")
         self.assertEqual(Vote.objects.count(), 1)
+        self.assertIn(
+            "Du har allereie stemt.", response.context["form"].non_field_errors()
+        )
 
     def test_vote_multiple_choice_poll(self):
         user = UserFactory()
@@ -603,6 +624,13 @@ class VoteCreateTestSuite(TestMixin, TestCase):
         self.assertRedirects(
             response, reverse("polls:PollResults", args=[self.poll.slug])
         )
+
+    def test_success_redirect_with_next(self):
+        """Should return to the provided next URL if provided and safe."""
+        next = reverse("polls:PollList")
+        self.client.force_login(UserFactory())
+        response = self.vote(url=self.get_url(next=next))
+        self.assertRedirects(response, next)
 
 
 class VoteDeleteTestSuite(TestMixin, TestCase):

@@ -1,0 +1,17 @@
+{% if poll %}
+    <dl>
+        {% for choice in poll.choices.all %}
+        <dt class="mb-2">{{ choice }}</dt>
+        <dd class="d-flex mb-3">
+            {% with choice.percentage as percentage %}
+                <span class="w-12">{{ percentage }}</span>
+                <div
+                    style="width: {{ percentage }};"
+                    class="d-block ms-2 rounded bg-primary">
+                </div>
+            {% endwith %}
+        </dd>
+        {% endfor %}
+    </dl>
+    <p>{{ poll.num_voting }} har stemt</p>
+{% endif %}

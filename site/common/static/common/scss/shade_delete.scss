@@ -1,7 +1,0 @@
-.to_be_deleted :not(input, select, td, td:last-of-type div.controls) {
-  opacity: 15%;
-}
-
-input[id*="DELETE"] {
-  transform: scale(1.8);
-}

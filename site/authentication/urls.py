@@ -1,15 +1,8 @@
-from django.contrib.auth.views import LoginView
 from django.urls import include, path
 
-from .forms import LoginForm
+from .views import LoginViewCustom
 
 urlpatterns = [
-    path(
-        "login/",
-        LoginView.as_view(
-            template_name="authentication/login.html", authentication_form=LoginForm
-        ),
-        name="login",
-    ),
+    path("login/", LoginViewCustom.as_view(), name="login"),
     path("", include("django.contrib.auth.urls")),
 ]

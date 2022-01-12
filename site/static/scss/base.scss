@@ -38,6 +38,9 @@ th {
 .form-label {
   font-weight: bold;
 }
+.form-control::placeholder {
+  font-style: italic;
+}
 .asteriskField {
   display: none;
 }

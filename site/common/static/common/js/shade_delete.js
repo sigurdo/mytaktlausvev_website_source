@@ -1,5 +1,11 @@
-Array.from(document.querySelectorAll('input[type="checkbox"]')).forEach(checkbox => {
-    checkbox.addEventListener('input', ev => {
-        ev.target.closest('tr').classList.toggle('to_be_deleted');
-    });
-});
+const toggleDeletedClass = (checkbox) => {
+  checkbox.closest("tr").classList.toggle("to_be_deleted");
+};
+
+Array.from(document.querySelectorAll('input[id*="DELETE"]')).forEach(
+  (checkbox) => {
+    if (checkbox.checked) toggleDeletedClass(checkbox);
+
+    checkbox.addEventListener("input", (ev) => toggleDeletedClass(ev.target));
+  }
+);

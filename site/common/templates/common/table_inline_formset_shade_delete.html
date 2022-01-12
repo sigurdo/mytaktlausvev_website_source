@@ -1,4 +1,4 @@
-{% include "bootstrap/table_inline_formset.html" %}
+{% include "bootstrap5/table_inline_formset.html" %}
 
 {% block js %}
     {% load static %}
@@ -7,6 +7,5 @@
 
 {% block css %}
     {% load sass_tags %}
-    <link href="{% sass_src 'common/scss/shade_delete.scss' %}" rel="stylesheet" type="text/css">
-    <link href="{% sass_src 'common/scss/hide_hidden.scss' %}" rel="stylesheet" type="text/css">
+    <link href="{% sass_src 'common/scss/table_inline_formset.scss' %}" rel="stylesheet" type="text/css">
 {% endblock css %}

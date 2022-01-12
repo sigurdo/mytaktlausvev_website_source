@@ -1,0 +1,6 @@
+{% if should_vote %}
+    {% load crispy_forms_tags %}
+    {% crispy form %}
+{% else %}
+    {% include "polls/includes/poll.html" with poll=poll %}
+{% endif %}

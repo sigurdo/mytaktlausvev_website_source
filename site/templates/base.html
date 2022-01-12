@@ -17,12 +17,19 @@
 	</header>
 	{% endif %}
 
-	<main class="{% block container_class %}container{% endblock container_class %}">
+	<div class="mt-4 {% block container_class %}container{% endblock container_class %}">
 		<div class="row">
-			<div class="col-md">
+			<main class="col">
 				{% block page %}
 				{% endblock page %}
-			</div>
+			</main>
+
+			{% block sidebar %}
+			<aside class="col-12 col-lg-3">
+				{% load sidebar %}
+				{% sidebar user request.path %}
+			</aside>
+			{% endblock sidebar %}
 		</div>
-	</main>
+	</div>
 {% endblock body %}

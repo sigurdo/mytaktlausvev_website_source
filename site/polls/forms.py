@@ -10,6 +10,8 @@ from django.forms import (
     RadioSelect,
 )
 from django.forms.models import inlineformset_factory
+from django.urls.base import reverse
+from django.utils.http import urlencode
 
 from .models import Choice, Poll, Vote
 
@@ -78,11 +80,15 @@ class SingleVoteForm(Form):
     helper = FormHelper()
     helper.add_input(Submit("submit", "Stem"))
 
-    def __init__(self, poll=None, user=None, *args, **kwargs):
+    def __init__(self, poll=None, user=None, next=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.poll = poll
         self.user = user
         self.fields["choices"].queryset = Choice.objects.filter(poll=self.poll)
+
+        self.helper.form_action = reverse("polls:VoteCreate", args=[self.poll.slug])
+        if next:
+            self.helper.form_action += f"?{urlencode({'next': next})}"
 
     def clean(self):
         """
