@@ -4,7 +4,7 @@ from .models import Comment
 
 
 class CommentAdminCustom(admin.ModelAdmin):
-    list_display = ("__str__", "created_by", "submitted")
+    list_display = ("__str__", "created_by", "created")
     search_fields = ("comment",)
 
 
