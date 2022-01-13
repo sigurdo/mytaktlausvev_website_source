@@ -1,7 +1,6 @@
-from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
-from django.db.models import CASCADE, CharField, DateTimeField, ForeignKey, TextField
+from django.db.models import CASCADE, CharField, ForeignKey, TextField
 
 from common.models import CreatedModifiedMixin
 
