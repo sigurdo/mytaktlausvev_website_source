@@ -11,7 +11,7 @@ from django.db.models import (
 
 
 class InstrumentGroup(Model):
-    name = CharField(max_length=255, verbose_name="namn")
+    name = CharField(max_length=255, verbose_name="namn", unique=True)
 
     def __str__(self):
         return self.name
@@ -22,7 +22,7 @@ class InstrumentGroup(Model):
 
 
 class InstrumentLocation(Model):
-    name = CharField(max_length=255, verbose_name="namn")
+    name = CharField(max_length=255, verbose_name="namn", unique=True)
 
     def __str__(self):
         return self.name

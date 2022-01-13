@@ -30,9 +30,13 @@
                         {{ vote.choice }}
                     </td>
                     <td>
-                        <time datetime="{{ vote.created | date:"c" }}">
-                            {{ vote.created | date:"l, j. F, Y - H:i" }}
-                        </time>
+                        {% if vote.created %}
+                            <time datetime="{{ vote.created | date:"c" }}">
+                                {{ vote.created | date:"j. F, Y - H:i" }}
+                            </time>
+                        {% else %}
+                            Ukjend
+                        {% endif %}
                     </td>
                 </tr>
             {% endfor %}
@@ -51,9 +55,13 @@
                         </ul>
                     </td>
                     <td>
-                        <time datetime="{{ votes.0.created | date:"c" }}">
-                            {{ votes.0.created | date:"j. F, Y - H:i" }}
-                        </time>
+                        {% if votes.0.created %}
+                            <time datetime="{{ votes.0.created | date:"c" }}">
+                                {{ votes.0.created | date:"j. F, Y - H:i" }}
+                            </time>
+                        {% else %}
+                            Ukjend
+                        {% endif %}
                     </td>
                 </tr>
             {% endfor %}

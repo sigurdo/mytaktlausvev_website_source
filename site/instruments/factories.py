@@ -1,4 +1,4 @@
-from factory import SubFactory
+from factory import SubFactory, sequence
 from factory.django import DjangoModelFactory
 
 from .models import Instrument, InstrumentGroup, InstrumentLocation
@@ -8,14 +8,14 @@ class InstrumentGroupFactory(DjangoModelFactory):
     class Meta:
         model = InstrumentGroup
 
-    name = "Instrumentgruppe"
+    name = sequence(lambda n: f"Instrumentgruppe #{n}")
 
 
 class InstrumentLocationFactory(DjangoModelFactory):
     class Meta:
         model = InstrumentLocation
 
-    name = "Hovedskapet"
+    name = sequence(lambda n: f"Instrumentstad #{n}")
 
 
 class InstrumentFactory(DjangoModelFactory):

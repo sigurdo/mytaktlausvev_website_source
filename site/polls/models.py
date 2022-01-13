@@ -129,7 +129,7 @@ class Vote(Model):
         related_name="poll_votes",
         verbose_name="brukar",
     )
-    created = DateTimeField("lagt ut", auto_now_add=True)
+    created = DateTimeField("lagt ut", auto_now_add=True, null=True)
 
     def __str__(self):
         return f"{self.choice} - {self.choice.poll} {self.user}"
