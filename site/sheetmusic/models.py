@@ -56,7 +56,7 @@ class Score(ArticleMixin):
     sound_link = URLField(verbose_name="lydlenkje", blank=True)
 
     class Meta:
-        ordering = ["title", "-submitted"]
+        ordering = ["title", "-created"]
         verbose_name = "note"
         verbose_name_plural = "notar"
 

@@ -13,13 +13,13 @@ from .factories import ForumFactory, PostFactory, TopicFactory
 from .models import Post
 
 
-def create_post_override_submitted(submitted, **kwargs):
+def create_post_override_created(created, **kwargs):
     """
-    Creates a post and overrides `submitted`.
-    `submitted` must be set after creation to override `auto_now_add`.
+    Creates a post and overrides `created`.
+    `created` must be set after creation to override `auto_now_add`.
     """
     post = PostFactory(**kwargs)
-    post.submitted = submitted
+    post.created = created
     post.save()
     return post
 
@@ -63,10 +63,10 @@ class ForumTestSuite(TestCase):
         """`latest_post()` should return the latest post in the forum's topics."""
         topic_in_forum = TopicFactory(forum=self.forum)
         topic_in_different_forum = TopicFactory()
-        latest_in_forum = create_post_override_submitted(
+        latest_in_forum = create_post_override_created(
             make_aware(datetime(2200, 1, 1)), topic=topic_in_forum
         )
-        create_post_override_submitted(
+        create_post_override_created(
             make_aware(datetime(2250, 1, 1)), topic=topic_in_different_forum
         )
 
@@ -152,12 +152,12 @@ class PostTestSuite(TestCase):
         self.post.content = "Ya ya ya"
         self.assertEqual(str(self.post), self.post.content_short())
 
-    def test_latest_by_submitted(self):
-        """`latest()` should return the latest post by `submitted`."""
-        post_far_in_future = create_post_override_submitted(
+    def test_latest_by_created(self):
+        """`latest()` should return the latest post by `created`."""
+        post_far_in_future = create_post_override_created(
             make_aware(datetime(2250, 5, 5))
         )
-        PostFactory(submitted=datetime(1950, 5, 5))
+        PostFactory(created=datetime(1950, 5, 5))
         self.assertEqual(Post.objects.latest().pk, post_far_in_future.pk)
 
 

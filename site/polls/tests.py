@@ -112,10 +112,10 @@ class PollTestSuite(TestCase):
             VoteFactory(choice__poll=poll_multiple_choice, user=user)
         self.assertEqual(poll_multiple_choice.num_voting(), 1)
 
-    def test_latest_by_submitted(self):
-        """Should get latest poll by `submitted`."""
+    def test_latest_by_created(self):
+        """Should get latest poll by `created`."""
         poll_early = PollFactory()
-        poll_early.submitted = make_aware(datetime(1950, 5, 5))
+        poll_early.created = make_aware(datetime(1950, 5, 5))
         poll_early.save()
         self.assertEqual(Poll.objects.latest(), self.poll)
 

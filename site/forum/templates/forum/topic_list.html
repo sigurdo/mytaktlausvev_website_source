@@ -31,8 +31,8 @@
                             {{ topic.created_by.username }}
                         </a>
                         |
-                        <time datetime="{{ topic.submitted | date:"c" }}">
-                            {{ topic.submitted | date:"d.m.Y - H:i" }}
+                        <time datetime="{{ topic.created | date:"c" }}">
+                            {{ topic.created | date:"d.m.Y - H:i" }}
                         </time>
                     </div>
                 </td>

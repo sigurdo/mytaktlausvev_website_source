@@ -10,8 +10,8 @@
         </a>
     </div>
     <div>
-        <time datetime="{{ post.submitted | date:"c" }}">
-            {{ post.submitted | date:"d.m.Y - H:i" }}
+        <time datetime="{{ post.created | date:"c" }}">
+            {{ post.created | date:"d.m.Y - H:i" }}
         </time>
     </div>
 {% else %}

@@ -35,8 +35,8 @@ class TopicList(LoginRequiredMixin, ListView):
             super()
             .get_queryset()
             .filter(forum=self.forum)
-            .alias(latest_submitted=Max("posts__submitted", default=F("submitted")))
-            .order_by("-latest_submitted")
+            .alias(latest_created=Max("posts__created", default=F("created")))
+            .order_by("-latest_created")
         )
 
     def get_context_data(self, **kwargs):
