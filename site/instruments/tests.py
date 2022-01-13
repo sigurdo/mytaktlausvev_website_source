@@ -22,6 +22,11 @@ class InstrumentGroupTestSuite(TestMixin, TestCase):
     def test_to_str(self):
         self.assertEqual(str(self.instrument_group), "Tuba")
 
+    def test_name_unique(self):
+        """`name` should be unique."""
+        with self.assertRaises(IntegrityError):
+            InstrumentGroupFactory(name=self.instrument_group.name)
+
 
 class InstrumentLocationTestSuite(TestMixin, TestCase):
     def setUp(self):
@@ -29,6 +34,11 @@ class InstrumentLocationTestSuite(TestMixin, TestCase):
 
     def test_to_str(self):
         self.assertEqual(str(self.instrument_location), "Lager")
+
+    def test_name_unique(self):
+        """`name` should be unique."""
+        with self.assertRaises(IntegrityError):
+            InstrumentLocationFactory(name=self.instrument_location.name)
 
 
 class InstrumentTestSuite(TestMixin, TestCase):
