@@ -2,7 +2,15 @@ from datetime import datetime
 
 from autoslug.fields import AutoSlugField
 from django.conf import settings
-from django.db import models
+from django.db.models import (
+    CASCADE,
+    CharField,
+    DateTimeField,
+    ForeignKey,
+    Model,
+    TextChoices,
+    UniqueConstraint,
+)
 from django.urls import reverse
 from django.utils.timezone import localtime, make_aware
 
@@ -12,8 +20,8 @@ from common.models import ArticleMixin
 class Event(ArticleMixin):
     """Model representing an event."""
 
-    start_time = models.DateTimeField("starttid")
-    end_time = models.DateTimeField("sluttid", default=None, blank=True, null=True)
+    start_time = DateTimeField("starttid")
+    end_time = DateTimeField("sluttid", default=None, blank=True, null=True)
 
     slug = AutoSlugField(
         verbose_name="lenkjenamn",
@@ -53,31 +61,31 @@ class Event(ArticleMixin):
         verbose_name_plural = "hendingar"
 
 
-class Attendance(models.TextChoices):
+class Attendance(TextChoices):
     ATTENDING = "ATTENDING", "Deltek"
     ATTENDING_MAYBE = "ATTENDING_MAYBE", "Deltek kanskje"
     ATTENDING_NOT = "ATTENDING_NOT", "Deltek ikkje"
 
 
-class EventAttendance(models.Model):
+class EventAttendance(Model):
     """Model representing a registered attendance for an event."""
 
-    event = models.ForeignKey(
+    event = ForeignKey(
         Event,
-        on_delete=models.CASCADE,
+        on_delete=CASCADE,
         verbose_name="hending",
         related_name="attendances",
     )
-    person = models.ForeignKey(
+    person = ForeignKey(
         settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
+        on_delete=CASCADE,
         verbose_name="person",
         related_name="event_attendances",
     )
-    status = models.CharField("status", max_length=255, choices=Attendance.choices)
+    status = CharField("status", max_length=255, choices=Attendance.choices)
 
-    created = models.DateTimeField("laga", auto_now_add=True)
-    modified = models.DateTimeField("redigert", auto_now=True)
+    created = DateTimeField("laga", auto_now_add=True)
+    modified = DateTimeField("redigert", auto_now=True)
 
     def __str__(self):
         return f"{self.event} - {self.person} - {self.get_status_display()}"
@@ -87,7 +95,5 @@ class EventAttendance(models.Model):
         verbose_name_plural = "hendingdeltakingar"
         ordering = ["person__pk"]
         constraints = [
-            models.UniqueConstraint(
-                fields=["event", "person"], name="unique_event_attendance"
-            )
+            UniqueConstraint(fields=["event", "person"], name="unique_event_attendance")
         ]
