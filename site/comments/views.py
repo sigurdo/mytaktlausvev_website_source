@@ -15,6 +15,7 @@ class CommentCreate(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.created_by = self.request.user
+        form.instance.modified_by = self.request.user
         return super().form_valid(form)
 
 
@@ -30,6 +31,10 @@ class CommentUpdate(UserPassesTestMixin, UpdateView):
         return self.get_object().created_by == user or user.has_perm(
             "comments.change_comment"
         )
+
+    def form_valid(self, form):
+        form.instance.modified_by = self.request.user
+        return super().form_valid(form)
 
 
 class CommentDelete(UserPassesTestMixin, DeleteViewCustom):

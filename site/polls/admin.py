@@ -9,7 +9,7 @@ class ChoiceInline(TabularInline):
 
 
 class PollAdmin(ModelAdmin):
-    list_display = ["question", "submitted"]
+    list_display = ["question", "created"]
     search_fields = ["question"]
     prepopulated_fields = {"slug": ("question",)}
     inlines = [ChoiceInline]

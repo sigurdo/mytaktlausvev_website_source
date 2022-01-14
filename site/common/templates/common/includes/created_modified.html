@@ -2,7 +2,7 @@
     Lagt ut av
     <a href="{{ object.created_by.get_absolute_url }}">{{ object.created_by }}</a>
     den
-    <time datetime="{{ object.submitted | date:"c" }}">{{ object.submitted | date }}</time>.
+    <time datetime="{{ object.created | date:"c" }}">{{ object.created | date }}</time>.
 
     Sist redigert av
     <a href="{{ object.modified_by.get_absolute_url }}">{{ object.modified_by }}</a>

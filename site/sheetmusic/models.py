@@ -7,8 +7,19 @@ import os
 from autoslug import AutoSlugField
 from django.conf import settings
 from django.core.validators import MinValueValidator
-from django.db import models
-from django.db.models import CharField, FileField, TextField, URLField
+from django.db.models import (
+    CASCADE,
+    BooleanField,
+    CharField,
+    DateTimeField,
+    FileField,
+    ForeignKey,
+    IntegerField,
+    Model,
+    TextField,
+    UniqueConstraint,
+    URLField,
+)
 from django.db.models.signals import pre_delete, pre_save
 from django.dispatch import receiver
 from django.urls import reverse
@@ -56,7 +67,7 @@ class Score(ArticleMixin):
     sound_link = URLField(verbose_name="lydlenkje", blank=True)
 
     class Meta:
-        ordering = ["title", "-submitted"]
+        ordering = ["title", "-created"]
         verbose_name = "note"
         verbose_name_plural = "notar"
 
@@ -115,13 +126,13 @@ def pdf_filename_no_extension(pdf):
     return pdf.filename_no_extension()
 
 
-class Pdf(models.Model):
+class Pdf(Model):
     """Model representing an uploaded pdf"""
 
-    score = models.ForeignKey(
-        Score, verbose_name="note", on_delete=models.CASCADE, related_name="pdfs"
+    score = ForeignKey(
+        Score, verbose_name="note", on_delete=CASCADE, related_name="pdfs"
     )
-    file = models.FileField(
+    file = FileField(
         "fil",
         upload_to="sheetmusic/original_pdfs/",
         default=None,
@@ -130,17 +141,15 @@ class Pdf(models.Model):
         # because some of our PDFs have really long names
         max_length=255,
     )
-    filename_original = models.CharField("opphaveleg filnamn", max_length=255)
+    filename_original = CharField("opphaveleg filnamn", max_length=255)
     slug = AutoSlugField(
         verbose_name="lenkjenamn",
         populate_from=pdf_filename_no_extension,
         unique_with="score__slug",
         editable=True,
     )
-    processing = models.BooleanField(
-        "prosessering pågår", default=False, editable=False
-    )
-    timestamp = models.DateTimeField("tidsmerke", auto_now_add=True)
+    processing = BooleanField("prosessering pågår", default=False, editable=False)
+    timestamp = DateTimeField("tidsmerke", auto_now_add=True)
 
     class Meta:
         ordering = ["filename_original"]
@@ -198,20 +207,18 @@ def pdf_pre_delete_receiver(sender, instance: Pdf, using, **kwargs):
         os.remove(instance.file.path)
 
 
-class Part(models.Model):
+class Part(Model):
     """Model representing a part"""
 
-    name = models.CharField("namn", max_length=255)
-    pdf = models.ForeignKey(
-        Pdf, verbose_name="pdf", on_delete=models.CASCADE, related_name="parts"
-    )
-    from_page = models.IntegerField(
+    name = CharField("namn", max_length=255)
+    pdf = ForeignKey(Pdf, verbose_name="pdf", on_delete=CASCADE, related_name="parts")
+    from_page = IntegerField(
         "første side", default=None, validators=[MinValueValidator(1)]
     )
-    to_page = models.IntegerField(
+    to_page = IntegerField(
         "siste side", default=None, validators=[MinValueValidator(1)]
     )
-    timestamp = models.DateTimeField("tidsmerke", auto_now_add=True)
+    timestamp = DateTimeField("tidsmerke", auto_now_add=True)
     slug = AutoSlugField(
         verbose_name="lenkjenamn",
         populate_from="name",
@@ -249,25 +256,25 @@ class Part(models.Model):
         return user.favorite_parts.filter(part=self).exists()
 
 
-class FavoritePart(models.Model):
+class FavoritePart(Model):
     """Model representing a favorite part of a user"""
 
-    user = models.ForeignKey(
+    user = ForeignKey(
         settings.AUTH_USER_MODEL,
         verbose_name="brukar",
-        on_delete=models.CASCADE,
+        on_delete=CASCADE,
         related_name="favorite_parts",
     )
-    part = models.ForeignKey(
+    part = ForeignKey(
         Part,
         verbose_name="stemme",
-        on_delete=models.CASCADE,
+        on_delete=CASCADE,
         related_name="favoring_users",
     )
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=["user", "part"], name="unique_user_part")
+            UniqueConstraint(fields=["user", "part"], name="unique_user_part")
         ]
         ordering = ["user", "part"]
         verbose_name = "favorittstemme"

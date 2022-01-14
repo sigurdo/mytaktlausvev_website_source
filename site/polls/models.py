@@ -14,7 +14,7 @@ from django.db.models import (
 from django.db.models.constraints import UniqueConstraint
 from django.urls.base import reverse
 
-from common.models import ArticleMixin
+from common.models import CreatedModifiedMixin
 
 
 class PollType(TextChoices):
@@ -30,9 +30,7 @@ class PollType(TextChoices):
         condition=pgtrigger.Q(old__type__df=pgtrigger.F("new__type")),
     )
 )
-class Poll(ArticleMixin):
-    title = None
-    content = None
+class Poll(CreatedModifiedMixin):
     question = CharField("spørsmål", max_length=255)
     slug = AutoSlugField(
         verbose_name="lenkjenamn",
@@ -75,8 +73,8 @@ class Poll(ArticleMixin):
         return self.votes().filter(user=user).exists()
 
     class Meta:
-        ordering = ["-submitted"]
-        get_latest_by = "submitted"
+        ordering = ["-created"]
+        get_latest_by = "created"
         verbose_name = "avstemming"
         verbose_name_plural = "avstemmingar"
 

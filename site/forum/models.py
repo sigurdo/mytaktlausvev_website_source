@@ -1,14 +1,14 @@
 from autoslug.fields import AutoSlugField
-from django.db import models
+from django.db.models import CASCADE, CharField, ForeignKey, Model, TextField
 from django.template.defaultfilters import truncatechars
 from django.urls import reverse
 
-from common.models import ArticleMixin
+from common.models import CreatedModifiedMixin
 
 
-class Forum(models.Model):
-    title = models.CharField("tittel", max_length=255)
-    description = models.CharField("beskriving", max_length=255)
+class Forum(Model):
+    title = CharField("tittel", max_length=255)
+    description = CharField("beskriving", max_length=255)
     slug = AutoSlugField(
         verbose_name="lenkjenamn",
         populate_from="title",
@@ -31,11 +31,11 @@ class Forum(models.Model):
         verbose_name_plural = "forum"
 
 
-class Topic(ArticleMixin):
-    content = None
-    forum = models.ForeignKey(
+class Topic(CreatedModifiedMixin):
+    title = CharField("tittel", max_length=255)
+    forum = ForeignKey(
         Forum,
-        on_delete=models.CASCADE,
+        on_delete=CASCADE,
         verbose_name="forum",
         related_name="topics",
     )
@@ -54,11 +54,11 @@ class Topic(ArticleMixin):
         verbose_name_plural = "emne"
 
 
-class Post(ArticleMixin):
-    title = None
-    topic = models.ForeignKey(
+class Post(CreatedModifiedMixin):
+    content = TextField("innhald", blank=True)
+    topic = ForeignKey(
         Topic,
-        on_delete=models.CASCADE,
+        on_delete=CASCADE,
         verbose_name="emne",
         related_name="posts",
     )
@@ -73,7 +73,7 @@ class Post(ArticleMixin):
         return reverse("forum:PostList", args=[self.topic.forum.slug, self.topic.slug])
 
     class Meta:
-        ordering = ["submitted"]
-        get_latest_by = "submitted"
+        ordering = ["created"]
+        get_latest_by = "created"
         verbose_name = "innlegg"
         verbose_name_plural = "innlegg"

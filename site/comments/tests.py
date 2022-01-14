@@ -1,13 +1,15 @@
 from http import HTTPStatus
 
+from django.contrib.contenttypes.models import ContentType
 from django.test import TestCase
 from django.urls import reverse
 
-from accounts.factories import UserFactory
+from accounts.factories import SuperUserFactory, UserFactory
 from articles.factories import ArticleFactory
 from common.mixins import TestMixin
 
 from .factories import CommentFactory
+from .models import Comment
 
 
 class CommentTestCase(TestCase):
@@ -51,48 +53,86 @@ class CommentTestCase(TestCase):
 
 
 class CommentCreateTestCase(TestMixin, TestCase):
+    def setUp(self):
+        article = ArticleFactory()
+        self.comment_data = {
+            "comment": "Here Hector entered,",
+            "object_pk": article.pk,
+            "content_type": ContentType.objects.get_for_model(article).id,
+        }
+
+    def get_url(self):
+        return reverse("comments:CommentCreate")
+
     def test_get_not_allowed(self):
         """Should not allow GET requests."""
         self.client.force_login(UserFactory())
-        response = self.client.get(reverse("comments:CommentCreate"))
+        response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, HTTPStatus.METHOD_NOT_ALLOWED)
 
     def test_requires_login(self):
         """Should require login."""
-        self.assertLoginRequired(reverse("comments:CommentCreate"))
+        self.assertLoginRequired(self.get_url())
+
+    def test_created_by_modified_by_set_to_current_user(self):
+        """Should set `created_by` and `modified_by` to the current user on creation."""
+        user = SuperUserFactory()
+        self.client.force_login(user)
+        self.client.post(self.get_url(), self.comment_data)
+
+        self.assertEqual(Comment.objects.count(), 1)
+        comment = Comment.objects.last()
+        self.assertEqual(comment.created_by, user)
+        self.assertEqual(comment.modified_by, user)
 
 
 class CommentUpdateTestCase(TestMixin, TestCase):
     def setUp(self):
-        self.author = UserFactory()
-        self.article = ArticleFactory()
-        self.comment = CommentFactory(
-            content_object=self.article, created_by=self.author
-        )
+        article = ArticleFactory()
+        self.comment = CommentFactory(content_object=article, created_by=UserFactory())
+        self.comment_data = {
+            "comment": "Here Hector entered,",
+            "object_pk": article.pk,
+            "content_type": ContentType.objects.get_for_model(article).id,
+        }
+
+    def get_url(self):
+        return reverse("comments:CommentUpdate", args=[self.comment.pk])
 
     def test_requires_login(self):
         """Should require login."""
-        self.assertLoginRequired(
-            reverse("comments:CommentUpdate", args=[self.comment.pk])
-        )
+        self.assertLoginRequired(self.get_url())
 
     def test_requires_permission(self):
         """Should require the `change_comment` permission."""
-        self.assertPermissionRequired(
-            reverse("comments:CommentUpdate", args=[self.comment.pk]),
-            "comments.change_comment",
-        )
+        self.assertPermissionRequired(self.get_url(), "comments.change_comment")
 
     def test_succeeds_if_not_permission_but_is_author(self):
         """
         Should succeed if the user is the author,
         even if the user doesn't have the `change_comment` permission.
         """
-        self.client.force_login(self.author)
-        response = self.client.get(
-            reverse("comments:CommentUpdate", args=[self.comment.pk])
-        )
+        self.client.force_login(self.comment.created_by)
+        response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, HTTPStatus.OK)
+
+    def test_created_by_not_changed(self):
+        """Should not change `created_by` when updating comment."""
+        self.client.force_login(SuperUserFactory())
+        self.client.post(self.get_url(), self.comment_data)
+
+        created_by_previous = self.comment.created_by
+        self.comment.refresh_from_db()
+        self.assertEqual(self.comment.created_by, created_by_previous)
+
+    def test_modified_by_set_to_current_user(self):
+        """Should set `modified_by` to the current user on update."""
+        user = SuperUserFactory()
+        self.client.force_login(user)
+        self.client.post(self.get_url(), self.comment_data)
+
+        self.comment.refresh_from_db()
+        self.assertEqual(self.comment.modified_by, user)
 
 
 class CommentDeleteTestCase(TestMixin, TestCase):

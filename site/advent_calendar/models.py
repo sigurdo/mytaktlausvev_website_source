@@ -1,14 +1,14 @@
-from django.core import validators
-from django.db import models
+from django.core.validators import MaxValueValidator, MinValueValidator
+from django.db.models import CASCADE, ForeignKey, IntegerField, Model, UniqueConstraint
 from django.urls import reverse
 
 from common.models import ArticleMixin
 
 
-class AdventCalendar(models.Model):
+class AdventCalendar(Model):
     """Model representing a year's advent calendar."""
 
-    year = models.IntegerField("år", primary_key=True)
+    year = IntegerField("år", primary_key=True)
 
     def __str__(self):
         return f"Julekalender {self.year}"
@@ -25,15 +25,15 @@ class AdventCalendar(models.Model):
 class Window(ArticleMixin):
     """Model representing a window in an advent calendar."""
 
-    advent_calendar = models.ForeignKey(
+    advent_calendar = ForeignKey(
         AdventCalendar,
-        on_delete=models.CASCADE,
+        on_delete=CASCADE,
         related_name="windows",
         verbose_name="kalender",
     )
-    index = models.IntegerField(
+    index = IntegerField(
         "index",
-        validators=[validators.MinValueValidator(1), validators.MaxValueValidator(24)],
+        validators=[MinValueValidator(1), MaxValueValidator(24)],
     )
 
     def __str__(self):
@@ -46,9 +46,7 @@ class Window(ArticleMixin):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(
-                fields=["advent_calendar", "index"], name="uniqueWindow"
-            )
+            UniqueConstraint(fields=["advent_calendar", "index"], name="uniqueWindow")
         ]
         verbose_name = "luke"
         verbose_name_plural = "luker"

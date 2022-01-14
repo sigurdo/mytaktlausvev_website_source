@@ -10,13 +10,13 @@ class ForumAdmin(admin.ModelAdmin):
 
 
 class TopicAdmin(admin.ModelAdmin):
-    list_display = ("title", "created_by", "submitted", "forum")
+    list_display = ("title", "created_by", "created", "forum")
     search_fields = ("title", "created_by__username", "forum__title")
     prepopulated_fields = {"slug": ("title",)}
 
 
 class PostAdmin(admin.ModelAdmin):
-    list_display = ("content_short", "created_by", "submitted", "topic")
+    list_display = ("content_short", "created_by", "created", "topic")
     search_fields = ("content_short", "created_by__username", "topic__title")
 
 

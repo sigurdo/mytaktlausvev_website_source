@@ -36,12 +36,12 @@
                         <ul class="list-inline">
                             <li class="list-inline-item">
                                 <time
-                                    datetime="{{ comment.submitted | date:"c" }}"
-                                    title="{{ comment.submitted }}"
+                                    datetime="{{ comment.created | date:"c" }}"
+                                    title="{{ comment.created }}"
                                     class="fw-light"
                                 >
                                     {% load humanize %}
-                                    {{ comment.submitted | naturaltime }}
+                                    {{ comment.created | naturaltime }}
                                 </time>
                             </li>
                             {% if user == comment.created_by or perms.comments.change_comment %}
