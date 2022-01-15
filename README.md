@@ -11,13 +11,14 @@ Studentorchesteret Dei Taktlause's new website.
 Requires [Docker](https://docs.docker.com/get-docker/) and [docker-compose](https://docs.docker.com/compose/install/).
 
 - Clone the repository.
-- Clone submodules, build containers and initialize the database with the [`init.sh`](./setup/init.sh) script.
+- Clone submodules with `git submodule update --init --recursive`.
+- Build containers and initialize the database by running the [`init.sh`](./init.sh) script.
 
 A superuser with the username "leiar" and the password "password" is created automatically when initializing the database. Users "aspirant", "medlem", and "pensjonist" are also created, with the password "password".
 
 ### Running
 
-- Run the project with `docker-compose up`. The site is accessible at [localhost:8000](http://localhost:8000/).
+- Run the project with `docker-compose up`. The site is accessible at [localhost:8000](http://localhost:8000/). Stop it with `Ctrl+C`.
 
 ### Building
 

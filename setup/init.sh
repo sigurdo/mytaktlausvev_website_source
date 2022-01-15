@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 set -e
 
-git submodule update --init --recursive
-
 docker-compose build
 docker-compose up -d
 
