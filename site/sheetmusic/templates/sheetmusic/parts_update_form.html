@@ -18,3 +18,8 @@
     {% load sass_tags %}
 	<link href="{% sass_src 'sheetmusic/parts_update_form.scss' %}" rel="stylesheet" type="text/css">
 {% endblock css %}
+
+{% block js %}
+{% load static %}
+<script src={% static 'sheetmusic/parts_update_form.js' %}></script>
+{% endblock js %}
