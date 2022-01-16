@@ -1,13 +1,49 @@
+/*
+ * Automatically change displayed PDF page
+ * when tabbing into and changing from and to pages.
+ *
+ * Pre-populate from and to pages with suggested values.
+ */
+
 const iframe = document.querySelector("iframe");
 const iframeSrcBase = iframe.src;
 
-const eventTypes = ["focus", "input"];
-
-document.querySelectorAll("input[name*='page']").forEach((input) => {
-  eventTypes.forEach((eventType) =>
-    input.addEventListener(eventType, (event) => {
-      if (event.target.value)
-        iframe.src = `${iframeSrcBase}#page=${event.target.value}`;
-    })
+document
+  .querySelectorAll("input[name*='page']")
+  .forEach((input) =>
+    input.addEventListener("input", () => setPdfPage(input.value))
   );
+
+document.querySelectorAll("input[name*='from_page']").forEach((input) => {
+  input.addEventListener("focus", () => {
+    if (!input.value) {
+      const previousToPage = getPreviousToPage(input);
+      if (previousToPage) input.value = previousToPage + 1;
+    }
+
+    setPdfPage(input.value);
+  });
 });
+
+document.querySelectorAll("input[name*='to_page']").forEach((input) => {
+  input.addEventListener("focus", () => {
+    if (!input.value) input.value = getPreviousFromPage(input);
+
+    setPdfPage(input.value);
+  });
+});
+
+function setPdfPage(page) {
+  if (page) iframe.src = `${iframeSrcBase}#page=${page}`;
+}
+
+function getPreviousToPage(input) {
+  const previousRow = input.closest("tr").previousElementSibling;
+  if (!previousRow) return;
+  return Number(previousRow.querySelector("input[name*='to_page']").value);
+}
+
+function getPreviousFromPage(input) {
+  const row = input.closest("tr");
+  return row.querySelector("input[name*='from_page']").value;
+}
