@@ -37,7 +37,7 @@ A superuser with the username "leiar" and the password "password" is created aut
 
 ### Code Quality
 
-The project uses [djangos test framework](https://docs.djangoproject.com/en/4.0/topics/testing/) for tests, [autoflake](https://github.com/myint/autoflake) to remove unsused imports, [isort](https://pycqa.github.io/isort/index.html) to sort imports, [Black](https://black.readthedocs.io/en/stable/) for formatting, and [flake8](https://flake8.pycqa.org/en/latest/) for linting.
+The project uses [Django's test framework](https://docs.djangoproject.com/en/4.0/topics/testing/) for tests, [autoflake](https://github.com/myint/autoflake) to remove unsused imports, [isort](https://pycqa.github.io/isort/index.html) to sort imports, [Black](https://black.readthedocs.io/en/stable/) for formatting, and [flake8](https://flake8.pycqa.org/en/latest/) for linting.
 
 - Run tests with `docker-compose run --rm django site/manage.py test site/`
 - Remove unused imports with `docker-compose run --rm django autoflake --in-place --remove-all-unused-imports -r site/`
