@@ -33,7 +33,7 @@ class PartsUpdateForm(forms.ModelForm):
 
     class Meta:
         model = Part
-        fields = ["name", "from_page", "to_page"]
+        fields = ["from_page", "name", "to_page"]
         widgets = {
             "name": forms.TextInput(attrs={"size": 30}),
             "from_page": forms.NumberInput(attrs={"size": 4}),
