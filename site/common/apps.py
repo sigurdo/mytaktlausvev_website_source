@@ -1,7 +1,7 @@
 from django.apps import AppConfig
 
 # Checks must be imported into a file loaded by Django
-from .checks import check_codestyles_exist  # noqa
+from . import checks  # noqa
 
 
 class CommonConfig(AppConfig):
