@@ -1,15 +1,17 @@
 from datetime import date
+
+from autoslug.fields import AutoSlugField
 from django.db.models import (
-    Model,
+    CASCADE,
+    CharField,
     DateField,
     ForeignKey,
     ImageField,
-    CharField,
-    CASCADE,
+    Model,
 )
 from django.urls.base import reverse
+
 from common.models import ArticleMixin
-from autoslug.fields import AutoSlugField
 
 
 class Gallery(ArticleMixin):
@@ -42,7 +44,7 @@ class Image(Model):
         on_delete=CASCADE,
         verbose_name="galleri",
     )
-    image = ImageField("bilde")
+    image = ImageField("bilete")
     description = CharField("beskrivelse", max_length=1024, blank=True)
 
     def __str__(self):

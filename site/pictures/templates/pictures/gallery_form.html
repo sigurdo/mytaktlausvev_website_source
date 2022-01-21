@@ -1,9 +1,6 @@
-{% extends "base.html" %}
+{% extends "common/form.html" %}
 
-{% block page %}
-<article>
-    <h1>Rediger galleri</h1>
-
+{% block form %}
     {% load crispy_forms_tags %}
     <form method="post" enctype="multipart/form-data" class="container">
         <div class="row">
@@ -15,5 +12,4 @@
             </div>
         </div>
     </form>
-</article>
 {% endblock %}

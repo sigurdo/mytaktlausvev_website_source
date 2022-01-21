@@ -1,11 +1,16 @@
 from datetime import date
+from http import HTTPStatus
+
 from django.test import TestCase
 from django.urls import reverse
+from django.utils.datastructures import MultiValueDict
 from django.utils.text import slugify
-from accounts.factories import SuperUserFactory
+
+from accounts.factories import SuperUserFactory, UserFactory
 from common.mixins import TestMixin
-from common.test_utils import create_formset_post_data
-from pictures.forms import ImageFormSet
+from common.test_utils import create_formset_post_data, test_image, test_pdf
+from pictures.forms import ImageCreateForm, ImageFormSet
+
 from .factories import GalleryFactory, ImageFactory
 from .models import Gallery, Image
 
@@ -73,37 +78,130 @@ class ImageTestSuite(TestMixin, TestCase):
         pass
 
 
-class GalleryCreateTestSuite(TestMixin, TestCase):
+class ImageCreateFormTestSuite(TestMixin, TestCase):
+    def setUp(self):
+        self.gallery = GalleryFactory()
+
+    def test_saves_all_uploaded_images(self):
+        form = ImageCreateForm(
+            gallery=self.gallery,
+            files=MultiValueDict({"image": [test_image() for _ in range(3)]}),
+        )
+        self.assertTrue(form.is_valid())
+        form.save()
+        self.assertEqual(Image.objects.count(), 3)
+
+    def test_error_if_one_or_more_files_are_not_images(self):
+        """Should add a form error if one or more files are not images."""
+        form = ImageCreateForm(
+            gallery=self.gallery,
+            files=MultiValueDict(
+                {"image": [test_image() for _ in range(3)] + [test_pdf()]}
+            ),
+        )
+        self.assertFalse(form.is_valid())
+        self.assertIn(
+            "Last opp eit gyldig bilete. Fila du lasta opp var ødelagt eller ikkje eit bilete.",
+            form.errors["image"],
+        )
+
+
+class GalleryDetailTestSuite(TestMixin, TestCase):
     def test_queryset_excludes_galleries_with_no_images(self):
         """Should exclude galleries with no images."""
         pass
 
 
-class GalleryCreateTestCase(TestMixin, TestCase):
+class GalleryCreateTestSuite(TestMixin, TestCase):
+    def setUp(self):
+        self.gallery_data = {
+            "title": "A Title",
+            "date": "2021-11-25",
+            "content": "Gallery text",
+        }
+
+    def get_url(self) -> str:
+        return reverse("pictures:GalleryCreate")
+
     def test_created_by_modified_by_set_to_current_user(self):
         """Should set `created_by` and `modified_by` to the current user on creation."""
         user = SuperUserFactory()
         self.client.force_login(user)
-        self.client.post(
-            reverse("pictures:GalleryCreate"),
-            {
-                "title": "A Title",
-                "date": "2021-11-25",
-                "content": "Gallery text",
-            },
-        )
+        response = self.client.post(self.get_url(), self.gallery_data)
 
         self.assertEqual(Gallery.objects.count(), 1)
         gallery = Gallery.objects.last()
         self.assertEqual(gallery.created_by, user)
         self.assertEqual(gallery.modified_by, user)
 
-    def test_redirects_to_image_upload_view(self):
-        """Should redirect to the view for uploading images."""
-        pass
+    def test_success_redirect(self):
+        """Should redirect to the view for uploading images on success."""
+        self.client.force_login(SuperUserFactory())
+        response = self.client.post(self.get_url(), self.gallery_data)
+        self.assertEqual(Gallery.objects.count(), 1)
+        gallery = Gallery.objects.last()
+        self.assertRedirects(
+            response, reverse("pictures:ImageCreate", args=[gallery.slug])
+        )
 
 
-class GalleryUpdateTestCase(TestMixin, TestCase):
+class ImageCreateTestSuite(TestMixin, TestCase):
+    def setUp(self):
+        self.gallery = GalleryFactory()
+        self.image_data = {"image": test_image()}
+
+    def get_url(self, slug=None) -> str:
+        return reverse("pictures:ImageCreate", args=[slug or self.gallery.slug])
+
+    def test_404_if_gallery_not_found(self):
+        """Should return a 404 if the gallery isn't found."""
+        self.client.force_login(UserFactory())
+        response = self.client.get(self.get_url("gallery-not-exist"))
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
+
+    def test_adds_gallery_to_context_data(self):
+        """Should add the gallery to the context data."""
+        self.client.force_login(UserFactory())
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.context["gallery"], self.gallery)
+
+    def test_error_if_uploaded_file_is_not_image(self):
+        """Should show a form error if the uploaded file isn't an image."""
+        self.image_data["image"] = test_pdf()
+        self.client.force_login(UserFactory())
+        response = self.client.post(self.get_url(), self.image_data)
+        self.assertFormError(
+            response,
+            "form",
+            "image",
+            "Last opp eit gyldig bilete. Fila du lasta opp var ødelagt eller ikkje eit bilete.",
+        )
+
+    def test_error_if_one_or_more_files_are_not_images(self):
+        """
+        Should show a form error if one or more
+        of the uploaded files are not images.
+        """
+        self.image_data["image"] = [test_pdf(), test_image()]
+        self.client.force_login(UserFactory())
+        response = self.client.post(self.get_url(), self.image_data)
+        self.assertFormError(
+            response,
+            "form",
+            "image",
+            "Last opp eit gyldig bilete. Fila du lasta opp var ødelagt eller ikkje eit bilete.",
+        )
+
+    def test_success_redirect(self):
+        """Should redirect to the view for updating a gallery on success."""
+        self.client.force_login(SuperUserFactory())
+        response = self.client.post(self.get_url(), self.image_data)
+        self.assertRedirects(
+            response, reverse("pictures:GalleryUpdate", args=[self.gallery.slug])
+        )
+
+
+class GalleryUpdateTestSuite(TestMixin, TestCase):
     def setUp(self):
         self.gallery = GalleryFactory()
         self.gallery_data = {
@@ -112,7 +210,6 @@ class GalleryUpdateTestCase(TestMixin, TestCase):
             "content": "Gallery text",
             **create_formset_post_data(
                 formset_class=ImageFormSet,
-                subform_prefix="images",
                 initial_forms=0,
                 total_forms=0,
             ),

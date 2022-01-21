@@ -1,11 +1,14 @@
-from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
+from django.forms import ClearableFileInput, DateInput, ModelForm
 from django.forms.models import inlineformset_factory
+
+from common.mixins import CleanAllFilesMixin
+
 from .models import Gallery, Image
 
 
-class GalleryForm(forms.ModelForm):
+class GalleryForm(ModelForm):
     """Form for creating and editing galleries."""
 
     helper = FormHelper()
@@ -15,13 +18,43 @@ class GalleryForm(forms.ModelForm):
         model = Gallery
         fields = ["title", "date", "date_to", "content"]
         widgets = {
-            "date": forms.DateInput(attrs={"type": "date"}),
-            "date_to": forms.DateInput(attrs={"type": "date"}),
+            "date": DateInput(attrs={"type": "date"}),
+            "date_to": DateInput(attrs={"type": "date"}),
         }
 
 
-class ImageForm(forms.ModelForm):
-    """Form for images."""
+class ImageCreateForm(CleanAllFilesMixin, ModelForm):
+    """Form for creating images"""
+
+    helper = FormHelper()
+    helper.add_input(Submit("submit", "Last opp bilete"))
+
+    def __init__(self, gallery=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.gallery = gallery
+
+    def save(self, commit=True):
+        """
+        Save all uploaded images using `bulk_create`.
+        Ignores `commit` parameter.
+        """
+        Image.objects.bulk_create(
+            [
+                Image(gallery=self.gallery, image=image)
+                for image in self.files.getlist("image")
+            ]
+        )
+
+    class Meta:
+        model = Image
+        fields = ["image"]
+        widgets = {
+            "image": ClearableFileInput(attrs={"multiple": True}),
+        }
+
+
+class ImageUpdateForm(ModelForm):
+    """Form for updating an image."""
 
     class Meta:
         model = Image
@@ -35,7 +68,7 @@ class ImageFormsetHelper(FormHelper):
 ImageFormSet = inlineformset_factory(
     Gallery,
     Image,
-    form=ImageForm,
+    form=ImageUpdateForm,
     can_delete=False,
     extra=0,
 )

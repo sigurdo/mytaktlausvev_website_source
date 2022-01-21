@@ -1,7 +1,11 @@
-from django.views.generic import ListView, DetailView, CreateView
-from common.views import FormAndFormsetUpdateView
-from .models import Gallery
-from .forms import GalleryForm, ImageFormSet, ImageFormsetHelper
+from django.shortcuts import get_object_or_404
+from django.urls import reverse
+from django.views.generic import CreateView, DetailView, ListView
+
+from common.views import InlineFormsetUpdateView
+
+from .forms import GalleryForm, ImageCreateForm, ImageFormSet
+from .models import Gallery, Image
 
 
 class GalleryList(ListView):
@@ -32,15 +36,43 @@ class GalleryCreate(CreateView):
         form.instance.modified_by = self.request.user
         return super().form_valid(form)
 
+    def get_success_url(self) -> str:
+        return reverse("pictures:ImageCreate", args=[self.object.slug])
 
-class GalleryUpdate(FormAndFormsetUpdateView):
+
+class ImageCreate(CreateView):
+    model = Image
+    form_class = ImageCreateForm
+    template_name = "common/form.html"
+
+    gallery = None
+
+    def get_gallery(self):
+        if not self.gallery:
+            self.gallery = get_object_or_404(Gallery, slug=self.kwargs["slug"])
+        return self.gallery
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["gallery"] = self.get_gallery()
+        return kwargs
+
+    def get_context_data(self, **kwargs):
+        kwargs["gallery"] = self.get_gallery()
+        kwargs["form_title"] = f"Last opp bilete til {self.get_gallery()}"
+        return super().get_context_data(**kwargs)
+
+    def get_success_url(self) -> str:
+        return reverse("pictures:GalleryUpdate", args=[self.get_gallery().slug])
+
+
+class GalleryUpdate(InlineFormsetUpdateView):
     """View for updating a gallery and its images."""
 
     model = Gallery
     form_class = GalleryForm
     formset_class = ImageFormSet
-    formset_helper = ImageFormsetHelper
 
-    def form_valid(self, form, formset):
+    def form_valid(self, form):
         form.instance.modified_by = self.request.user
-        return super().form_valid(form, formset)
+        return super().form_valid(form)
