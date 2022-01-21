@@ -7,7 +7,7 @@ from django.utils.text import slugify
 
 from accounts.factories import SuperUserFactory, UserFactory
 from common.mixins import TestMixin
-from common.test_utils import create_formset_post_data, test_pdf
+from common.test_utils import create_formset_post_data, test_image_gif_2x2, test_pdf
 
 from .factories import FavoritePartFactory, PartFactory, PdfFactory, ScoreFactory
 from .forms import EditPdfFormset, PartsUpdateAllFormset, PartsUpdateFormset
@@ -409,6 +409,19 @@ class PdfsUploadTestSuite(TestMixin, TestCase):
         self.upload_pdf()
         self.assertEqual(Pdf.objects.count(), 3)
         self.assertEqual(Part.objects.count(), 3)
+
+    def test_error_if_one_or_more_files_not_pdf(self):
+        """Should display a form error if one more files aren't PDFs."""
+        self.client.force_login(SuperUserFactory())
+        image = test_image_gif_2x2()
+        self.test_data["files"] = [test_pdf() for _ in range(3)] + [image]
+        response = self.upload_pdf()
+        self.assertFormError(
+            response,
+            "form",
+            "files",
+            f"{image.name}: Filtype {image.content_type} ikkje lovleg",
+        )
 
 
 class ScoreCreateTestSuite(TestMixin, TestCase):

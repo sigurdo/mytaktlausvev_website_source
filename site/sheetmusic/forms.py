@@ -1,14 +1,23 @@
 """Forms for the 'sheetmusic'-app"""
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
-from django import forms
-from django.core.exceptions import ValidationError
-from django.forms import ChoiceField, FileField, modelformset_factory
+from django.forms import (
+    ChoiceField,
+    ClearableFileInput,
+    FileField,
+    Form,
+    ModelForm,
+    NumberInput,
+    TextInput,
+    modelformset_factory,
+)
+
+from common.mixins import CleanAllFilesMixin
 
 from .models import Part, Pdf, Score, pdf_file_validators
 
 
-class ScoreForm(forms.ModelForm):
+class ScoreForm(ModelForm):
     """Form for creating or changing a score"""
 
     helper = FormHelper()
@@ -26,7 +35,7 @@ class ScoreForm(forms.ModelForm):
         ]
 
 
-class PartsUpdateForm(forms.ModelForm):
+class PartsUpdateForm(ModelForm):
     """Form for editing a part for a given pdf"""
 
     helper = FormHelper()
@@ -35,9 +44,9 @@ class PartsUpdateForm(forms.ModelForm):
         model = Part
         fields = ["from_page", "name", "to_page"]
         widgets = {
-            "name": forms.TextInput(attrs={"size": 30}),
-            "from_page": forms.NumberInput(attrs={"size": 4}),
-            "to_page": forms.NumberInput(attrs={"size": 4}),
+            "name": TextInput(attrs={"size": 30}),
+            "from_page": NumberInput(attrs={"size": 4}),
+            "to_page": NumberInput(attrs={"size": 4}),
         }
 
 
@@ -60,7 +69,7 @@ PartsUpdateFormset = modelformset_factory(
 PartsUpdateFormset.helper = PartsUpdateFormsetHelper()
 
 
-class PartsUpdateAllForm(forms.ModelForm):
+class PartsUpdateAllForm(ModelForm):
     """Form for editing a part"""
 
     helper = FormHelper()
@@ -69,9 +78,9 @@ class PartsUpdateAllForm(forms.ModelForm):
         model = Part
         fields = ["name", "from_page", "to_page", "pdf"]
         widgets = {
-            "name": forms.TextInput(attrs={"size": 50}),
-            "from_page": forms.NumberInput(attrs={"size": 4}),
-            "to_page": forms.NumberInput(attrs={"size": 4}),
+            "name": TextInput(attrs={"size": 50}),
+            "from_page": NumberInput(attrs={"size": 4}),
+            "to_page": NumberInput(attrs={"size": 4}),
         }
 
 
@@ -86,11 +95,11 @@ PartsUpdateAllFormset = modelformset_factory(
 PartsUpdateAllFormset.helper = PartsUpdateFormsetHelper()
 
 
-class UploadPdfForm(forms.Form):
+class UploadPdfForm(CleanAllFilesMixin, Form):
     helper = FormHelper()
     helper.add_input(Submit("submit", "Last opp"))
-    files = forms.FileField(
-        widget=forms.ClearableFileInput(attrs={"multiple": True}),
+    files = FileField(
+        widget=ClearableFileInput(attrs={"multiple": True}),
         label="Filer",
         validators=pdf_file_validators,
     )
@@ -112,20 +121,8 @@ class UploadPdfForm(forms.Form):
         label="Gjett stemmer ved hjelp av",
     )
 
-    def _clean_fields(self):
-        super()._clean_fields()
-        # For some reason, django only calls field.clean() on the last file, so
-        # we have to call field.clean() on all the others manually
-        for name, field in self.fields.items():
-            if isinstance(field, FileField):
-                for file in self.files.getlist("files")[:-1]:
-                    try:
-                        field.clean(file)
-                    except ValidationError as exception:
-                        self.add_error(name, exception)
 
-
-class EditPdfForm(forms.ModelForm):
+class EditPdfForm(ModelForm):
     """Form for editing a pdf"""
 
     helper = FormHelper()
@@ -133,7 +130,7 @@ class EditPdfForm(forms.ModelForm):
     class Meta:
         model = Pdf
         fields = ["file"]
-        widgets = {"file": forms.ClearableFileInput(attrs={"disabled": True})}
+        widgets = {"file": ClearableFileInput(attrs={"disabled": True})}
 
 
 EditPdfFormset = modelformset_factory(
