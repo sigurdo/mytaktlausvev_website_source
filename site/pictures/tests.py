@@ -117,9 +117,23 @@ class ImageCreateFormTestSuite(TestMixin, TestCase):
 
 
 class GalleryListTestSuite(TestMixin, TestCase):
+    def get_url(self) -> str:
+        return reverse("pictures:GalleryList")
+
+    def test_requires_login(self):
+        """Should require login."""
+        self.assertLoginRequired(self.get_url())
+
     def test_queryset_excludes_galleries_with_no_images(self):
         """Should exclude galleries with no images."""
-        pass
+        image = ImageFactory()
+        for _ in range(3):
+            GalleryFactory()
+
+        self.client.force_login(UserFactory())
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.context["galleries"].count(), 1)
+        self.assertEqual(response.context["galleries"].first(), image.gallery)
 
 
 class GalleryDetailTestSuite(TestMixin, TestCase):
@@ -130,6 +144,10 @@ class GalleryDetailTestSuite(TestMixin, TestCase):
 
     def get_url(self, slug=None) -> str:
         return reverse("pictures:GalleryDetail", args=[slug or self.gallery.slug])
+
+    def test_requires_login(self):
+        """Should require login."""
+        self.assertLoginRequired(self.get_url())
 
     def test_404_if_gallery_not_found(self):
         """Should return a 404 if the gallery isn't found."""
@@ -148,6 +166,7 @@ class GalleryDetailTestSuite(TestMixin, TestCase):
         for _ in range(3):
             ImageFactory()
 
+        self.client.force_login(UserFactory())
         response = self.client.get(self.get_url())
         self.assertQuerysetEqual(response.context["images"], self.gallery.images.all())
 
@@ -162,6 +181,10 @@ class GalleryCreateTestSuite(TestMixin, TestCase):
 
     def get_url(self) -> str:
         return reverse("pictures:GalleryCreate")
+
+    def test_requires_login(self):
+        """Should require login."""
+        self.assertLoginRequired(self.get_url())
 
     def test_created_by_modified_by_set_to_current_user(self):
         """Should set `created_by` and `modified_by` to the current user on creation."""
@@ -192,6 +215,10 @@ class ImageCreateTestSuite(TestMixin, TestCase):
 
     def get_url(self, slug=None) -> str:
         return reverse("pictures:ImageCreate", args=[slug or self.gallery.slug])
+
+    def test_requires_login(self):
+        """Should require login."""
+        self.assertLoginRequired(self.get_url())
 
     def test_404_if_gallery_not_found(self):
         """Should return a 404 if the gallery isn't found."""
@@ -268,6 +295,10 @@ class GalleryUpdateTestSuite(TestMixin, TestCase):
     def get_url(self):
         """Returns the URL for the gallery update view for `self.gallery`."""
         return reverse("pictures:GalleryUpdate", args=[self.gallery.slug])
+
+    def test_requires_login(self):
+        """Should require login."""
+        self.assertLoginRequired(self.get_url())
 
     def test_created_by_not_changed(self):
         """Should not change `created_by` when updating gallery."""

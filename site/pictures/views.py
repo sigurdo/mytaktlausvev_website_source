@@ -1,3 +1,5 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import F, Max
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.views.generic import CreateView, ListView
@@ -16,7 +18,7 @@ def breadcrumbs(gallery=None):
     return breadcrumbs
 
 
-class GalleryList(ListView):
+class GalleryList(LoginRequiredMixin, ListView):
     """View for viewing all galleries."""
 
     model = Gallery
@@ -24,10 +26,16 @@ class GalleryList(ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        return super().get_queryset().exclude(images__isnull=True)
+        return (
+            super()
+            .get_queryset()
+            .exclude(images__isnull=True)
+            .alias(latest_upload=Max("images__uploaded"))
+            .order_by("-latest_upload")
+        )
 
 
-class GalleryDetail(ListView):
+class GalleryDetail(LoginRequiredMixin, ListView):
     """View for viewing a single gallery."""
 
     model = Image
@@ -51,7 +59,7 @@ class GalleryDetail(ListView):
         return super().get_context_data(**kwargs)
 
 
-class GalleryCreate(CreateView):
+class GalleryCreate(LoginRequiredMixin, CreateView):
     """View for creating an gallery."""
 
     model = Gallery
@@ -71,7 +79,7 @@ class GalleryCreate(CreateView):
         return reverse("pictures:ImageCreate", args=[self.object.slug])
 
 
-class ImageCreate(CreateView):
+class ImageCreate(LoginRequiredMixin, CreateView):
     model = Image
     form_class = ImageCreateForm
     template_name = "common/form.html"
@@ -99,7 +107,7 @@ class ImageCreate(CreateView):
         return reverse("pictures:GalleryUpdate", args=[self.get_gallery().slug])
 
 
-class GalleryUpdate(InlineFormsetUpdateView):
+class GalleryUpdate(LoginRequiredMixin, InlineFormsetUpdateView):
     """View for updating a gallery and its images."""
 
     model = Gallery

@@ -34,6 +34,7 @@ class Gallery(ArticleMixin):
         return reverse("pictures:GalleryDetail", args=[self.slug])
 
     class Meta:
+        ordering = ["title"]
         verbose_name = "galleri"
         verbose_name_plural = "galleri"
 
