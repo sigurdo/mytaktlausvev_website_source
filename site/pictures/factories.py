@@ -1,6 +1,8 @@
-from factory.django import DjangoModelFactory, ImageField
 from factory import SubFactory
+from factory.django import DjangoModelFactory, ImageField
+
 from accounts.factories import UserFactory
+
 from .models import Gallery, Image
 
 
@@ -21,3 +23,4 @@ class ImageFactory(DjangoModelFactory):
     gallery = SubFactory(GalleryFactory)
     image = ImageField(color="blue")
     description = "A most famous image of the color blue."
+    uploaded_by = SubFactory(UserFactory)

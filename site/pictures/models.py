@@ -1,10 +1,13 @@
 from datetime import date
 
 from autoslug.fields import AutoSlugField
+from django.conf import settings
 from django.db.models import (
     CASCADE,
     CharField,
     DateField,
+    DateTimeField,
+    FloatField,
     ForeignKey,
     ImageField,
     Model,
@@ -46,6 +49,21 @@ class Image(Model):
     )
     image = ImageField("bilete")
     description = CharField("beskrivelse", max_length=1024, blank=True)
+    uploaded = DateTimeField("lasta opp", auto_now_add=True)
+    uploaded_by = ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=CASCADE,
+        related_name="%(class)s_uploaded",
+        verbose_name="lasta opp av",
+    )
+    order = FloatField(
+        "rekkjefølgje",
+        default=0,
+        help_text=(
+            "Definerer rekkjefølgja til bilete. "
+            "Bilete med lik rekkjefølgje vert sortert etter tidspunkt for opplasting."
+        ),
+    )
 
     def __str__(self):
         return self.image.name
@@ -54,5 +72,6 @@ class Image(Model):
         return self.image.url
 
     class Meta:
+        ordering = ["order", "uploaded"]
         verbose_name = "bilete"
         verbose_name_plural = "bilete"

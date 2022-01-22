@@ -24,14 +24,15 @@ class GalleryForm(ModelForm):
 
 
 class ImageCreateForm(CleanAllFilesMixin, ModelForm):
-    """Form for creating images"""
+    """Form for creating images."""
 
     helper = FormHelper()
     helper.add_input(Submit("submit", "Last opp bilete"))
 
-    def __init__(self, gallery=None, *args, **kwargs):
+    def __init__(self, gallery=None, user=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.gallery = gallery
+        self.user = user
 
     def save(self, commit=True):
         """
@@ -40,7 +41,7 @@ class ImageCreateForm(CleanAllFilesMixin, ModelForm):
         """
         Image.objects.bulk_create(
             [
-                Image(gallery=self.gallery, image=image)
+                Image(gallery=self.gallery, image=image, uploaded_by=self.user)
                 for image in self.files.getlist("image")
             ]
         )

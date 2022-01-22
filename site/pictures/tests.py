@@ -81,24 +81,34 @@ class ImageTestSuite(TestMixin, TestCase):
 class ImageCreateFormTestSuite(TestMixin, TestCase):
     def setUp(self):
         self.gallery = GalleryFactory()
+        self.user = UserFactory()
+
+    def get_form(self, images):
+        return ImageCreateForm(
+            gallery=self.gallery,
+            user=self.user,
+            files=MultiValueDict({"image": images}),
+        )
+
+    def test_sets_uploaded_by_to_user(self):
+        """Should set `uploaded_by` to `user`."""
+        form = self.get_form([test_image()])
+        self.assertTrue(form.is_valid())
+        form.save()
+
+        self.assertEqual(Image.objects.count(), 1)
+        image = Image.objects.last()
+        self.assertEqual(image.uploaded_by, self.user)
 
     def test_saves_all_uploaded_images(self):
-        form = ImageCreateForm(
-            gallery=self.gallery,
-            files=MultiValueDict({"image": [test_image() for _ in range(3)]}),
-        )
+        form = self.get_form([test_image() for _ in range(3)])
         self.assertTrue(form.is_valid())
         form.save()
         self.assertEqual(Image.objects.count(), 3)
 
     def test_error_if_one_or_more_files_are_not_images(self):
         """Should add a form error if one or more files are not images."""
-        form = ImageCreateForm(
-            gallery=self.gallery,
-            files=MultiValueDict(
-                {"image": [test_image() for _ in range(3)] + [test_pdf()]}
-            ),
-        )
+        form = self.get_form([test_image() for _ in range(3)] + [test_pdf()])
         self.assertFalse(form.is_valid())
         self.assertIn(
             "Last opp eit gyldig bilete. Fila du lasta opp var ødelagt eller ikkje eit bilete.",
@@ -164,6 +174,16 @@ class ImageCreateTestSuite(TestMixin, TestCase):
         self.client.force_login(UserFactory())
         response = self.client.get(self.get_url())
         self.assertEqual(response.context["gallery"], self.gallery)
+
+    def test_sets_uploaded_by_to_user(self):
+        """Should set `uploaded_by` to the user."""
+        user = UserFactory()
+        self.client.force_login(user)
+        self.client.post(self.get_url(), self.image_data)
+
+        self.assertEqual(Image.objects.count(), 1)
+        image = Image.objects.last()
+        self.assertEqual(image.uploaded_by, user)
 
     def test_error_if_uploaded_file_is_not_image(self):
         """Should show a form error if the uploaded file isn't an image."""
