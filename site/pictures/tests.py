@@ -54,6 +54,15 @@ class GalleryTestSuite(TestCase):
         """The default date should be the current date."""
         self.assertEqual(self.gallery.date, date.today())
 
+    def test_images_latest(self):
+        """Should return the gallery's images ordered by `uploaded`, descending."""
+        for _ in range(3):
+            ImageFactory()
+
+        self.assertQuerysetEqual(
+            self.gallery.images_latest(), self.gallery.images.order_by("-uploaded")
+        )
+
 
 class ImageTestSuite(TestMixin, TestCase):
     def setUp(self):

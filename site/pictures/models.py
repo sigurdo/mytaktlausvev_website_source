@@ -33,6 +33,10 @@ class Gallery(ArticleMixin):
     def get_absolute_url(self):
         return reverse("pictures:GalleryDetail", args=[self.slug])
 
+    def images_latest(self):
+        """Returns this gallery's images ordered by `uploaded`, descending."""
+        return self.images.order_by("-uploaded")
+
     class Meta:
         ordering = ["title"]
         verbose_name = "galleri"
