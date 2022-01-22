@@ -116,10 +116,40 @@ class ImageCreateFormTestSuite(TestMixin, TestCase):
         )
 
 
-class GalleryDetailTestSuite(TestMixin, TestCase):
+class GalleryListTestSuite(TestMixin, TestCase):
     def test_queryset_excludes_galleries_with_no_images(self):
         """Should exclude galleries with no images."""
         pass
+
+
+class GalleryDetailTestSuite(TestMixin, TestCase):
+    def setUp(self):
+        self.gallery = GalleryFactory()
+        for _ in range(3):
+            ImageFactory(gallery=self.gallery)
+
+    def get_url(self, slug=None) -> str:
+        return reverse("pictures:GalleryDetail", args=[slug or self.gallery.slug])
+
+    def test_404_if_gallery_not_found(self):
+        """Should return a 404 if the gallery isn't found."""
+        self.client.force_login(UserFactory())
+        response = self.client.get(self.get_url("gallery-not-exist"))
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
+
+    def test_adds_gallery_to_context_data(self):
+        """Should add the gallery to the context data."""
+        self.client.force_login(UserFactory())
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.context["gallery"], self.gallery)
+
+    def test_queryset_only_includes_images_in_gallery(self):
+        """The queryset should only include the images in the gallery."""
+        for _ in range(3):
+            ImageFactory()
+
+        response = self.client.get(self.get_url())
+        self.assertQuerysetEqual(response.context["images"], self.gallery.images.all())
 
 
 class GalleryCreateTestSuite(TestMixin, TestCase):

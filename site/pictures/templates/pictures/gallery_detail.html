@@ -5,7 +5,13 @@
 
 {% block page %}
 <article>
-    <h1>{{ gallery.title }}</h1>
+    <header>
+        {% include "common/includes/breadcrumbs.html" with breadcrumbs=breadcrumbs only %}
+
+        <h1>{{ gallery }}</h1>
+
+        {% include "common/includes/created_modified.html" with object=gallery only %}
+    </header>
 
     <p>
         <b>Dato:</b>
@@ -19,7 +25,7 @@
     {{ gallery.content | markdown }}
 
     <ul class="list-unstyled d-flex flex-wrap justify-content-center">
-    {% for image in gallery.images.all %}
+    {% for image in images %}
         <li class="d-flex justify-content-center align-items-center m-3 h-52">
             {% include "pictures/includes/image.html" with image=image gallery=gallery.slug only %}
         </li>
@@ -45,6 +51,8 @@
                 </a>
             </li>
         </ul>
+
+        {% include "common/includes/pagination.html" with pagination_label="Biletesider" %}
     </footer>
 </article>
 {% endblock %}
