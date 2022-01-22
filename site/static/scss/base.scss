@@ -49,3 +49,19 @@ th {
   background-color: $primary;
   border: none;
 }
+
+.btn-advent-calendar {
+  @include button-variant(
+    $button-color-advent-calendar,
+    darken($button-color-advent-calendar, 7.5%),
+    darken($button-color-advent-calendar, 10%),
+    lighten($button-color-advent-calendar, 5%),
+    lighten($button-color-advent-calendar, 10%),
+    darken($button-color-advent-calendar, 30%)
+  );
+}
+
+// Hide BigPicture's weird and unnecessary caption close button
+.bp-xc {
+  display: none;
+}

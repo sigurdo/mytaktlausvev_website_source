@@ -1,3 +1,17 @@
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/utilities";
+
+$utilities: map-merge(
+  $utilities,
+  (
+    "cursor": (
+      property: cursor,
+      values: auto pointer grab,
+    ),
+  )
+);
+
 .fs-7 {
   font-size: $font-size-base * 0.9 !important;
 }
@@ -13,17 +27,6 @@
 
 .p-margin-last-0 > p:last-of-type {
   margin-bottom: 0 !important;
-}
-
-.btn-advent-calendar {
-  @include button-variant(
-    $button-color-advent-calendar,
-    darken($button-color-advent-calendar, 7.5%),
-    darken($button-color-advent-calendar, 10%),
-    lighten($button-color-advent-calendar, 5%),
-    lighten($button-color-advent-calendar, 10%),
-    darken($button-color-advent-calendar, 30%)
-  );
 }
 
 .flex-1 {

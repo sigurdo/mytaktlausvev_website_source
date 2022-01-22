@@ -72,6 +72,7 @@ class GalleryUpdate(InlineFormsetUpdateView):
     model = Gallery
     form_class = GalleryForm
     formset_class = ImageFormSet
+    template_name_suffix = "_form_update"
 
     def form_valid(self, form):
         form.instance.modified_by = self.request.user

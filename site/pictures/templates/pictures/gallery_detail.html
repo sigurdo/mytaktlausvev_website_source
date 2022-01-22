@@ -20,8 +20,8 @@
 
     <ul class="list-unstyled d-flex flex-wrap justify-content-center">
     {% for image in gallery.images.all %}
-        <li class="d-flex justify-content-center align-items-center m-3 h-52" data-bs-toggle="modal" data-bs-target="#myModal">
-            {% include "pictures/includes/image.html" with image=image only %}
+        <li class="d-flex justify-content-center align-items-center m-3 h-52">
+            {% include "pictures/includes/image.html" with image=image gallery=gallery.slug only %}
         </li>
     {% endfor %}
     </ul>
@@ -48,3 +48,9 @@
     </footer>
 </article>
 {% endblock %}
+
+{% block js %}
+    <script src="https://cdn.jsdelivr.net/npm/bigpicture@2.6.1/dist/BigPicture.min.js" integrity="sha256-OsbS8Cw/fMpgT6GBFfqhvmX9yJLwzE6+me56KzpSbAs=" crossorigin="anonymous"></script>
+    {% load static %}
+    <script src="{% static "common/js/lightbox.js" %}"></script>
+{% endblock js %}
