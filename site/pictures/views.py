@@ -18,6 +18,20 @@ def breadcrumbs(gallery=None):
     return breadcrumbs
 
 
+def nav_tabs_gallery_edit(gallery):
+    """Returns tab data for editing a gallery."""
+    return [
+        {
+            "url": reverse("pictures:GalleryUpdate", args=[gallery.slug]),
+            "name": "Rediger galleri",
+        },
+        {
+            "url": reverse("pictures:ImageCreate", args=[gallery.slug]),
+            "name": "Last opp bilete",
+        },
+    ]
+
+
 class GalleryList(LoginRequiredMixin, ListView):
     """View for viewing all galleries."""
 
@@ -99,8 +113,9 @@ class ImageCreate(LoginRequiredMixin, CreateView):
 
     def get_context_data(self, **kwargs):
         kwargs["gallery"] = self.get_gallery()
+        kwargs["form_title"] = f'Last opp bilete til "{self.get_gallery()}"'
         kwargs["breadcrumbs"] = breadcrumbs(self.get_gallery())
-        kwargs["form_title"] = f"Last opp bilete til {self.get_gallery()}"
+        kwargs["nav_tabs"] = nav_tabs_gallery_edit(self.get_gallery())
         return super().get_context_data(**kwargs)
 
     def get_success_url(self) -> str:
@@ -117,6 +132,7 @@ class GalleryUpdate(LoginRequiredMixin, InlineFormsetUpdateView):
 
     def get_context_data(self, **kwargs):
         kwargs["breadcrumbs"] = breadcrumbs(self.object)
+        kwargs["nav_tabs"] = nav_tabs_gallery_edit(self.object)
         return super().get_context_data(**kwargs)
 
     def form_valid(self, form):
