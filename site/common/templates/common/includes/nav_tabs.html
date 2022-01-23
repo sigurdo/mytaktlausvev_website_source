@@ -1,0 +1,18 @@
+<nav>
+    {% load utils %}
+    <ul class="nav nav-tabs mb-3">
+    {% for nav_tab in nav_tabs %}
+        {% if not nav_tab.permissions or nav_tab.permissions|contained_in:perms %}
+        <li class="nav-item">
+            <a
+                class="nav-link {% if request.path == nav_tab.url %} active {% endif %}"
+                {% if request.path == nav_tab.url %}aria-current="page"{% endif %}
+                href="{{ nav_tab.url }}"
+            >
+                {{ nav_tab.name }}
+            </a>
+        </li>
+        {% endif %}
+    {% endfor %}
+    </ul>
+</nav>

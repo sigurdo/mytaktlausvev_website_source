@@ -13,7 +13,7 @@
             <ul class="list-unstyled d-flex flex-wrap">
                 {% for image in gallery.images_latest|slice:":5" %}
                 <li class="d-flex justify-content-center align-items-center m-3 h-52">
-                        {% include "pictures/includes/image.html" with image=image gallery=gallery.slug only %}
+                        {% include "pictures/includes/image.html" with image=image bp_gallery=gallery.slug only %}
                 </li>
                 {% endfor %}
             </ul>
