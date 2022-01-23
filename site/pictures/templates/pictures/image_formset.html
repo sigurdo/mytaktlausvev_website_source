@@ -3,19 +3,51 @@
 
     <ol class="list-unstyled">
         {% for form in formset %}
-        <li class="card shadow my-4">
-            <div class="card-body d-flex justify-content-center align-items-center m-0 p-0 h-96">
-                {% include "pictures/includes/image.html" with image=form.instance gallery=form.instance.gallery only %}
+        <li class="position-relative form-image">
+            <div class="card shadow my-4">
+                <div class="card-body d-flex justify-content-center align-items-center m-0 p-0 h-96">
+                    {% include "pictures/includes/image.html" with image=form.instance gallery=form.instance.gallery only %}
+                </div>
+
+                <div class="card-footer p-0">
+                    <input
+                        type="text"
+                        class="form-control p-3 fs-5"
+                        placeholder="Skriv ein beskrivelse her..."
+                        name="{{ formset.prefix }}-{{ forloop.counter0 }}-description"
+                        value="{{ form.instance.description }}"
+                    />
+                </div>
             </div>
 
-            <div class="card-footer p-0">
-                <input
-                    type="text"
-                    class="form-control p-3 fs-5"
-                    placeholder="Skriv ein beskrivelse her..."
-                    name="{{ formset.prefix }}-{{ forloop.counter0 }}-description"
-                    value="{{ form.instance.description }}"
-                />
+            <div class="dropdown position-absolute top-0 end-0 me-3 mt-3">
+                <button
+                    class="btn btn-secondary"
+                    type="button"
+                    id="id_{{ formset.prefix }}-{{ forloop.counter0 }}-dropdown"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                    role="menu"
+                >
+                    <span class="visually-hidden">More options</span>
+                    …
+                </button>
+                <div class="dropdown-menu" aria-labelledby="id_{{ formset.prefix }}-{{ forloop.counter0 }}-dropdown">
+                    <div class="form-check min-h-0 ms-3 mb-0">
+                        <input
+                            class="form-check-input"
+                            type="checkbox"
+                            name="{{ formset.prefix }}-{{ forloop.counter0 }}-DELETE"
+                            id="id_{{ formset.prefix }}-{{ forloop.counter0 }}-DELETE"
+                        >
+                        <label
+                            class="form-check-label"
+                            for="id_{{ formset.prefix }}-{{ forloop.counter0 }}-DELETE"
+                        >
+                            Slett
+                        </label>
+                    </div>
+                </div>
             </div>
 
             <div class="d-none">

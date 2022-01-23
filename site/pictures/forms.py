@@ -70,7 +70,6 @@ ImageFormSet = inlineformset_factory(
     Gallery,
     Image,
     form=ImageUpdateForm,
-    can_delete=False,
     extra=0,
 )
 ImageFormSet.helper = ImageFormsetHelper()

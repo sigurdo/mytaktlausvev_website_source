@@ -70,6 +70,11 @@ class Image(Model):
         ),
     )
 
+    def delete(self, *args, **kwargs):
+        storage, path = self.image.storage, self.image.path
+        super().delete(*args, **kwargs)
+        storage.delete(path)
+
     def __str__(self):
         return self.image.name
 
