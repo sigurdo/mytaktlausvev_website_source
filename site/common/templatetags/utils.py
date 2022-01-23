@@ -1,6 +1,6 @@
 from os.path import basename
 
-from django import template, urls
+from django import template
 
 register = template.Library()
 

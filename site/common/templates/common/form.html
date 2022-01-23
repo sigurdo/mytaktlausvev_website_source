@@ -46,6 +46,7 @@
                 <li class="nav-item">
                     <a
                         class="nav-link {% if request.path == nav_tab.url %} active {% endif %}"
+                        {% if request.path == nav_tab.url %}aria-current="page"{% endif %}
                         href="{{ nav_tab.url }}"
                     >
                         {{ nav_tab.name }}

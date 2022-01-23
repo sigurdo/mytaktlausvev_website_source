@@ -1,4 +1,5 @@
 from django.contrib import admin
+
 from .models import Gallery, Image
 
 
@@ -7,6 +8,8 @@ class ImageInline(admin.TabularInline):
 
 
 class GalleryAdmin(admin.ModelAdmin):
+    list_display = ("title", "created", "created_by")
+    search_fields = ("title", "created_by__username")
     prepopulated_fields = {"slug": ("title",)}
     inlines = (ImageInline,)
 

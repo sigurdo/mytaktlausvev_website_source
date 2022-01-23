@@ -199,7 +199,7 @@ class GalleryCreateTestSuite(TestMixin, TestCase):
         """Should set `created_by` and `modified_by` to the current user on creation."""
         user = SuperUserFactory()
         self.client.force_login(user)
-        response = self.client.post(self.get_url(), self.gallery_data)
+        self.client.post(self.get_url(), self.gallery_data)
 
         self.assertEqual(Gallery.objects.count(), 1)
         gallery = Gallery.objects.last()

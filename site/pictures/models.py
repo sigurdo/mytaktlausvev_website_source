@@ -18,7 +18,7 @@ from common.models import ArticleMixin
 
 
 class Gallery(ArticleMixin):
-    """Model representing a gallery"""
+    """Model representing a gallery."""
 
     date = DateField("dato", default=date.today)
     date_to = DateField("til dato", null=True, blank=True)
@@ -52,7 +52,7 @@ class Image(Model):
         on_delete=CASCADE,
         verbose_name="galleri",
     )
-    image = ImageField("bilete")
+    image = ImageField("bilete", upload_to="pictures/")
     description = CharField("beskrivelse", max_length=1024, blank=True)
     uploaded = DateTimeField("lasta opp", auto_now_add=True)
     uploaded_by = ForeignKey(

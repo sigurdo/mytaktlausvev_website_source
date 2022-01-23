@@ -12,7 +12,7 @@ class GalleryForm(ModelForm):
     """Form for creating and editing galleries."""
 
     helper = FormHelper()
-    helper.add_input(Submit("submit", "Lag/rediger galleri"))
+    helper.add_input(Submit("submit", "Lagre galleri"))
 
     class Meta:
         model = Gallery

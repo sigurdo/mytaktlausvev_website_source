@@ -1,5 +1,7 @@
 from datetime import date, datetime, time, timedelta
 
+from django.conf import settings
+from django.contrib.sites.models import Site
 from django.core.management.base import BaseCommand
 from django.urls import reverse
 from django.utils.timezone import make_aware
@@ -18,6 +20,7 @@ from instruments.factories import (
 from instruments.models import Instrument
 from navbar.factories import NavbarItemFactory
 from navbar.models import NavbarItem
+from pictures.factories import GalleryFactory, ImageFactory
 from polls.factories import ChoiceFactory, PollFactory, VoteFactory
 from uniforms.factories import JacketFactory, JacketLocationFactory, JacketUserFactory
 from uniforms.models import Jacket
@@ -25,6 +28,11 @@ from uniforms.models import Jacket
 
 class Command(BaseCommand):
     def handle(self, **options):
+        Site.objects.update_or_create(
+            id=settings.SITE_ID,
+            defaults={"domain": "localhost:8000", "name": "localhost"},
+        )
+
         superuser = UserCustom.objects.create_superuser(
             "leiar", "leiar@taktlaus.no", "password"
         )
@@ -248,6 +256,16 @@ class Command(BaseCommand):
         VoteFactory(choice=choice_juff, user=member)
         VoteFactory(choice=choice_juff, user=aspirant)
         VoteFactory(choice=choice_tuba, user=retiree)
+
+        gallery = GalleryFactory(
+            title="The Book of Blue",
+            content="Blue is all around",
+            created_by=superuser,
+            modified_by=aspirant,
+        )
+        for _ in range(3):
+            ImageFactory(gallery=gallery)
+
         NavbarItemFactory(
             text="Julekalender",
             link=reverse("advent_calendar:AdventCalendarList"),
