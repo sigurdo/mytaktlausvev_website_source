@@ -1,0 +1,36 @@
+{% extends "common/form.html" %}
+
+{% block form %}
+    {% load crispy_forms_tags %}
+    <form method="post" enctype="multipart/form-data" class="container">
+        <div class="row">
+            <div class="col-lg-4">
+                {% crispy form %}
+            </div>
+            <div class="col-lg-8">
+                {% crispy formset %}
+            </div>
+        </div>
+    </form>
+{% endblock %}
+
+{% block css %}
+    {% load sass_tags %}
+    <link
+        rel="stylesheet"
+        type="text/css"
+        href="{% sass_src 'pictures/image_formset.scss' %}"
+    />
+{% endblock css %}
+
+{% block js %}
+    {% load static %}
+    <script src="{% static 'pictures/image_formset.js' %}"></script>
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/bigpicture@2.6.1/dist/BigPicture.min.js"
+        integrity="sha256-OsbS8Cw/fMpgT6GBFfqhvmX9yJLwzE6+me56KzpSbAs="
+        crossorigin="anonymous"
+    ></script>
+    <script src="{% static "common/js/lightbox.js" %}"></script>
+{% endblock js %}

@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Fotoarkiv{% endblock title %}
+
+{% block page %}
+<article>
+    <h1>Fotoarkiv</h1>
+
+    <ul class="list-unstyled">
+        {% for gallery in galleries %}
+        <li class="my-4">
+            <h2><a href="{{ gallery.get_absolute_url }}">{{ gallery.title }}</a></h2>
+            <ul class="list-unstyled d-flex flex-wrap">
+                {% for image in gallery.images_latest|slice:":5" %}
+                <li class="d-flex justify-content-center align-items-center m-3 h-52">
+                        {% include "pictures/includes/image.html" with image=image bp_gallery=gallery.slug only %}
+                </li>
+                {% endfor %}
+            </ul>
+        </li>
+        {% endfor %}
+    </ul>
+
+    <footer>
+        <a href="{% url 'pictures:GalleryCreate' %}" class="btn btn-primary">Nytt galleri</a>
+
+        {% include "common/includes/pagination.html" with pagination_label="Gallerisider" %}
+    </footer>
+</article>
+{% endblock page %}
+
+{% block js %}
+    <script src="https://cdn.jsdelivr.net/npm/bigpicture@2.6.1/dist/BigPicture.min.js" integrity="sha256-OsbS8Cw/fMpgT6GBFfqhvmX9yJLwzE6+me56KzpSbAs=" crossorigin="anonymous"></script>
+    {% load static %}
+    <script src="{% static "common/js/lightbox.js" %}"></script>
+{% endblock js %}

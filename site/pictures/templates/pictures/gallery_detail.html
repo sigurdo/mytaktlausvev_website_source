@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}{{ gallery.title }}{% endblock %}
+
+
+{% block page %}
+<article>
+    <header>
+        {% include "common/includes/breadcrumbs.html" with breadcrumbs=breadcrumbs only %}
+
+        <h1>{{ gallery }}</h1>
+
+        {% include "common/includes/created_modified.html" with object=gallery only %}
+    </header>
+
+    <p>
+        <strong>Dato:</strong>
+        <time datetime="{{ gallery.date | date:"c" }}">{{ gallery.date }}</time>
+        {% if gallery.date_to %}
+        - <time datetime="{{ gallery.date_to | date:"c" }}">{{ gallery.date_to }}</time>
+        {% endif %}
+    </p>
+
+    {% load markdown %}
+    {{ gallery.content | markdown }}
+
+    <ul class="list-unstyled d-flex flex-wrap justify-content-center">
+    {% for image in images %}
+        <li class="d-flex justify-content-center align-items-center m-3 h-52">
+            {% include "pictures/includes/image.html" with image=image bp_gallery=gallery.slug only %}
+        </li>
+    {% endfor %}
+    </ul>
+
+    <footer>
+        <ul class="list-inline">
+            <li class="list-inline-item">
+                <a
+                    href="{% url 'pictures:GalleryUpdate' gallery.slug %}"
+                    class="btn btn-primary"
+                >
+                    Rediger galleri
+                </a>
+            </li>
+            <li class="list-inline-item">
+                <a
+                    href="{% url 'pictures:ImageCreate' gallery.slug %}"
+                    class="btn btn-primary"
+                >
+                    Last opp bilete
+                </a>
+            </li>
+        </ul>
+
+        {% include "common/includes/pagination.html" with pagination_label="Biletesider" %}
+    </footer>
+
+    {% load comments %}
+    {% comment_list gallery %}
+</article>
+{% endblock %}
+
+{% block js %}
+    <script
+        src="https://cdn.jsdelivr.net/npm/bigpicture@2.6.1/dist/BigPicture.min.js"
+        integrity="sha256-OsbS8Cw/fMpgT6GBFfqhvmX9yJLwzE6+me56KzpSbAs="
+        crossorigin="anonymous"
+    ></script>
+    {% load static %}
+    <script src="{% static "common/js/lightbox.js" %}"></script>
+{% endblock js %}

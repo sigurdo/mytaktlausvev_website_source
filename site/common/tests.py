@@ -11,7 +11,7 @@ from comments.models import Comment
 from sheetmusic.factories import PdfFactory
 
 from .mixins import TestMixin
-from .templatetags.utils import filename, verbose_name
+from .templatetags.utils import contained_in, filename, verbose_name
 from .test_utils import test_image, test_pdf, test_txt_file
 from .validators import FileTypeValidator
 
@@ -30,6 +30,19 @@ class TemplateUtilsTestSuite(TestMixin, TestCase):
         expected = basename(pdf.file.name)
         actual = filename(pdf.file)
         self.assertEqual(expected, actual)
+
+    def test_contained_in_true(self):
+        """Should return `True` when the list is contained in the container."""
+        self.assertTrue(contained_in([1], [1, 2, 3]))
+        self.assertTrue(contained_in([1, 2], [1, 2, 3]))
+        self.assertTrue(contained_in([3, 1], [1, 2, 3]))
+        self.assertTrue(contained_in([], [1, 2, 3]))
+
+    def test_contained_in_false(self):
+        """Should return `False` when the list isn't contained in the container."""
+        self.assertFalse(contained_in([4], [1, 2, 3]))
+        self.assertFalse(contained_in([1, 2, 3, 4], [1, 2, 3]))
+        self.assertFalse(contained_in(["1"], [1, 2, 3]))
 
 
 class FileTypeValidatorTestSuite(TestCase):

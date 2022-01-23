@@ -20,3 +20,9 @@ def get_range(length):
 @register.filter
 def filename(file):
     return basename(file.name)
+
+
+@register.filter
+def contained_in(list, container):
+    """Returns whether all elements of `list` are also in `container`."""
+    return all(element in container for element in list)

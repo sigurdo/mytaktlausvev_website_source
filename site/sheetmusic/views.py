@@ -37,6 +37,27 @@ from .forms import (
 from .models import FavoritePart, Part, Pdf, Score
 
 
+def nav_tabs_score_edit(score):
+    """Returns nav tabs for editing a score."""
+    return [
+        {
+            "url": reverse("sheetmusic:ScoreUpdate", args=[score.slug]),
+            "name": "Generelt",
+            "permissions": ["sheetmusic.change_score"],
+        },
+        {
+            "url": reverse("sheetmusic:PdfsUpdate", args=[score.slug]),
+            "name": "PDFar",
+            "permissions": ["sheetmusic.delete_pdf"],
+        },
+        {
+            "url": reverse("sheetmusic:PdfsUpload", args=[score.slug]),
+            "name": "PDF-opplasting",
+            "permissions": ["sheetmusic.add_pdf", "sheetmusic.add_part"],
+        },
+    ]
+
+
 class ScoreView(LoginRequiredMixin, DetailView):
     model = Score
 
@@ -56,8 +77,12 @@ class ScoreView(LoginRequiredMixin, DetailView):
 class ScoreUpdate(PermissionRequiredMixin, UpdateView):
     model = Score
     form_class = ScoreForm
-    template_name = "sheetmusic/score_edit.html"
+    template_name = "common/form.html"
     permission_required = "sheetmusic.change_score"
+
+    def get_context_data(self, **kwargs):
+        kwargs["nav_tabs"] = nav_tabs_score_edit(self.object)
+        return super().get_context_data(**kwargs)
 
     def form_valid(self, form):
         form.instance.modified_by = self.request.user
@@ -216,7 +241,7 @@ class PdfsUpdate(
 ):
     model = Score
     form_class = EditPdfFormset
-    template_name = "sheetmusic/score_edit.html"
+    template_name = "common/form.html"
     context_object_name = "score"
     permission_required = "sheetmusic.delete_pdf"
 
@@ -242,23 +267,30 @@ class PdfsUpdate(
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         kwargs["helper"] = EditPdfFormsetHelper()
+        kwargs["nav_tabs"] = nav_tabs_score_edit(self.object)
         return super().get_context_data(**kwargs)
 
 
 class PdfsUpload(PermissionRequiredMixin, FormView):
     form_class = UploadPdfForm
-    template_name = "sheetmusic/score_edit.html"
+    template_name = "common/form.html"
     context_object_name = "score"
     permission_required = ("sheetmusic.add_pdf", "sheetmusic.add_part")
 
-    def get_object(self):
-        return get_object_or_404(Score, slug=self.kwargs["slug"])
+    score = None
+
+    def get_score(self):
+        if not self.score:
+            self.score = get_object_or_404(Score, slug=self.kwargs["slug"])
+        return self.score
 
     def get_success_url(self) -> str:
-        return self.get_object().get_absolute_url()
+        return self.get_score().get_absolute_url()
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
-        kwargs[self.context_object_name] = self.get_object()
+        kwargs[self.context_object_name] = self.get_score()
+        kwargs["object"] = self.get_score()
+        kwargs["nav_tabs"] = nav_tabs_score_edit(self.get_score())
         return super().get_context_data(**kwargs)
 
     def form_valid(self, form: BaseModelForm) -> HttpResponse:

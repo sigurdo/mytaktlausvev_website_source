@@ -1,0 +1,11 @@
+<img
+    class="mh-100 mw-100 cursor-pointer"
+    data-toggle="lightbox"
+    src="{{ image.image.url }}"
+    data-href="{{ image.image.url }}"
+    alt="{{ image.description }}"
+    title="{{ image.description }}"
+    data-caption="{{ image.description }}"
+    {% if bp_gallery %}data-gallery="{{ bp_gallery }}"{% endif %}
+    loading="lazy"
+/>

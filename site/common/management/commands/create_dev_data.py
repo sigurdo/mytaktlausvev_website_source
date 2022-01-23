@@ -1,6 +1,9 @@
 from datetime import date, datetime, time, timedelta
 
+from django.conf import settings
+from django.contrib.sites.models import Site
 from django.core.management.base import BaseCommand
+from django.urls import reverse
 from django.utils.timezone import make_aware
 
 from accounts.models import UserCustom
@@ -17,6 +20,7 @@ from instruments.factories import (
 from instruments.models import Instrument
 from navbar.factories import NavbarItemFactory
 from navbar.models import NavbarItem
+from pictures.factories import GalleryFactory, ImageFactory
 from polls.factories import ChoiceFactory, PollFactory, VoteFactory
 from uniforms.factories import JacketFactory, JacketLocationFactory, JacketUserFactory
 from uniforms.models import Jacket
@@ -24,6 +28,11 @@ from uniforms.models import Jacket
 
 class Command(BaseCommand):
     def handle(self, **options):
+        Site.objects.update_or_create(
+            id=settings.SITE_ID,
+            defaults={"domain": "localhost:8000", "name": "localhost"},
+        )
+
         superuser = UserCustom.objects.create_superuser(
             "leiar", "leiar@taktlaus.no", "password"
         )
@@ -46,15 +55,15 @@ class Command(BaseCommand):
             membership_status=UserCustom.MembershipStatus.RETIRED,
         )
 
-        ArticleFactory(
+        article_about = ArticleFactory(
             title="Om oss",
             content="Dette er ein artikkel om oss",
             public=True,
             comments_allowed=False,
             created_by=superuser,
             modified_by=superuser,
-        ).save()
-        songar = ArticleFactory(
+        )
+        article_songs = ArticleFactory(
             title="Songar",
             content="Eit knippe songar.",
             public=True,
@@ -62,7 +71,6 @@ class Command(BaseCommand):
             created_by=superuser,
             modified_by=superuser,
         )
-        songar.save()
         ArticleFactory(
             title="Calypso",
             content="Tanken går til den skjønne vår\nda jeg sang i mannskoret Polyfon,\ntil den turne da vi dro avsted\nmed lokaltog fra Trondheims sentralstasjon.",
@@ -70,16 +78,16 @@ class Command(BaseCommand):
             comments_allowed=True,
             created_by=superuser,
             modified_by=superuser,
-            parent=songar,
-        ).save()
-        ArticleFactory(
+            parent=article_songs,
+        )
+        article_wiki = ArticleFactory(
             title="Wiki",
             content="Informasjon til Taktlause.",
             public=True,
             comments_allowed=True,
             created_by=superuser,
             modified_by=superuser,
-        ).save()
+        )
         ArticleFactory(
             title="Kalenderfeed-vegvisar",
             content="Importer kalenderfeeden frå [denne](/hendingar/taktlaushendingar.ics) lenkja i kalender-appen din og sett han opp til å oppdatere seg automatisk.",
@@ -89,8 +97,8 @@ class Command(BaseCommand):
             modified_by=superuser,
         )
 
-        ContactCategoryFactory(name="Generelt").save()
-        ContactCategoryFactory(name="Bli med!").save()
+        ContactCategoryFactory(name="Generelt")
+        ContactCategoryFactory(name="Bli med!")
 
         event = EventFactory(
             title="SMASH",
@@ -99,7 +107,6 @@ class Command(BaseCommand):
             modified_by=superuser,
             start_time=make_aware(datetime.now() + timedelta(365)),
         )
-        event.save()
         EventAttendanceFactory(
             event=event, person=superuser, status=Attendance.ATTENDING
         )
@@ -249,20 +256,30 @@ class Command(BaseCommand):
         VoteFactory(choice=choice_juff, user=member)
         VoteFactory(choice=choice_juff, user=aspirant)
         VoteFactory(choice=choice_tuba, user=retiree)
+
+        gallery = GalleryFactory(
+            title="The Book of Blue",
+            content="Blue is all around",
+            created_by=superuser,
+            modified_by=aspirant,
+        )
+        for _ in range(3):
+            ImageFactory(gallery=gallery)
+
         NavbarItemFactory(
             text="Julekalender",
-            link="/julekalender/",
+            link=reverse("advent_calendar:AdventCalendarList"),
             order=0,
             requires_login=True,
         )
         NavbarItemFactory(
             text="Om oss",
-            link="/om-oss/",
+            link=article_about.get_absolute_url(),
             order=1,
         )
         NavbarItemFactory(
             text="Hendingar",
-            link="/hendingar/",
+            link=reverse("events:EventList"),
             order=1.5,
             requires_login=True,
         )
@@ -273,17 +290,23 @@ class Command(BaseCommand):
         )
         NavbarItemFactory(
             text="Alle notar",
-            link="/notar/",
+            link=reverse("sheetmusic:ScoreList"),
             order=1,
             requires_login=True,
             parent=sheetmusic_dropdown,
         )
         NavbarItemFactory(
             text="Repertoar",
-            link="/repertoar/",
+            link=reverse("repertoire:RepertoireList"),
             order=2,
             requires_login=True,
             parent=sheetmusic_dropdown,
+        )
+        NavbarItemFactory(
+            text="Foto",
+            link=reverse("pictures:GalleryList"),
+            order=2.5,
+            requires_login=True,
         )
         admin_dropdown = NavbarItemFactory(
             text="Administrasjon",
@@ -292,28 +315,28 @@ class Command(BaseCommand):
         )
         NavbarItemFactory(
             text="Administrasjonspanel",
-            link="/admin/",
+            link=reverse("admin:index"),
             order=1,
             requires_login=True,
             parent=admin_dropdown,
         )
         NavbarItemFactory(
             text="Instrument",
-            link="/instrument/",
+            link=reverse("instruments:InstrumentList"),
             order=2,
             requires_login=True,
             parent=admin_dropdown,
         )
         NavbarItemFactory(
             text="Uniformar",
-            link="/uniformer/",
+            link=reverse("uniforms:JacketList"),
             order=3,
             requires_login=True,
             parent=admin_dropdown,
         )
         NavbarItemFactory(
             text="Opprett artikkel",
-            link="/artiklar/ny/",
+            link=reverse("articles:ArticleCreate"),
             order=4,
             parent=admin_dropdown,
             permissions=["articles.add_article"],
@@ -325,34 +348,34 @@ class Command(BaseCommand):
         )
         NavbarItemFactory(
             text="Songar",
-            link="/songar/",
+            link=article_songs.get_absolute_url(),
             order=1,
             parent=other_dropdown,
         )
         NavbarItemFactory(
             text="Sitat",
-            link="/sitat/",
+            link=reverse("quotes:quotes"),
             order=2,
             requires_login=True,
             parent=other_dropdown,
         )
         NavbarItemFactory(
             text="Wiki",
-            link="/wiki/",
+            link=article_wiki.get_absolute_url(),
             order=2.5,
             requires_login=True,
             parent=other_dropdown,
         )
         NavbarItemFactory(
             text="Forum",
-            link="/forum/",
+            link=reverse("forum:ForumList"),
             order=2.6,
             requires_login=True,
             parent=other_dropdown,
         )
         NavbarItemFactory(
             text="Buttonpdfgenerator",
-            link="/buttons/",
+            link=reverse("buttons:ButtonsView"),
             order=3,
             parent=other_dropdown,
         )

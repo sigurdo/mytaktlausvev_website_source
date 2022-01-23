@@ -1,13 +1,13 @@
 @import "bootswatch/dist/flatly/variables";
 @import "variables";
 @import "variables-light";
+@import "utilities";
 @import "bootstrap/scss/bootstrap.scss";
 @import "bootswatch/dist/flatly/bootswatch";
 
 @import "codestyle-default.scss";
 
 @import "base";
-@import "utilities";
 
 // Flatly changes these colors to the link color, which is really ugly...
 .bg-primary {

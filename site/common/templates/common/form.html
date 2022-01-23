@@ -37,6 +37,10 @@
         </h1>
     </header>
 
+    {% if nav_tabs %}
+        {% include "common/includes/nav_tabs.html" %}
+    {% endif %}
+
     {% block form %}
         {% if form and formset %}
         <form method="post">
