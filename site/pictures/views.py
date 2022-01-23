@@ -74,7 +74,7 @@ class GalleryDetail(LoginRequiredMixin, ListView):
 
 
 class GalleryCreate(LoginRequiredMixin, CreateView):
-    """View for creating an gallery."""
+    """View for creating a gallery."""
 
     model = Gallery
     form_class = GalleryForm

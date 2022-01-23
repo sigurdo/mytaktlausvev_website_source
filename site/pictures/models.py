@@ -65,7 +65,7 @@ class Image(Model):
         "rekkjefølgje",
         default=0,
         help_text=(
-            "Definerer rekkjefølgja til bilete. "
+            "Definerer rekkjefølgja til biletet. "
             "Bilete med lik rekkjefølgje vert sortert etter tidspunkt for opplasting."
         ),
     )
