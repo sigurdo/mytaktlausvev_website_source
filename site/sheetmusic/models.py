@@ -12,6 +12,7 @@ from django.db.models import (
     BooleanField,
     CharField,
     DateTimeField,
+    F,
     FileField,
     ForeignKey,
     IntegerField,
@@ -29,6 +30,7 @@ from sheatless import predict_parts_in_pdf
 
 from common.models import ArticleMixin
 from common.validators import FileTypeValidator
+from instruments.models import InstrumentType
 from web.settings import TESSDATA_DIR
 
 
@@ -73,6 +75,12 @@ class Score(ArticleMixin):
 
     def get_absolute_url(self):
         return reverse("sheetmusic:ScoreView", kwargs={"slug": self.slug})
+
+    def find_user_part(self, user):
+        favorite_parts = Part.objects.filter(favoring_users__user=user, pdf__score=self)
+        if favorite_parts.exists():
+            return favorite_parts.first()
+        return Part.objects.filter(pdf__score=self).first()
 
     def favorite_parts_pdf_file(self, user):
         """Returns the PDF that contains user's favorite parts on this score"""
@@ -187,7 +195,7 @@ class Pdf(Model):
                 )
             for part in parts:
                 part = Part(
-                    name=part["name"],
+                    note=part["name"],
                     pdf=self,
                     from_page=part["fromPage"],
                     to_page=part["toPage"],
@@ -210,7 +218,14 @@ def pdf_pre_delete_receiver(sender, instance: Pdf, using, **kwargs):
 class Part(Model):
     """Model representing a part"""
 
-    name = CharField("namn", max_length=255)
+    instrument_type = ForeignKey(
+        InstrumentType,
+        verbose_name="instrumenttype",
+        related_name="parts",
+        on_delete=CASCADE,
+    )
+    part_number = IntegerField(verbose_name="stemmenummer", blank=True, null=True)
+    note = CharField(verbose_name="merknad", max_length=255, blank=True)
     pdf = ForeignKey(Pdf, verbose_name="pdf", on_delete=CASCADE, related_name="parts")
     from_page = IntegerField(
         "første side", default=None, validators=[MinValueValidator(1)]
@@ -219,20 +234,29 @@ class Part(Model):
         "siste side", default=None, validators=[MinValueValidator(1)]
     )
     timestamp = DateTimeField("tidsmerke", auto_now_add=True)
+
+    def to_string(self):
+        return str(self)
+
     slug = AutoSlugField(
         verbose_name="lenkjenamn",
-        populate_from="name",
+        populate_from=to_string,
         unique_with="pdf__score__slug",
         editable=True,
     )
 
     class Meta:
-        ordering = ["name"]
+        ordering = ["instrument_type", F("part_number").asc(nulls_first=True), "note"]
         verbose_name = "stemme"
         verbose_name_plural = "stemmer"
 
     def __str__(self):
-        return self.name
+        result = str(self.instrument_type)
+        if self.part_number:
+            result += f" {self.part_number}"
+        if self.note:
+            result += f" ({self.note})"
+        return result
 
     def get_absolute_url(self):
         return reverse("sheetmusic:ScoreView", kwargs={"slug": self.pdf.score.slug})
@@ -250,7 +274,7 @@ class Part(Model):
 
     def pdf_filename(self):
         """Returns a nice filename for the PDF that contains only this part"""
-        return slugify(f"{self.pdf.score.title} {self.name}") + ".pdf"
+        return slugify(f"{self.pdf.score.title} {self}") + ".pdf"
 
     def is_favorite_for(self, user):
         return user.favorite_parts.filter(part=self).exists()

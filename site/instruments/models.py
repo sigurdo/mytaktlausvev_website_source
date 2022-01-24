@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db.models import (
+    CASCADE,
     RESTRICT,
     SET_NULL,
     CharField,
@@ -19,6 +20,25 @@ class InstrumentGroup(Model):
     class Meta:
         verbose_name = "instrumentgruppe"
         verbose_name_plural = "instrumentgrupper"
+        ordering = ["name"]
+
+
+class InstrumentType(Model):
+    name = CharField(max_length=255, verbose_name="namn", unique=True)
+    group = ForeignKey(
+        InstrumentGroup,
+        verbose_name="instrumentgruppe",
+        related_name="types",
+        on_delete=CASCADE,
+    )
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = "instrumenttype"
+        verbose_name_plural = "instrumenttyper"
+        ordering = ["name"]
 
 
 class InstrumentLocation(Model):

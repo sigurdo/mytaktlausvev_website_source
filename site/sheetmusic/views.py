@@ -152,7 +152,7 @@ class PartsUpdate(
         # the parts that are related to the current pdf.
         kwargs = super().get_form_kwargs()
         kwargs["queryset"] = Part.objects.filter(pdf=self.get_object()).order_by(
-            "from_page", "to_page", "name"
+            "from_page", "to_page", "instrument_type", "part_number"
         )
         return kwargs
 
@@ -201,7 +201,7 @@ class PartsUpdateAll(
         # the parts that are related to the current score.
         kwargs = super().get_form_kwargs()
         kwargs["queryset"] = Part.objects.filter(pdf__score=self.get_object()).order_by(
-            "pdf", "from_page", "to_page", "name"
+            "pdf", "from_page", "to_page", "instrument_type", "part_number"
         )
         return kwargs
 
@@ -312,7 +312,7 @@ class PdfsUpload(PermissionRequiredMixin, FormView):
                 case "filename":
                     predicted_name = os.path.splitext(os.path.basename(file.name))[0]
                     Part(
-                        name=predicted_name,
+                        note=predicted_name,
                         pdf=pdf,
                         from_page=1,
                         to_page=pdf.num_of_pages(),

@@ -1,6 +1,14 @@
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
-from django.forms import ModelForm, inlineformset_factory
+from django.forms import (
+    Form,
+    ModelChoiceField,
+    ModelForm,
+    formset_factory,
+    inlineformset_factory,
+)
+
+from sheetmusic.models import Part, Score
 
 from .models import Repertoire, RepertoireEntry
 
@@ -41,3 +49,30 @@ RepertoireEntryFormset = inlineformset_factory(
 )
 
 RepertoireEntryFormset.helper = RepertoireEntryFormsetHelper()
+
+
+class RepertoirePdfForm(Form):
+    """
+    Form for an entry (pair of score and part) for generating a repertoire PDF.
+    """
+
+    score = ModelChoiceField(queryset=Score.objects.all(), label="Note", disabled=True)
+    part = ModelChoiceField(queryset=Part.objects.all(), label="Stemme")
+
+    # class Meta:
+    #     widgets = {
+    #         "score": HiddenInput()
+    #     }
+
+
+class RepertoirePdfFormsetHelper(FormHelper):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.add_input(Submit("submit", "Generer PDF"))
+        self.template = "common/table_inline_formset_shade_delete.html"
+
+
+RepertoirePdfFormset = formset_factory(form=RepertoirePdfForm, extra=0)
+
+
+RepertoirePdfFormset.helper = RepertoirePdfFormsetHelper()

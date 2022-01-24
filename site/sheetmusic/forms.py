@@ -8,7 +8,6 @@ from django.forms import (
     Form,
     ModelForm,
     NumberInput,
-    TextInput,
     modelformset_factory,
 )
 
@@ -42,9 +41,10 @@ class PartsUpdateForm(ModelForm):
 
     class Meta:
         model = Part
-        fields = ["from_page", "name", "to_page"]
+        fields = ["from_page", "instrument_type", "part_number", "note", "to_page"]
+        labels = {"part_number": "Stemme-nummer"}
         widgets = {
-            "name": TextInput(attrs={"size": 30}),
+            "part_number": NumberInput(attrs={"size": 4}),
             "from_page": NumberInput(attrs={"size": 4}),
             "to_page": NumberInput(attrs={"size": 4}),
         }
@@ -76,9 +76,15 @@ class PartsUpdateAllForm(ModelForm):
 
     class Meta:
         model = Part
-        fields = ["name", "from_page", "to_page", "pdf"]
+        fields = [
+            "instrument_type",
+            "part_number",
+            "note",
+            "from_page",
+            "to_page",
+            "pdf",
+        ]
         widgets = {
-            "name": TextInput(attrs={"size": 50}),
             "from_page": NumberInput(attrs={"size": 4}),
             "to_page": NumberInput(attrs={"size": 4}),
         }

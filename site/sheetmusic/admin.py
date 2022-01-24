@@ -10,7 +10,13 @@ class ScoreAdmin(ModelAdmin):
 
 
 class PartAdmin(ModelAdmin):
-    prepopulated_fields = {"slug": ("name",)}
+    prepopulated_fields = {
+        "slug": (
+            "instrument_type",
+            "part_number",
+            "note",
+        )
+    }
 
 
 site.register(Score, ScoreAdmin)
