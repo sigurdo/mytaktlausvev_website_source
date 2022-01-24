@@ -1,18 +1,25 @@
 {% extends "base.html" %}
 
-{% block page %}
-    <h1 class="mb-3">  Lagertilgjenge </h1>
-    <table class="table table-bordered">
-        <tr>
-            <th> Namn </th>
-            <th> Studentkortnummer </th>
-            </tr>
-        {% for user in users_with_storage_access %}
-                <tr>
-                    <td> <a href="{{user.get_absolute_url}}"> {{ user.get_name }} </a> </td>
-                    <td> {{ user.student_card_number }} </td>
-                </tr>
-        {% endfor %}
-    </table>
+{% block title %}
+    Lagertilgjenge
+{% endblock title %}
 
+{% block page %}
+    <h1 class="mb-3"> Lagertilgjenge </h1>
+    <table class="table table-striped table-sm">
+        <thead>
+            <tr>
+                <th> Namn </th>
+                <th> Studentkortnummer </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users_with_storage_access %}
+                    <tr>
+                        <td> <a href="{{ user.get_absolute_url }}"> {{ user.get_name }} </a> </td>
+                        <td> {{ user.student_card_number }} </td>
+                    </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 {% endblock %}

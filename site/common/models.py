@@ -38,3 +38,18 @@ class ArticleMixin(CreatedModifiedMixin):
 
     class Meta:
         abstract = True
+
+
+class PermissionCustom(Model):
+    """
+    Model used to define custom permissions.
+    Required because permissions must be assosiated with a model.
+    """
+
+    def __str__(self):
+        return "PermissionCustom"
+
+    class Meta:
+        managed = False
+        default_permissions = ()
+        permissions = (("storage_access", "access to view storage access"),)
