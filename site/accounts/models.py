@@ -107,6 +107,3 @@ class UserCustom(AbstractUser):
         constraints = [
             UniqueConstraint(Lower("username"), name="username_case_insensitive")
         ]
-
-
-

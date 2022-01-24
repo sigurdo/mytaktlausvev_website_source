@@ -1,7 +1,6 @@
-from django.urls import include, path
-from django.contrib.auth import views as auth_views
+from django.urls import path
 
-from .views import ProfileDetail, MemberList, UserCustomCreate
+from .views import MemberList, ProfileDetail, UserCustomCreate
 
 app_name = "accounts"
 
@@ -9,5 +8,4 @@ urlpatterns = [
     path("ny/", UserCustomCreate.as_view(), name="UserCustomCreate"),
     path("profil/<slug:slug>/", ProfileDetail.as_view(), name="ProfileDetail"),
     path("", MemberList.as_view(), name="medlemmer"),
-
 ]
