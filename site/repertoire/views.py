@@ -2,11 +2,12 @@ from io import BytesIO
 
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.http import FileResponse
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.utils.text import slugify
 from django.views.generic import DetailView, FormView, ListView
 from PyPDF2 import PdfFileReader, PdfFileWriter
 
+from common.mixins import BreadcrumbsMixin
 from common.views import (
     DeleteViewCustom,
     InlineFormsetCreateView,
@@ -18,12 +19,24 @@ from .forms import RepertoireEntryFormset, RepertoireForm, RepertoirePdfFormset
 from .models import Repertoire
 
 
+class ReperoireBreadcrumbsMixin(BreadcrumbsMixin):
+    def get_breadcrumbs(self):
+        return [
+            {
+                "url": reverse("repertoire:RepertoireList"),
+                "name": "Repertoar",
+            }
+        ]
+
+
 class RepertoireList(LoginRequiredMixin, ListView):
     model = Repertoire
     context_object_name = "repertoires"
 
 
-class RepertoireCreate(PermissionRequiredMixin, InlineFormsetCreateView):
+class RepertoireCreate(
+    PermissionRequiredMixin, ReperoireBreadcrumbsMixin, InlineFormsetCreateView
+):
     model = Repertoire
     form_class = RepertoireForm
     formset_class = RepertoireEntryFormset
@@ -32,7 +45,9 @@ class RepertoireCreate(PermissionRequiredMixin, InlineFormsetCreateView):
     permission_required = "repertoire.add_repertoire"
 
 
-class RepertoireUpdate(PermissionRequiredMixin, InlineFormsetUpdateView):
+class RepertoireUpdate(
+    PermissionRequiredMixin, ReperoireBreadcrumbsMixin, InlineFormsetUpdateView
+):
     model = Repertoire
     form_class = RepertoireForm
     formset_class = RepertoireEntryFormset
@@ -41,13 +56,17 @@ class RepertoireUpdate(PermissionRequiredMixin, InlineFormsetUpdateView):
     permission_required = "repertoire.change_repertoire"
 
 
-class RepertoireDelete(PermissionRequiredMixin, DeleteViewCustom):
+class RepertoireDelete(
+    PermissionRequiredMixin, ReperoireBreadcrumbsMixin, DeleteViewCustom
+):
     model = Repertoire
     success_url = reverse_lazy("repertoire:RepertoireList")
     permission_required = "repertoire.delete_repertoire"
 
 
-class RepertoirePdf(LoginRequiredMixin, FormView, DetailView):
+class RepertoirePdf(
+    LoginRequiredMixin, ReperoireBreadcrumbsMixin, FormView, DetailView
+):
     model = Repertoire
     template_name = "repertoire/repertoire_pdf.html"
     form_class = RepertoirePdfFormset
