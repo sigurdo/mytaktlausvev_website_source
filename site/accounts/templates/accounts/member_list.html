@@ -5,7 +5,7 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs5/jq-3.6.0/dt-1.11.3/datatables.min.css"/>
 {% endblock css %}
 
-{% block title%}{{'Medlemsliste'}}{%endblock title%}
+{% block title%}Medlemsliste{%endblock title%}
 
 {% block page %}
 <article>
@@ -15,7 +15,7 @@
         <thead>
             <tr>
                 <th> </th>
-                <th>Nanm</th>
+                <th>Namn</th>
                 <th>Medlemsstatus</th>
                 <th>Instrument</th>
                 <th>E-mail</th>
@@ -24,32 +24,32 @@
             </tr>
         </thead>
         <tbody>
-            {% for medlem in medlemmer%}
+            {% for member in members%}
                  <tr>
                      <td style="width: 60px;">
                         <div class="mx-auto" style="width: 40px; height: 40px;">
                             <a
-                                href="{% url 'accounts:ProfileDetail' medlem.slug %}"
+                                href="{% url 'accounts:ProfileDetail' member.slug %}"
                                 class="d-flex justify-content-center w-100 h-100"
                             >
                                 <img
-                                    src="{{ medlem.get_avatar_url }}"
+                                    src="{{ member.get_avatar_url }}"
                                     class="object-fit-cover mw-100 mh-100"
                                 />
                             </a>
                         </div>
                     </td> 
-                     <td> <a href="{{ medlem.get_absolute_url }}">
-                        {{ medlem.get_name }}
+                     <td> <a href="{{ member.get_absolute_url }}">
+                        {{ member.get_name }}
                     </a></td>
-                     <td>{{medlem.member_status}}</td>
-                     <td>{{medlem.instrument_group}}</td>
-                     <td>{{medlem.email}}</td>
-                     <td>{{medlem.phone_number}}</td>
-                     <td>{{meldem.role}}</tr>
+                     <td>{{member.get_membership_status_display}}</td>
+                     <td>{{member.instrument_group}}</td>
+                     <td>{{member.email}}</td>
+                     <td>{{member.phone_number}}</td>
+                     <td>{{member.role}}</tr>
                  </tr >
             {% endfor %} 
-        </thbody>
+        </tbody>
     </table>
 </div>
  
