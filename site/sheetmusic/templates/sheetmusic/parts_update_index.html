@@ -5,7 +5,11 @@
 
 {% block page %}
 <article>
-    <h1> Rediger stemmer for <a href="{% url "sheetmusic:ScoreView" score.slug %}">{{score}}</a> </h1>
+    <header>
+        {% include "common/includes/breadcrumbs.html" with breadcrumbs=breadcrumbs only %}
+
+        <h1> Rediger stemmer for {{score}} </h1>
+    </header>
     <p>
         Her kan ein relativt enkelt redigere stemmer for {{score}}.
     </p>

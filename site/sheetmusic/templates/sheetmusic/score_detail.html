@@ -5,6 +5,8 @@
 {% block page %}
 <article>
     <heading class="mb-3">
+        {% include "common/includes/breadcrumbs.html" with breadcrumbs=breadcrumbs only %}
+        
         <div class="d-flex align-items-center">
             <h1 class="me-3 mb-0">{{ score.title }}</h1>
 

@@ -25,6 +25,7 @@ from django.views.generic.edit import (
     UpdateView,
 )
 
+from common.mixins import BreadcrumbsMixin
 from common.views import DeleteViewCustom
 from instruments.models import InstrumentType
 
@@ -60,8 +61,30 @@ def nav_tabs_score_edit(score):
     ]
 
 
-class ScoreView(LoginRequiredMixin, DetailView):
+def sheetmusic_breadcrumbs(score=None, parts_update_index=False):
+    breadcrumbs = [{"url": reverse("sheetmusic:ScoreList"), "name": "Alle notar"}]
+    if score:
+        breadcrumbs.append(
+            {
+                "url": reverse("sheetmusic:ScoreView", args=[score.slug]),
+                "name": str(score),
+            }
+        )
+    if parts_update_index:
+        breadcrumbs.append(
+            {
+                "url": reverse("sheetmusic:PartsUpdateIndex", args=[score.slug]),
+                "name": "Rediger stemmer",
+            }
+        )
+    return breadcrumbs
+
+
+class ScoreView(LoginRequiredMixin, BreadcrumbsMixin, DetailView):
     model = Score
+
+    def get_breadcrumbs(self):
+        return sheetmusic_breadcrumbs()
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         user = self.request.user
@@ -82,11 +105,14 @@ class ScoreView(LoginRequiredMixin, DetailView):
         return context
 
 
-class ScoreUpdate(PermissionRequiredMixin, UpdateView):
+class ScoreUpdate(PermissionRequiredMixin, BreadcrumbsMixin, UpdateView):
     model = Score
     form_class = ScoreForm
     template_name = "common/form.html"
     permission_required = "sheetmusic.change_score"
+
+    def get_breadcrumbs(self):
+        return sheetmusic_breadcrumbs(score=self.get_object())
 
     def get_context_data(self, **kwargs):
         kwargs["nav_tabs"] = nav_tabs_score_edit(self.object)
@@ -97,13 +123,16 @@ class ScoreUpdate(PermissionRequiredMixin, UpdateView):
         return super().form_valid(form)
 
 
-class ScoreDelete(PermissionRequiredMixin, DeleteViewCustom):
+class ScoreDelete(PermissionRequiredMixin, BreadcrumbsMixin, DeleteViewCustom):
     model = Score
     success_url = reverse_lazy("sheetmusic:ScoreList")
     permission_required = "sheetmusic.delete_score"
 
+    def get_breadcrumbs(self):
+        return sheetmusic_breadcrumbs(score=self.get_object())
 
-class PartsUpdateIndex(PermissionRequiredMixin, ListView):
+
+class PartsUpdateIndex(PermissionRequiredMixin, BreadcrumbsMixin, ListView):
     model = Pdf
     context_object_name = "pdfs"
     template_name = "sheetmusic/parts_update_index.html"
@@ -116,6 +145,9 @@ class PartsUpdateIndex(PermissionRequiredMixin, ListView):
         "sheetmusic.change_part",
         "sheetmusic.delete_part",
     )
+
+    def get_breadcrumbs(self):
+        return sheetmusic_breadcrumbs(score=self.score)
 
     def get_context_data(self, **kwargs):
         kwargs["score"] = self.score
@@ -131,6 +163,7 @@ class PartsUpdateIndex(PermissionRequiredMixin, ListView):
 
 class PartsUpdate(
     PermissionRequiredMixin,
+    BreadcrumbsMixin,
     FormMixin,
     SingleObjectMixin,
     TemplateResponseMixin,
@@ -149,6 +182,11 @@ class PartsUpdate(
     def get_success_url(self) -> str:
         return reverse(
             "sheetmusic:PartsUpdateIndex", args=[self.get_object().score.slug]
+        )
+
+    def get_breadcrumbs(self):
+        return sheetmusic_breadcrumbs(
+            score=self.get_object().score, parts_update_index=True
         )
 
     def get_context_data(self, **kwargs):
@@ -187,6 +225,7 @@ class PartsUpdate(
 
 class PartsUpdateAll(
     PermissionRequiredMixin,
+    BreadcrumbsMixin,
     FormMixin,
     SingleObjectMixin,
     TemplateResponseMixin,
@@ -203,6 +242,9 @@ class PartsUpdateAll(
 
     def get_success_url(self) -> str:
         return reverse("sheetmusic:PartsUpdateIndex", args=[self.get_object().slug])
+
+    def get_breadcrumbs(self):
+        return sheetmusic_breadcrumbs(score=self.get_object(), parts_update_index=True)
 
     def get_form_kwargs(self) -> Dict[str, Any]:
         # We have to override get_form_kwargs() to restrict the queryset of the formset to only
@@ -242,6 +284,7 @@ class PartsUpdateAll(
 
 class PdfsUpdate(
     PermissionRequiredMixin,
+    BreadcrumbsMixin,
     FormMixin,
     SingleObjectMixin,
     TemplateResponseMixin,
@@ -255,6 +298,9 @@ class PdfsUpdate(
 
     def get_success_url(self) -> str:
         return self.get_object().get_absolute_url()
+
+    def get_breadcrumbs(self):
+        return sheetmusic_breadcrumbs(score=self.get_object())
 
     def get_form_kwargs(self) -> Dict[str, Any]:
         # We have to override get_form_kwargs() to restrict the queryset of the formset to only
@@ -291,7 +337,7 @@ def find_instrument_type_from_filename(filename):
     return InstrumentType.objects.first()
 
 
-class PdfsUpload(PermissionRequiredMixin, FormView):
+class PdfsUpload(PermissionRequiredMixin, BreadcrumbsMixin, FormView):
     form_class = UploadPdfForm
     template_name = "common/form.html"
     context_object_name = "score"
@@ -306,6 +352,9 @@ class PdfsUpload(PermissionRequiredMixin, FormView):
 
     def get_success_url(self) -> str:
         return self.get_score().get_absolute_url()
+
+    def get_breadcrumbs(self):
+        return sheetmusic_breadcrumbs(score=self.get_score())
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         kwargs[self.context_object_name] = self.get_score()
@@ -351,7 +400,7 @@ class PdfsUpload(PermissionRequiredMixin, FormView):
         return super().form_valid(form)
 
 
-class ScoreCreate(PermissionRequiredMixin, CreateView):
+class ScoreCreate(PermissionRequiredMixin, BreadcrumbsMixin, CreateView):
     model = Score
     form_class = ScoreForm
     template_name = "common/form.html"
@@ -359,6 +408,9 @@ class ScoreCreate(PermissionRequiredMixin, CreateView):
 
     def get_success_url(self):
         return reverse("sheetmusic:PdfsUpload", args=[self.object.slug])
+
+    def get_breadcrumbs(self):
+        return sheetmusic_breadcrumbs()
 
     def form_valid(self, form):
         form.instance.created_by = self.request.user
