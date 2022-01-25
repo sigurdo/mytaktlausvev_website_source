@@ -64,15 +64,21 @@ class ScoreView(LoginRequiredMixin, DetailView):
     model = Score
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        user = self.request.user
         pdfs = Pdf.objects.filter(score=self.get_object())
         parts = Part.objects.filter(pdf__in=pdfs)
         for part in parts:
-            part.favorite = part.is_favorite_for(self.request.user)
-
+            part.favorite = part.is_favorite_for(user)
         context = super().get_context_data(**kwargs)
         context["pdfs"] = pdfs
         context["parts"] = parts
         context["parts_favorite"] = list(filter(lambda part: part.favorite, parts))
+        context["parts_instrument_group"] = list(
+            filter(
+                lambda part: part.instrument_type.group == user.instrument_type.group,
+                parts,
+            )
+        )
         return context
 
 

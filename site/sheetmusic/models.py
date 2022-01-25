@@ -76,19 +76,20 @@ class Score(ArticleMixin):
         return reverse("sheetmusic:ScoreView", kwargs={"slug": self.slug})
 
     def find_user_part(self, user):
-        favorite_parts = Part.objects.filter(favoring_users__user=user, pdf__score=self)
+        all_parts = Part.objects.filter(pdf__score=self)
+        favorite_parts = all_parts.filter(favoring_users__user=user)
         if favorite_parts.exists():
             return favorite_parts.first()
         if user.instrument_type:
-            instrument_parts = Part.objects.filter(instrument_type=user.instrument_type)
+            instrument_parts = all_parts.filter(instrument_type=user.instrument_type)
             if instrument_parts.exists():
                 return instrument_parts.first()
-            group_parts = Part.objects.filter(
+            group_parts = all_parts.filter(
                 instrument_type__group=user.instrument_type.group
             )
             if group_parts.exists():
                 return group_parts.first()
-        return Part.objects.filter(pdf__score=self).first()
+        return all_parts.first()
 
     def favorite_parts_pdf_file(self, user):
         """Returns the PDF that contains user's favorite parts on this score"""

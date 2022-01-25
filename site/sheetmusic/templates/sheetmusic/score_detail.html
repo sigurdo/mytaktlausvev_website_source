@@ -66,6 +66,15 @@
     {% endif %}
 
 
+    {% if parts_instrument_group %}
+    <section>
+        <h2 class="fs-3"> {{request.user.instrument_type.group}}-stemmer </h2>
+
+        {% include "sheetmusic/includes/table_parts.html" with parts=parts_instrument_group only %}
+    </section>
+    {% endif %}
+
+
     {% if parts %}
     <section>
         <h2 class="fs-3"> Alle stemmer </h2>

@@ -1,0 +1,25 @@
+{% extends "common/form.html" %}
+
+{% block container_class %}container-fluid{% endblock container_class %}
+
+{% block form %}
+<div class="row">
+    <div class="col-lg-6 d-none d-lg-block">
+        <iframe class="sticky-top w-100" id="pdf-iframe" src=""></iframe>
+    </div>
+    <section class="col-lg-6 col-12">
+        {% load crispy_forms_tags %}
+        {% crispy form %}
+    </section>
+</div>
+{% endblock form %}
+
+{% block css %}
+    {% load sass_tags %}
+	<link href="{% sass_src 'sheetmusic/parts_update_form.scss' %}" rel="stylesheet" type="text/css">
+{% endblock css %}
+
+{% block js %}
+{% load static %}
+<script src={% static 'repertoire/repertoire_pdf.js' %}></script>
+{% endblock js %}

@@ -44,7 +44,7 @@ class RepertoireDelete(PermissionRequiredMixin, DeleteViewCustom):
 
 class RepertoirePdf(LoginRequiredMixin, FormView, DetailView):
     model = Repertoire
-    template_name = "common/form.html"
+    template_name = "repertoire/repertoire_pdf.html"
     form_class = RepertoirePdfFormset
 
     def get_initial(self):

@@ -3,10 +3,12 @@ from crispy_forms.layout import Submit
 from django.forms import (
     Form,
     ModelChoiceField,
+    Select,
     ModelForm,
     formset_factory,
     inlineformset_factory,
 )
+from django.urls import reverse
 
 from sheetmusic.models import Part, Score
 
@@ -51,18 +53,42 @@ RepertoireEntryFormset = inlineformset_factory(
 RepertoireEntryFormset.helper = RepertoireEntryFormsetHelper()
 
 
+class PartChoiceWidget(Select):
+    def create_option(self, name, value, label, selected, index, subindex=None, attrs=None):
+        # This allows using strings labels as usual
+        if isinstance(label, dict):
+            opt_attrs = label.copy()
+            label = opt_attrs.pop("label")
+        else: 
+            opt_attrs = {}
+        option_dict = super().create_option(name, value, label, selected, index, subindex=subindex, attrs=attrs)
+        for key,val in opt_attrs.items():
+            option_dict["attrs"][key] = val
+        return option_dict
+
+class PartChoiceField(ModelChoiceField):
+    """
+    ChoiceField that puts data-pdf-url on <option>s.
+    Waterfall-boiled from https://stackoverflow.com/a/63293300/9395922
+    """
+    widget = PartChoiceWidget
+
+    def label_from_instance(self, part):
+        return {
+            # the usual label:
+            "label": super().label_from_instance(part),
+            # the new data attribute:
+            "data-pdf-url": reverse("sheetmusic:PartPdf", args=[part.pdf.score.slug, part.slug]),
+        }
+
+
 class RepertoirePdfForm(Form):
     """
     Form for an entry (pair of score and part) for generating a repertoire PDF.
     """
 
     score = ModelChoiceField(queryset=Score.objects.all(), label="Note", disabled=True)
-    part = ModelChoiceField(queryset=Part.objects.all(), label="Stemme")
-
-    # class Meta:
-    #     widgets = {
-    #         "score": HiddenInput()
-    #     }
+    part = PartChoiceField(queryset=Part.objects.all(), label="Stemme")
 
 
 class RepertoirePdfFormsetHelper(FormHelper):
