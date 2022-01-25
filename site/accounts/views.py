@@ -42,8 +42,8 @@ class ProfileDetail(LoginRequiredMixin, DetailView):
     template_name = "accounts/profile_detail.html"
     context_object_name = "profile"
 
-class MemberList(ListView):
+class MemberList(LoginRequiredMixin, ListView):
 
     model= UserCustom
     template_name = "accounts/member_list.html"
-    context_object_name = "medlemmer"
+    context_object_name = "members"
