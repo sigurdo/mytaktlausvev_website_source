@@ -5,9 +5,9 @@
 {% block page %}
 <article>
     <h1 class="text-center">{{ profile.get_name }}</h1>
-    {% if profile.instrument_group %}
+    {% if profile.instrument_type %}
     <p>
-        Instrumentgruppe: {{ profile.instrument_group }}
+        Instrumentgruppe: {{ profile.instrument_type.group }} ({{ profile.instrument_type }})
     </p>
     {% endif %}
     {% if profile.instruments.exists %}

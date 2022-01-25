@@ -55,6 +55,12 @@ class Command(BaseCommand):
             "password",
             membership_status=UserCustom.MembershipStatus.RETIRED,
         )
+        musical_leader = UserCustom.objects.create_user(
+            "musikalsk",
+            "muikalsk@taktlaus.no",
+            "password",
+            membership_status=UserCustom.MembershipStatus.ACTIVE,
+        )
 
         article_about = ArticleFactory(
             title="Om oss",
@@ -172,8 +178,9 @@ class Command(BaseCommand):
         juff = InstrumentGroupFactory(name="Juff")
         tuba = InstrumentGroupFactory(name="Tuba")
         drums = InstrumentGroupFactory(name="Slagverk")
+        synthesizer = InstrumentGroupFactory(name="Synthesizer")
         InstrumentTypeFactory(name="Piccolo", group=flute)
-        InstrumentTypeFactory(name="Fløyte", group=flute)
+        type_flute = InstrumentTypeFactory(name="Fløyte", group=flute)
         InstrumentTypeFactory(name="Obo", group=flute)
         InstrumentTypeFactory(name="Klarinett", group=clarinet)
         InstrumentTypeFactory(name="Bassklarinett", group=clarinet)
@@ -191,7 +198,6 @@ class Command(BaseCommand):
         InstrumentTypeFactory(name="Trombone", group=trombone)
         InstrumentTypeFactory(name="Soprantrombone", group=trombone)
         InstrumentTypeFactory(name="Basstrombone", group=trombone)
-        InstrumentTypeFactory(name="Cimbasso", group=trombone)
         InstrumentTypeFactory(name="Eufonium", group=juff)
         InstrumentTypeFactory(name="Baryton", group=juff)
         InstrumentTypeFactory(name="Tuba", group=tuba)
@@ -202,17 +208,22 @@ class Command(BaseCommand):
         InstrumentTypeFactory(name="Kubjelle", group=drums)
         InstrumentTypeFactory(name="Tamburin", group=drums)
         InstrumentTypeFactory(name="Triangel", group=drums)
+        InstrumentTypeFactory(name="Perkusjon", group=drums)
+        type_grand_piano = InstrumentTypeFactory(name="Flygel", group=drums)
+        type_synthesizer = InstrumentTypeFactory(name="Synthesizer", group=synthesizer)
         main_storage = InstrumentLocationFactory(name="Hovedskapet")
         InstrumentLocationFactory(name="Styreskapet")
         InstrumentLocationFactory(name="Saunaen")
         InstrumentLocationFactory(name="Tatt med hjem")
-        member.instrument_group = flute
+        member.instrument_type = type_flute
         member.save()
         InstrumentFactory(
             name="Piccolo 1", group=flute, user=member, location=main_storage
         )
-        superuser.instrument_group = trumpet
+        superuser.instrument_type = type_synthesizer
         superuser.save()
+        musical_leader.instrument_type = type_grand_piano
+        musical_leader.save()
         InstrumentFactory(
             name="Piccolotrompet", group=trumpet, user=superuser, location=main_storage
         )

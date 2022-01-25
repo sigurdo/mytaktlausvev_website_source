@@ -4,6 +4,7 @@
 import json
 import os
 import threading
+from difflib import SequenceMatcher
 from typing import Any, Dict
 
 import django
@@ -25,6 +26,7 @@ from django.views.generic.edit import (
 )
 
 from common.views import DeleteViewCustom
+from instruments.models import InstrumentType
 
 from .forms import (
     EditPdfFormset,
@@ -271,6 +273,18 @@ class PdfsUpdate(
         return super().get_context_data(**kwargs)
 
 
+def find_instrument_type_from_filename(filename):
+    filename = filename.lower()
+    sequence_matcher = SequenceMatcher()
+    for instrument_type in InstrumentType.objects.all():
+        sequence_matcher.set_seq1(instrument_type.name.lower())
+        for i in range(max(1, len(filename) - len(instrument_type.name) + 1)):
+            sequence_matcher.set_seq2(filename[i : i + len(instrument_type.name)])
+            if sequence_matcher.ratio() > 0.8:
+                return instrument_type
+    return InstrumentType.objects.first()
+
+
 class PdfsUpload(PermissionRequiredMixin, FormView):
     form_class = UploadPdfForm
     template_name = "common/form.html"
@@ -305,23 +319,26 @@ class PdfsUpload(PermissionRequiredMixin, FormView):
                     # server does not return a response before the PDF is done processing
                     plz_wait = self.request.POST.get("plz_wait", False)
                     if plz_wait:
-                        pdf.find_parts()
+                        pdf.find_parts_with_sheatless()
                     else:
-                        processPdfsThread = threading.Thread(target=pdf.find_parts)
+                        processPdfsThread = threading.Thread(
+                            target=pdf.find_parts_with_sheatless
+                        )
                         processPdfsThread.start()
                 case "filename":
-                    predicted_name = os.path.splitext(os.path.basename(file.name))[0]
-                    Part(
-                        note=predicted_name,
-                        pdf=pdf,
+                    filename = os.path.splitext(os.path.basename(file.name))[0]
+                    predicted_type = find_instrument_type_from_filename(filename)
+                    pdf.create_part_auto_number(
+                        instrument_type=predicted_type,
+                        note="funne automatisk",
                         from_page=1,
                         to_page=pdf.num_of_pages(),
-                    ).save()
+                    )
                 case "none":
                     pass
                 case _:
                     raise ValidationError(
-                        "Ulovleg stemmegjettingstrategi: {}".format(
+                        "Ulovleg stemmefinningsstrategi: {}".format(
                             form["part_prediction"].value()
                         )
                     )

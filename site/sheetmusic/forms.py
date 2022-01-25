@@ -124,7 +124,7 @@ class UploadPdfForm(CleanAllFilesMixin, Form):
                 "Ingen",
             ),
         ],
-        label="Gjett stemmer ved hjelp av",
+        label="Strategi for å finne stemmer automatisk",
     )
 
 

@@ -25,7 +25,7 @@ class UserAdminCustom(UserAdmin):
         ),
         (
             "Taktlaus-ting",
-            {"fields": ("membership_status", "membership_period", "instrument_group")},
+            {"fields": ("membership_status", "membership_period", "instrument_type")},
         ),
         (
             _("Permissions"),

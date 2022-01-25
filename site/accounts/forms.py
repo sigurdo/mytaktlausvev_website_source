@@ -21,7 +21,7 @@ class UserCustomCreateForm(UserCreationForm):
             "address",
             "student_card_number",
         ),
-        Fieldset("Taktlaus-ting", "instrument_group", "membership_period"),
+        Fieldset("Taktlaus-ting", "instrument_type", "membership_period"),
         Submit("submit", "Lag brukar"),
     )
 
@@ -60,7 +60,7 @@ class UserCustomCreateForm(UserCreationForm):
             "address",
             "birthdate",
             "student_card_number",
-            "instrument_group",
+            "instrument_type",
             "membership_period",
         )
         widgets = {"birthdate": DateDateInput}

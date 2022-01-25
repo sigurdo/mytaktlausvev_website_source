@@ -1,7 +1,6 @@
 """ Models for the sheetmusic-app """
 
 import io
-import multiprocessing
 import os
 
 from autoslug import AutoSlugField
@@ -26,7 +25,7 @@ from django.dispatch import receiver
 from django.urls import reverse
 from django.utils.text import slugify
 from PyPDF2 import PdfFileReader, PdfFileWriter
-from sheatless import predict_parts_in_pdf
+from sheatless import PdfPredictor
 
 from common.models import ArticleMixin
 from common.validators import FileTypeValidator
@@ -80,6 +79,15 @@ class Score(ArticleMixin):
         favorite_parts = Part.objects.filter(favoring_users__user=user, pdf__score=self)
         if favorite_parts.exists():
             return favorite_parts.first()
+        if user.instrument_type:
+            instrument_parts = Part.objects.filter(instrument_type=user.instrument_type)
+            if instrument_parts.exists():
+                return instrument_parts.first()
+            group_parts = Part.objects.filter(
+                instrument_type__group=user.instrument_type.group
+            )
+            if group_parts.exists():
+                return group_parts.first()
         return Part.objects.filter(pdf__score=self).first()
 
     def favorite_parts_pdf_file(self, user):
@@ -178,32 +186,61 @@ class Pdf(Model):
         pdf_reader = PdfFileReader(self.file.path)
         return pdf_reader.getNumPages()
 
-    def find_parts(self):
+    def find_parts_with_sheatless(self):
         self.processing = True
         self.save()
         try:
             # PDF processing is done in a separate process to not affect response time
             # of other requests the server receives while it is processing
             with open(self.file.path, "rb") as pdf_file:
-                parts, instrumentsDefaultParts = multiprocessing.Pool().apply(
-                    predict_parts_in_pdf,
-                    [pdf_file.read()],
-                    {
-                        "use_lstm": True,
-                        "tessdata_dir": TESSDATA_DIR,
-                    },
+                pdf_predictor = PdfPredictor(
+                    pdf_file.read(),
+                    use_lstm=True,
+                    tessdata_dir=TESSDATA_DIR,
+                    instruments_file=os.path.abspath(
+                        os.path.join(
+                            os.path.dirname(os.path.realpath(__file__)),
+                            "instruments.yaml",
+                        )
+                    ),
                 )
-            for part in parts:
-                part = Part(
-                    note=part["name"],
-                    pdf=self,
-                    from_page=part["fromPage"],
-                    to_page=part["toPage"],
-                )
-                part.save()
+
+            for part in pdf_predictor.parts():
+                for instrument_name in part["instruments"]:
+                    instrument_type = InstrumentType.objects.filter(
+                        name__iexact=instrument_name
+                    ).first()
+                    if not instrument_type:
+                        instrument_type = InstrumentType.objects.first()
+                    self.create_part_auto_number(
+                        instrument_type=instrument_type,
+                        note="funne automatisk",
+                        from_page=part["fromPage"],
+                        to_page=part["toPage"],
+                    )
         finally:
             self.processing = False
             self.save()
+
+    def create_part_auto_number(self, **kwargs):
+        """
+        Creates a new Part with part_number caclulated automatically.
+        """
+        part_number = None
+        other_parts_on_same_instrument = Part.objects.filter(
+            pdf__score=self.score, instrument_type=kwargs["instrument_type"]
+        ).order_by(F("part_number").asc(nulls_first=True))
+        if other_parts_on_same_instrument.exists():
+            if other_parts_on_same_instrument.count() == 1:
+                part_one = other_parts_on_same_instrument.first()
+                part_one.part_number = 1
+                part_one.save()
+            part_number = other_parts_on_same_instrument.last().part_number + 1
+        Part(
+            part_number=part_number,
+            pdf=self,
+            **kwargs,
+        ).save()
 
 
 @receiver(pre_delete, sender=Pdf, dispatch_uid="pdf_delete_images")
@@ -246,6 +283,11 @@ class Part(Model):
     )
 
     class Meta:
+        constraints = [
+            UniqueConstraint(
+                "pdf", "instrument_type", "part_number", "note", name="unique_part"
+            )
+        ]
         ordering = ["instrument_type", F("part_number").asc(nulls_first=True), "note"]
         verbose_name = "stemme"
         verbose_name_plural = "stemmer"
