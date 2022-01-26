@@ -2,14 +2,11 @@
 
 # Official python packages
 import json
-import os
-import threading
-from difflib import SequenceMatcher
 from typing import Any, Dict
 
 import django
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.forms import BaseModelForm, ValidationError
+from django.forms import BaseModelForm
 from django.http import HttpResponse
 from django.http.response import FileResponse
 from django.shortcuts import get_object_or_404
@@ -27,7 +24,6 @@ from django.views.generic.edit import (
 
 from common.mixins import BreadcrumbsMixin
 from common.views import DeleteViewCustom
-from instruments.models import InstrumentType
 
 from .forms import (
     EditPdfFormset,
@@ -194,8 +190,10 @@ class PartsUpdate(
         return super().get_context_data(**kwargs)
 
     def get_form_kwargs(self) -> Dict[str, Any]:
-        # We have to override get_form_kwargs() to restrict the queryset of the formset to only
-        # the parts that are related to the current pdf.
+        """
+        We have to override get_form_kwargs() to restrict the queryset of the formset to only
+        the parts that are related to the current pdf.
+        """
         kwargs = super().get_form_kwargs()
         kwargs["queryset"] = Part.objects.filter(pdf=self.get_object()).order_by(
             "from_page", "to_page", "instrument_type", "part_number"
@@ -206,19 +204,25 @@ class PartsUpdate(
         return Pdf.objects.filter(score__slug=self.kwargs["score_slug"])
 
     def form_valid(self, form):
-        # We must explicitly save the form because it is not done automatically by any ancestors
+        """
+        We must explicitly save the form because it is not done automatically by any ancestors.
+        """
         for subform in form.forms:
             subform.instance.pdf = self.get_object()
         form.save()
         return super().form_valid(form)
 
     def post(self, *args, **kwargs):
-        # We must set self.object here to be compatible with SingleObjectMixin
+        """
+        We must set self.object here to be compatible with SingleObjectMixin.
+        """
         self.object = self.get_object()
         return super().post(*args, **kwargs)
 
     def get(self, *args, **kwargs):
-        # We must set self.object here to be compatible with SingleObjectMixin
+        """
+        We must set self.object here to be compatible with SingleObjectMixin.
+        """
         self.object = self.get_object()
         return super().get(*args, **kwargs)
 
@@ -247,8 +251,10 @@ class PartsUpdateAll(
         return sheetmusic_breadcrumbs(score=self.get_object(), parts_update_index=True)
 
     def get_form_kwargs(self) -> Dict[str, Any]:
-        # We have to override get_form_kwargs() to restrict the queryset of the formset to only
-        # the parts that are related to the current score.
+        """
+        We have to override get_form_kwargs() to restrict the queryset of the formset to only
+        the parts that are related to the current score.
+        """
         kwargs = super().get_form_kwargs()
         kwargs["queryset"] = Part.objects.filter(pdf__score=self.get_object()).order_by(
             "pdf", "from_page", "to_page", "instrument_type", "part_number"
@@ -260,24 +266,32 @@ class PartsUpdateAll(
         return super().get_context_data(**kwargs)
 
     def get_form(self, **kwargs) -> BaseModelForm:
-        # Here we have to modify the queryset of each subform of the formset
+        """
+        Here we have to modify the queryset of each subform of the formset.
+        """
         formset = super().get_form(**kwargs)
         for form in formset.forms:
             form.fields["pdf"].queryset = self.get_object().pdfs
         return formset
 
     def form_valid(self, form):
-        # We must explicitly save the form because it is not done automatically by any ancestors
+        """
+        We must explicitly save the form because it is not done automatically by any ancestors.
+        """
         form.save()
         return super().form_valid(form)
 
     def post(self, *args, **kwargs):
-        # We must set self.object here to be compatible with SingleObjectMixin
+        """
+        We must set self.object here to be compatible with SingleObjectMixin.
+        """
         self.object = self.get_object()
         return super().post(*args, **kwargs)
 
     def get(self, *args, **kwargs):
-        # We must set self.object here to be compatible with SingleObjectMixin
+        """
+        We must set self.object here to be compatible with SingleObjectMixin.
+        """
         self.object = self.get_object()
         return super().get(*args, **kwargs)
 
@@ -303,19 +317,25 @@ class PdfsUpdate(
         return sheetmusic_breadcrumbs(score=self.get_object())
 
     def get_form_kwargs(self) -> Dict[str, Any]:
-        # We have to override get_form_kwargs() to restrict the queryset of the formset to only
-        # the parts that are related to the current score.
+        """
+        We have to override get_form_kwargs() to restrict the queryset of the formset to only
+        the parts that are related to the current score.
+        """
         kwargs = super().get_form_kwargs()
         kwargs["queryset"] = self.get_object().pdfs.all()
         return kwargs
 
     def form_valid(self, form):
-        # We must explicitly save the form because it is not done automatically by any ancestors
+        """
+        We must explicitly save the form because it is not done automatically by any ancestors.
+        """
         form.save()
         return super().form_valid(form)
 
     def get(self, *args, **kwargs):
-        # We must set self.object here to be compatible with SingleObjectMixin
+        """
+        We must set self.object here to be compatible with SingleObjectMixin.
+        """
         self.object = self.get_object()
         return super().get(*args, **kwargs)
 
@@ -323,18 +343,6 @@ class PdfsUpdate(
         kwargs["helper"] = EditPdfFormsetHelper()
         kwargs["nav_tabs"] = nav_tabs_score_edit(self.object)
         return super().get_context_data(**kwargs)
-
-
-def find_instrument_type_from_filename(filename):
-    filename = filename.lower()
-    sequence_matcher = SequenceMatcher()
-    for instrument_type in InstrumentType.objects.all():
-        sequence_matcher.set_seq1(instrument_type.name.lower())
-        for i in range(max(1, len(filename) - len(instrument_type.name) + 1)):
-            sequence_matcher.set_seq2(filename[i : i + len(instrument_type.name)])
-            if sequence_matcher.ratio() > 0.8:
-                return instrument_type
-    return InstrumentType.objects.first()
 
 
 class PdfsUpload(PermissionRequiredMixin, BreadcrumbsMixin, FormView):
@@ -363,40 +371,8 @@ class PdfsUpload(PermissionRequiredMixin, BreadcrumbsMixin, FormView):
         return super().get_context_data(**kwargs)
 
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
-        for file in form.files.getlist("files"):
-            score = Score.objects.get(slug=self.kwargs["slug"])
-            pdf = Pdf.objects.create(
-                score=score, file=file, filename_original=file.name
-            )
-            match form["part_prediction"].value():
-                case "sheatless":
-                    # plz_wait is a simple hack used only by the test framework so that the
-                    # server does not return a response before the PDF is done processing
-                    plz_wait = self.request.POST.get("plz_wait", False)
-                    if plz_wait:
-                        pdf.find_parts_with_sheatless()
-                    else:
-                        processPdfsThread = threading.Thread(
-                            target=pdf.find_parts_with_sheatless
-                        )
-                        processPdfsThread.start()
-                case "filename":
-                    filename = os.path.splitext(os.path.basename(file.name))[0]
-                    predicted_type = find_instrument_type_from_filename(filename)
-                    pdf.create_part_auto_number(
-                        instrument_type=predicted_type,
-                        note="funne automatisk",
-                        from_page=1,
-                        to_page=pdf.num_of_pages(),
-                    )
-                case "none":
-                    pass
-                case _:
-                    raise ValidationError(
-                        "Ulovleg stemmefinningsstrategi: {}".format(
-                            form["part_prediction"].value()
-                        )
-                    )
+        score = Score.objects.get(slug=self.kwargs["slug"])
+        form.save(score=score, plz_wait=self.request.POST.get("plz_wait", False))
         return super().form_valid(form)
 
 

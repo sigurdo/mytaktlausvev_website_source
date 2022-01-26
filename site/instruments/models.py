@@ -40,6 +40,14 @@ class InstrumentType(Model):
         verbose_name_plural = "instrumenttyper"
         ordering = ["name"]
 
+    @classmethod
+    def unknown(cls):
+        group_unknown, created = InstrumentGroup.objects.get_or_create(name="Ukjend")
+        type_unknown, created = InstrumentType.objects.get_or_create(
+            name="Ukjend", group=group_unknown
+        )
+        return type_unknown
+
 
 class InstrumentLocation(Model):
     name = CharField(max_length=255, verbose_name="namn", unique=True)

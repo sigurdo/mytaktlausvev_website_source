@@ -1,3 +1,5 @@
+from io import BytesIO
+
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 from django.forms import (
@@ -9,6 +11,7 @@ from django.forms import (
     inlineformset_factory,
 )
 from django.urls import reverse
+from PyPDF2 import PdfFileReader, PdfFileWriter
 
 from sheetmusic.models import Part, Score
 
@@ -106,7 +109,19 @@ class RepertoirePdfFormsetHelper(FormHelper):
         self.template = "common/table_inline_formset_shade_delete.html"
 
 
+def RepertoirePdfFormset_save(self):
+    pdf_writer = PdfFileWriter()
+    for form in self:
+        part = form.cleaned_data["part"]
+        pdf_writer.appendPagesFromReader(PdfFileReader(part.pdf_file()))
+    output_stream = BytesIO()
+    pdf_writer.write(output_stream)
+    output_stream.seek(0)
+    return output_stream
+
+
 RepertoirePdfFormset = formset_factory(form=RepertoirePdfForm, extra=0)
+RepertoirePdfFormset.save = RepertoirePdfFormset_save
 
 
 RepertoirePdfFormset.helper = RepertoirePdfFormsetHelper()

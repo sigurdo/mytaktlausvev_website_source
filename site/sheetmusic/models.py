@@ -26,6 +26,7 @@ from django.urls import reverse
 from django.utils.text import slugify
 from PyPDF2 import PdfFileReader, PdfFileWriter
 from sheatless import PdfPredictor
+from sheatless.engine import SubstringSequenceMatcher
 
 from common.models import ArticleMixin
 from common.validators import FileTypeValidator
@@ -204,6 +205,7 @@ class Pdf(Model):
                             "instruments.yaml",
                         )
                     ),
+                    use_multiprocessing=True,
                 )
 
             for part in pdf_predictor.parts():
@@ -212,7 +214,7 @@ class Pdf(Model):
                         name__iexact=instrument_name
                     ).first()
                     if not instrument_type:
-                        instrument_type = InstrumentType.objects.first()
+                        instrument_type = InstrumentType.unknown()
                     self.create_part_auto_number(
                         instrument_type=instrument_type,
                         note="funne automatisk",
@@ -223,20 +225,37 @@ class Pdf(Model):
             self.processing = False
             self.save()
 
+    def find_parts_from_original_filename(self):
+        def find_instrument_type_from_filename(filename):
+            sequence_matcher = SubstringSequenceMatcher()
+            for instrument_type in InstrumentType.objects.all():
+                if sequence_matcher.is_rougly_substring(instrument_type.name, filename):
+                    return instrument_type
+            return InstrumentType.unknown()
+
+        filename, _ = os.path.splitext(self.filename_original)
+        predicted_type = find_instrument_type_from_filename(filename)
+        self.create_part_auto_number(
+            instrument_type=predicted_type,
+            note="funne automatisk",
+            from_page=1,
+            to_page=self.num_of_pages(),
+        )
+
     def create_part_auto_number(self, **kwargs):
         """
         Creates a new Part with part_number caclulated automatically.
         """
         part_number = None
-        other_parts_on_same_instrument = Part.objects.filter(
+        other_parts_for_same_instrument = Part.objects.filter(
             pdf__score=self.score, instrument_type=kwargs["instrument_type"]
         ).order_by(F("part_number").asc(nulls_first=True))
-        if other_parts_on_same_instrument.exists():
-            if other_parts_on_same_instrument.count() == 1:
-                part_one = other_parts_on_same_instrument.first()
+        if other_parts_for_same_instrument.exists():
+            if other_parts_for_same_instrument.count() == 1:
+                part_one = other_parts_for_same_instrument.first()
                 part_one.part_number = 1
                 part_one.save()
-            part_number = other_parts_on_same_instrument.last().part_number + 1
+            part_number = other_parts_for_same_instrument.last().part_number + 1
         Part(
             part_number=part_number,
             pdf=self,
@@ -273,12 +292,17 @@ class Part(Model):
     )
     timestamp = DateTimeField("tidsmerke", auto_now_add=True)
 
-    def to_string(self):
-        return str(self)
+    def __str__(self):
+        result = str(self.instrument_type)
+        if self.part_number:
+            result += f" {self.part_number}"
+        if self.note:
+            result += f" ({self.note})"
+        return result
 
     slug = AutoSlugField(
         verbose_name="lenkjenamn",
-        populate_from=to_string,
+        populate_from=__str__,
         unique_with="pdf__score__slug",
         editable=True,
     )
@@ -292,14 +316,6 @@ class Part(Model):
         ordering = ["instrument_type", F("part_number").asc(nulls_first=True), "note"]
         verbose_name = "stemme"
         verbose_name_plural = "stemmer"
-
-    def __str__(self):
-        result = str(self.instrument_type)
-        if self.part_number:
-            result += f" {self.part_number}"
-        if self.note:
-            result += f" ({self.note})"
-        return result
 
     def get_absolute_url(self):
         return reverse("sheetmusic:ScoreView", kwargs={"slug": self.pdf.score.slug})

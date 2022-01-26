@@ -1,11 +1,8 @@
-from io import BytesIO
-
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.http import FileResponse
 from django.urls import reverse, reverse_lazy
 from django.utils.text import slugify
 from django.views.generic import DetailView, FormView, ListView
-from PyPDF2 import PdfFileReader, PdfFileWriter
 
 from common.mixins import BreadcrumbsMixin
 from common.views import (
@@ -81,7 +78,9 @@ class RepertoirePdf(
         ]
 
     def get_form(self, **kwargs):
-        # Here we have to modify the queryset of each subform of the formset
+        """
+        Here we have to modify the queryset of each subform of the formset.
+        """
         formset = super().get_form(**kwargs)
         initial = self.get_initial()
         for i, form in enumerate(formset.forms):
@@ -89,14 +88,8 @@ class RepertoirePdf(
             form.fields["part"].queryset = Part.objects.filter(pdf__score=score)
         return formset
 
-    def form_valid(self, formset):
-        pdf_writer = PdfFileWriter()
-        for form in formset:
-            part = form.cleaned_data["part"]
-            pdf_writer.appendPagesFromReader(PdfFileReader(part.pdf_file()))
-        output_stream = BytesIO()
-        pdf_writer.write(output_stream)
-        output_stream.seek(0)
+    def form_valid(self, form):
+        output_stream = form.save()
         filename = slugify(f"{self.get_object()} {self.request.user}") + ".pdf"
         return FileResponse(
             output_stream,

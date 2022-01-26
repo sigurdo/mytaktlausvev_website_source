@@ -20,6 +20,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='part',
             name='slug',
-            field=autoslug.fields.AutoSlugField(editable=True, populate_from=sheetmusic.models.Part.to_string, unique_with=('pdf__score__slug',), verbose_name='lenkjenamn'),
+            field=autoslug.fields.AutoSlugField(editable=True, populate_from=sheetmusic.models.Part.__str__, unique_with=('pdf__score__slug',), verbose_name='lenkjenamn'),
         ),
     ]

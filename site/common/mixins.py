@@ -68,11 +68,20 @@ class CleanAllFilesMixin:
 
 
 class BreadcrumbsMixin(View):
-    def get_breadcrumbs():
+    def get_breadcrumbs(self) -> list:
         """
-        Should be overrided.
+        Should be overrided and return a list of breadcrumb dicts on the following format:
+        [
+            {
+                "url": "<URL the breadcrumb should redirect to>",
+                "name": "<name or label for the breadcrumb>",
+            },
+            ...
+        ]
         """
-        return []
+        raise NotImplementedError(
+            "BreadcrumbsMixin.get_breadcrumbs() must be overridden"
+        )
 
     def get_context_data(self, **kwargs):
         kwargs["breadcrumbs"] = self.get_breadcrumbs()
