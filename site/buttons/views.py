@@ -1,7 +1,7 @@
 import multiprocessing
 
 import PIL
-from django.http import HttpResponse, HttpResponseBadRequest
+from django.http import FileResponse, HttpResponseBadRequest
 from django.views.generic import FormView
 
 from .button_pdf_generator import button_pdf_generator
@@ -33,4 +33,4 @@ class ButtonsView(FormView):
                 "button_height_mm": button_diameter_mm,
             },
         )
-        return HttpResponse(content=pdf.getvalue(), content_type="application/pdf")
+        return FileResponse(pdf, content_type="application/pdf", filename="buttons.pdf")

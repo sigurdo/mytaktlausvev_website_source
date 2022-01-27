@@ -1,7 +1,6 @@
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 from django import forms
-from django.urls import reverse_lazy
 
 
 class ButtonsForm(forms.Form):
@@ -20,4 +19,3 @@ class ButtonsForm(forms.Form):
 
     helper = FormHelper()
     helper.add_input(Submit("submit", "Generer PDF"))
-    helper.form_action = reverse_lazy("buttons:ButtonsView_with_filename")

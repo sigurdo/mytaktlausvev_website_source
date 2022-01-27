@@ -9,5 +9,4 @@ urlpatterns = [
     # filesystem with the name buttons.pdf instead of anything else the browser
     # might decide
     path("", views.ButtonsView.as_view(), name="ButtonsView"),
-    path("buttons.pdf", views.ButtonsView.as_view(), name="ButtonsView_with_filename"),
 ]

@@ -25,6 +25,7 @@ def pages_to_pdf(pages: list, page_dpi=300) -> io.BytesIO:
         )
     else:
         pages[0].save(output_bytes, format="PDF", resolution=page_dpi)
+    output_bytes.seek(0)
     return output_bytes
 
 
