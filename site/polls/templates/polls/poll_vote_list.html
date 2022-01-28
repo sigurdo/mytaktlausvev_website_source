@@ -1,15 +1,9 @@
 {% extends "base.html" %}
 
-{% block title %}Stemmer for {{ poll }}{% endblock title %}
+{% block title_page %}Stemmer for {{ poll }}{% endblock title_page %}
+{% block title_content %}Stemmer for {{ poll }}{% endblock title_content %}
 
-{% block page %}
-<article>
-    <header>
-        {% include "common/includes/breadcrumbs.html" with breadcrumbs=breadcrumbs only %}
-
-        <h1 class="mb-3">Stemmer for {{ poll }}</h1>
-    </header>
-
+{% block content %}
     <table class="table table-striped">
         <thead>
             <tr>
@@ -66,7 +60,6 @@
                 </tr>
             {% endfor %}
         {% endif %}
-    </tbody>
+        </tbody>
     </table>
-</article>
-{% endblock page %}
+{% endblock content %}

@@ -1,15 +1,9 @@
 {% extends "base.html" %}
 
-{% block title %}{{ forum.title }}{% endblock title %}
+{% block title_page %}{{ forum.title }}{% endblock title_page %}
+{% block title_content %}{{ forum.title }}{% endblock title_content %}
 
-{% block page %}
-<article>
-    <header>
-        {% include "common/includes/breadcrumbs.html" with breadcrumbs=breadcrumbs only %}
-
-        <h1>{{ forum.title }}</h1>
-    </hedaer>
-
+{% block content %}
     {% if topics %}
     <table class="table table-striped">
         <thead>
@@ -47,5 +41,4 @@
     {% endif %}
 
     {% include "common/includes/pagination.html" with pagination_label="Emnesider" %}
-</article>
-{% endblock page %}
+{% endblock content %}

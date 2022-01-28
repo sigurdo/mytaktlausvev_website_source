@@ -1,14 +1,17 @@
 {% extends "base.html" %}
-{% block title %}
-    Rediger stemmer for {{score}}
-{% endblock title %}
 
-{% block page %}
-<article>
-    <h1> Rediger stemmer for <a href="{% url "sheetmusic:ScoreView" score.slug %}">{{score}}</a> </h1>
+{% block title_page %}
+    Rediger stemmer for {{score}}
+{% endblock title_page %}
+{% block title_content %}
+    Rediger stemmer for <a href="{% url "sheetmusic:ScoreView" score.slug %}">{{score}}</a>
+{% endblock title_content %}
+
+{% block content %}
     <p>
         Her kan ein relativt enkelt redigere stemmer for {{score}}.
     </p>
+
     <section>
         <h2> Tips </h2>
         <ul>
@@ -45,5 +48,4 @@
             </tbody>
         </table>
     </div>
-</article>
-{% endblock page %}
+{% endblock content %}

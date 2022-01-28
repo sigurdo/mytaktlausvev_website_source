@@ -1,11 +1,9 @@
 {% extends "base.html" %}
 
-{% block title %}Avstemmingar{% endblock title %}
+{% block title_page %}Avstemmingar{% endblock title_page %}
+{% block title_content %}Avstemmingar{% endblock title_content %}
 
-{% block page %}
-<article>
-    <h1>Avstemmingar</h1>
-
+{% block content %}
     <ul>
         {% for poll in polls %}
         <li>
@@ -22,6 +20,4 @@
 
         {% include "common/includes/pagination.html" with pagination_label="Avstemmingsider" %}
     </footer>
-
-</article>
-{% endblock page %}
+{% endblock content %}

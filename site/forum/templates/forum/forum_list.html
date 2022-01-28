@@ -1,11 +1,9 @@
 {% extends "base.html" %}
 
-{% block title %}Forum{% endblock title %}
+{% block title_page %}Forum{% endblock title_page %}
+{% block title_content %}Forum{% endblock title_content %}
 
-{% block page %}
-<article>
-    <h1>Forum</h1>
-
+{% block content %}
     <table class="table table-striped">
         <thead>
             <tr>
@@ -33,5 +31,4 @@
             {% endfor %}
         </tbody>
     </table>
-</article>
-{% endblock page %}
+{% endblock content %}

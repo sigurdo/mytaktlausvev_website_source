@@ -1,42 +1,32 @@
 {% extends "base.html" %}
 {% load utils %}
 
-{% block title %}
+{% block title_page %}
     {% if form_title %}
         {{ form_title }}
     {% elif object %}
         Rediger {{ object | verbose_name }} "{{ object }}"
     {% elif view.model %}
-        Opprett
-        {{ view.model | verbose_name }}
+        Opprett {{ view.model | verbose_name }}
     {% else %}
         Skjema
     {% endif %}
 {% endblock %}
+{% block title_content %}
+    {% if form_title %}
+        {{ form_title }}
+    {% elif object %}
+        Rediger {{ object | verbose_name }} "{{ object }}"
+    {% elif view.model %}
+        Opprett {{ view.model | verbose_name }}
+    {% else %}
+        Skjema
+    {% endif %}
+{% endblock title_content %}
 
 {% block sidebar %}{% endblock sidebar %}
 
-{% block page %}
-<article>
-    <header>
-        {% if breadcrumbs %}
-            {% include "common/includes/breadcrumbs.html" with breadcrumbs=breadcrumbs only %}
-        {% endif %}
-
-        <h1>
-            {% if form_title %}
-                {{ form_title }}
-            {% elif object %}
-                Rediger {{ object | verbose_name }} "{{ object }}"
-            {% elif view.model %}
-                Opprett
-                {{ view.model | verbose_name }}
-            {% else %}
-                Skjema
-            {% endif %}
-        </h1>
-    </header>
-
+{% block content %}
     {% if nav_tabs %}
         {% include "common/includes/nav_tabs.html" %}
     {% endif %}
@@ -57,5 +47,4 @@
         </form>
         {% endif %}
     {% endblock form %}
-</article>
 {% endblock %}

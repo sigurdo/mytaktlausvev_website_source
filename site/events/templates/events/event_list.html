@@ -1,14 +1,10 @@
 
 {% extends "base.html" %}
 
-{% block title %}Hendingar{% if year %} {{year}}{% endif %}{% endblock title %}
+{% block title_page %}Hendingar{% if year %} {{year}}{% endif %}{% endblock title_page %}
+{% block title_content %}Hendingar{% if year %} {{year}}{% endif %}{% endblock title_content %}
 
-{% block page %}
-<article>
-    <header class="mb-4">
-        <h1>Hendingar{% if year %} {{year}}{% endif %}</h1>
-    </header>
-
+{% block content %}
     <section class="mb-3">
         <nav class="mb-3">
             {% if year %}
@@ -64,8 +60,7 @@
     </ol>
     </section>
     {% endif %}
-</article>
-{% endblock page %}
+{% endblock content %}
 
 {% block js %}
     {% load static %}

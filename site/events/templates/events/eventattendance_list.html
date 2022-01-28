@@ -1,11 +1,9 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ event.title }} - Svar{% endblock title %}
+{% block title_page %}{{ event.title }} - Svar{% endblock title_page %}
+{% block title_content %}{{ event.title }} - Svar{% endblock title_content %}
 
-{% block page %}
-<article>
-    <h1 class="mb-3">{{ event.title }} - Svar</h1>
-
+{% block content %}
     <p>
         Svar for <a href="{{ event.get_absolute_url }}">{{ event.title }}</a>.
         {{attendances.count}} har svara.
@@ -37,5 +35,4 @@
             {% endfor %}
         </tbody>
     </table>
-</article>
-{% endblock page %}
+{% endblock content %}

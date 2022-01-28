@@ -1,11 +1,9 @@
 {% extends 'base.html' %}
 
-{% block title %}Fotoarkiv{% endblock title %}
+{% block title_page %}Fotoarkiv{% endblock title_page %}
+{% block title_content %}Fotoarkiv{% endblock title_content %}
 
-{% block page %}
-<article>
-    <h1>Fotoarkiv</h1>
-
+{% block content %}
     <ul class="list-unstyled">
         {% for gallery in galleries %}
         <li class="my-4">
@@ -26,8 +24,7 @@
 
         {% include "common/includes/pagination.html" with pagination_label="Gallerisider" %}
     </footer>
-</article>
-{% endblock page %}
+{% endblock content %}
 
 {% block js %}
     <script src="https://cdn.jsdelivr.net/npm/bigpicture@2.6.1/dist/BigPicture.min.js" integrity="sha256-OsbS8Cw/fMpgT6GBFfqhvmX9yJLwzE6+me56KzpSbAs=" crossorigin="anonymous"></script>

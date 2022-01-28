@@ -1,18 +1,14 @@
 {% extends "base.html" %}
 
-{% block title %}{{ gallery.title }}{% endblock %}
+{% block title_page %}{{ gallery.title }}{% endblock %}
+{% block title_content %}{{ gallery.title }}{% endblock %}
 
+{% block header %}
+    {{ block.super }}
+    {% include "common/includes/created_modified.html" with object=gallery only %}
+{% endblock header %}
 
-{% block page %}
-<article>
-    <header>
-        {% include "common/includes/breadcrumbs.html" with breadcrumbs=breadcrumbs only %}
-
-        <h1>{{ gallery }}</h1>
-
-        {% include "common/includes/created_modified.html" with object=gallery only %}
-    </header>
-
+{% block content %}
     <p>
         <strong>Dato:</strong>
         <time datetime="{{ gallery.date | date:"c" }}">{{ gallery.date }}</time>
@@ -57,7 +53,6 @@
 
     {% load comments %}
     {% comment_list gallery %}
-</article>
 {% endblock %}
 
 {% block js %}
