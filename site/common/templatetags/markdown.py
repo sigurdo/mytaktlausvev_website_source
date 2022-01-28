@@ -8,6 +8,7 @@ from django.utils.safestring import mark_safe
 
 from common.markdown_extensions import (
     BootstrapTableExtension,
+    KWordCensorExtension,
     StrikethroughExtension,
     UnderlineExtension,
 )
@@ -76,6 +77,7 @@ def markdown(string):
             BootstrapTableExtension(),
             StrikethroughExtension(),
             UnderlineExtension(),
+            KWordCensorExtension(),
         ],
     )
 
