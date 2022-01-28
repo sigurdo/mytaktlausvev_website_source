@@ -1,20 +1,16 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ article.title }}{% endblock title %}
+{% block title_page %}{{ article.title }}{% endblock title_page %}
+{% block title_content %}{{ article.title }}{% endblock title_content %}
 
-{% block page %}
-<article>
-    <header class="mb-4">
-        {% if breadcrumbs %}
-        {% include "common/includes/breadcrumbs.html" with breadcrumbs=breadcrumbs only %}
-        {% endif %}
+{% block header %}
+    {{ block.super }}
+    {% if user.is_authenticated %}
+        {% include "common/includes/created_modified.html" with object=article only %}
+    {% endif %}
+{% endblock header %}
 
-        <h1 class="mb-0">{{ article.title }}</h1>
-        {% if user.is_authenticated %}
-            {% include "common/includes/created_modified.html" with object=article only %}
-        {% endif %}
-    </header>
-
+{% block content %}
     {% load markdown %}
     {{ article.content | markdown }}
 
@@ -49,5 +45,4 @@
         {% load comments %}
         {% comment_list article %}
     {% endif %}
-</article>
-{% endblock page %}
+{% endblock content %}

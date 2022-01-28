@@ -1,11 +1,14 @@
-{% extends "./base.html" %}
-{% block content %}
+{% extends "base.html" %}
 
-{% if user.is_authenticated %}
-<form action="{% url 'quotes:new_quote' %}" method="POST">
-    {% csrf_token %}
-    {% load crispy_forms_tags %}
-    {% crispy form %}
-</form>
-{% endif %}
+{% block title_page %}Sitat{% endblock title_page %}
+{% block title_content %}Sitat{% endblock title_content %}
+
+{% block content %}
+    {% if user.is_authenticated %}
+    <form action="{% url 'quotes:new_quote' %}" method="POST">
+        {% csrf_token %}
+        {% load crispy_forms_tags %}
+        {% crispy form %}
+    </form>
+    {% endif %}
 {% endblock %}

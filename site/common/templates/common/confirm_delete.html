@@ -1,24 +1,15 @@
 {% extends "base.html" %}
 
-{% block title %}
+{% block title_page %}
     {% load utils %}
-    Slett {{ object | verbose_name }}
+    Slett {{ object | verbose_name | title }} "{{ object }}"
 {% endblock %}
+{% block title_content %}Slett {{ object | verbose_name | title }} "{{ object }}"{% endblock title_content %}
 
-{% block page %}
-<article>
-    <header>
-        {% if breadcrumbs %}
-            {% include "common/includes/breadcrumbs.html" with breadcrumbs=breadcrumbs only %}
-        {% endif %}
-
-        <h1>Slett {{ object | verbose_name | title }} "{{ object }}"</h1>
-    </header>
-
+{% block content %}
     <form method="post">
         {% csrf_token %}
         <p>Er du sikker på at du vil slette {{ object | verbose_name }} "{{ object }}"?</p>
         <input type="submit" value="Slett {{object | verbose_name}}" class="btn btn-danger">
     </form>
-</article>
 {% endblock %}

@@ -1,11 +1,9 @@
 {% extends 'base.html' %}
 
-{% block title %}Kontakt{% endblock title %}
+{% block title_page %}Kontakt{% endblock title_page %}
+{% block title_content %}Kontakt{% endblock title_content %}
 
-{% block page %}
-<article>
-    <h1>Kontakt</h1>
-
+{% block content %}
     <p>
         Her kan du kontakta dei i styret, eller tillitsvalde.
         Om du vil vere med oss å spele, gjerne legg til kva instrument du spelar,
@@ -14,5 +12,4 @@
 
     {% load crispy_forms_tags %}
     {% crispy form %}
-</article>
-{% endblock page %}
+{% endblock content %}
