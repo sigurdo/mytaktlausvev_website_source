@@ -1,5 +1,5 @@
 from markdown.extensions import Extension
-from markdown.inlinepatterns import SimpleTagPattern
+from markdown.inlinepatterns import InlineProcessor, SimpleTagPattern
 from markdown.treeprocessors import Treeprocessor
 
 
@@ -44,3 +44,20 @@ class UnderlineExtension(Extension):
     def extendMarkdown(self, md):
         ins_tag = SimpleTagPattern(self.RE, "ins")
         md.inlinePatterns.add("ins", ins_tag, ">del")
+
+
+class CensorshipProcessor(InlineProcessor):
+    """Censors everything except the first letter of the matched string."""
+
+    def handleMatch(self, m, data):
+        censored = m.group(0)[0] + "*" * (len(m.group(0)) - 1)
+        return censored, m.start(0), m.end(0)
+
+
+class KWordCensorExtension(Extension):
+    """Markdown extension that censors the dreaded K-word."""
+
+    RE = r"(K|k)orps"
+
+    def extendMarkdown(self, md):
+        md.inlinePatterns.register(CensorshipProcessor(self.RE), "k-word-censor", 451)
