@@ -77,6 +77,13 @@ class Score(ArticleMixin):
         return reverse("sheetmusic:ScoreView", kwargs={"slug": self.slug})
 
     def find_user_part(self, user):
+        """
+        Finds the most relevant part for user by the following priority:
+        1. One of user's favorite parts
+        2. A part for user's instrument type
+        3. A part for another instrument type in user's instrument group
+        4. None
+        """
         all_parts = Part.objects.filter(pdf__score=self)
         favorite_parts = all_parts.filter(favoring_users__user=user)
         if favorite_parts.exists():
@@ -90,7 +97,7 @@ class Score(ArticleMixin):
             )
             if group_parts.exists():
                 return group_parts.first()
-        return all_parts.first()
+        return None
 
     def favorite_parts_pdf_file(self, user):
         """Returns the PDF that contains user's favorite parts on this score"""

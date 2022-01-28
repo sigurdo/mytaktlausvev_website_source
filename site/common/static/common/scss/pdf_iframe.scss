@@ -1,0 +1,13 @@
+/*
+ * Useful stylesheet for displaying a pdf in a page.
+ *
+ * Sets top and height to fill the page without conflicting the navbar.
+ * It is intended to be used with .sticky-top and typically also .w-100.
+ */
+
+@import "variables";
+
+.pdf-iframe {
+  top: $navbar-padding;
+  height: calc(100vh - #{$navbar-padding});
+}
