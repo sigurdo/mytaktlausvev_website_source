@@ -3,9 +3,6 @@
  * when tabbing into and changing from and to pages.
  *
  * Pre-populate from and to pages with suggested values.
- * 
- * Prevent unintentionally changing the value of a number
- * input when scrolling
  */
 
 const iframe = document.querySelector("iframe");
@@ -50,13 +47,3 @@ function getPreviousFromPage(input) {
   const row = input.closest("tr");
   return row.querySelector("input[name*='from_page']").value;
 }
-
-document.addEventListener("wheel", () => {
-  if(document.activeElement.type === "number"){
-    let element = document.activeElement;
-    element.blur();
-    window.setTimeout(() => {
-      element.focus();
-    }, 1);
-  }
-});

@@ -237,7 +237,7 @@ class PartsUpdateAll(
 ):
     model = Score
     form_class = PartsUpdateAllFormset
-    template_name = "common/form.html"
+    template_name = "sheetmusic/parts_update_all_form.html"
     permission_required = (
         "sheetmusic.add_part",
         "sheetmusic.change_part",
