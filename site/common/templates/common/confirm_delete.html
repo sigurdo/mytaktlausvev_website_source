@@ -2,9 +2,9 @@
 
 {% block title_page %}
     {% load utils %}
-    Slett {{ object | verbose_name | title }} "{{ object }}"
+    Slett {{ object | verbose_name }} "{{ object }}"
 {% endblock %}
-{% block title_content %}Slett {{ object | verbose_name | title }} "{{ object }}"{% endblock title_content %}
+{% block title_content %}Slett {{ object | verbose_name }} "{{ object }}"{% endblock title_content %}
 
 {% block content %}
     <form method="post">
