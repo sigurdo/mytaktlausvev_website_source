@@ -1,13 +1,13 @@
 {% extends "base.html" %}
-{% block title %}
-    Repertoar
-{% endblock title %}
 
-{% block page %}
-<article>
-    <header>
-        <h1> Repertoar </h1>
-    </header>
+{% block title_page %}
+    Repertoar
+{% endblock title_page %}
+{% block title_content %}
+    Repertoar
+{% endblock title_content %}
+
+{% block content %}
     {% for repertoire in repertoires %}
         <section class="my-3">
             <h2> {{ repertoire }} </h2>
@@ -53,5 +53,4 @@
         <a href="{% url 'repertoire:RepertoireCreate' %}" class="btn btn-primary"> Nytt repertoar </a>
     <section>
     {% endif %}
-</article>
-{% endblock page %}
+{% endblock content %}

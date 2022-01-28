@@ -1,30 +1,26 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ score.title }}{% endblock title %}
+{% block title_page %}{{ score.title }}{% endblock title_page %}
+{% block title_content %}{{ score.title }}{% endblock title_content %}
 
-{% block page %}
-<article>
-    <heading class="mb-3">
-        {% include "common/includes/breadcrumbs.html" with breadcrumbs=breadcrumbs only %}
-        
-        <div class="d-flex align-items-center">
-            <h1 class="me-3 mb-0">{{ score.title }}</h1>
+{% block header %}
+    {{ block.super }}
 
-            {% if perms.sheetmusic.change_score %}
-                <a class="btn btn-primary btn-sm mx-1" href="{% url 'sheetmusic:ScoreUpdate' score.slug %}"> Rediger </a>
-            {% endif %}
-            {% if perms.sheetmusic.add_part and perms.sheetmusic.change_part and perms.sheetmusic.delete_part %}
-                <a class="btn btn-primary btn-sm mx-1" href="{% url 'sheetmusic:PartsUpdateIndex' score.slug %}"> Rediger stemmer </a>
-            {% endif %}
+    {% include "common/includes/created_modified.html" with object=score only %}
 
-            {% if perms.sheetmusic.delete_score %}
-                <a class="btn btn-danger btn-sm mx-1" href="{% url 'sheetmusic:ScoreDelete' score.slug %}"> Slett </a>
-            {% endif %}
-        </div>
+    {% if perms.sheetmusic.change_score %}
+        <a class="btn btn-primary btn-sm mx-1" href="{% url 'sheetmusic:ScoreUpdate' score.slug %}"> Rediger </a>
+    {% endif %}
+    {% if perms.sheetmusic.add_part and perms.sheetmusic.change_part and perms.sheetmusic.delete_part %}
+        <a class="btn btn-primary btn-sm mx-1" href="{% url 'sheetmusic:PartsUpdateIndex' score.slug %}"> Rediger stemmer </a>
+    {% endif %}
 
-        {% include "common/includes/created_modified.html" with object=score only %}
-    </heading>
+    {% if perms.sheetmusic.delete_score %}
+        <a class="btn btn-danger btn-sm mx-1" href="{% url 'sheetmusic:ScoreDelete' score.slug %}"> Slett </a>
+    {% endif %}
+{% endblock header %}
 
+{% block content %}
     {% if score.content %}
     <section>
         {% load markdown %}
@@ -101,8 +97,7 @@
 
     {% load comments %}
     {% comment_list score %}
-</article>
-{% endblock page %}
+{% endblock content %}
 
 {% block js %}
     {% load static %}

@@ -1,16 +1,9 @@
 {% extends "base.html" %}
 
-{% block title %}{{ topic.title }}{% endblock title %}
+{% block title_page %}{{ topic.title }}{% endblock title_page %}
+{% block title_content %}{{ topic.title }}{% endblock title_content %}
 
-{% block page %}
-<article>
-    <header>
-        {% include "common/includes/breadcrumbs.html" with breadcrumbs=breadcrumbs only %}
-
-        <h1 class="mb-4">{{ topic.title }}</h1>
-    </hedaer>
-
-
+{% block content %}
     {% if posts %}
     <ol class="list-unstyled">
         {% for post in posts %}
@@ -22,5 +15,4 @@
     {% endif %}
 
     {% include "common/includes/pagination.html" with pagination_label="Innleggsider" %}
-</article>
-{% endblock page %}
+{% endblock content %}

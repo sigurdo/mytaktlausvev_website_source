@@ -1,46 +1,42 @@
 {% extends "base.html" %}
 
-{% block title %}{{ poll }}{% endblock title %}
+{% block title_page %}{{ poll }}{% endblock title_page %}
+{% block title_content %}{{ poll }}{% endblock title_content %}
 
-{% block page %}
-<article>
-    <header>
-        {% include "common/includes/breadcrumbs.html" with breadcrumbs=breadcrumbs only %}
+{% block header %}
+    {{ block.super }}
+    {% include "common/includes/created_modified.html" with object=poll only %}
+{% endblock header %}
 
-        <h1>{{ poll }}</h1>
-
-        {% include "common/includes/created_modified.html" with object=poll only %}
-    </header>
-
+{% block content %}
     {% include "polls/includes/poll.html" with poll=poll only %}
 
     {% if user.is_authenticated %}
-    {% if user_has_voted %}
-        <a href="{% url 'polls:VoteDelete' poll.slug %}" class="btn btn-danger">Fjern di stemme</a>
-    {% else %}
-        <a href="{% url 'polls:VoteCreate' poll.slug %}" class="btn btn-primary">Stem på avstemminga</a>
-    {% endif %}
+        {% if user_has_voted %}
+            <a href="{% url 'polls:VoteDelete' poll.slug %}" class="btn btn-danger">Fjern di stemme</a>
+        {% else %}
+            <a href="{% url 'polls:VoteCreate' poll.slug %}" class="btn btn-primary">Stem på avstemminga</a>
+        {% endif %}
 
-    <footer class="mt-4">
-        <ul class="list-inline">
-            <li class="list-inline-item">
-                <a href="{% url 'polls:PollVoteList' poll.slug %}" class="btn btn-primary">Stemmer</a>
-            </li>
-            {% if perms.polls.change_poll and perms.polls.add_choice and perms.polls.change_choice and perms.polls.delete_choice %}
-            <li class="list-inline-item">
-                <a href="{% url 'polls:PollUpdate' poll.slug %}" class="btn btn-primary">Rediger avstemming</a>
-            </li>
-            {% endif %}
-            {% if perms.polls.delete_poll and perms.polls.delete_choice %}
-            <li class="list-inline-item">
-                <a href="{% url 'polls:PollDelete' poll.slug %}" class="btn btn-primary">Slett avstemming</a>
-            </li>
-            {% endif %}
-        </ul>
-    </footer>
+        <footer class="mt-4">
+            <ul class="list-inline">
+                <li class="list-inline-item">
+                    <a href="{% url 'polls:PollVoteList' poll.slug %}" class="btn btn-primary">Stemmer</a>
+                </li>
+                {% if perms.polls.change_poll and perms.polls.add_choice and perms.polls.change_choice and perms.polls.delete_choice %}
+                <li class="list-inline-item">
+                    <a href="{% url 'polls:PollUpdate' poll.slug %}" class="btn btn-primary">Rediger avstemming</a>
+                </li>
+                {% endif %}
+                {% if perms.polls.delete_poll and perms.polls.delete_choice %}
+                <li class="list-inline-item">
+                    <a href="{% url 'polls:PollDelete' poll.slug %}" class="btn btn-primary">Slett avstemming</a>
+                </li>
+                {% endif %}
+            </ul>
+        </footer>
     {% endif %}
 
     {% load comments %}
     {% comment_list poll %}
-</article>
-{% endblock page %}
+{% endblock content %}

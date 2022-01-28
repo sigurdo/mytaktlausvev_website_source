@@ -1,11 +1,10 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ profile.get_name }}{% endblock title %}
+{% block title_page %}{{ profile.get_name }}{% endblock title_page %}
+{% block title_content %}{{ profile.get_name }}{% endblock title_content %}
 
-{% block page %}
-<article>
-    <h1 class="text-center">{{ profile.get_name }}</h1>
-    {% if profile.instrument_type %}
+{% block content %}
+    {% if profile.instrument_group %}
     <p>
         Instrumentgruppe: {{ profile.instrument_type.group }} ({{ profile.instrument_type }})
     </p>
@@ -22,5 +21,4 @@
             </p>
         {% endif %}
     {% endwith %}
-</article>
-{% endblock page %}
+{% endblock content %}

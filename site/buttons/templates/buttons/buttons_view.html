@@ -1,12 +1,10 @@
 {% extends 'base.html' %}
 
-{% block title %} Buttonpdfgenerator {% endblock title %}
+{% block title_page %} Buttonpdfgenerator {% endblock title_page %}
+{% block title_content %} Buttonpdfgenerator {% endblock title_content %}
 
-{% block page %}
-<article>
-    <h1> Buttonpdfgenerator </h1>
-
-    <div>
+{% block content %}
+    <section>
         <h2 class="fs-3"> Framgangsmåte </h2>
 
         <ol>
@@ -14,9 +12,8 @@
             <li> Last opp motiva her som bilete og oppgje kor mange buttons du ynskjer av kvart motiv. Om du skal lage buttons i ei anna storleik enn Dei Taktlause sin standard, endre ynskja diameter. </li>
             <li> Trykk generer PDF, vent til sida svarar (dette kan ta nokre sekund om du provar å lage mange eller store buttons) og print ut. </li>
         </ol>
-    </div>
+    </section>
 
     {% load crispy_forms_tags %}
     {% crispy form %}
-</article>
-{% endblock page %}
+{% endblock content %}

@@ -1,13 +1,9 @@
 {% extends 'base.html' %}
 
-{% block title %} Notearkiv {% endblock title %}
+{% block title_page %} Notearkiv {% endblock title_page %}
+{% block title_content %} Alle notar {% endblock title_content %}
 
-{% block page %}
-<article>
-    <header>
-        <h1> Alle notar </h1>
-    </header>
-
+{% block content %}
     {% if scores %}
     <table class="table table-striped table-sm">
         <thead>
@@ -67,8 +63,7 @@
     {% if perms.sheetmusic.add_score %}
         <a href="{% url 'sheetmusic:ScoreCreate' %}" class="btn btn-primary"> Ny note </a>
     {% endif %}
-</article>
-{% endblock page %}
+{% endblock content %}
 
 {% block js %}
     {% load static %}

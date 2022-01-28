@@ -1,16 +1,10 @@
 {% extends "base.html" %}
 {% load utils %}
 
-{% block title %}{{ poll }}{% endblock %}
+{% block title_page %}{{ poll }}{% endblock %}
+{% block title_content %}{{ poll }}{% endblock %}
 
-{% block page %}
-<article>
-    <header>
-        {% include "common/includes/breadcrumbs.html" with breadcrumbs=breadcrumbs only %}
-
-        <h1>{{ poll }}</h1>
-    </header>
-
+{% block content %}
     {% load crispy_forms_tags %}
     {% crispy form %}
 
@@ -34,5 +28,4 @@
 
     {% load comments %}
     {% comment_list poll %}
-</article>
 {% endblock %}

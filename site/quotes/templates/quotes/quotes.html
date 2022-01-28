@@ -1,31 +1,33 @@
-{% extends "./base.html" %}
-{% load show_quote %}
+{% extends "base.html" %}
+
+{% block title_page %}Sitat{% endblock title_page %}
+{% block title_content %}Sitat{% endblock title_content %}
 
 {% block content %}
-{% if quotes %}
+    {% if quotes %}
+        {% for q in quotes %}
+        <div class="row">
+            <div class="col-lg-6">
+                {% load show_quote %}
+                {% show_quote q %}
+            </div>
+        </div>
+        {% endfor %}
 
-{% for q in quotes %}
-<div class="row">
-    <div class="col-lg-6">
-        {% show_quote q %}
-    </div>
-</div>
-{% endfor %}
+        <div class="row">
+            <div class="col-lg-6">
+                <p>
+                    {% if quotes.has_previous %}
+                        <a class="float-left" href="?page={{quotes.previous_page_number}}">Forrige</a>
+                    {% endif %}
 
-<div class="row">
-    <div class="col-lg-6">
-        <p>
-            {% if quotes.has_previous %}
-                <a class="float-left" href="?page={{quotes.previous_page_number}}">Forrige</a>
-            {% endif %}
-
-            {% if quotes.has_next %}
-                <a class="float-right" href="?page={{quotes.next_page_number}}">Neste</a>
-            {% endif %}
-        </p>
-    </div>
-</div>
-{% else %}
-<p>Ingen sitat registert.</p>
-{% endif %}
+                    {% if quotes.has_next %}
+                        <a class="float-right" href="?page={{quotes.next_page_number}}">Neste</a>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    {% else %}
+        <p>Ingen sitat registert.</p>
+    {% endif %}
 {% endblock %}
