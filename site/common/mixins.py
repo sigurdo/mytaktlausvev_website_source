@@ -2,6 +2,7 @@ import shutil
 import tempfile
 from http import HTTPStatus
 
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.forms import FileField, ValidationError
 from django.test import TestCase, override_settings
 from django.urls import reverse
@@ -64,3 +65,31 @@ class CleanAllFilesMixin:
                         field.clean(file)
                     except ValidationError as exception:
                         self.add_error(name, exception)
+
+
+class PermissionOrCreatedMixin(PermissionRequiredMixin):
+    """
+    Mixin that permits the user if the user has the correct permissions,
+    or if the user created the view's object.
+    Designed to be used with SingleObjectMixin.
+
+    Permission functionality is equivalent to `PermissionRequiredMixin`.
+
+    `field_created_by` specifies which field to get the object's author from.
+    Defaults to `CreatedModifiedMixin`'s `created_by`.
+
+    `user_has_created` checks if the user created the object.
+    """
+
+    field_created_by = "created_by"
+
+    def user_has_created(self):
+        """Returns `True` if the user created `object`, `False` otherwise."""
+        created_by = getattr(self.get_object(), self.field_created_by, None)
+        return created_by == self.request.user
+
+    def dispatch(self, request, *args, **kwargs):
+        has_permission = self.user_has_created() or self.has_permission()
+        if not has_permission:
+            return self.handle_no_permission()
+        return super(PermissionRequiredMixin, self).dispatch(request, *args, **kwargs)

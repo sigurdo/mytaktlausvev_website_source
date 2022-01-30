@@ -12,7 +12,7 @@ from django.db.models import (
     UniqueConstraint,
 )
 from django.urls import reverse
-from django.utils.timezone import localtime, make_aware
+from django.utils.timezone import localtime, make_aware, now
 
 from common.models import ArticleMixin
 
@@ -20,7 +20,7 @@ from common.models import ArticleMixin
 class Event(ArticleMixin):
     """Model representing an event."""
 
-    start_time = DateTimeField("starttid")
+    start_time = DateTimeField("starttid", default=now)
     end_time = DateTimeField("sluttid", default=None, blank=True, null=True)
 
     slug = AutoSlugField(
