@@ -1,14 +1,12 @@
 import random
 
-from django.contrib.auth.mixins import (
-    LoginRequiredMixin,
-    PermissionRequiredMixin,
-    UserPassesTestMixin,
-)
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.shortcuts import get_object_or_404
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
+
+from common.mixins import PermissionOrCreatedMixin
 
 from .forms import AdventCalendarForm, WindowCreateForm, WindowUpdateForm
 from .models import AdventCalendar, Window
@@ -70,21 +68,16 @@ class WindowCreate(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class WindowUpdate(UserPassesTestMixin, UpdateView):
+class WindowUpdate(PermissionOrCreatedMixin, UpdateView):
     """View for updating an advent calendar window."""
 
     model = Window
     form_class = WindowUpdateForm
+    permission_required = "advent_calendar.change_window"
 
     def get_object(self, queryset=None):
         return get_object_or_404(
             Window, advent_calendar=self.kwargs["year"], index=self.kwargs["index"]
-        )
-
-    def test_func(self):
-        user = self.request.user
-        return self.get_object().created_by == user or user.has_perm(
-            "advent_calendar.change_window"
         )
 
     def form_valid(self, form):

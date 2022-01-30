@@ -1,6 +1,7 @@
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, UpdateView
 
+from common.mixins import PermissionOrCreatedMixin
 from common.views import DeleteViewCustom
 
 from .forms import CommentCreateForm, CommentUpdateForm
@@ -19,35 +20,25 @@ class CommentCreate(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class CommentUpdate(UserPassesTestMixin, UpdateView):
+class CommentUpdate(PermissionOrCreatedMixin, UpdateView):
     """View for updating a comment."""
 
     model = Comment
     form_class = CommentUpdateForm
     template_name = "common/form.html"
-
-    def test_func(self):
-        user = self.request.user
-        return self.get_object().created_by == user or user.has_perm(
-            "comments.change_comment"
-        )
+    permission_required = "comments.change_comment"
 
     def form_valid(self, form):
         form.instance.modified_by = self.request.user
         return super().form_valid(form)
 
 
-class CommentDelete(UserPassesTestMixin, DeleteViewCustom):
+class CommentDelete(PermissionOrCreatedMixin, DeleteViewCustom):
     """View for deleting a comment."""
 
     model = Comment
     success_message = "Kommentaren vart fjerna."
-
-    def test_func(self):
-        user = self.request.user
-        return self.get_object().created_by == user or user.has_perm(
-            "comments.delete_comment"
-        )
+    permission_required = "comments.delete_comment"
 
     def get_success_url(self):
         return self.object.content_object.get_absolute_url()

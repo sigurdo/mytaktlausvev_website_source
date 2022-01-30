@@ -1,10 +1,6 @@
 from datetime import date, datetime
 
-from django.contrib.auth.mixins import (
-    LoginRequiredMixin,
-    PermissionRequiredMixin,
-    UserPassesTestMixin,
-)
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.db.models.functions.datetime import TruncMonth
 from django.db.models.query_utils import Q
 from django.shortcuts import get_object_or_404
@@ -13,6 +9,7 @@ from django.utils.timezone import localtime, make_aware
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 from django_ical.views import ICalFeed
 
+from common.mixins import PermissionOrCreatedMixin
 from common.views import DeleteViewCustom
 
 from .forms import EventAttendanceForm, EventForm
@@ -99,7 +96,7 @@ class EventDetail(LoginRequiredMixin, DetailView):
         return context
 
 
-class EventCreate(PermissionRequiredMixin, CreateView):
+class EventCreate(LoginRequiredMixin, CreateView):
     """View for creating an event."""
 
     model = Event
@@ -116,7 +113,7 @@ class EventCreate(PermissionRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class EventUpdate(PermissionRequiredMixin, UpdateView):
+class EventUpdate(PermissionOrCreatedMixin, UpdateView):
     """View for updating an event."""
 
     model = Event
@@ -183,13 +180,16 @@ class EventAttendanceCreateFromList(EventAttendanceCreate):
         return reverse("events:EventList")
 
 
-class EventAttendanceUpdate(UserPassesTestMixin, UpdateView):
+class EventAttendanceUpdate(PermissionOrCreatedMixin, UpdateView):
     """View for updating event attendance."""
 
     model = EventAttendance
     form_class = EventAttendanceForm
     template_name = "common/form.html"
 
+    permission_required = "events.change_eventattendance"
+    field_created_by = "person"
+
     object = None
 
     def get_object(self):
@@ -201,22 +201,19 @@ class EventAttendanceUpdate(UserPassesTestMixin, UpdateView):
             self.kwargs.get("slug_person"),
         )
         return self.object
-
-    def test_func(self):
-        user = self.request.user
-        return self.get_object().person == user or user.has_perm(
-            "events.change_eventattendance"
-        )
 
     def get_success_url(self):
         return self.get_object().event.get_absolute_url()
 
 
-class EventAttendanceDelete(UserPassesTestMixin, DeleteViewCustom):
+class EventAttendanceDelete(PermissionOrCreatedMixin, DeleteViewCustom):
     """View for deleting event attendance."""
 
     model = EventAttendance
     success_message = "Deltakinga vart fjerna."
+
+    permission_required = "events.delete_eventattendance"
+    field_created_by = "person"
 
     object = None
 
@@ -229,12 +226,6 @@ class EventAttendanceDelete(UserPassesTestMixin, DeleteViewCustom):
             self.kwargs.get("slug_person"),
         )
         return self.object
-
-    def test_func(self):
-        user = self.request.user
-        return self.get_object().person == user or user.has_perm(
-            "events.delete_eventattendance"
-        )
 
     def get_success_url(self):
         return self.get_object().event.get_absolute_url()
