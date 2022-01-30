@@ -76,6 +76,8 @@ class PermissionOrCreatedMixin(PermissionRequiredMixin):
     Permission functionality is equivalent to `PermissionRequiredMixin`.
 
     `field_created_by` specifies which field to get the object's author from.
+    Defaults to `CreatedModifiedMixin`'s `created_by`.
+
     `user_has_created` checks if the user created the object.
     """
 

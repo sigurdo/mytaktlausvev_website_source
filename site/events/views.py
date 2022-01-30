@@ -1,10 +1,6 @@
 from datetime import date, datetime
 
-from django.contrib.auth.mixins import (
-    LoginRequiredMixin,
-    PermissionRequiredMixin,
-    UserPassesTestMixin,
-)
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.db.models.functions.datetime import TruncMonth
 from django.db.models.query_utils import Q
 from django.shortcuts import get_object_or_404

@@ -1,7 +1,4 @@
-from datetime import datetime
-
 import factory
-from django.utils.timezone import make_aware
 
 from accounts.factories import UserFactory
 
