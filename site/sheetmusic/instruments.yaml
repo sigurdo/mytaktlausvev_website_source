@@ -38,7 +38,7 @@ Sopransax:
     include: ["sopransaxofon", "soprano saxophone", "soprano sax", "saxo soprano"]
     exceptions: []
 Altsax:
-    include: ["altsaxofon", "alto saxophone", "alto sax", "saxo alto"]
+    include: ["altsax", "saxofon", "altsaxofon", "alto saxophone", "alto sax", "saxo alto"]
     exceptions: []
 Tenorsax:
     include: ["tenorsaksofon", "tenorsaxofon", "tenor saxophone", "tenor sax", "saxo tenore"]

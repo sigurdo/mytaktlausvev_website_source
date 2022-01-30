@@ -25,8 +25,7 @@ from django.dispatch import receiver
 from django.urls import reverse
 from django.utils.text import slugify
 from PyPDF2 import PdfFileReader, PdfFileWriter
-from sheatless import PdfPredictor
-from sheatless.engine import SubstringSequenceMatcher
+from sheatless import PdfPredictor, predict_part_from_string
 
 from common.models import ArticleMixin
 from common.validators import FileTypeValidator
@@ -151,6 +150,14 @@ def pdf_filename_no_extension(pdf):
     return pdf.filename_no_extension()
 
 
+INSTRUMENTS_YAML_PATH = os.path.abspath(
+    os.path.join(
+        os.path.dirname(os.path.realpath(__file__)),
+        "instruments.yaml",
+    )
+)
+
+
 class Pdf(Model):
     """Model representing an uploaded pdf"""
 
@@ -206,12 +213,7 @@ class Pdf(Model):
                     pdf_file.read(),
                     use_lstm=True,
                     tessdata_dir=TESSDATA_DIR,
-                    instruments_file=os.path.abspath(
-                        os.path.join(
-                            os.path.dirname(os.path.realpath(__file__)),
-                            "instruments.yaml",
-                        )
-                    ),
+                    instruments_file=INSTRUMENTS_YAML_PATH,
                     use_multiprocessing=True,
                 )
 
@@ -233,21 +235,26 @@ class Pdf(Model):
             self.save()
 
     def find_parts_from_original_filename(self):
-        def find_instrument_type_from_filename(filename):
-            sequence_matcher = SubstringSequenceMatcher()
-            for instrument_type in InstrumentType.objects.all():
-                if sequence_matcher.is_rougly_substring(instrument_type.name, filename):
-                    return instrument_type
-            return InstrumentType.unknown()
-
         filename, _ = os.path.splitext(self.filename_original)
-        predicted_type = find_instrument_type_from_filename(filename)
-        self.create_part_auto_number(
-            instrument_type=predicted_type,
-            note="funne automatisk",
-            from_page=1,
-            to_page=self.num_of_pages(),
+        part = predict_part_from_string(
+            filename, instruments_file=INSTRUMENTS_YAML_PATH
         )
+        print("part:", part, filename)
+        if part is None:
+            return
+        part_number, instruments = part
+        for instrument_name in instruments:
+            instrument_type = InstrumentType.objects.filter(
+                name__iexact=instrument_name
+            ).first()
+            if not instrument_type:
+                instrument_type = InstrumentType.unknown()
+            self.create_part_auto_number(
+                instrument_type=instrument_type,
+                note="funne automatisk",
+                from_page=1,
+                to_page=self.num_of_pages(),
+            )
 
     def create_part_auto_number(self, **kwargs):
         """
@@ -262,7 +269,7 @@ class Pdf(Model):
                 part_one = other_parts_for_same_instrument.first()
                 part_one.part_number = 1
                 part_one.save()
-            part_number = other_parts_for_same_instrument.last().part_number + 1
+            part_number = (other_parts_for_same_instrument.last().part_number or 0) + 1
         Part(
             part_number=part_number,
             pdf=self,

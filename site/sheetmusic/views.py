@@ -92,12 +92,14 @@ class ScoreView(LoginRequiredMixin, BreadcrumbsMixin, DetailView):
         context["pdfs"] = pdfs
         context["parts"] = parts
         context["parts_favorite"] = list(filter(lambda part: part.favorite, parts))
-        context["parts_instrument_group"] = list(
-            filter(
-                lambda part: part.instrument_type.group == user.instrument_type.group,
-                parts,
+        if user.instrument_type:
+            context["parts_instrument_group"] = list(
+                filter(
+                    lambda part: part.instrument_type.group
+                    == user.instrument_type.group,
+                    parts,
+                )
             )
-        )
         return context
 
 

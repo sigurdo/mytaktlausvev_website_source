@@ -1,8 +1,9 @@
-from factory import SubFactory
+from factory import SubFactory, sequence
 from factory.django import DjangoModelFactory
 
 from accounts.factories import UserFactory
 from common.test_utils import test_pdf
+from instruments.factories import InstrumentTypeFactory
 
 from .models import FavoritePart, Part, Pdf, Score
 
@@ -29,7 +30,9 @@ class PartFactory(DjangoModelFactory):
     class Meta:
         model = Part
 
-    name = "Part"
+    instrument_type = SubFactory(InstrumentTypeFactory)
+    part_number = sequence(lambda n: n)
+    note = ""
     pdf = SubFactory(PdfFactory)
     from_page = 1
     to_page = 1
