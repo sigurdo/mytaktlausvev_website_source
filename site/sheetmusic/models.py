@@ -206,15 +206,14 @@ class Pdf(Model):
         self.processing = True
         self.save()
         try:
-            # PDF processing is done in a separate process to not affect response time
-            # of other requests the server receives while it is processing
             with open(self.file.path, "rb") as pdf_file:
                 pdf_predictor = PdfPredictor(
                     pdf_file.read(),
                     use_lstm=True,
+                    crop_to_left=True,
+                    crop_to_top=True,
                     tessdata_dir=TESSDATA_DIR,
                     instruments_file=INSTRUMENTS_YAML_PATH,
-                    use_multiprocessing=True,
                 )
 
             for part in pdf_predictor.parts():
