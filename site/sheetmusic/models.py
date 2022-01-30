@@ -30,7 +30,7 @@ from sheatless import PdfPredictor, predict_part_from_string
 from common.models import ArticleMixin
 from common.validators import FileTypeValidator
 from instruments.models import InstrumentType
-from web.settings import TESSDATA_DIR, INSTRUMENTS_YAML_PATH
+from web.settings import INSTRUMENTS_YAML_PATH, TESSDATA_DIR
 
 
 class Score(ArticleMixin):

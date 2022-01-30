@@ -365,7 +365,7 @@ class ScoreViewTestSuite(TestMixin, TestCase):
         self.client.force_login(user)
         context = self.client.get(self.get_url()).context
         self.assertEqual(list(context["pdfs"]), [pdf])
-    
+
     def test_parts_in_context(self):
         user = UserFactory()
         part = PartFactory(pdf__score=self.score)
