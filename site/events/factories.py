@@ -16,7 +16,6 @@ class EventFactory(factory.django.DjangoModelFactory):
     content = "SMASH in Trondheim."
     created_by = factory.SubFactory(UserFactory)
     modified_by = factory.SubFactory(UserFactory)
-    start_time = make_aware(datetime(2020, 11, 23, 12, 15, 00))
 
 
 class EventAttendanceFactory(factory.django.DjangoModelFactory):

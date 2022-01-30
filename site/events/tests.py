@@ -5,9 +5,8 @@ from django.db import IntegrityError
 from django.http.response import Http404
 from django.test import TestCase
 from django.urls import reverse
-from django.utils import timezone
 from django.utils.text import slugify
-from django.utils.timezone import make_aware
+from django.utils.timezone import make_aware, now
 
 from accounts.factories import SuperUserFactory, UserFactory
 from common.mixins import TestMixin
@@ -45,7 +44,7 @@ class EventTestCase(TestCase):
         """Should create unique slugs for events with the same year."""
         event_same_year = EventFactory(
             title=self.event.title,
-            start_time=timezone.make_aware(datetime(self.event.start_time.year, 1, 1)),
+            start_time=make_aware(datetime(self.event.start_time.year, 1, 1)),
         )
         self.assertNotEqual(self.event.slug, event_same_year.slug)
 
@@ -53,7 +52,7 @@ class EventTestCase(TestCase):
         """Should allow events with different years to have equal slugs."""
         event_different_year = EventFactory(
             title=self.event.title,
-            start_time=timezone.make_aware(datetime(1900, 1, 1)),
+            start_time=make_aware(datetime(1900, 1, 1)),
         )
         self.assertEqual(self.event.slug, event_different_year.slug)
 
@@ -64,6 +63,10 @@ class EventTestCase(TestCase):
             title="Title that is very different from the slug", slug=slug
         )
         self.assertEqual(event.slug, slug)
+
+    def test_start_time_defaults_to_now(self):
+        """`start_time` should default to the current date and time."""
+        self.assertAlmostEqual(self.event.start_time, now(), delta=timedelta(seconds=1))
 
 
 class EventAttendanceTestCase(TestCase):
