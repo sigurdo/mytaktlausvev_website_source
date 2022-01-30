@@ -30,7 +30,7 @@ from sheatless import PdfPredictor, predict_part_from_string
 from common.models import ArticleMixin
 from common.validators import FileTypeValidator
 from instruments.models import InstrumentType
-from web.settings import TESSDATA_DIR
+from web.settings import TESSDATA_DIR, INSTRUMENTS_YAML_PATH
 
 
 class Score(ArticleMixin):
@@ -150,14 +150,6 @@ def pdf_filename_no_extension(pdf):
     return pdf.filename_no_extension()
 
 
-INSTRUMENTS_YAML_PATH = os.path.abspath(
-    os.path.join(
-        os.path.dirname(os.path.realpath(__file__)),
-        "instruments.yaml",
-    )
-)
-
-
 class Pdf(Model):
     """Model representing an uploaded pdf"""
 
@@ -214,6 +206,8 @@ class Pdf(Model):
                     crop_to_top=True,
                     tessdata_dir=TESSDATA_DIR,
                     instruments_file=INSTRUMENTS_YAML_PATH,
+                    full_score_threshold=2,
+                    full_score_label="Partitur",
                 )
 
             for part in pdf_predictor.parts():

@@ -62,10 +62,9 @@ class ScoreTestSuite(TestMixin, TestCase):
         Checks that favorite part is found before instrument type part.
         """
         user = UserFactory(instrument_type=self.instrument_type)
-        part_favorite = PartFactory(pdf=self.pdf_1)
-        FavoritePartFactory(user=user, part=part_favorite)
+        favorite_part = FavoritePartFactory(user=user, part__pdf=self.pdf_1)
         found_part = self.score.find_user_part(user)
-        self.assertEqual(found_part, part_favorite)
+        self.assertEqual(found_part, favorite_part.part)
 
     def test_find_user_part_type(self):
         """
@@ -360,22 +359,42 @@ class ScoreViewTestSuite(TestMixin, TestCase):
         response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
-    def test_context_data(self):
+    def test_pdf_in_context(self):
+        user = UserFactory()
+        pdf = PdfFactory(score=self.score)
+        self.client.force_login(user)
+        context = self.client.get(self.get_url()).context
+        self.assertEqual(list(context["pdfs"]), [pdf])
+    
+    def test_parts_in_context(self):
+        user = UserFactory()
+        part = PartFactory(pdf__score=self.score)
+        self.client.force_login(user)
+        context = self.client.get(self.get_url()).context
+        self.assertEqual(list(context["parts"]), [part])
+
+    def test_parts_favorite_in_context(self):
+        user = UserFactory()
+        part = PartFactory(pdf__score=self.score)
+        FavoritePartFactory(user=user, part=part)
+        self.client.force_login(user)
+        context = self.client.get(self.get_url()).context
+        self.assertEqual(list(context["parts_favorite"]), [part])
+
+    def test_parts_instrument_group_in_context(self):
         instrument_type = InstrumentTypeFactory()
         user = UserFactory(instrument_type=instrument_type)
+        part = PartFactory(pdf__score=self.score, instrument_type=instrument_type)
         self.client.force_login(user)
-        pdf = PdfFactory(score=self.score)
-        part = PartFactory(pdf=pdf, instrument_type=instrument_type)
-        FavoritePartFactory(user=user, part=part)
-        response = self.client.get(self.get_url())
-        context = response.context
-        self.assertEqual(list(context["pdfs"]), [pdf])
-        self.assertEqual(list(context["parts"]), [part])
-        self.assertTrue(list(context["parts"])[0].favorite)
-        self.assertEqual(list(context["parts_favorite"]), [part])
-        self.assertTrue(list(context["parts_favorite"])[0].favorite)
+        context = self.client.get(self.get_url()).context
         self.assertEqual(list(context["parts_instrument_group"]), [part])
-        self.assertTrue(list(context["parts_instrument_group"])[0].favorite)
+
+    def test_favorite_on_parts_in_context(self):
+        user = UserFactory()
+        FavoritePartFactory(user=user, part__pdf__score=self.score)
+        self.client.force_login(user)
+        context = self.client.get(self.get_url()).context
+        self.assertTrue(list(context["parts"])[0].favorite)
 
 
 class ScoreUpdateTestSuite(TestMixin, TestCase):

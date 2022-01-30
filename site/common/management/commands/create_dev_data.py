@@ -187,6 +187,7 @@ class Command(BaseCommand):
         tuba = InstrumentGroupFactory(name="Tuba")
         drums = InstrumentGroupFactory(name="Slagverk")
         synthesizer = InstrumentGroupFactory(name="Synthesizer")
+        director = InstrumentGroupFactory(name="Dirigent")
         InstrumentTypeFactory(name="Piccolo", group=flute)
         type_flute = InstrumentTypeFactory(name="Fløyte", group=flute)
         InstrumentTypeFactory(name="Obo", group=flute)
@@ -217,6 +218,7 @@ class Command(BaseCommand):
         InstrumentTypeFactory(name="Tamburin", group=drums)
         InstrumentTypeFactory(name="Triangel", group=drums)
         InstrumentTypeFactory(name="Perkusjon", group=drums)
+        InstrumentTypeFactory(name="Partitur", group=director)
         type_grand_piano = InstrumentTypeFactory(name="Flygel", group=drums)
         type_synthesizer = InstrumentTypeFactory(name="Synthesizer", group=synthesizer)
         type_vco = InstrumentTypeFactory(
