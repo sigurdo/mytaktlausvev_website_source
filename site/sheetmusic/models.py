@@ -239,7 +239,6 @@ class Pdf(Model):
         part = predict_part_from_string(
             filename, instruments_file=INSTRUMENTS_YAML_PATH
         )
-        print("part:", part, filename)
         if part is None:
             return
         part_number, instruments = part
