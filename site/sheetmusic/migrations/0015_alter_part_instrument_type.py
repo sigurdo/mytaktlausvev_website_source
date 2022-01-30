@@ -18,9 +18,4 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RunPython(delete_parts_without_instrument_type),
-        migrations.AlterField(
-            model_name='part',
-            name='instrument_type',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='parts', to='instruments.instrumenttype', verbose_name='instrumenttype'),
-        ),
     ]
