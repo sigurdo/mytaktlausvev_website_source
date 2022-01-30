@@ -196,10 +196,6 @@ class EventCreateTestCase(TestMixin, TestCase):
         """Should require login."""
         self.assertLoginRequired(reverse("events:EventCreate"))
 
-    def test_requires_permission(self):
-        """Should require the `create_event` permission."""
-        self.assertPermissionRequired(reverse("events:EventCreate"), "events.add_event")
-
     def test_created_by_modified_by_set_to_current_user(self):
         """Should set `created_by` and `modified_by` to the current user on creation."""
         user = SuperUserFactory()
@@ -221,10 +217,6 @@ class EventCreateTestCase(TestMixin, TestCase):
 
 
 class EventUpdateTestCase(TestMixin, TestCase):
-    def get_url(self, event):
-        """Returns the URL for the event update view for `event`."""
-        return reverse("events:EventUpdate", args=[event.start_time.year, event.slug])
-
     def setUp(self):
         self.event = EventFactory()
         self.event_data = {
@@ -234,21 +226,36 @@ class EventUpdateTestCase(TestMixin, TestCase):
             "content": "Event text",
         }
 
+    def get_url(self):
+        """Returns the URL for the event update view for `event`."""
+        return reverse(
+            "events:EventUpdate", args=[self.event.start_time.year, self.event.slug]
+        )
+
     def test_requires_login(self):
         """Should require login."""
-        self.assertLoginRequired(self.get_url(self.event))
+        self.assertLoginRequired(self.get_url())
 
     def test_requires_permission(self):
         """Should require the `change_event` permission."""
         self.assertPermissionRequired(
-            self.get_url(self.event),
+            self.get_url(),
             "events.change_event",
         )
+
+    def test_succeeds_if_not_permission_but_is_author(self):
+        """
+        Should succeed if the user is the author,
+        even if the user doesn't have the `change_event` permission.
+        """
+        self.client.force_login(self.event.created_by)
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_created_by_not_changed(self):
         """Should not change `created_by` when updating event."""
         self.client.force_login(SuperUserFactory())
-        self.client.post(self.get_url(self.event), self.event_data)
+        self.client.post(self.get_url(), self.event_data)
 
         created_by_previous = self.event.created_by
         self.event.refresh_from_db()
@@ -258,7 +265,7 @@ class EventUpdateTestCase(TestMixin, TestCase):
         """Should set `modified_by` to the current user on update."""
         user = SuperUserFactory()
         self.client.force_login(user)
-        self.client.post(self.get_url(self.event), self.event_data)
+        self.client.post(self.get_url(), self.event_data)
 
         self.event.refresh_from_db()
         self.assertEqual(self.event.modified_by, user)
