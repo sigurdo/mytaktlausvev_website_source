@@ -5,7 +5,7 @@
 {% block form %}
 <div class="row">
     <div class="col-lg-6 d-none d-lg-block">
-        <iframe class="sticky-top w-100 pdf-iframe" src="{{pdf.file.url}}"></iframe>
+        <iframe class="sticky-top w-100 pdf-iframe" src=""></iframe>
     </div>
     <section class="col-lg-6 col-12">
         {% load crispy_forms_tags %}
@@ -20,7 +20,6 @@
 {% endblock css %}
 
 {% block js %}
-    {% load static %}
-    <script src={% static 'sheetmusic/parts_update_form.js' %}></script>
-    <script src={% static 'common/js/prevent_number_input_scroll.js' %}></script>
+{% load static %}
+<script src={% static 'repertoire/repertoire_pdf.js' %}></script>
 {% endblock js %}

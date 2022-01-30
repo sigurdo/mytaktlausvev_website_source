@@ -8,7 +8,7 @@ from django.utils.text import slugify
 
 from common.mixins import TestMixin
 from common.test_utils import test_image
-from instruments.factories import InstrumentGroupFactory
+from instruments.factories import InstrumentTypeFactory
 from uniforms.factories import JacketUserFactory
 
 from .factories import SuperUserFactory, UserFactory
@@ -153,7 +153,7 @@ class UserCustomCreateTestSuite(TestMixin, TestCase):
             "birthdate": "2021-12-18",
             "address": "A server near you",
             "student_card_number": "6C696E74",
-            "instrument_group": InstrumentGroupFactory().pk,
+            "instrument_type": InstrumentTypeFactory().pk,
             "membership_period": "2022, Spring - ",
         }
 

@@ -43,9 +43,9 @@ class UserCustom(AbstractUser):
         ),
     )
     avatar = ImageField("profilbilde", upload_to="profile/", blank=True)
-    instrument_group = ForeignKey(
-        "instruments.InstrumentGroup",
-        verbose_name="instrumentgruppe",
+    instrument_type = ForeignKey(
+        "instruments.InstrumentType",
+        verbose_name="instrumenttype",
         related_name="users",
         on_delete=SET_NULL,
         null=True,

@@ -1,8 +1,7 @@
-import os
+from io import BytesIO
 
 from django.core.files.uploadedfile import SimpleUploadedFile
-
-from web.settings import BASE_DIR
+from PIL import Image, ImageDraw
 
 
 def test_txt_file(name="test.txt", content="test", content_type="text/plain"):
@@ -34,11 +33,29 @@ def test_image_gif_2x2(name="test_image.gif", content_type="image/gif"):
 
 
 def test_pdf(name="test.pdf", content_type="application/pdf"):
-    """Returns a temporary pdf file with 1 page and the text Tuba written on it that can be used in tests."""
-    pdf = open(os.path.join(BASE_DIR, "common", "test_data", "test.pdf"), "rb").read()
+    """Returns a temporary pdf file with 1 page and the text Tuba written to the top left that can be used in tests."""
+    return test_pdf_multipage(["Tuba"], name=name, content_type=content_type)
+
+
+def test_pdf_multipage(
+    page_titles, name="multipage.pdf", content_type="application/pdf"
+):
+    """
+    Returns a temporary pdf file with one page per element in page_titles, with titles written
+    to the top left on each page.
+    """
+    imgs = []
+    for page_title in page_titles:
+        img = Image.new("L", (500, 707), 255)
+        ImageDraw.Draw(img).text((50, 50), page_title, fill=0)
+        imgs.append(img)
+    pdf = BytesIO()
+    imgs[0].save(
+        pdf, resolution=67, format="PDF", save_all=True, append_images=imgs[1:]
+    )
     return SimpleUploadedFile(
         name=name,
-        content=pdf,
+        content=pdf.getvalue(),
         content_type=content_type,
     )
 

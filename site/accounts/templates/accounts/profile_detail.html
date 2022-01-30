@@ -6,7 +6,7 @@
 {% block content %}
     {% if profile.instrument_group %}
     <p>
-        Instrumentgruppe: {{ profile.instrument_group }}
+        Instrumentgruppe: {{ profile.instrument_type.group }} ({{ profile.instrument_type }})
     </p>
     {% endif %}
     {% if profile.instruments.exists %}

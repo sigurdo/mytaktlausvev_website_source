@@ -17,7 +17,13 @@ from django.contrib.messages import constants as messages
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TESSDATA_DIR = os.path.join(BASE_DIR, "..", "tessdata", "tessdata_best-4.1.0")
-
+INSTRUMENTS_YAML_PATH = os.path.abspath(
+    os.path.join(
+        BASE_DIR,
+        "sheetmusic",
+        "instruments.yaml",
+    )
+)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/

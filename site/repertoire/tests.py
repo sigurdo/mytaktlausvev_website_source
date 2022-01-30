@@ -2,6 +2,7 @@ from io import BytesIO
 
 from django.test import TestCase
 from django.urls import reverse
+from PyPDF2 import PdfFileReader
 
 from accounts.factories import SuperUserFactory, UserFactory
 from common.mixins import TestMixin
@@ -9,7 +10,7 @@ from common.test_utils import create_formset_post_data
 from sheetmusic.factories import FavoritePartFactory
 
 from .factories import RepertoireEntryFactory, RepertoireFactory
-from .forms import RepertoireEntryFormset
+from .forms import RepertoireEntryFormset, RepertoirePdfFormset
 
 
 class RepertoireTestSuite(TestMixin, TestCase):
@@ -130,17 +131,40 @@ class RepertoirePdfTestSuite(TestMixin, TestCase):
     def get_url(self):
         return reverse("repertoire:RepertoirePdf", args=[self.entry.repertoire.slug])
 
+    def create_post_data(self, data=None):
+        if data is None:
+            data = [
+                {
+                    "part": self.entry.score.find_user_part(self.user).pk,
+                },
+                {
+                    "part": self.entry_2.score.find_user_part(self.user).pk,
+                },
+            ]
+        return create_formset_post_data(
+            RepertoirePdfFormset,
+            total_forms=2,
+            initial_forms=2,
+            data=data,
+        )
+
     def setUp(self):
         self.user = UserFactory()
         self.entry = RepertoireEntryFactory()
+        self.entry_2 = RepertoireEntryFactory(repertoire=self.entry.repertoire)
         self.favorite = FavoritePartFactory(
             part__pdf__score=self.entry.score, user=self.user
+        )
+        self.favorite_2 = FavoritePartFactory(
+            part__pdf__score=self.entry_2.score, user=self.user
         )
 
     def test_requires_login(self):
         self.assertLoginRequired(self.get_url())
 
-    def test_returns_pdf(self):
+    def test_post(self):
         self.client.force_login(self.user)
-        response = self.client.get(self.get_url())
+        response = self.client.post(self.get_url(), self.create_post_data())
         self.assertEqual(response["content-type"], "application/pdf")
+        pdf_reader = PdfFileReader(BytesIO(response.getvalue()))
+        self.assertEqual(pdf_reader.getNumPages(), 2)

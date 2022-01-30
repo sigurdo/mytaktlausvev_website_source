@@ -1,7 +1,7 @@
 <table class="table table-sm table-striped">
     <thead>
         <tr>
-            <th> Navn </th>
+            <th> Stemme </th>
             <th> PDF </th>
             <th> Favoritt </th>
         </tr>
@@ -11,7 +11,7 @@
     {% for part in parts %}
         <tr>
             <td>
-                {{ part.name }}
+                {{ part }}
             </td>
             <td>
                 <a href="{% url 'sheetmusic:PartPdf' part.pdf.score.slug part.slug %}"> PDF </a>
