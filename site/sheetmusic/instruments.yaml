@@ -63,7 +63,7 @@ Baryton:
     exceptions: ["barytonsaxofon", "baritone saxophone"]
 Tuba:
     include: ["tuba", "tubas", "bass", "basses", "eb-tuba", "bb-tuba"]
-    exceptions: ["bass trombone", "bass clarinet", "bassklarinett", "bass guitar"]
+    exceptions: ["bass trombone", "bass clarinet", "bassklarinett", "bass guitar", "basson", "basstrombone", "el-bass", "el bass"]
 Trommesett:
     include: ["slagverk", "trommer", "tromme", "drum", "drums", "trommesett", "drum set", "drumset", "platos y campanas", ]
     exceptions: []
