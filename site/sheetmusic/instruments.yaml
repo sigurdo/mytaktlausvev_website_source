@@ -91,6 +91,6 @@ Pauker:
 Perkusjon:
     include: ["perkusjon", "percussion", "mallets"]
     exceptions: []
-Annet:
+Anna:
     include: ["guitar", "bass guitar", "el-bass", "el bass", "lyre", "lyra"]
     exceptions: []

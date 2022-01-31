@@ -219,7 +219,7 @@ class Command(BaseCommand):
         InstrumentTypeFactory(name="Triangel", group=drums)
         InstrumentTypeFactory(name="Pauker", group=drums)
         InstrumentTypeFactory(name="Perkusjon", group=drums)
-        InstrumentTypeFactory(name="Annet", group=director)
+        InstrumentTypeFactory(name="Anna", group=director)
         InstrumentTypeFactory(name="Partitur", group=director)
         type_grand_piano = InstrumentTypeFactory(name="Flygel", group=drums)
         type_synthesizer = InstrumentTypeFactory(name="Synthesizer", group=synthesizer)
