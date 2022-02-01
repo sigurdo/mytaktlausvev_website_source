@@ -155,7 +155,7 @@ class PdfTestSuite(TestMixin, TestCase):
         """
         InstrumentTypeFactory(name="Fløyte")
         InstrumentTypeFactory(name="Klarinett")
-        saxophone = InstrumentTypeFactory(name="Altsax")
+        saxophone = InstrumentTypeFactory(name="Altsaksofon")
         self.pdf.find_parts_from_original_filename()
         self.pdf.refresh_from_db()
         self.assertEqual(self.pdf.parts.count(), 1)
