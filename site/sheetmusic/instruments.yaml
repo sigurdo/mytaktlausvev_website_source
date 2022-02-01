@@ -34,17 +34,17 @@ Althorn:
 Tenorhorn:
     include: ["tenororn", "tenorhom", "bb-horn", "bb horn"]
     exceptions: []
-Sopransax:
-    include: ["sopransaxofon", "soprano saxophone", "soprano sax", "saxo soprano"]
+Sopransaksofon:
+    include: ["sopransaks", "sopransax", "sopransaxofon", "sopransaksofon", "soprano saxophone", "soprano sax", "saxo soprano"]
     exceptions: []
-Altsax:
-    include: ["altsax", "saxofon", "saxophone", "altsaxofon", "alto saxophone", "alto sax", "saxo alto"]
+Altsaksofon:
+    include: ["altsax", "altsaxofon", "saxofon", "altsaks", "altsaksofon", "saksofon", "saxophone", "alto saxophone", "alto sax", "saxo alto"]
     exceptions: ["sopran", "tenor", "baryton", "baritone", "barítono"]
-Tenorsax:
-    include: ["tenorsaksofon", "tenorsaxofon", "tenor saxophone", "tenor sax", "saxo tenore"]
+Tenorsaksofon:
+    include: ["tenorsaks", "tenorsaksofon", "tenorsax", "tenorsaxofon", "tenor sax", "saxo tenore"]
     exceptions: []
-Barysax:
-    include: ["barytonsaxofon", "barytonsaksofon", "barysax", "saxo barítono", "baritone saxophone", "baritone sax"]
+Barytonsaksofon:
+    include: ["barytonsaxofon", "barytonsaksofon", "barysax", "barysaks", "saxo barítono", "baritone saxophone", "baritone sax"]
     exceptions: []
 Trombone:
     include: ["trombone", "trombón"]
