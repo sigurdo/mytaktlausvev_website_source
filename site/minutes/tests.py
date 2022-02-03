@@ -1,8 +1,10 @@
 from datetime import date
 
 from django.test import TestCase
+from django.urls import reverse
 from django.utils.text import slugify
 
+from common.mixins import TestMixin
 from minutes.factories import MinutesFactory
 
 
@@ -40,3 +42,12 @@ class EventTestCase(TestCase):
     def test_date_defaults_to_today(self):
         """`date` should default to the current date."""
         self.assertEqual(self.minutes.date, date.today())
+
+
+class MinutesListTestSuite(TestMixin, TestCase):
+    def get_url(self):
+        return reverse("minutes:MinutesList")
+
+    def test_login_required(self):
+        """Should require login."""
+        self.assertLoginRequired(self.get_url())

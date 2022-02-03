@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title_page %}Referat{% endblock title_page %}
+{% block title_content %}Referat{% endblock title_content %}
+
+{% block content %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Tittel</th>
+                <th>Skrive av</th>
+                <th>Dato laga</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for minutes in minutes_list %}
+                <tr>
+                    <td>
+                        {{ minutes.title }}
+                    </td>
+
+                    <td>
+                        <a href="{{ minutes.created_by.get_absolute_url }}">
+                            {{ minutes.created_by.username }}
+                        </a>
+                    </td>
+
+                    <td>{{ minutes.created }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <footer>
+        {% include "common/includes/pagination.html" with pagination_label="Referatsider" %}
+    </footer>
+{% endblock content %}
