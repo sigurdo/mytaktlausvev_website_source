@@ -191,7 +191,7 @@ class Pdf(Model):
         return os.path.splitext(self.filename_original)[0]
 
     def num_of_pages(self):
-        pdf_reader = PdfFileReader(self.file.path)
+        pdf_reader = PdfFileReader(self.file.path, strict=False)
         return pdf_reader.getNumPages()
 
     def find_parts_with_sheatless(self):
