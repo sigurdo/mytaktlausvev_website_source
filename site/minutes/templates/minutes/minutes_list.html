@@ -3,6 +3,12 @@
 {% block title_page %}Referat{% endblock title_page %}
 {% block title_content %}Referat{% endblock title_content %}
 
+{% block header %}
+    {{ block.super }}
+
+    <a class="btn btn-primary btn-sm my-1" href="{% url 'minutes:MinutesCreate' %}">Nytt referat</a>
+{% endblock header %}
+
 {% block content %}
     <table class="table table-striped">
         <thead>

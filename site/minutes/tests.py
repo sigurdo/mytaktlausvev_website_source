@@ -1,4 +1,5 @@
 from datetime import date
+from http import HTTPStatus
 
 from django.test import TestCase
 from django.urls import reverse
@@ -10,7 +11,7 @@ from minutes.factories import MinutesFactory
 from minutes.models import Minutes
 
 
-class EventTestCase(TestCase):
+class MinutesTestCase(TestCase):
     def setUp(self):
         self.minutes = MinutesFactory()
 
@@ -96,3 +97,54 @@ class MinutesCreateTestCase(TestMixin, TestCase):
         minutes = Minutes.objects.last()
         self.assertEqual(minutes.created_by, user)
         self.assertEqual(minutes.modified_by, user)
+
+
+class MinutesUpdateTestCase(TestMixin, TestCase):
+    def setUp(self):
+        self.minutes = MinutesFactory()
+        self.minutes_data = {
+            "title": "Another one",
+            "content": "Again! Again! Again!",
+            "date": date.today(),
+        }
+
+    def get_url(self):
+        return reverse("minutes:MinutesUpdate", args=[self.minutes.slug])
+
+    def test_requires_login(self):
+        """Should require login."""
+        self.assertLoginRequired(self.get_url())
+
+    def test_requires_permission(self):
+        """Should require permission to change minutes."""
+        self.assertPermissionRequired(
+            self.get_url(),
+            "minutes.change_minutes",
+        )
+
+    def test_succeeds_if_not_permission_but_is_author(self):
+        """
+        Should succeed if the user is the author,
+        even if the user doesn't have permission to change minutes.
+        """
+        self.client.force_login(self.minutes.created_by)
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+    def test_created_by_not_changed(self):
+        """Should not change `created_by` when updating minutes."""
+        self.client.force_login(SuperUserFactory())
+        self.client.post(self.get_url(), self.minutes_data)
+
+        created_by_previous = self.minutes.created_by
+        self.minutes.refresh_from_db()
+        self.assertEqual(self.minutes.created_by, created_by_previous)
+
+    def test_modified_by_set_to_current_user(self):
+        """Should set `modified_by` to the current user on update."""
+        user = SuperUserFactory()
+        self.client.force_login(user)
+        self.client.post(self.get_url(), self.minutes_data)
+
+        self.minutes.refresh_from_db()
+        self.assertEqual(self.minutes.modified_by, user)

@@ -7,6 +7,8 @@
 {% block header %}
     {{ block.super }}
     {% include "common/includes/created_modified.html" with object=minutes only %}
+
+    <a class="btn btn-primary btn-sm" href="{% url 'minutes:MinutesUpdate' minutes.slug %}">Rediger</a>
 {% endblock header %}
 
 {% block content %}
