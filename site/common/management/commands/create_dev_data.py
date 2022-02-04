@@ -20,6 +20,7 @@ from instruments.factories import (
     InstrumentTypeFactory,
 )
 from instruments.models import Instrument
+from minutes.factories import MinutesFactory
 from navbar.factories import NavbarItemFactory
 from navbar.models import NavbarItem
 from pictures.factories import GalleryFactory, ImageFactory
@@ -331,6 +332,14 @@ class Command(BaseCommand):
         for _ in range(3):
             ImageFactory(gallery=gallery)
 
+        MinutesFactory(
+            title="Council of Elrond",
+            content="Cast it into the fire!",
+            date=date(3018, 10, 25),
+            created_by=superuser,
+            modified_by=superuser,
+        )
+
         NavbarItemFactory(
             text="Julekalender",
             link=reverse("advent_calendar:AdventCalendarList"),
@@ -428,6 +437,13 @@ class Command(BaseCommand):
             text="Wiki",
             link=article_wiki.get_absolute_url(),
             order=2.5,
+            requires_login=True,
+            parent=other_dropdown,
+        )
+        NavbarItemFactory(
+            text="Referat",
+            link=reverse("minutes:MinutesList"),
+            order=2.55,
             requires_login=True,
             parent=other_dropdown,
         )

@@ -11,7 +11,7 @@ from minutes.factories import MinutesFactory
 from minutes.models import Minutes
 
 
-class MinutesTestCase(TestCase):
+class MinutesTestSuite(TestCase):
     def setUp(self):
         self.minutes = MinutesFactory()
 
@@ -60,7 +60,7 @@ class MinutesListTestSuite(TestMixin, TestCase):
         self.assertLoginRequired(self.get_url())
 
 
-class MinutesDetailTestCase(TestMixin, TestCase):
+class MinutesDetailTestSuite(TestMixin, TestCase):
     def setUp(self):
         self.minutes = MinutesFactory()
 
@@ -72,7 +72,7 @@ class MinutesDetailTestCase(TestMixin, TestCase):
         self.assertLoginRequired(self.get_url())
 
 
-class MinutesCreateTestCase(TestMixin, TestCase):
+class MinutesCreateTestSuite(TestMixin, TestCase):
     def get_url(self):
         return reverse("minutes:MinutesCreate")
 
@@ -99,7 +99,7 @@ class MinutesCreateTestCase(TestMixin, TestCase):
         self.assertEqual(minutes.modified_by, user)
 
 
-class MinutesUpdateTestCase(TestMixin, TestCase):
+class MinutesUpdateTestSuite(TestMixin, TestCase):
     def setUp(self):
         self.minutes = MinutesFactory()
         self.minutes_data = {

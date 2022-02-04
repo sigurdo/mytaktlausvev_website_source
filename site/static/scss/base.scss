@@ -61,15 +61,17 @@ th {
   );
 }
 
-.dl-inline dt:before {
-  content: "";
-  display: block;
-}
-.dl-inline dt::after {
-  content: ": ";
-}
-.dl-inline dt, dd {
-  display: inline;
+.dl-inline {
+  dt:before {
+    content: "";
+    display: block;
+  }
+  dt::after {
+    content: ": ";
+  }
+  dt, dd {
+    display: inline;
+  }
 }
 
 // Hide BigPicture's weird and unnecessary caption close button
