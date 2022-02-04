@@ -14,6 +14,10 @@ class EventTestCase(TestCase):
 
     def test_get_absolute_url(self):
         """Should link to the minutes' detail page."""
+        self.assertEqual(
+            self.minutes.get_absolute_url(),
+            reverse("minutes:MinutesDetail", args=[self.minutes.slug]),
+        )
 
     def test_creates_slug_from_title_automatically(self):
         """Should create a slug from the title automatically during creation."""
@@ -49,5 +53,17 @@ class MinutesListTestSuite(TestMixin, TestCase):
         return reverse("minutes:MinutesList")
 
     def test_login_required(self):
+        """Should require login."""
+        self.assertLoginRequired(self.get_url())
+
+
+class MinutesDetailTestCase(TestMixin, TestCase):
+    def setUp(self):
+        self.minutes = MinutesFactory()
+
+    def get_url(self):
+        return reverse("minutes:MinutesDetail", args=[self.minutes.slug])
+
+    def test_requires_login(self):
         """Should require login."""
         self.assertLoginRequired(self.get_url())

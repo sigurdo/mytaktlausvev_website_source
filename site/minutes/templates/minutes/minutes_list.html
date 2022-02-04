@@ -17,7 +17,9 @@
             {% for minutes in minutes_list %}
                 <tr>
                     <td>
-                        {{ minutes.title }}
+                        <a href="{{ minutes.get_absolute_url }}">
+                            {{ minutes.title }}
+                        </a>
                     </td>
 
                     <td>
