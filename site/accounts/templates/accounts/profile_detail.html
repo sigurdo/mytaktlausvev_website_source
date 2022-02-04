@@ -1,24 +1,137 @@
 {% extends 'base.html' %}
 
 {% block title_page %}{{ profile.get_name }}{% endblock title_page %}
-{% block title_content %}{{ profile.get_name }}{% endblock title_content %}
+
+{% block header_container %}{% endblock header_container %}
 
 {% block content %}
-    {% if profile.instrument_group %}
-    <p>
-        Instrumentgruppe: {{ profile.instrument_type.group }} ({{ profile.instrument_type }})
-    </p>
-    {% endif %}
-    {% if profile.instruments.exists %}
-    <p>
-        Lånte instrument: {% for instrument in profile.instruments.all %}{{ instrument }}{% if not forloop.last %}, {% else %}.{% endif %}{% endfor %}
-    </p>
-    {% endif %}
-    {% with profile.get_jacket as jacket %}
-        {% if jacket %}
-            <p>
-                Jakkenummer: {{ jacket.number }}
-            </p>
-        {% endif %}
-    {% endwith %}
+    <div class="row gy-3">
+        <div class="col-lg-3">
+            <div class="h-24 d-flex justify-content-center">
+                <img
+                    src="{{ profile.get_avatar_url }}"
+                    class="img-fluid mh-100"
+                />
+            </div>
+            <h1 class="fs-3 text-center mb-1">
+                {{ profile.get_name }}
+            </h1>
+            <div class="text-center">
+                @{{ profile.username }}
+            </div>
+        </div>
+
+        <div class="col-lg-9">
+            <div class="row gy-3">
+                <div class="col-md-6">
+                    <section class="card h-100">
+                        <div class="card-body">
+                            <h2 class="fs-3">Personleg</h2>
+                            <dl>
+                                <dt>Fullt namn</dt>
+                                <dd>{% firstof profile.name "Ukjent" %}</dd>
+
+                                <dt>Fødselsdato</dt>
+                                <dd>{% firstof profile.birthdate "Ukjent" %}</dd>
+
+                                <dt>Studentkortnummer</dt>
+                                <dd>{% firstof profile.student_card_number "Ukjent" %}</dd>
+                            </dl>
+                        </div>
+                    </section>
+                </div>
+
+                <div class="col-md-6">
+                    <section class="card h-100">
+                        <div class="card-body">
+                            <h2 class="fs-3">Kontakt</h2>
+                            <dl>
+                                <dt>Telefonnummer</dt>
+                                <dd>
+                                    {% if profile.phone_number %}
+                                    <a href="tel:{{ profile.phone_number }}">{{ profile.phone_number }}</a>
+                                    {% else %}
+                                    Ukjent
+                                    {% endif %}
+                                </dd>
+
+                                <dt>Adresse</dt>
+                                <dd class="p-margin-last-0">
+                                    {% if profile.address %}
+                                    {% load markdown %}
+                                    {{ profile.address | markdown }}
+                                    {% else %}
+                                    Ukjent
+                                    {% endif %}
+                                </dd>
+
+                                <dt>Heimeside</dt>
+                                <dd>
+                                    {% if profile.home_page %}
+                                    <a href="{{ profile.home_page }}">{{ profile.home_page }}</a>
+                                    {% else %}
+                                    Ukjent
+                                    {% endif %}
+                                </dd>
+                            </dl>
+                        </div>
+                    </section>
+                </div>
+
+                <div class="col-md-6">
+                    <section class="card h-100">
+                        <div class="card-body">
+                            <h2 class="fs-3">Medlemskap</h2>
+                            <dl>
+                                <dt>Medlemsstatus</dt>
+                                <dd>{{ profile.get_membership_status_display }}</dd>
+
+                                <dt>Medlemsperiode</dt>
+                                <dd>{% firstof profile.membership_period "Ukjent" %}</dd>
+                            </dl>
+                        </div>
+                    </section>
+                </div>
+
+                <div class="col-md-6">
+                    <section class="card h-100">
+                        <div class="card-body">
+                            <h2 class="fs-3">Materiale</h2>
+                            <dl>
+                                <dt>Instrumentgruppe</dt>
+                                <dd>
+                                    {% if profile.instrument_type %}
+                                        {{ profile.instrument_type.group }}
+                                        {% if profile.instrument_type.name != profile.instrument_type.group.name %}
+                                        ({{ profile.instrument_type }})
+                                        {% endif %}
+                                    {% else %}
+                                        Ukjent
+                                    {% endif %}
+                                </dd>
+
+                                {% if profile.instruments.exists %}
+                                    <dt>Lånte instrument</dt>
+                                    <dd>
+                                        <ul class="mb-0">
+                                            {% for instrument in profile.instruments.all %}
+                                            <li>{{ instrument }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    </dd>
+                                {% endif %}
+
+                                {% with profile.get_jacket as jacket %}
+                                {% if jacket %}
+                                    <dt>Jakkenummer</dt>
+                                    <dd>{{ jacket.number }}</dd>
+                                {% endif %}
+                                {% endwith %}
+                            </dl>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock content %}

@@ -20,16 +20,18 @@
 	<div class="mt-4 {% block container_class %}container{% endblock container_class %}">
 		<div class="row">
 			<main class="col">
-				<article>
-					<header class="mb-4">
-					{% block header %}
-						{% if breadcrumbs %}
-							{% include "common/includes/breadcrumbs.html" with breadcrumbs=breadcrumbs only %}
-						{% endif %}
+				<article class="mb-5">
+					{% block header_container %}
+						<header class="mb-4">
+						{% block header %}
+							{% if breadcrumbs %}
+								{% include "common/includes/breadcrumbs.html" with breadcrumbs=breadcrumbs only %}
+							{% endif %}
 
-						<h1 class="mb-0">{% block title_content %}{% endblock title_content %}</h1>
-					{% endblock header %}
-					</header>
+							<h1 class="mb-0">{% block title_content %}{% endblock title_content %}</h1>
+						{% endblock header %}
+						</header>
+					{% endblock header_container %}
 
 					{% block content %}
 					{% endblock content %}
