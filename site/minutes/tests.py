@@ -4,8 +4,10 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils.text import slugify
 
+from accounts.factories import SuperUserFactory
 from common.mixins import TestMixin
 from minutes.factories import MinutesFactory
+from minutes.models import Minutes
 
 
 class EventTestCase(TestCase):
@@ -67,3 +69,30 @@ class MinutesDetailTestCase(TestMixin, TestCase):
     def test_requires_login(self):
         """Should require login."""
         self.assertLoginRequired(self.get_url())
+
+
+class MinutesCreateTestCase(TestMixin, TestCase):
+    def get_url(self):
+        return reverse("minutes:MinutesCreate")
+
+    def test_requires_login(self):
+        """Should require login."""
+        self.assertLoginRequired(self.get_url())
+
+    def test_created_by_modified_by_set_to_current_user(self):
+        """Should set `created_by` and `modified_by` to the current user on creation."""
+        user = SuperUserFactory()
+        self.client.force_login(user)
+        self.client.post(
+            self.get_url(),
+            {
+                "title": "Another Meeting",
+                "content": "Bureaucracy...",
+                "date": date.today(),
+            },
+        )
+
+        self.assertEqual(Minutes.objects.count(), 1)
+        minutes = Minutes.objects.last()
+        self.assertEqual(minutes.created_by, user)
+        self.assertEqual(minutes.modified_by, user)
