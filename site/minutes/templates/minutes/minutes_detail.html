@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title_page %}{{ minutes.title }}{% endblock title_page %}
+{% block title_content %}{{ minutes.title }}{% endblock title_content %}
+
+{% block header %}
+    {{ block.super }}
+    {% include "common/includes/created_modified.html" with object=minutes only %}
+
+    {% if perms.minutes.change_minutes or minutes.created_by == request.user %}
+        <a class="btn btn-primary btn-sm" href="{% url 'minutes:MinutesUpdate' minutes.slug %}">Rediger</a>
+    {% endif %}
+{% endblock header %}
+
+{% block content %}
+    <dl class="dl-inline">
+        <dt>Dato</dt>
+        <dd>{{ minutes.date }}</dd>
+
+        {% if minutes.file %}
+            <dt>Referatfil</dt>
+            {% load utils %}
+            <dd><a href="{{ minutes.file.url }}">{{ minutes.file | filename }}</a></dd>
+        {% endif %}
+    </dl>
+
+    {% load markdown %}
+    {{ minutes.content | markdown }}
+{% endblock content %}

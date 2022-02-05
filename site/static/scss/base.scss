@@ -61,6 +61,19 @@ th {
   );
 }
 
+.dl-inline {
+  dt:before {
+    content: "";
+    display: block;
+  }
+  dt::after {
+    content: ": ";
+  }
+  dt, dd {
+    display: inline;
+  }
+}
+
 // Hide BigPicture's weird and unnecessary caption close button
 .bp-xc {
   display: none;

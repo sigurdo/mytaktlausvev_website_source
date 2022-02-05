@@ -82,6 +82,7 @@ INSTALLED_APPS = [
     "polls",
     "navbar",
     "pictures",
+    "minutes",
 ]
 
 MIDDLEWARE = [

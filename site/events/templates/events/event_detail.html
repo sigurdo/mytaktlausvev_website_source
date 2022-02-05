@@ -20,10 +20,10 @@
     {% load markdown %}
     {{ event.content | markdown }}
 
-    {% if perms.events.change_event or perms.events.view_eventattendance %}
+    {% if perms.events.change_event or event.created_by == request.user or perms.events.view_eventattendance %}
         <footer class="my-4">
             <ol class="list-unstyled d-flex">
-                {% if perms.events.change_event %}
+                {% if perms.events.change_event or event.created_by == request.user %}
                 <li class="me-3">
                     <a
                         href="{% url 'events:EventUpdate' event.start_time|date:"Y" event.slug %}"

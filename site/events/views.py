@@ -102,7 +102,6 @@ class EventCreate(LoginRequiredMixin, CreateView):
     model = Event
     form_class = EventForm
     template_name = "common/form.html"
-    permission_required = "events.add_event"
 
     def get_object(self, queryset=None):
         return get_event_or_404(self.kwargs.get("year"), self.kwargs.get("slug"))
