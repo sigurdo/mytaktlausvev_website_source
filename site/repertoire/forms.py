@@ -99,7 +99,7 @@ class RepertoirePdfForm(Form):
     """
 
     score = ModelChoiceField(queryset=Score.objects.all(), label="Note", disabled=True)
-    part = PartChoiceField(queryset=Part.objects.all(), label="Stemme")
+    part = PartChoiceField(queryset=Part.objects.none(), label="Stemme")
 
 
 class RepertoirePdfFormsetHelper(FormHelper):
