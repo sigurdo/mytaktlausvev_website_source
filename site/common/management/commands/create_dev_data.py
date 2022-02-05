@@ -42,8 +42,17 @@ class Command(BaseCommand):
             defaults={"domain": "localhost:8000", "name": "localhost"},
         )
 
-        superuser = UserCustom.objects.create_superuser(
-            "leiar", "leiar@taktlaus.no", "password"
+        leader = UserCustom.objects.create_superuser(
+            "leiar",
+            "leiar@taktlaus.no",
+            "password",
+            name="Leiar Leiarsen",
+            birthdate=date(2012, 12, 12),
+            student_card_number="42069420",
+            phone_number="12345678",
+            address="The Milky Way",
+            home_page="https://example.com",
+            membership_period="Haust, 1337 -",
         )
         aspirant = UserCustom.objects.create_user(
             "aspirant",
@@ -75,24 +84,24 @@ class Command(BaseCommand):
             content="Dette er ein artikkel om oss",
             public=True,
             comments_allowed=False,
-            created_by=superuser,
-            modified_by=superuser,
+            created_by=leader,
+            modified_by=leader,
         )
         article_songs = ArticleFactory(
             title="Songar",
             content="Eit knippe songar.",
             public=True,
             comments_allowed=True,
-            created_by=superuser,
-            modified_by=superuser,
+            created_by=leader,
+            modified_by=leader,
         )
         ArticleFactory(
             title="Calypso",
             content="Tanken går til den skjønne vår\nda jeg sang i mannskoret Polyfon,\ntil den turne da vi dro avsted\nmed lokaltog fra Trondheims sentralstasjon.",
             public=True,
             comments_allowed=True,
-            created_by=superuser,
-            modified_by=superuser,
+            created_by=leader,
+            modified_by=leader,
             parent=article_songs,
         )
         article_wiki = ArticleFactory(
@@ -100,16 +109,16 @@ class Command(BaseCommand):
             content="Informasjon til Taktlause.",
             public=True,
             comments_allowed=True,
-            created_by=superuser,
-            modified_by=superuser,
+            created_by=leader,
+            modified_by=leader,
         )
         ArticleFactory(
             title="Kalenderfeed-vegvisar",
             content="Importer kalenderfeeden frå [denne](/hendingar/taktlaushendingar.ics) lenkja i kalender-appen din og sett han opp til å oppdatere seg automatisk.",
             public=True,
             comments_allowed=False,
-            created_by=superuser,
-            modified_by=superuser,
+            created_by=leader,
+            modified_by=leader,
         )
 
         ContactCategoryFactory(name="Generelt")
@@ -118,13 +127,11 @@ class Command(BaseCommand):
         event = EventFactory(
             title="SMASH",
             content="SMASH in Trondheim",
-            created_by=superuser,
-            modified_by=superuser,
+            created_by=leader,
+            modified_by=leader,
             start_time=make_aware(datetime.now() + timedelta(365)),
         )
-        EventAttendanceFactory(
-            event=event, person=superuser, status=Attendance.ATTENDING
-        )
+        EventAttendanceFactory(event=event, person=leader, status=Attendance.ATTENDING)
         EventAttendanceFactory(event=event, person=member, status=Attendance.ATTENDING)
         EventAttendanceFactory(
             event=event, person=aspirant, status=Attendance.ATTENDING_MAYBE
@@ -143,15 +150,15 @@ class Command(BaseCommand):
         EventFactory(
             title="Øving",
             content="Vanleg øving.",
-            created_by=superuser,
-            modified_by=superuser,
+            created_by=leader,
+            modified_by=leader,
             start_time=make_aware(first_wednesday),
         )
         EventFactory(
             title="Brettspelkveld",
             content="Brettspelkveld i KJL4.",
-            created_by=superuser,
-            modified_by=superuser,
+            created_by=leader,
+            modified_by=leader,
             start_time=make_aware(first_wednesday + timedelta(days=1)),
         )
         month = datetime.now().month
@@ -163,8 +170,8 @@ class Command(BaseCommand):
         EventFactory(
             title="Temafest",
             content="Ikkje så viktig med tema, men viktig med fest.",
-            created_by=superuser,
-            modified_by=superuser,
+            created_by=leader,
+            modified_by=leader,
             start_time=make_aware(datetime_theme_party),
         )
         medal_galla_datetime = datetime(year - 1 if month < 8 else year, 11, 1, 18)
@@ -173,8 +180,8 @@ class Command(BaseCommand):
         EventFactory(
             title="Medaljegalla",
             content="Ete lasagne, drikke ulike drikkar og danse.",
-            created_by=superuser,
-            modified_by=superuser,
+            created_by=leader,
+            modified_by=leader,
             start_time=make_aware(medal_galla_datetime),
         )
         flute = InstrumentGroupFactory(name="Fløyte")
@@ -241,12 +248,12 @@ class Command(BaseCommand):
         InstrumentFactory(
             name="Piccolo 1", group=flute, user=member, location=main_storage
         )
-        superuser.instrument_type = type_synthesizer
-        superuser.save()
+        leader.instrument_type = type_synthesizer
+        leader.save()
         musical_leader.instrument_type = type_grand_piano
         musical_leader.save()
         InstrumentFactory(
-            name="Piccolotrompet", group=trumpet, user=superuser, location=main_storage
+            name="Piccolotrompet", group=trumpet, user=leader, location=main_storage
         )
         InstrumentFactory(
             name="Tuba 2",
@@ -304,20 +311,20 @@ class Command(BaseCommand):
             title="Www",
             description="List of things that don't work on the new website.",
         )
-        truths = TopicFactory(title="Truths", forum=general, created_by=superuser)
+        truths = TopicFactory(title="Truths", forum=general, created_by=leader)
         the_device = TopicFactory(title="The Device", forum=general, created_by=member)
-        PostFactory(content="2+2=5", topic=truths, created_by=superuser)
+        PostFactory(content="2+2=5", topic=truths, created_by=leader)
         PostFactory(content="???", topic=the_device, created_by=member)
 
         poll = PollFactory(
             question="Beste instrument?",
-            created_by=superuser,
-            modified_by=superuser,
+            created_by=leader,
+            modified_by=leader,
             public=True,
         )
         choice_juff = ChoiceFactory(text="Juff", poll=poll)
         choice_tuba = ChoiceFactory(text="Mindre tuba", poll=poll)
-        VoteFactory(choice=choice_juff, user=superuser)
+        VoteFactory(choice=choice_juff, user=leader)
         VoteFactory(choice=choice_juff, user=member)
         VoteFactory(choice=choice_juff, user=aspirant)
         VoteFactory(choice=choice_tuba, user=retiree)
@@ -325,7 +332,7 @@ class Command(BaseCommand):
         gallery = GalleryFactory(
             title="The Book of Blue",
             content="Blue is all around",
-            created_by=superuser,
+            created_by=leader,
             modified_by=aspirant,
         )
         for _ in range(3):
@@ -564,6 +571,6 @@ class Command(BaseCommand):
             from_page=13,
             to_page=13,
         )
-        FavoritePartFactory(user=superuser, part=pause_waltz_vco)
+        FavoritePartFactory(user=leader, part=pause_waltz_vco)
         concert_repertoire = RepertoireFactory(name="Konsert")
         RepertoireEntryFactory(repertoire=concert_repertoire, score=pause_waltz)
