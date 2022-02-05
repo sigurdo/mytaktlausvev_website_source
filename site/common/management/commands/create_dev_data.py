@@ -343,8 +343,8 @@ class Command(BaseCommand):
             title="Elronds rådlag",
             content="Sleng han i flammane i domsberget!",
             date=date(3018, 10, 25),
-            created_by=superuser,
-            modified_by=superuser,
+            created_by=leader,
+            modified_by=leader,
         )
 
         NavbarItemFactory(
