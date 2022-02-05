@@ -333,8 +333,8 @@ class Command(BaseCommand):
             ImageFactory(gallery=gallery)
 
         MinutesFactory(
-            title="Council of Elrond",
-            content="Cast it into the fire!",
+            title="Elronds rådlag",
+            content="Sleng han i flammane i domsberget!",
             date=date(3018, 10, 25),
             created_by=superuser,
             modified_by=superuser,
