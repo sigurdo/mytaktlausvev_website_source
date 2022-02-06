@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     "crispy_bootstrap5",
     "sass_processor",
     "pgtrigger",
+    "watson",
     "authentication",
     "accounts",
     "common",
@@ -97,6 +98,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "watson.middleware.SearchContextMiddleware",
     "common.middleware.RedirectFallbackMiddleware",
 ]
 
@@ -244,6 +246,11 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
+# Search
+# https://github.com/etianen/django-watson/wiki
+
+WATSON_POSTGRES_SEARCH_CONFIG = "pg_catalog.norwegian"
 
 
 # Static files (CSS, JavaScript, Images)
