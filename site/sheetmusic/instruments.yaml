@@ -9,9 +9,12 @@ Obo:
     exceptions: []
 Klarinett:
     include: ["klarinett", "clarinet", "clarinete"]
-    exceptions: ["bass"]
+    exceptions: ["bass", "alt", "eb"]
+Altklarinett:
+    include: ["altklarinett", "alto clarinet", "eb clarinet", "eb-clarinet", "eb-klarinett", "eb klarinett"]
+    exceptions: []
 Bassklarinett:
-    include: ["bassklarinett", "bass clarinet"]
+    include: ["bassklarinett", "bass klarinett", "bass clarinet"]
     exceptions: []
 Fagott:
     include: ["bassoon", "fagott"]
@@ -27,7 +30,7 @@ Flugelhorn:
     exceptions: []
 Horn:
     include: ["horn", "hom", "trompa", "f-horn", "f horn"]
-    exceptions: ["althorn", "althom", "eb-horn", "eb horn"]
+    exceptions: ["althorn", "althom", "eb-horn", "eb horn", "tenororn", "tenorhom", "bb-horn", "bb horn"]
 Althorn:
     include: ["althorn", "althom", "eb-horn", "eb horn"]
     exceptions: []
@@ -60,10 +63,10 @@ Eufonium:
     exceptions: []
 Baryton:
     include: ["baryton", "baritone", "bombardíno"]
-    exceptions: ["barytonsaxofon", "baritone saxophone"]
+    exceptions: ["barytonsaxofon", "barytonsaksofon", "baritone sax"]
 Tuba:
     include: ["tuba", "bass", "eb-tuba", "eb tuba", "bb-tuba", "bb tuba"]
-    exceptions: ["trombone", "clarinet", "klarinett", "guitar", "bassoon", "el-bass", "el bass", "bass drum"]
+    exceptions: ["trombone", "clarinet", "klarinett", "guitar", "bassoon", "el-bass", "el bass", "electric bass", "string bass", "bass drum"]
 Trommesett:
     include: ["slagverk", "tromme", "drum", "trommesett", "drum set", "drumset", "platos y campanas"]
     exceptions: ["caja", "snare drum", "skarptromme", "stortromme", "bass"]
@@ -72,6 +75,9 @@ Skarptromme:
     exceptions: []
 Stortromme:
     include: ["stortromme", "bass drum", "basstromme"]
+    exceptions: []
+Tom-toms:
+    include: ["tom-tom", "tom tom", "trio tom", "quad tom"]
     exceptions: []
 Cymbal:
     include: ["cymbal"]
@@ -91,6 +97,12 @@ Pauker:
 Perkusjon:
     include: ["perkusjon", "percussion", "mallets"]
     exceptions: []
-Anna:
-    include: ["guitar", "bass guitar", "el-bass", "el bass", "lyre", "lyra"]
+Klokkespill:
+    include: ["klokkespill", "lyre", "lyra", "bells", "xylophone", "xylofon", "marimba"]
+    exceptions: []
+Gitar:
+    include: ["guitar"]
+    exceptions: ["bass guitar"]
+Bassgitar:
+    include: ["bass guitar", "el-bass", "el bass"]
     exceptions: []

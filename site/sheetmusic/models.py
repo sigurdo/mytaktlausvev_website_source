@@ -205,6 +205,7 @@ class Pdf(Model):
                     crop_to_left=True,
                     crop_to_top=True,
                     tessdata_dir=TESSDATA_DIR,
+                    tesseract_languages=["nor"],
                     instruments_file=INSTRUMENTS_YAML_PATH,
                     full_score_threshold=2,
                     full_score_label="Partitur",
