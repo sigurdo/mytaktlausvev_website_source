@@ -1,5 +1,6 @@
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.views.generic import TemplateView
+from django.db.models.functions import Lower
 
 from accounts.models import UserCustom
 
@@ -12,5 +13,5 @@ class StorageAccessView(PermissionRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         context["users_with_storage_access"] = UserCustom.objects.filter(
             membership_status="ACTIVE"
-        ).order_by("username")
+        ).order_by(Lower("username"))
         return context
