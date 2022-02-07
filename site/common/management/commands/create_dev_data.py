@@ -36,7 +36,6 @@ from uniforms.factories import JacketFactory, JacketLocationFactory, JacketUserF
 from uniforms.models import Jacket
 
 
-
 class Command(BaseCommand):
     def handle(self, **options):
         Site.objects.update_or_create(
@@ -369,7 +368,7 @@ class Command(BaseCommand):
             text="Medlemsliste",
             link=reverse("accounts:MemberList"),
             order=2,
-            requires_login = True,
+            requires_login=True,
             parent=about_dropdown,
         )
         NavbarItemFactory(
