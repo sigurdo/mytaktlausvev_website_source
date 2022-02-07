@@ -19,7 +19,7 @@
                 <th>Instrument</th>
                 <th>E-post</th>
                 <th>Telefonnummer</th>
-                <th>Roller</th>
+                {% comment %} <th>Roller</th> {% endcomment %}
             </tr>
         </thead>
         <tbody>
@@ -45,7 +45,7 @@
                      <td>{{member.instrument_group}}</td>
                      <td>{{member.email}}</td>
                      <td>{{member.phone_number}}</td>
-                     <td>{{member.groups}}</tr>
+                     {% comment %} <td>{{member.groups}}</tr> {% endcomment %}
                  </tr >
             {% endfor %} 
         </tbody>
