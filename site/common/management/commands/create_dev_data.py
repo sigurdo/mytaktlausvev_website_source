@@ -356,7 +356,7 @@ class Command(BaseCommand):
         )
         about_dropdown = NavbarItemFactory(
             text="Om oss",
-            order=2,
+            order=1,
             type=NavbarItem.Type.DROPDOWN,
         )
         NavbarItemFactory(
@@ -367,7 +367,7 @@ class Command(BaseCommand):
         )
         NavbarItemFactory(
             text="Medlemsliste",
-            link=reverse("members:MemberList"),
+            link=reverse("accounts:MemberList"),
             order=2,
             requires_login = True,
             parent=about_dropdown,
