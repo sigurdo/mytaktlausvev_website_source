@@ -1,0 +1,1 @@
+sh lint.sh && sh test.sh
