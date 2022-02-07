@@ -2,4 +2,6 @@ from django.urls import path
 
 from . import views
 
-urlpatterns = [path("", views.StorageAccessView.as_view(), name="storage")]
+app_name = "storage"
+
+urlpatterns = [path("", views.StorageAccessView.as_view(), name="StorageAccessView")]

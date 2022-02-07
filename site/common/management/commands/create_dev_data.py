@@ -427,6 +427,14 @@ class Command(BaseCommand):
             parent=admin_dropdown,
             permissions=["articles.add_article"],
         )
+        NavbarItemFactory(
+            text="Lagertilgjenge",
+            link=reverse("storage:StorageAccessView"),
+            order=5,
+            requires_login=True,
+            parent=admin_dropdown,
+            permissions=["common.storage_access"],
+        )
         other_dropdown = NavbarItemFactory(
             text="Anna",
             order=4,
@@ -595,3 +603,4 @@ class Command(BaseCommand):
         FavoritePartFactory(user=leader, part=pause_waltz_vco)
         concert_repertoire = RepertoireFactory(name="Konsert")
         RepertoireEntryFactory(repertoire=concert_repertoire, score=pause_waltz)
+      

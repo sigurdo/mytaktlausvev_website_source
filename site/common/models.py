@@ -52,4 +52,4 @@ class PermissionCustom(Model):
     class Meta:
         managed = False
         default_permissions = ()
-        permissions = (("storage_access", "access to view storage access"),)
+        permissions = (("view_storage_access", "Kan sjå lagertilgjenge"),)
