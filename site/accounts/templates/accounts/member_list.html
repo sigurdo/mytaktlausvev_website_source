@@ -5,11 +5,10 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs5/jq-3.6.0/dt-1.11.3/datatables.min.css"/>
 {% endblock css %}
 
-{% block title%}Medlemsliste{%endblock title%}
+{% block title_page%}Medlemsliste{%endblock title_page%}
 
-{% block page %}
-<article>
-    <h1> Medlemsliste </h1>
+{% block content %}
+{% block title_content%}Medlemsliste{% endblock title_content%}
     <div class="table-responsive">
     <table class="table table-striped table-sm" id="member_overview">
         <thead>
@@ -53,7 +52,7 @@
     </table>
 </div>
  
-{% endblock page %}
+{% endblock content %}
 
 {% block js %}
     <script src="https://cdn.datatables.net/v/bs5/jq-3.6.0/dt-1.11.3/datatables.min.js"></script>
