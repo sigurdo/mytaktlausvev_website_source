@@ -8,13 +8,16 @@ Obo:
     include: ["oboe", "obo"]
     exceptions: []
 Klarinett:
-    include: ["klarinett", "clarinet", "clarinete"]
+    include: ["klarinet", "clarinet", "clarinete"]
     exceptions: ["bass", "alt", "eb"]
 Altklarinett:
-    include: ["altklarinett", "alto clarinet", "eb clarinet", "eb-clarinet", "eb-klarinett", "eb klarinett"]
+    include: ["altklarinet", "alto clarinet"]
+    exceptions: []
+Eb-klarinett:
+    include: ["eb clarinet", "eb-clarinet", "eb-klarinet", "eb klarinet"]
     exceptions: []
 Bassklarinett:
-    include: ["bassklarinett", "bass klarinett", "bass clarinet"]
+    include: ["bassklarinet", "bass klarinet", "bass clarinet"]
     exceptions: []
 Fagott:
     include: ["bassoon", "fagott"]
