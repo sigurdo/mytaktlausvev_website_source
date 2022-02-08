@@ -368,10 +368,23 @@ class Command(BaseCommand):
             order=0,
             requires_login=True,
         )
+        about_dropdown = NavbarItemFactory(
+            text="Om oss",
+            order=1,
+            type=NavbarItem.Type.DROPDOWN,
+        )
         NavbarItemFactory(
             text="Om oss",
             link=article_about.get_absolute_url(),
             order=1,
+            parent=about_dropdown,
+        )
+        NavbarItemFactory(
+            text="Medlemsliste",
+            link=reverse("accounts:MemberList"),
+            order=2,
+            requires_login=True,
+            parent=about_dropdown,
         )
         NavbarItemFactory(
             text="Hendingar",
