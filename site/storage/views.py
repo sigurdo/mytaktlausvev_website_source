@@ -1,6 +1,6 @@
 from django.contrib.auth.mixins import PermissionRequiredMixin
-from django.views.generic import TemplateView
 from django.db.models.functions import Lower
+from django.views.generic import TemplateView
 
 from accounts.models import UserCustom
 

@@ -603,4 +603,3 @@ class Command(BaseCommand):
         FavoritePartFactory(user=leader, part=pause_waltz_vco)
         concert_repertoire = RepertoireFactory(name="Konsert")
         RepertoireEntryFactory(repertoire=concert_repertoire, score=pause_waltz)
-      
