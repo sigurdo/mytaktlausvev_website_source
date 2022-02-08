@@ -5,7 +5,7 @@
 {% block title_content %}Dashbord{% endblock title_content %}
 
 {% block content %}
-<div class="row gy-5">
+<div class="row gy-4">
 	<div class="col-md-6">
 		<div class="card h-100 p-3 shadow-sm">
 			<div class="card-body">
@@ -48,7 +48,12 @@
 					<li>
 						<a href={{minute.get_absolute_url}}>{{minute}}</a>
 						<div>
-							{{minute.date}}
+							<time
+								datetime="{{ minute.date | date:"c" }}"
+								title="{{ minute.date }}"
+							>
+								{{minute.date}}
+							</time>
 						</div>
 					</li>
 					{% endfor %}
@@ -90,7 +95,12 @@
 						<a href="{{comment.get_absolute_url}}">{{comment}}</a>
 						<div>
 							{% load humanize %}
-							{{ comment.created | naturaltime }}
+							<time
+								datetime="{{ comment.created | date:"c" }}"
+								title="{{ comment.created }}"
+							>
+								{{ comment.created | naturaltime }}
+							</time>
 							av
 							<a href="{{comment.created_by.get_absolute_url}}">
 								{{comment.created_by}}
