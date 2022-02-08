@@ -34,16 +34,16 @@ class CommentTestCase(TestCase):
             f"{reverse('articles:ArticleDetail', args=[self.article.slug])}#comment-{self.comment.pk}",
         )
 
-    def test_to_str_comment_shorter_than_20_characters(self):
-        """`__str__` should be the entire comment when it's shorter than 20 characters."""
+    def test_to_str_comment_shorter_than_25_characters(self):
+        """`__str__` should be the entire comment when it's shorter than 25 characters."""
         self.assertEqual(str(self.comment), self.comment.comment)
 
-    def test_to_str_comment_longer_than_20_characters(self):
+    def test_to_str_comment_longer_than_25_characters(self):
         """
-        `__str__` should truncate comment when it has more than 20 characters,
+        `__str__` should truncate comment when it has more than 25 characters,
         and add an ellipsis.
         """
-        self.assertEqual(str(self.comment_long), self.comment_long.comment[0:19] + "…")
+        self.assertEqual(str(self.comment_long), self.comment_long.comment[0:24] + "…")
 
     def test_to_str_strips_whitespace_before_checking(self):
         """`__str__` should strip whitespace before checking length."""

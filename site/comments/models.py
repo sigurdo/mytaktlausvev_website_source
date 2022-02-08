@@ -17,9 +17,9 @@ class Comment(CreatedModifiedMixin):
 
     def __str__(self):
         stripped = self.comment.rstrip()
-        if len(stripped) <= 20:
+        if len(stripped) <= 25:
             return stripped
-        return stripped[0:19] + "…"
+        return stripped[0:24] + "…"
 
     class Meta:
         verbose_name = "kommentar"

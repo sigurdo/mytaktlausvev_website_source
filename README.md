@@ -49,5 +49,6 @@ The project uses [Django's test framework](https://docs.djangoproject.com/en/4.0
 - `sh run.sh`: Enter docker container as bash shell.
 - `sh run.sh <command>`: Run `<command>` in docker docker container bash shell.
 - `sh lint.sh`: Run formatter and linter.
-- `sh test.sh`: Run tests.
+- `sh test.sh`: Run all tests.
+- `sh test.sh <app_name>`: Run tests for a single app.
 - `sh verify.sh`: Run formatter, linter and tests.

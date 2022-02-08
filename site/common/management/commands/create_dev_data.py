@@ -8,6 +8,7 @@ from django.utils.timezone import make_aware
 
 from accounts.models import UserCustom
 from articles.factories import ArticleFactory
+from comments.factories import CommentFactory
 from common.test_utils import test_pdf_multipage
 from contact.factories import ContactCategoryFactory
 from events.factories import EventAttendanceFactory, EventFactory
@@ -95,6 +96,11 @@ class Command(BaseCommand):
             comments_allowed=True,
             created_by=leader,
             modified_by=leader,
+        )
+        CommentFactory(
+            content_object=article_songs,
+            comment="Eg elskar songar!",
+            created_by=retiree,
         )
         ArticleFactory(
             title="Calypso",
@@ -291,10 +297,14 @@ class Command(BaseCommand):
             state=Jacket.State.GOOD,
             location=jacket_at_home,
         )
-        JacketFactory(
+        jacket_65 = JacketFactory(
             number=65,
             state=Jacket.State.OK,
             location=jacket_at_storage,
+        )
+        JacketUserFactory(
+            user=leader,
+            jacket=jacket_65,
         )
         JacketUserFactory(
             user=member,
