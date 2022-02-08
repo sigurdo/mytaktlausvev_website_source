@@ -5,9 +5,9 @@
 {% block title_content %}Dashbord{% endblock title_content %}
 
 {% block content %}
-<div class="row">
-	<div class="col-md">
-		<div class="card p-3 mb-5 shadow-sm">
+<div class="row gy-5">
+	<div class="col-md-6">
+		<div class="card h-100 p-3 shadow-sm">
 			<div class="card-body">
 				<h2>Hendingar</h2>
 				<ul>
@@ -39,17 +39,144 @@
 			</div>
 		</div>
 	</div>
-	<div class="col-md">
-		<div class="card p-3 mb-5 shadow-sm">
+	<div class="col-md-6">
+		<div class="card h-100 p-3 shadow-sm">
+			<div class="card-body">
+				<h2>Nyaste referat</h2>
+				<ul>
+					{% for minute in minutes %}
+					<li>
+						<a href={{minute.get_absolute_url}}>{{minute}}</a>
+						<div>
+							{{minute.date}}
+						</div>
+					</li>
+					{% endfor %}
+				</ul>
+				<p>
+					<a class="btn btn-primary" href="{% url "minutes:MinutesList" %}"> Alle referat </a>
+				</p>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-6">
+		<div class="card h-100 p-3 shadow-sm">
 			<div class="card-body">
 				<h2>Gullkorn</h2>
-				{% for q in quotes %}
-				<div class="row">
-					<div class="col-lg-6">
-						{% show_quote q %}
-					</div>
+				<ul class="list-unstyled">
+					{% for q in quotes %}
+					<li>
+						<div class="row">
+							<div class="col-lg-6">
+								{% show_quote q %}
+							</div>
+						</div>
+					</li>
+					{% endfor %}
+				</ul>
+				<p>
+					<a class="btn btn-primary" href="{% url "quotes:quotes" %}"> Alle sitat </a>
+				</p>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-6">
+		<div class="card h-100 p-3 shadow-sm">
+			<div class="card-body">
+				<h2>Nyaste kommentarar</h2>
+				<ul>
+					{% for comment in latest_comments %}
+					<li>
+						<a href="{{comment.get_absolute_url}}">{{comment}}</a>
+						<div>
+							{% load humanize %}
+							{{ comment.created | naturaltime }}
+							av
+							<a href="{{comment.created_by.get_absolute_url}}">
+								{{comment.created_by}}
+							</a>
+						</div>
+					</li>
+					{% endfor %}
+				</ul>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-12">
+		<div class="card h-100 p-3 shadow-sm">
+			<div class="card-body">
+				<h2>Nyaste bilete</h2>
+				<ul class="list-unstyled d-flex flex-wrap">
+					{% for gallery in latest_galleries %}
+						{% for image in gallery.images_latest|slice:":1" %}
+                			<li class="col-md-6">
+								<h3><a href="{{ gallery.get_absolute_url }}">{{ gallery.title }}</a></h3>
+								<div class="d-flex justify-content-center align-items-center p-3 h-52">
+									{% include "pictures/includes/image.html" with image=image bp_gallery="latest" only %}
+								</div>
+							</li>
+						{% endfor %}
+					{% endfor %}
+				</ul>
+				<p>
+					<a class="btn btn-primary" href="{% url "pictures:GalleryList" %}"> Alle bilete </a>
+				</p>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-12">
+		<div class="card h-100 p-3 shadow-sm">
+			<div class="card-body">
+				<h2>Hine hårde dagar</h2>
+				<ul class="list-unstyled d-flex flex-wrap">
+					{% for image in random_images %}
+						<li class="col-md-6">
+							<h3><a href="{{ image.gallery.get_absolute_url }}">{{ image.gallery.title }}</a></h3>
+							<div class="d-flex justify-content-center align-items-center p-3 h-52">
+								{% include "pictures/includes/image.html" with image=image bp_gallery="random" only %}
+							</div>
+						</li>
+					{% endfor %}
+				</ul>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-6">
+		<div class="card h-100 p-3 shadow-sm">
+			<div class="card-body">
+				<div class="h-16 d-flex align-items-center">
+					<a class="h-100" href="{{user.get_absolute_url}}">
+						<img
+							src="{{ user.get_avatar_url }}"
+							class="img-fluid mh-100"
+						/>
+					</a>
+					<h2 class="m-3">{{user}}</h2>
 				</div>
-				{% endfor %}
+					
+				<dl class="dl-inline mt-3">
+					<dt> Medlemsstatus </dt>
+					<dd> {{ user.get_membership_status_display }} </dd>
+					
+					<dt>Instrumentgruppe</dt>
+					<dd>
+						{% if user.instrument_type %}
+							{{ user.instrument_type.group }}
+							{% if user.instrument_type.name != user.instrument_type.group.name %}
+							({{ user.instrument_type }})
+							{% endif %}
+						{% else %}
+							Ukjent
+						{% endif %}
+					</dd>
+
+					{% with user.get_jacket as jacket %}
+					{% if jacket %}
+						<dt>Jakkenummer</dt>
+						<dd>{{ jacket.number }}</dd>
+					{% endif %}
+					{% endwith %}
+				</dl>
 			</div>
 		</div>
 	</div>
@@ -57,6 +184,8 @@
 {% endblock %}
 
 {% block js %}
+    <script src="https://cdn.jsdelivr.net/npm/bigpicture@2.6.1/dist/BigPicture.min.js" integrity="sha256-OsbS8Cw/fMpgT6GBFfqhvmX9yJLwzE6+me56KzpSbAs=" crossorigin="anonymous"></script>
     {% load static %}
     <script src="{% static "events/ical_button.js" %}"></script>
-{% endblock js %}
+    <script src="{% static "common/js/lightbox.js" %}"></script>
+	{% endblock js %}
