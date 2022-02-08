@@ -43,7 +43,7 @@
                         {% if user == attendance.person or perms.events.delete_eventattendance %}
                         <a
                             href="{% url 'events:EventAttendanceDelete' attendance.event.start_time|date:"Y" attendance.event.slug attendance.person.slug %}"
-                            class="btn btn-primary btn-sm"
+                            class="btn btn-danger btn-sm"
                         >
                             Meld av
                         </a>
