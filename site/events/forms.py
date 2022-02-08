@@ -1,31 +1,32 @@
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
-from django import forms
+from django.forms import ModelForm, SplitDateTimeField
+from django.utils.timezone import now
 
 from common.widgets import SplitDateTimeWidgetCustom
 
 from .models import Event, EventAttendance
 
 
-class EventForm(forms.ModelForm):
+class EventForm(ModelForm):
     """Form for creating and editing events."""
 
-    start_time = forms.SplitDateTimeField(
-        label="Starttid", widget=SplitDateTimeWidgetCustom()
+    start_time = SplitDateTimeField(
+        label="Starttid", widget=SplitDateTimeWidgetCustom(), initial=now
     )
-    end_time = forms.SplitDateTimeField(
+    end_time = SplitDateTimeField(
         label="Sluttid", widget=SplitDateTimeWidgetCustom(), required=False
     )
 
     helper = FormHelper()
-    helper.add_input(Submit("submit", "Lag/rediger hending"))
+    helper.add_input(Submit("submit", "Lagre hending"))
 
     class Meta:
         model = Event
         fields = ["title", "start_time", "end_time", "content"]
 
 
-class EventAttendanceForm(forms.ModelForm):
+class EventAttendanceForm(ModelForm):
     """Form for registering event attendance."""
 
     def __init__(self, *args, **kwargs):

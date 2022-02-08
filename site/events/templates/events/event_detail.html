@@ -52,9 +52,9 @@
         {% crispy form_attendance %}
     {% endif %}
 
-    {% include "events/attendances.html" with title="Deltek" attendances=event.attending %}
-    {% include "events/attendances.html" with title="Deltek kanskje" attendances=event.attending_maybe %}
-    {% include "events/attendances.html" with title="Deltek ikkje" attendances=event.attending_not %}
+    {% include "events/includes/attendances.html" with title="Deltek" attendances=event.attending %}
+    {% include "events/includes/attendances.html" with title="Deltek kanskje" attendances=event.attending_maybe %}
+    {% include "events/includes/attendances.html" with title="Deltek ikkje" attendances=event.attending_not %}
 
     {% load comments %}
     {% comment_list event %}
