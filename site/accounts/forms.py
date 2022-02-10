@@ -2,6 +2,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Fieldset, Layout, Submit
 from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
+from django.forms import ModelForm
 
 from common.widgets import DateDateInput
 
@@ -63,4 +64,35 @@ class UserCustomCreateForm(UserCreationForm):
             "instrument_type",
             "membership_period",
         )
+        widgets = {"birthdate": DateDateInput}
+
+
+class UserCustomUpdateForm(ModelForm):
+    helper = FormHelper()
+    helper.layout = Layout(
+        Fieldset("Brukar", "email"),
+        Fieldset(
+            "Personleg",
+            "name",
+            "phone_number",
+            "birthdate",
+            "address",
+            "student_card_number",
+        ),
+        Fieldset("Taktlaus-ting", "instrument_type", "membership_period"),
+        Submit("submit", "Rediger brukar"),
+    )
+
+    class Meta:
+        model = UserCustom
+        fields = [
+            "email",
+            "name",
+            "phone_number",
+            "birthdate",
+            "address",
+            "student_card_number",
+            "instrument_type",
+            "membership_period",
+        ]
         widgets = {"birthdate": DateDateInput}

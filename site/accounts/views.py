@@ -1,12 +1,16 @@
 from django.conf import settings
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.mixins import (
+    LoginRequiredMixin,
+    PermissionRequiredMixin,
+    UserPassesTestMixin,
+)
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
-from django.views.generic import CreateView, DetailView, ListView
+from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 from common.templatetags.markdown import markdown
 
-from .forms import UserCustomCreateForm
+from .forms import UserCustomCreateForm, UserCustomUpdateForm
 from .models import UserCustom
 
 
@@ -32,6 +36,16 @@ class UserCustomCreate(PermissionRequiredMixin, CreateView):
         )
 
         return response
+
+
+class UserCustomUpdate(UserPassesTestMixin, UpdateView):
+    model = UserCustom
+    form_class = UserCustomUpdateForm
+    template_name = "common/form.html"
+
+    def test_func(self):
+        user = self.request.user
+        return self.get_object() == user or user.has_perm("accounts.change_usercustom")
 
 
 class ProfileDetail(LoginRequiredMixin, DetailView):

@@ -1,3 +1,5 @@
+from http import HTTPStatus
+
 from django.contrib.auth import authenticate
 from django.core import mail
 from django.db import IntegrityError
@@ -176,6 +178,28 @@ class UserCustomCreateTestSuite(TestMixin, TestCase):
         self.assertEqual(len(mail.outbox), 1)
         email = mail.outbox[0]
         self.assertEqual(email.to, [self.data_user["email"]])
+
+
+class UserCustomUpdateTestSuite(TestMixin, TestCase):
+    def setUp(self):
+        self.user = UserFactory()
+
+    def get_url(self):
+        return reverse("accounts:UserCustomUpdate", args=[self.user.slug])
+
+    def test_requires_login(self):
+        """Should require login."""
+        self.assertLoginRequired(self.get_url())
+
+    def test_requires_permission(self):
+        """Should require permission to edit users."""
+        self.assertPermissionRequired(self.get_url(), "accounts.change_usercustom")
+
+    def test_succeeds_if_self(self):
+        """Should succeed if a user tries to edit their own account."""
+        self.client.force_login(self.user)
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.status_code, HTTPStatus.OK)
 
 
 class ProfileDetailTest(TestMixin, TestCase):
