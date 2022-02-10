@@ -6,19 +6,20 @@ from django.urls import reverse
 from django.utils.text import slugify
 from django.utils.timezone import make_aware
 
-from accounts.factories import SuperUserFactory
+from accounts.factories import SuperUserFactory, UserFactory
+from comments.factories import CommentFactory
 from common.mixins import TestMixin
 
-from .factories import ForumFactory, PostFactory, TopicFactory
-from .models import Post
+from .factories import ForumFactory, TopicFactory
+from .models import Topic
 
 
-def create_post_override_created(created, **kwargs):
+def create_post_override_created(created, topic=None, **kwargs):
     """
     Creates a post and overrides `created`.
     `created` must be set after creation to override `auto_now_add`.
     """
-    post = PostFactory(**kwargs)
+    post = CommentFactory(content_object=topic, **kwargs)
     post.created = created
     post.save()
     return post
@@ -81,7 +82,7 @@ class TopicTestSuite(TestCase):
         """Should link to the topic's post list page."""
         self.assertEqual(
             self.topic.get_absolute_url(),
-            reverse("forum:PostList", args=[self.topic.forum.slug, self.topic.slug]),
+            reverse("forum:TopicDetail", args=[self.topic.forum.slug, self.topic.slug]),
         )
 
     def test_creates_slug_from_title_automatically(self):
@@ -116,51 +117,6 @@ class TopicTestSuite(TestCase):
         self.assertEqual(topic.slug, slug)
 
 
-class PostTestSuite(TestCase):
-    def setUp(self):
-        self.post = PostFactory()
-
-    def test_get_absolute_url(self):
-        """Should link to the post's topic's post list page."""
-        self.assertEqual(
-            self.post.get_absolute_url(),
-            reverse(
-                "forum:PostList",
-                args=[self.post.topic.forum.slug, self.post.topic.slug],
-            ),
-        )
-
-    def test_content_short_truncated_when_long(self):
-        """
-        `content_short` should be truncated to 40 chars
-        when `content` is long.
-        """
-        self.assertEqual(len(self.post.content_short()), 40)
-
-    def test_content_short_ends_with_ellipsis_when_truncated(self):
-        """`content_short` should end with an ellipsis when truncated."""
-        self.assertEqual(self.post.content_short()[-1], "…")
-
-    def test_content_short_unchanged_when_short_content(self):
-        """`content_short` should be unchanged when `content` is less than 40 chars."""
-        self.post.content = "I am short."
-        self.assertEqual(self.post.content_short(), self.post.content)
-
-    def test_to_str(self):
-        """`__str__` should be equal to `content_short`."""
-        self.assertEqual(str(self.post), self.post.content_short())
-        self.post.content = "Ya ya ya"
-        self.assertEqual(str(self.post), self.post.content_short())
-
-    def test_latest_by_created(self):
-        """`latest()` should return the latest post by `created`."""
-        post_far_in_future = create_post_override_created(
-            make_aware(datetime(2250, 5, 5))
-        )
-        PostFactory(created=datetime(1950, 5, 5))
-        self.assertEqual(Post.objects.latest().pk, post_far_in_future.pk)
-
-
 class ForumListTestSuite(TestMixin, TestCase):
     def get_url(self):
         return reverse("forum:ForumList")
@@ -180,13 +136,37 @@ class TopicListTestSuite(TestMixin, TestCase):
         self.assertLoginRequired(self.get_url())
 
 
+class TopicCreateTestSuite(TestMixin, TestCase):
+    def get_url(self):
+        return reverse("forum:TopicCreate", args=[self.forum.slug])
+
+    def setUp(self):
+        self.forum = ForumFactory()
+
+    def test_requires_login(self):
+        self.assertLoginRequired(self.get_url())
+
+    def test_create_topic(self):
+        self.client.force_login(UserFactory())
+        self.client.post(
+            self.get_url(),
+            {
+                "title": "Kva er forskjellen på ein elefant?",
+            },
+        )
+        topics = Topic.objects.all()
+        self.assertEqual(len(topics), 1)
+        topic = topics.last()
+        self.assertEqual(topic.title, "Kva er forskjellen på ein elefant?")
+
+
 class PostListTestSuite(TestMixin, TestCase):
     def setUp(self):
         self.topic = TopicFactory()
 
     def get_url(self, args=None):
         return reverse(
-            "forum:PostList", args=args or [self.topic.forum.slug, self.topic.slug]
+            "forum:TopicDetail", args=args or [self.topic.forum.slug, self.topic.slug]
         )
 
     def test_requires_login(self):

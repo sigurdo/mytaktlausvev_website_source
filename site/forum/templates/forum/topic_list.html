@@ -41,4 +41,6 @@
     {% endif %}
 
     {% include "common/includes/pagination.html" with pagination_label="Emnesider" %}
+
+    <a href="{% url 'forum:TopicCreate' forum.slug %}" class="btn btn-primary"> Nytt emne </a>
 {% endblock content %}

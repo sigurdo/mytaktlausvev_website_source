@@ -5,9 +5,11 @@
         <dd class="d-flex mb-3">
             {% with choice.percentage as percentage %}
                 <span class="w-12">{{ percentage }}</span>
-                <div
-                    style="width: {{ percentage }};"
-                    class="d-block ms-2 rounded bg-primary">
+                <div class="w-100">
+                    <div
+                        style="width: {{ percentage }};"
+                        class="d-block h-100 ms-2 rounded bg-primary">
+                    </div>
                 </div>
             {% endwith %}
         </dd>

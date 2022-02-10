@@ -8,8 +8,11 @@ urlpatterns = [
     path("", views.ForumList.as_view(), name="ForumList"),
     path("<slug:slug_forum>/", views.TopicList.as_view(), name="TopicList"),
     path(
-        "<slug:slug_forum>/<slug:slug_topic>/",
-        views.PostList.as_view(),
-        name="PostList",
+        "<slug:slug_forum>/nytt-emne/", views.TopicCreate.as_view(), name="TopicCreate"
+    ),
+    path(
+        "<slug:slug_forum>/<slug:slug>/",
+        views.TopicDetail.as_view(),
+        name="TopicDetail",
     ),
 ]

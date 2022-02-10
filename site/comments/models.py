@@ -1,13 +1,13 @@
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
-from django.db.models import CASCADE, CharField, ForeignKey, TextField
+from django.db.models import CASCADE, ForeignKey, IntegerField, TextField
 
 from common.models import CreatedModifiedMixin
 
 
 class Comment(CreatedModifiedMixin):
     content_type = ForeignKey(ContentType, on_delete=CASCADE)
-    object_pk = CharField(max_length=64)
+    object_pk = IntegerField()
     content_object = GenericForeignKey("content_type", "object_pk")
 
     comment = TextField("kommentar")
@@ -24,3 +24,4 @@ class Comment(CreatedModifiedMixin):
     class Meta:
         verbose_name = "kommentar"
         verbose_name_plural = "kommentarar"
+        get_latest_by = "created"
