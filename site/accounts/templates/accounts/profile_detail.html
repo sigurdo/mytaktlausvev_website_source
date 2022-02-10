@@ -19,6 +19,10 @@
             <div class="text-center">
                 @{{ profile.username }}
             </div>
+
+            {% if request.user == profile or perms.accounts.change_usercustom %}
+                <a class="btn btn-primary btn-sm w-100 my-2" href="{% url 'accounts:UserCustomUpdate' profile.slug %}">Rediger profil</a>
+            {% endif %}
         </div>
 
         <div class="col-lg-9">
