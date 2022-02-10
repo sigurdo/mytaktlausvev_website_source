@@ -42,7 +42,5 @@
 
     {% include "common/includes/pagination.html" with pagination_label="Emnesider" %}
 
-    {% if perms.forum.add_topic %}
-        <a href="{% url 'forum:TopicCreate' forum.slug %}" class="btn btn-primary"> Nytt emne </a>
-    {% endif %}
+    <a href="{% url 'forum:TopicCreate' forum.slug %}" class="btn btn-primary"> Nytt emne </a>
 {% endblock content %}
