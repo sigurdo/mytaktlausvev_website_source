@@ -5,6 +5,7 @@ from django.db.models import (
     CASCADE,
     CharField,
     DateTimeField,
+    FloatField,
     ForeignKey,
     Model,
     UniqueConstraint,
@@ -26,10 +27,18 @@ class Repertoire(Model):
         unique=True,
         editable=True,
     )
+    order = FloatField(
+        verbose_name="rekkjefølgje",
+        default=0,
+        help_text=(
+            "Definerer rekkjefølgja til repertoaret. "
+            "Repertoar med lik rekkjefølgje vert sortert etter namn."
+        ),
+    )
 
     class Meta:
         constraints = [UniqueConstraint(fields=["slug"], name="repertoire_unique_slug")]
-        ordering = ["-timestamp"]
+        ordering = ["order", "name"]
         verbose_name = "repertoar"
         verbose_name_plural = "repertoar"
 
