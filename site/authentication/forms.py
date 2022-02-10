@@ -2,7 +2,6 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 from django.contrib.auth.forms import AuthenticationForm
 from django.forms import CharField, HiddenInput
-from django.urls.base import reverse_lazy
 
 
 class LoginForm(AuthenticationForm):
@@ -11,5 +10,5 @@ class LoginForm(AuthenticationForm):
     next = CharField(widget=HiddenInput, required=False)
 
     helper = FormHelper()
-    helper.form_action = reverse_lazy("login")
+    helper.form_action = "login"
     helper.add_input(Submit("submit", "Logg inn"))

@@ -5,6 +5,7 @@
             <h2 class="fs-3">Innlogging</h2>
             {% load crispy_forms_tags %}
             {% crispy form_login %}
+            <a href="{% url 'password_reset' %}">Be om nytt passord</a>
         </section>
     {% endif %}
 
