@@ -26,7 +26,7 @@ class RepertoireForm(ModelForm):
 
     class Meta:
         model = Repertoire
-        fields = ["name"]
+        fields = ["name", "order"]
 
 
 class RepertoireEntryForm(ModelForm):

@@ -24,4 +24,5 @@ class Comment(CreatedModifiedMixin):
     class Meta:
         verbose_name = "kommentar"
         verbose_name_plural = "kommentarar"
+        ordering = ["created"]
         get_latest_by = "created"
