@@ -57,6 +57,7 @@ class RepertoireCreateTestSuite(TestMixin, TestCase):
     def setUp(self):
         self.test_data = {
             "name": "Repertoire",
+            "order": 0,
             **create_formset_post_data(
                 RepertoireEntryFormset,
                 total_forms=0,
@@ -99,6 +100,7 @@ class RepertoireUpdateTestSuite(TestMixin, TestCase):
             data=[{"score": self.entry.score.pk, "id": self.entry.pk}]
         )
         self.test_data["name"] = self.repertoire.name
+        self.test_data["order"] = self.repertoire.order
 
     def test_requires_login(self):
         self.assertLoginRequired(self.get_url())
