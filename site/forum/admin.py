@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Forum, Post, Topic
+from .models import Forum, Topic
 
 
 class ForumAdmin(admin.ModelAdmin):
@@ -15,11 +15,5 @@ class TopicAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("title",)}
 
 
-class PostAdmin(admin.ModelAdmin):
-    list_display = ("content_short", "created_by", "created", "topic")
-    search_fields = ("content_short", "created_by__username", "topic__title")
-
-
 admin.site.register(Forum, ForumAdmin)
 admin.site.register(Topic, TopicAdmin)
-admin.site.register(Post, PostAdmin)

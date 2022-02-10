@@ -13,7 +13,7 @@ from common.test_utils import test_pdf_multipage
 from contact.factories import ContactCategoryFactory
 from events.factories import EventAttendanceFactory, EventFactory
 from events.models import Attendance
-from forum.factories import ForumFactory, PostFactory, TopicFactory
+from forum.factories import ForumFactory, TopicFactory
 from instruments.factories import (
     InstrumentFactory,
     InstrumentGroupFactory,
@@ -329,8 +329,8 @@ class Command(BaseCommand):
         )
         truths = TopicFactory(title="Truths", forum=general, created_by=leader)
         the_device = TopicFactory(title="The Device", forum=general, created_by=member)
-        PostFactory(content="2+2=5", topic=truths, created_by=leader)
-        PostFactory(content="???", topic=the_device, created_by=member)
+        CommentFactory(comment="2+2=5", content_object=truths, created_by=leader)
+        CommentFactory(comment="???", content_object=the_device, created_by=member)
 
         poll = PollFactory(
             question="Beste instrument?",
@@ -456,7 +456,7 @@ class Command(BaseCommand):
             order=5,
             requires_login=True,
             parent=admin_dropdown,
-            permissions=["common.storage_access"],
+            permissions=["common.view_storage_access"],
         )
         other_dropdown = NavbarItemFactory(
             text="Anna",
