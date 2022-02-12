@@ -1,6 +1,8 @@
 {% if user.is_authenticated %}
 <section class="mt-4">
-    <h2 class="fs-3">Kommentarar ({{comments | length }})</h2>
+    {% if not forum_posts %}
+        <h2 class="fs-3"> Kommentarar ({{comments | length }}) </h2>
+    {% endif %}
 
     <ol class="list-unstyled">
     {% for comment in comments %}
@@ -63,7 +65,14 @@
     </ol>
 
     <section>
-        <h3 class="fs-4">Skriv ny kommentar</h3>
+        <h3 class="fs-4">
+            Skriv
+            {% if forum_posts %}
+                nytt innlegg
+            {% else %}
+                ny kommentar
+            {% endif %}
+        </h3>
         {% load crispy_forms_tags %}
         {% crispy form %}
     </section>
