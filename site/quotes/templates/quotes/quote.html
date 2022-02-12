@@ -1,8 +1,16 @@
+{% load markdown %}
+
 <figure>
     <blockquote class="blockquote">
-        <p>{{ quote.text }}</p>
+        <p>{{ quote.text | markdown }}</p>
     </blockquote>
     <figcaption class="blockquote-footer">
         {{ quote.owner }} <span class="fst-italic">{{ quote.timestamp|date }}</span>
     </figcaption>
 </figure>
+
+{% if perms.quotes.change_quote or quote.created_by == request.user %}
+    <a href="{% url 'quotes:QuoteUpdate' quote.pk %}" class="btn btn-primary">
+            Rediger sitat
+    </a>
+{% endif %}
