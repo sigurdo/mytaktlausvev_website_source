@@ -12,6 +12,7 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from common.mixins import PermissionOrCreatedMixin
 
 from quotes.models import Quote
 
@@ -45,7 +46,7 @@ class QuoteList(LoginRequiredMixin, ListView):
         return super().get_queryset().filter(public=True)
 
 
-class QuoteUpdate(PermissionRequiredMixin, UpdateView):
+class QuoteUpdate(PermissionOrCreatedMixin, UpdateView):
     """View-function for editing quotes"""
 
     model = Quote
