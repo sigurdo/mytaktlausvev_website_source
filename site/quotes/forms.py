@@ -12,7 +12,6 @@ class QuoteForm(forms.ModelForm):
     helper = FormHelper()
     helper.form_id = "quote_form"
     helper.form_method = "post"
-    helper.form_action = "login"
     helper.form_class = "form-horizontal"
     helper.label_class = "col-lg-12 form-label"
     helper.field_class = "col-lg-6 form-field"
@@ -20,6 +19,6 @@ class QuoteForm(forms.ModelForm):
 
     class Meta:
         model = Quote
-        fields = ["title", "text", "owner"]
+        fields = ["text", "owner"]
         widgets = {"text": forms.Textarea(attrs={"cols": 40, "rows": 5})}
-        labels = {"owner": "Eier", "text": "Tekst", "title": "Tittel"}
+        labels = {"owner": "Eier", "text": "Tekst"}
