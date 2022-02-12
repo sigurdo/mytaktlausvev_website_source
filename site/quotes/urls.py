@@ -6,6 +6,7 @@ from quotes import views
 app_name = "quotes"
 
 urlpatterns = [
-    path("nytt/", views.new_quote, name="new_quote"),
-    path("", views.quotes, name="quotes"),
+    path("nytt/", views.QuoteNew.as_view(), name="new_quote"),
+    path("", views.QuoteList.as_view(), name="quotes"),
+    path("<int:pk>/rediger/", views.QuoteUpdate.as_view(), name="QuoteUpdate"),
 ]

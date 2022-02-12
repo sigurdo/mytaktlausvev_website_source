@@ -1,18 +1,19 @@
 """Models for the quote-app"""
 
+from common.models import CreatedModifiedMixin
 from django.db import models
 
 
-class Quote(models.Model):
+
+class Quote(CreatedModifiedMixin):
     """Model representing a single quote"""
 
-    title = models.CharField(max_length=255)
     text = models.CharField(max_length=2000)
     owner = models.CharField(max_length=255)
-    timestamp = models.DateTimeField()
+    timestamp = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        ordering = ["-timestamp"]
+        ordering = ["-created"]
         verbose_name = "sitat"
         verbose_name_plural = "sitat"
 
