@@ -3,6 +3,7 @@
 from common.models import CreatedModifiedMixin
 from django.db import models
 
+from common.models import CreatedModifiedMixin
 
 
 class Quote(CreatedModifiedMixin):
