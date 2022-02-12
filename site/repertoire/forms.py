@@ -99,7 +99,7 @@ class RepertoirePdfForm(Form):
     """
 
     score = ModelChoiceField(queryset=Score.objects.all(), label="Note", disabled=True)
-    part = PartChoiceField(queryset=Part.objects.none(), label="Stemme")
+    part = PartChoiceField(queryset=Part.objects.none(), label="Stemme", required=False)
 
 
 class RepertoirePdfFormsetHelper(FormHelper):
@@ -113,6 +113,8 @@ def RepertoirePdfFormset_save(self):
     pdf_writer = PdfFileWriter()
     for form in self:
         part = form.cleaned_data["part"]
+        if part is None:
+            continue
         pdf_writer.appendPagesFromReader(PdfFileReader(part.pdf_file()))
     output_stream = BytesIO()
     pdf_writer.write(output_stream)
