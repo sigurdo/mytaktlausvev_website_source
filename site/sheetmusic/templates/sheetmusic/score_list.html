@@ -5,55 +5,61 @@
 
 {% block content %}
     {% if scores %}
-    <table class="table table-striped table-sm">
-        <thead>
-            <tr>
-                <th class="col-form-label">
-                    Namn
-                </th>
+    <div class="table-responsive">
+        <table class="table table-striped table-sm">
+            <thead>
+                <tr>
+                    <th class="col-form-label">
+                        Namn
+                    </th>
 
-                <th class="col-form-label">
-                    Favorittstemme
-                </th>
+                    <th class="col-form-label">
+                        Favorittstemme
+                    </th>
 
-                <th class="col-form-label">
-                    Arrangement
-                </th>
+                    <th class="col-form-label">
+                        Arrangement
+                    </th>
 
-                <th class="col-form-label">
-                    Opphaveleg ifrå
-                </th>
-            </tr>
-        </thead>
-
-        <tbody>
-            {% for score in scores %}
-                <tr id="tr-{{score.slug}}">
-                    <td>
-                        <a class="larger-link" data-larger-link-target="#tr-{{score.slug}}" href="{% url "sheetmusic:ScoreView" score.slug %}">
-                            {{ score.title }}
-                        </a>
-                    </td>
-
-                    <td>
-                        {% load has_favorite_part %}
-                        {% has_favorite_part user score as has_favorite_part %}
-                        {% if has_favorite_part %}
-                            <a href="{% url "sheetmusic:FavoritePartPdf" score.slug %}"> Favorittstemme </a>
-                        {% endif %}
-                    </td>
-
-                    <td>
-                        {{ score.arrangement }}
-                    </td>
-
-                    <td>
-                        {{ score.originally_from }}
-                    </td>
+                    <th class="col-form-label">
+                        Opphaveleg ifrå
+                    </th>
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+
+            <tbody>
+                {% for score in scores %}
+                    <tr id="tr-{{score.slug}}">
+                        <td>
+                            <a
+                                class="larger-link"
+                                data-larger-link-target="#tr-{{score.slug}}"
+                                href="{% url "sheetmusic:ScoreView" score.slug %}"
+                            >
+                                {{ score.title }}
+                            </a>
+                        </td>
+
+                        <td>
+                            {% load has_favorite_part %}
+                            {% has_favorite_part user score as has_favorite_part %}
+                            {% if has_favorite_part %}
+                                <a href="{% url "sheetmusic:FavoritePartPdf" score.slug %}"> Favorittstemme </a>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {{ score.arrangement }}
+                        </td>
+
+                        <td>
+                            {{ score.originally_from }}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
     <p>
         ({{ scores|length }} not{{ scores|length|pluralize:"e,ar" }})

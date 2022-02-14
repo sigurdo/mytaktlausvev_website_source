@@ -70,7 +70,7 @@ class UserCustomCreateForm(UserCreationForm):
 class UserCustomUpdateForm(ModelForm):
     helper = FormHelper()
     helper.layout = Layout(
-        Fieldset("Brukar", "email"),
+        Fieldset("Brukar", "email", "avatar"),
         Fieldset(
             "Personleg",
             "name",
@@ -87,6 +87,7 @@ class UserCustomUpdateForm(ModelForm):
         model = UserCustom
         fields = [
             "email",
+            "avatar",
             "name",
             "phone_number",
             "birthdate",

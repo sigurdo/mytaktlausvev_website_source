@@ -9,30 +9,32 @@
         {{attendances.count}} har svara.
     </p>
 
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Brukar</th>
-                <th>Status</th>
-                <th>Laga</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for attendance in attendances %}
-            <tr>
-                <td>
-                    <a href="{{ attendance.person.get_absolute_url }}">
-                        {{ attendance.person.get_name }}
-                    </a>
-                </td>
-                <td>{{ attendance.get_status_display }}</td>
-                <td>
-                    <time datetime="{{ attendance.created | date:"c" }}">
-                        {{ attendance.created }}
-                    </time>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Brukar</th>
+                    <th>Status</th>
+                    <th>Laga</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for attendance in attendances %}
+                <tr>
+                    <td>
+                        <a href="{{ attendance.person.get_absolute_url }}">
+                            {{ attendance.person.get_name }}
+                        </a>
+                    </td>
+                    <td>{{ attendance.get_status_display }}</td>
+                    <td>
+                        <time datetime="{{ attendance.created | date:"c" }}">
+                            {{ attendance.created }}
+                        </time>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 {% endblock content %}

@@ -1,39 +1,41 @@
-<table class="table table-sm table-striped">
-    <thead>
-        <tr>
-            <th> Stemme </th>
-            <th> PDF </th>
-            <th> Favoritt </th>
-        </tr>
-    </thead>
+<div class="table-responsive">
+    <table class="table table-sm table-striped">
+        <thead>
+            <tr>
+                <th> Stemme </th>
+                <th> PDF </th>
+                <th> Favoritt </th>
+            </tr>
+        </thead>
 
-    <tbody>
-    {% for part in parts %}
-        <tr>
-            <td>
-                {{ part }}
-            </td>
-            <td>
-                <a href="{% url 'sheetmusic:PartPdf' part.pdf.score.slug part.slug %}"> PDF </a>
-            </td>
-            <td>
-                <form
-                    action="{% url "sheetmusic:FavoritePartUpdate" %}"
-                    data-method="{% if part.favorite %}DELETE{% else %}POST{% endif %}"
-                    class="form-favorite-part"
-                >
-                    <input type="hidden" name="part_pk" value="{{ part.pk }}" />
-                    <button class="bg-transparent border-0">
-                        {% load static %}
-                        {% if part.favorite %}
-                            <img src="{% static 'sheetmusic/star-filled.svg' %}" alt="Fjern som favoritt" />
-                        {% else %}
-                            <img src="{% static 'sheetmusic/star-outline.svg' %}" alt="Gjer til favoritt" />
-                        {% endif %}
-                    </button>
-                </form>
-            </td>
-        </tr>
-    {% endfor %}
-    </tbody>
-</table>
+        <tbody>
+        {% for part in parts %}
+            <tr>
+                <td>
+                    {{ part }}
+                </td>
+                <td>
+                    <a href="{% url 'sheetmusic:PartPdf' part.pdf.score.slug part.slug %}"> PDF </a>
+                </td>
+                <td>
+                    <form
+                        action="{% url "sheetmusic:FavoritePartUpdate" %}"
+                        data-method="{% if part.favorite %}DELETE{% else %}POST{% endif %}"
+                        class="form-favorite-part"
+                    >
+                        <input type="hidden" name="part_pk" value="{{ part.pk }}" />
+                        <button class="bg-transparent border-0">
+                            {% load static %}
+                            {% if part.favorite %}
+                                <img src="{% static 'sheetmusic/star-filled.svg' %}" alt="Fjern som favoritt" />
+                            {% else %}
+                                <img src="{% static 'sheetmusic/star-outline.svg' %}" alt="Gjer til favoritt" />
+                            {% endif %}
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>

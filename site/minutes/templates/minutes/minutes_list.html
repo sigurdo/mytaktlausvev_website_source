@@ -10,6 +10,7 @@
 {% endblock header %}
 
 {% block content %}
+<div class="table-responsive">
     <table class="table table-striped">
         <thead>
             <tr>
@@ -21,24 +22,25 @@
 
         <tbody>
             {% for minutes in minutes_list %}
-                <tr>
-                    <td>
-                        <a href="{{ minutes.get_absolute_url }}">
-                            {{ minutes.title }}
-                        </a>
-                    </td>
+            <tr>
+                <td>
+                    <a href="{{ minutes.get_absolute_url }}">
+                        {{ minutes.title }}
+                    </a>
+                </td>
 
-                    <td>
-                        <a href="{{ minutes.created_by.get_absolute_url }}">
-                            {{ minutes.created_by.username }}
-                        </a>
-                    </td>
+                <td>
+                    <a href="{{ minutes.created_by.get_absolute_url }}">
+                        {{ minutes.created_by.username }}
+                    </a>
+                </td>
 
-                    <td>{{ minutes.date }}</td>
-                </tr>
+                <td>{{ minutes.date }}</td>
+            </tr>
             {% endfor %}
         </tbody>
     </table>
+</div>
 
     <footer>
         {% include "common/includes/pagination.html" with pagination_label="Referatsider" %}
