@@ -5,39 +5,41 @@
 
 {% block content %}
     {% if topics %}
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Emne</th>
-                <th>Svar</th>
-                <th>Siste innlegg</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for topic in topics %}
-            <tr>
-                <td>
-                    <div class="mb-1 fs-5">
-                        <a href="{{ topic.get_absolute_url }}">{{ topic.title }}</a>
-                    </div>
-                    <div>av
-                        <a href="{{ topic.created_by.get_absolute_url }}">
-                            {{ topic.created_by.username }}
-                        </a>
-                        |
-                        <time datetime="{{ topic.created | date:"c" }}">
-                            {{ topic.created | date:"d.m.Y - H:i" }}
-                        </time>
-                    </div>
-                </td>
-                <td>{{ topic.posts.count }}</td>
-                <td>
-                    {% include "forum/includes/latest_post.html" with post=topic.posts.latest only %}
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Emne</th>
+                    <th>Svar</th>
+                    <th>Siste innlegg</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for topic in topics %}
+                <tr>
+                    <td>
+                        <div class="mb-1 fs-5">
+                            <a href="{{ topic.get_absolute_url }}">{{ topic.title }}</a>
+                        </div>
+                        <div>av
+                            <a href="{{ topic.created_by.get_absolute_url }}">
+                                {{ topic.created_by.username }}
+                            </a>
+                            |
+                            <time datetime="{{ topic.created | date:"c" }}">
+                                {{ topic.created | date:"d.m.Y - H:i" }}
+                            </time>
+                        </div>
+                    </td>
+                    <td>{{ topic.posts.count }}</td>
+                    <td>
+                        {% include "forum/includes/latest_post.html" with post=topic.posts.latest only %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
     {% endif %}
 
     {% include "common/includes/pagination.html" with pagination_label="Emnesider" %}

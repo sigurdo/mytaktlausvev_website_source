@@ -12,11 +12,7 @@
 {% block content %}
     {% if quotes %}
         {% for q in quotes %}
-        <div class="row">
-            <div class="col-lg-6">
-                {% include "quotes/quote.html" with quote=q %}
-            </div>
-        </div>
+            {% include "quotes/quote.html" with quote=q %}
         {% endfor %}
 
         {% include "common/includes/pagination.html" with pagination_label="Sitatsida" %}
