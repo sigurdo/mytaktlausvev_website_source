@@ -11,10 +11,19 @@
 	<link rel="icon" href="{% static 'images/logo.svg' %}" type="image/svg+xml">
 
 	{% load sass_tags %}
-	<link href="{% sass_src 'scss/bootstrap-light.scss' %}" media="(prefers-color-scheme: light)" rel="stylesheet" type="text/css">
-	<link href="{% sass_src 'scss/bootstrap-dark.scss' %}" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
+	<link
+		href="{% sass_src 'scss/bootstrap-light.scss' %}"
+		rel="stylesheet"
+		type="text/css"
+	>
+	<link
+		href="{% sass_src 'scss/bootstrap-dark.scss' %}"
+		media="(prefers-color-scheme: dark)"
+		rel="stylesheet"
+		type="text/css"
+	>
 
-	<!-- Chrome for Android theme color -->
+	<meta name="color-scheme" content="dark light">
 	<meta name="theme-color" content="#a50104">
 
 	{% if ENABLE_PWA_MANIFEST %}
