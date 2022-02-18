@@ -70,6 +70,7 @@ class Jacket(Model):
         return f"Jakke {self.number}"
 
     class Meta:
+        ordering = ["number"]
         verbose_name = "jakke"
         verbose_name_plural = "jakker"
 
