@@ -10,7 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
+import logging
 import os
+import sys
 
 from django.contrib.messages import constants as messages
 
@@ -222,6 +224,11 @@ LOGGING = {
         "level": "WARNING",
     },
 }
+
+# Disable excessive logging during tests
+# https://stackoverflow.com/questions/5255657/how-can-i-disable-logging-while-running-unit-tests-in-python-django/7732916#7732916
+if len(sys.argv) > 1 and sys.argv[1] == "test":
+    logging.disable(logging.WARNING)
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
