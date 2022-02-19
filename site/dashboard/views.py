@@ -25,7 +25,11 @@ class DashboardRedirect(RedirectView):
 class Dashboard(LoginRequiredMixin, TemplateView):
     template_name = "dashboard/dashboard.html"
 
-    def get_quotes(self):
+    def get_latest_quotes(self):
+        """Returns the 2 latest quotes."""
+        return Quote.objects.all()[0:2]
+
+    def get_random_quotes(self):
         """Returns 2 random quotes."""
         return random_sample_queryset(Quote.objects.all(), 2)
 
@@ -61,7 +65,8 @@ class Dashboard(LoginRequiredMixin, TemplateView):
         return Comment.objects.all().order_by("-created")[:5]
 
     def get_context_data(self, **kwargs):
-        kwargs["quotes"] = self.get_quotes()
+        kwargs["latest_quotes"] = self.get_latest_quotes()
+        kwargs["random_quotes"] = self.get_random_quotes()
         kwargs["events"] = self.get_events()
         kwargs["minutes"] = self.get_minutes()
         kwargs["latest_galleries"] = self.get_latest_galleries()
