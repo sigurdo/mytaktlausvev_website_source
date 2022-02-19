@@ -12,3 +12,7 @@ class LoginForm(AuthenticationForm):
     helper = FormHelper()
     helper.form_action = "login"
     helper.add_input(Submit("submit", "Logg inn"))
+
+    def __init__(self, autofocus=True, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self.fields["username"].widget.attrs["autofocus"] = autofocus

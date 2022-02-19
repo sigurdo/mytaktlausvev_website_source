@@ -26,7 +26,7 @@ class SidebarTestSuite(TestCase):
 
     def test_login_form_in_context(self):
         """Should include the login form in context."""
-        self.assertEqual(self.get_sidebar()["form_login"], LoginForm)
+        self.assertIsInstance(self.get_sidebar()["form_login"], LoginForm)
 
     def test_latest_poll_logged_in(self):
         """Should include the latest poll when logged in."""

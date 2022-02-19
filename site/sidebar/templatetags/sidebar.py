@@ -18,6 +18,6 @@ def sidebar(user, request_path):
     return {
         "user": user,
         "request_path": request_path,
-        "form_login": LoginForm,
+        "form_login": LoginForm(autofocus=False),
         "poll": poll,
     }
