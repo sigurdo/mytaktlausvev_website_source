@@ -39,6 +39,7 @@
 			</div>
 		</div>
 	</div>
+
 	<div class="col-md-6">
 		<div class="card h-100 p-3 shadow-sm">
 			<div class="card-body">
@@ -64,14 +65,15 @@
 			</div>
 		</div>
 	</div>
+
 	<div class="col-md-6">
 		<div class="card h-100 p-3 shadow-sm">
 			<div class="card-body">
-				<h2>Gullkorn</h2>
+				<h2>Nyaste sitat</h2>
 				<ul class="list-unstyled">
-					{% for q in quotes %}
+					{% for quote in latest_quotes %}
 					<li>
-						{% show_quote q %}
+						{% show_quote quote %}
 					</li>
 					{% endfor %}
 				</ul>
@@ -81,6 +83,7 @@
 			</div>
 		</div>
 	</div>
+
 	<div class="col-md-6">
 		<div class="card h-100 p-3 shadow-sm">
 			<div class="card-body">
@@ -108,6 +111,7 @@
 			</div>
 		</div>
 	</div>
+
 	<div class="col-md-12">
 		<div class="card h-100 p-3 shadow-sm">
 			<div class="card-body">
@@ -130,6 +134,7 @@
 			</div>
 		</div>
 	</div>
+
 	<div class="col-md-12">
 		<div class="card h-100 p-3 shadow-sm">
 			<div class="card-body">
@@ -147,6 +152,25 @@
 			</div>
 		</div>
 	</div>
+
+	<div class="col-md-6">
+		<div class="card h-100 p-3 shadow-sm">
+			<div class="card-body">
+				<h2>Gullkorn</h2>
+				<ul class="list-unstyled">
+					{% for quote in random_quotes %}
+					<li>
+						{% show_quote quote %}
+					</li>
+					{% endfor %}
+				</ul>
+				<p>
+					<a class="btn btn-primary" href="{% url "quotes:quotes" %}"> Alle sitat </a>
+				</p>
+			</div>
+		</div>
+	</div>
+
 	<div class="col-md-6">
 		<div class="card h-100 p-3 shadow-sm">
 			<div class="card-body">

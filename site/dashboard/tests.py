@@ -41,9 +41,13 @@ class DashboardTestSuite(TestMixin, TestCase):
         self.client.force_login(UserFactory())
         return self.client.get(self.get_url()).context
 
-    def test_quotes_in_context(self):
+    def test_latest_quotes_in_context(self):
         context = self.get_context()
-        self.assertIn("quotes", context)
+        self.assertIn("latest_quotes", context)
+
+    def test_random_quotes_in_context(self):
+        context = self.get_context()
+        self.assertIn("random_quotes", context)
 
     def test_events_in_context(self):
         EventFactory()
