@@ -4,6 +4,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 from django.forms import (
     Form,
+    IntegerField,
     ModelChoiceField,
     ModelForm,
     Select,
@@ -100,6 +101,7 @@ class RepertoirePdfForm(Form):
 
     score = ModelChoiceField(queryset=Score.objects.all(), label="Note", disabled=True)
     part = PartChoiceField(queryset=Part.objects.none(), label="Stemme", required=False)
+    amount = IntegerField(min_value=0, max_value=63, label="Antal", initial=1)
 
 
 class RepertoirePdfFormsetHelper(FormHelper):
@@ -115,7 +117,8 @@ def RepertoirePdfFormset_save(self):
         part = form.cleaned_data["part"]
         if part is None:
             continue
-        pdf_writer.appendPagesFromReader(PdfFileReader(part.pdf_file()))
+        for _ in range(form.cleaned_data["amount"]):
+            pdf_writer.appendPagesFromReader(PdfFileReader(part.pdf_file()))
     output_stream = BytesIO()
     pdf_writer.write(output_stream)
     output_stream.seek(0)
