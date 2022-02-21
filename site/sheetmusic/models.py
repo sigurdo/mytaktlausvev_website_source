@@ -312,6 +312,7 @@ class Part(Model):
         populate_from=__str__,
         unique_with="pdf__score__slug",
         editable=True,
+        always_update=True,
     )
 
     class Meta:
