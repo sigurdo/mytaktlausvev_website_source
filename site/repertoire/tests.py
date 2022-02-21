@@ -138,9 +138,11 @@ class RepertoirePdfTestSuite(TestMixin, TestCase):
             data = [
                 {
                     "part": self.entry.score.find_user_part(self.user).pk,
+                    "amount": self.amount,
                 },
                 {
                     "part": self.entry_2.score.find_user_part(self.user).pk,
+                    "amount": self.amount_2,
                 },
             ]
         return create_formset_post_data(
@@ -153,7 +155,9 @@ class RepertoirePdfTestSuite(TestMixin, TestCase):
     def setUp(self):
         self.user = UserFactory()
         self.entry = RepertoireEntryFactory()
+        self.amount = 1
         self.entry_2 = RepertoireEntryFactory(repertoire=self.entry.repertoire)
+        self.amount_2 = 2
         self.favorite = FavoritePartFactory(
             part__pdf__score=self.entry.score, user=self.user
         )
@@ -169,4 +173,4 @@ class RepertoirePdfTestSuite(TestMixin, TestCase):
         response = self.client.post(self.get_url(), self.create_post_data())
         self.assertEqual(response["content-type"], "application/pdf")
         pdf_reader = PdfFileReader(BytesIO(response.getvalue()))
-        self.assertEqual(pdf_reader.getNumPages(), 2)
+        self.assertEqual(pdf_reader.getNumPages(), 3)
