@@ -397,6 +397,19 @@ class ScoreViewTestSuite(TestMixin, TestCase):
         self.assertTrue(list(context["parts"])[0].favorite)
 
 
+class ScoreCreateTestSuite(TestMixin, TestCase):
+    def test_create_score(self):
+        user = SuperUserFactory()
+        self.client.force_login(user)
+        self.client.post(reverse("sheetmusic:ScoreCreate"), {"title": "A score"})
+        self.assertEqual(Score.objects.count(), 1)
+        score = Score.objects.last()
+        self.assertEqual(score.title, "A score")
+
+    def test_requires_login(self):
+        self.assertLoginRequired(reverse("sheetmusic:ScoreCreate"))
+
+
 class ScoreUpdateTestSuite(TestMixin, TestCase):
     def setUp(self):
         self.score = ScoreFactory()
@@ -413,6 +426,15 @@ class ScoreUpdateTestSuite(TestMixin, TestCase):
             "sheetmusic.change_score",
         )
 
+    def test_succeeds_if_not_permission_but_is_author(self):
+        """
+        Should succeed if the user is the author,
+        even if the user doesn't have the `change_score` permission.
+        """
+        self.client.force_login(self.score.created_by)
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
     def test_success_redirect(self):
         user = SuperUserFactory()
         self.client.force_login(user)
@@ -428,7 +450,7 @@ class ScoreUpdateTestSuite(TestMixin, TestCase):
         user = SuperUserFactory()
         self.client.force_login(user)
         response = self.client.get(self.get_url())
-        self.assertEquals(response.context["nav_tabs"], nav_tabs_score_edit(self.score))
+        self.assertEquals(response.context["nav_tabs"], nav_tabs_score_edit(self.score, user))
 
 
 class ScoreDeleteTestSuite(TestMixin, TestCase):
@@ -446,6 +468,15 @@ class ScoreDeleteTestSuite(TestMixin, TestCase):
             self.get_url(),
             "sheetmusic.delete_score",
         )
+
+    def test_succeeds_if_not_permission_but_is_author(self):
+        """
+        Should succeed if the user is the author,
+        even if the user doesn't have the `change_score` permission.
+        """
+        self.client.force_login(self.score.created_by)
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_success_redirect(self):
         user = SuperUserFactory()
@@ -468,6 +499,15 @@ class PartsUpdateIndexTestSuite(TestMixin, TestCase):
             "sheetmusic.change_part",
             "sheetmusic.delete_part",
         )
+
+    def test_succeeds_if_not_permission_but_is_author(self):
+        """
+        Should succeed if the user is the author,
+        even if the user doesn't have the `change_score` permission.
+        """
+        self.client.force_login(self.score.created_by)
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_context_data(self):
         pdf = PdfFactory(score=self.score)
@@ -516,6 +556,15 @@ class PartsUpdateTestSuite(TestMixin, TestCase):
             "sheetmusic.change_part",
             "sheetmusic.delete_part",
         )
+
+    def test_succeeds_if_not_permission_but_is_author(self):
+        """
+        Should succeed if the user is the author,
+        even if the user doesn't have the `change_score` permission.
+        """
+        self.client.force_login(self.score.created_by)
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_success_redirect(self):
         user = SuperUserFactory()
@@ -611,6 +660,15 @@ class PartsUpdateAllTestSuite(TestMixin, TestCase):
             "sheetmusic.delete_part",
         )
 
+    def test_succeeds_if_not_permission_but_is_author(self):
+        """
+        Should succeed if the user is the author,
+        even if the user doesn't have the `change_score` permission.
+        """
+        self.client.force_login(self.score.created_by)
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
     def test_success_redirect(self):
         user = SuperUserFactory()
         self.client.force_login(user)
@@ -673,21 +731,31 @@ class PdfsUpdateTestSuite(TestMixin, TestCase):
             data=data,
         )
 
+    def get_url(self):
+        return reverse("sheetmusic:PdfsUpdate", args=[self.score.slug])
+
     def setUp(self):
         self.score = ScoreFactory()
         self.pdf = PdfFactory(score=self.score)
         self.test_data = self.create_post_data([])
 
     def test_requires_login(self):
-        self.assertLoginRequired(
-            reverse("sheetmusic:PdfsUpdate", args=[self.score.slug])
-        )
+        self.assertLoginRequired(self.get_url())
 
     def test_requires_permission(self):
         self.assertPermissionRequired(
-            reverse("sheetmusic:PdfsUpdate", args=[self.score.slug]),
+            self.get_url(),
             "sheetmusic.delete_pdf",
         )
+
+    def test_succeeds_if_not_permission_but_is_author(self):
+        """
+        Should succeed if the user is the author,
+        even if the user doesn't have the `change_score` permission.
+        """
+        self.client.force_login(self.score.created_by)
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_success_redirect(self):
         user = SuperUserFactory()
@@ -739,6 +807,15 @@ class PdfsUploadTestSuite(TestMixin, TestCase):
         self.assertPermissionRequired(
             self.get_url(), "sheetmusic.add_pdf", "sheetmusic.add_part"
         )
+
+    def test_succeeds_if_not_permission_but_is_author(self):
+        """
+        Should succeed if the user is the author,
+        even if the user doesn't have the `change_score` permission.
+        """
+        self.client.force_login(self.score.created_by)
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_success_redirect(self):
         self.client.force_login(SuperUserFactory())
@@ -819,24 +896,6 @@ class PdfsUploadTestSuite(TestMixin, TestCase):
             "form",
             "files",
             f"{image.name}: Filtype {image.content_type} ikkje lovleg",
-        )
-
-
-class ScoreCreateTestSuite(TestMixin, TestCase):
-    def test_create_score(self):
-        user = SuperUserFactory()
-        self.client.force_login(user)
-        self.client.post(reverse("sheetmusic:ScoreCreate"), {"title": "A score"})
-        self.assertEqual(Score.objects.count(), 1)
-        score = Score.objects.last()
-        self.assertEqual(score.title, "A score")
-
-    def test_requires_login(self):
-        self.assertLoginRequired(reverse("sheetmusic:ScoreCreate"))
-
-    def test_requires_permission(self):
-        self.assertPermissionRequired(
-            reverse("sheetmusic:ScoreCreate"), "sheetmusic.add_score"
         )
 
 
