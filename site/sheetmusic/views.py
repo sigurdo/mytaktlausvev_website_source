@@ -5,7 +5,7 @@ import json
 from typing import Any, Dict
 
 import django
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.forms import BaseModelForm
 from django.http import HttpResponse
 from django.http.response import FileResponse

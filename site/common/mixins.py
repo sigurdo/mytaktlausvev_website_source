@@ -110,7 +110,9 @@ class PermissionOrCreatedMixin(PermissionRequiredMixin):
 
     def user_has_created(self):
         """Returns `True` if the user created `object`, `False` otherwise."""
-        created_by = getattr(self.get_permission_check_object(), self.field_created_by, None)
+        created_by = getattr(
+            self.get_permission_check_object(), self.field_created_by, None
+        )
         return created_by == self.request.user
 
     def dispatch(self, request, *args, **kwargs):

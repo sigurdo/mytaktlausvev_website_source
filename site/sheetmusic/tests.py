@@ -450,7 +450,9 @@ class ScoreUpdateTestSuite(TestMixin, TestCase):
         user = SuperUserFactory()
         self.client.force_login(user)
         response = self.client.get(self.get_url())
-        self.assertEquals(response.context["nav_tabs"], nav_tabs_score_edit(self.score, user))
+        self.assertEquals(
+            response.context["nav_tabs"], nav_tabs_score_edit(self.score, user)
+        )
 
 
 class ScoreDeleteTestSuite(TestMixin, TestCase):
