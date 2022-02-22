@@ -3,6 +3,11 @@
 {% block title_page %} Notearkiv {% endblock title_page %}
 {% block title_content %} Alle notar {% endblock title_content %}
 
+{% block header %}
+    {{ block.super }}
+    <a class="btn btn-primary btn-sm" href="{% url 'sheetmusic:ScoreCreate' %}"> Ny note </a>
+{% endblock header %}
+
 {% block content %}
     {% if scores %}
     <div class="table-responsive">
@@ -64,10 +69,6 @@
     <p>
         ({{ scores|length }} not{{ scores|length|pluralize:"e,ar" }})
     </p>
-    {% endif %}
-
-    {% if perms.sheetmusic.add_score %}
-        <a href="{% url 'sheetmusic:ScoreCreate' %}" class="btn btn-primary"> Ny note </a>
     {% endif %}
 {% endblock content %}
 

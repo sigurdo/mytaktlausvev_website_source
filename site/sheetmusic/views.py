@@ -5,7 +5,7 @@ import json
 from typing import Any, Dict
 
 import django
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.forms import BaseModelForm
 from django.http import HttpResponse
 from django.http.response import FileResponse
@@ -22,7 +22,7 @@ from django.views.generic.edit import (
     UpdateView,
 )
 
-from common.mixins import BreadcrumbsMixin
+from common.mixins import BreadcrumbsMixin, PermissionOrCreatedMixin
 from common.views import DeleteViewCustom
 
 from .forms import (
@@ -36,9 +36,9 @@ from .forms import (
 from .models import FavoritePart, Part, Pdf, Score
 
 
-def nav_tabs_score_edit(score):
+def nav_tabs_score_edit(score, user):
     """Returns nav tabs for editing a score."""
-    return [
+    nav_tabs = [
         {
             "url": reverse("sheetmusic:ScoreUpdate", args=[score.slug]),
             "name": "Generelt",
@@ -55,6 +55,10 @@ def nav_tabs_score_edit(score):
             "permissions": ["sheetmusic.add_pdf", "sheetmusic.add_part"],
         },
     ]
+    if score.created_by == user:
+        for nav_tab in nav_tabs:
+            nav_tab["permissions"] = []
+    return nav_tabs
 
 
 def sheetmusic_breadcrumbs(score=None, parts_update_index=False):
@@ -103,7 +107,24 @@ class ScoreView(LoginRequiredMixin, BreadcrumbsMixin, DetailView):
         return context
 
 
-class ScoreUpdate(PermissionRequiredMixin, BreadcrumbsMixin, UpdateView):
+class ScoreCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
+    model = Score
+    form_class = ScoreForm
+    template_name = "common/form.html"
+
+    def get_success_url(self):
+        return reverse("sheetmusic:PdfsUpload", args=[self.object.slug])
+
+    def get_breadcrumbs(self):
+        return sheetmusic_breadcrumbs()
+
+    def form_valid(self, form):
+        form.instance.created_by = self.request.user
+        form.instance.modified_by = self.request.user
+        return super().form_valid(form)
+
+
+class ScoreUpdate(PermissionOrCreatedMixin, BreadcrumbsMixin, UpdateView):
     model = Score
     form_class = ScoreForm
     template_name = "common/form.html"
@@ -113,7 +134,7 @@ class ScoreUpdate(PermissionRequiredMixin, BreadcrumbsMixin, UpdateView):
         return sheetmusic_breadcrumbs(score=self.get_object())
 
     def get_context_data(self, **kwargs):
-        kwargs["nav_tabs"] = nav_tabs_score_edit(self.object)
+        kwargs["nav_tabs"] = nav_tabs_score_edit(self.object, self.request.user)
         return super().get_context_data(**kwargs)
 
     def form_valid(self, form):
@@ -121,7 +142,7 @@ class ScoreUpdate(PermissionRequiredMixin, BreadcrumbsMixin, UpdateView):
         return super().form_valid(form)
 
 
-class ScoreDelete(PermissionRequiredMixin, BreadcrumbsMixin, DeleteViewCustom):
+class ScoreDelete(PermissionOrCreatedMixin, BreadcrumbsMixin, DeleteViewCustom):
     model = Score
     success_url = reverse_lazy("sheetmusic:ScoreList")
     permission_required = "sheetmusic.delete_score"
@@ -130,7 +151,7 @@ class ScoreDelete(PermissionRequiredMixin, BreadcrumbsMixin, DeleteViewCustom):
         return sheetmusic_breadcrumbs(score=self.get_object())
 
 
-class PartsUpdateIndex(PermissionRequiredMixin, BreadcrumbsMixin, ListView):
+class PartsUpdateIndex(PermissionOrCreatedMixin, BreadcrumbsMixin, ListView):
     model = Pdf
     context_object_name = "pdfs"
     template_name = "sheetmusic/parts_update_index.html"
@@ -147,6 +168,9 @@ class PartsUpdateIndex(PermissionRequiredMixin, BreadcrumbsMixin, ListView):
     def get_breadcrumbs(self):
         return sheetmusic_breadcrumbs(score=self.score)
 
+    def get_permission_check_object(self):
+        return self.score
+
     def get_context_data(self, **kwargs):
         kwargs["score"] = self.score
         return super().get_context_data(**kwargs)
@@ -160,7 +184,7 @@ class PartsUpdateIndex(PermissionRequiredMixin, BreadcrumbsMixin, ListView):
 
 
 class PartsUpdate(
-    PermissionRequiredMixin,
+    PermissionOrCreatedMixin,
     BreadcrumbsMixin,
     FormMixin,
     SingleObjectMixin,
@@ -186,6 +210,9 @@ class PartsUpdate(
         return sheetmusic_breadcrumbs(
             score=self.get_object().score, parts_update_index=True
         )
+
+    def get_permission_check_object(self):
+        return self.get_object().score
 
     def get_context_data(self, **kwargs):
         kwargs["form_title"] = f"Rediger stemmer for {self.get_object()}"
@@ -230,7 +257,7 @@ class PartsUpdate(
 
 
 class PartsUpdateAll(
-    PermissionRequiredMixin,
+    PermissionOrCreatedMixin,
     BreadcrumbsMixin,
     FormMixin,
     SingleObjectMixin,
@@ -299,7 +326,7 @@ class PartsUpdateAll(
 
 
 class PdfsUpdate(
-    PermissionRequiredMixin,
+    PermissionOrCreatedMixin,
     BreadcrumbsMixin,
     FormMixin,
     SingleObjectMixin,
@@ -343,11 +370,11 @@ class PdfsUpdate(
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         kwargs["helper"] = EditPdfFormsetHelper()
-        kwargs["nav_tabs"] = nav_tabs_score_edit(self.object)
+        kwargs["nav_tabs"] = nav_tabs_score_edit(self.object, self.request.user)
         return super().get_context_data(**kwargs)
 
 
-class PdfsUpload(PermissionRequiredMixin, BreadcrumbsMixin, FormView):
+class PdfsUpload(PermissionOrCreatedMixin, BreadcrumbsMixin, FormView):
     form_class = UploadPdfForm
     template_name = "common/form.html"
     context_object_name = "score"
@@ -366,33 +393,18 @@ class PdfsUpload(PermissionRequiredMixin, BreadcrumbsMixin, FormView):
     def get_breadcrumbs(self):
         return sheetmusic_breadcrumbs(score=self.get_score())
 
+    def get_permission_check_object(self):
+        return self.get_score()
+
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         kwargs[self.context_object_name] = self.get_score()
         kwargs["object"] = self.get_score()
-        kwargs["nav_tabs"] = nav_tabs_score_edit(self.get_score())
+        kwargs["nav_tabs"] = nav_tabs_score_edit(self.get_score(), self.request.user)
         return super().get_context_data(**kwargs)
 
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
         score = Score.objects.get(slug=self.kwargs["slug"])
         form.save(score=score, plz_wait=self.request.POST.get("plz_wait", False))
-        return super().form_valid(form)
-
-
-class ScoreCreate(PermissionRequiredMixin, BreadcrumbsMixin, CreateView):
-    model = Score
-    form_class = ScoreForm
-    template_name = "common/form.html"
-    permission_required = "sheetmusic.add_score"
-
-    def get_success_url(self):
-        return reverse("sheetmusic:PdfsUpload", args=[self.object.slug])
-
-    def get_breadcrumbs(self):
-        return sheetmusic_breadcrumbs()
-
-    def form_valid(self, form):
-        form.instance.created_by = self.request.user
-        form.instance.modified_by = self.request.user
         return super().form_valid(form)
 
 
