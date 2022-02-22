@@ -31,7 +31,7 @@ class InstrumentFactory(DjangoModelFactory):
         model = Instrument
 
     type = SubFactory(InstrumentTypeFactory)
-    identifier = "1"
+    identifier = sequence(lambda n: n)
     user = None
     location = SubFactory(InstrumentLocationFactory)
     serial_number = "abc-123"
