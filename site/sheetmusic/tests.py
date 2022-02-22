@@ -474,7 +474,7 @@ class ScoreDeleteTestSuite(TestMixin, TestCase):
     def test_succeeds_if_not_permission_but_is_author(self):
         """
         Should succeed if the user is the author,
-        even if the user doesn't have the `change_score` permission.
+        even if the user doesn't have permission to delete scores.
         """
         self.client.force_login(self.score.created_by)
         response = self.client.get(self.get_url())
@@ -505,7 +505,7 @@ class PartsUpdateIndexTestSuite(TestMixin, TestCase):
     def test_succeeds_if_not_permission_but_is_author(self):
         """
         Should succeed if the user is the author,
-        even if the user doesn't have the `change_score` permission.
+        even if the user doesn't have permission to modify parts.
         """
         self.client.force_login(self.score.created_by)
         response = self.client.get(self.get_url())
@@ -562,7 +562,7 @@ class PartsUpdateTestSuite(TestMixin, TestCase):
     def test_succeeds_if_not_permission_but_is_author(self):
         """
         Should succeed if the user is the author,
-        even if the user doesn't have the `change_score` permission.
+        even if the user doesn't have permission to modify parts.
         """
         self.client.force_login(self.score.created_by)
         response = self.client.get(self.get_url())
@@ -665,7 +665,7 @@ class PartsUpdateAllTestSuite(TestMixin, TestCase):
     def test_succeeds_if_not_permission_but_is_author(self):
         """
         Should succeed if the user is the author,
-        even if the user doesn't have the `change_score` permission.
+        even if the user doesn't have permission to modify parts.
         """
         self.client.force_login(self.score.created_by)
         response = self.client.get(self.get_url())
@@ -753,7 +753,7 @@ class PdfsUpdateTestSuite(TestMixin, TestCase):
     def test_succeeds_if_not_permission_but_is_author(self):
         """
         Should succeed if the user is the author,
-        even if the user doesn't have the `change_score` permission.
+        even if the user doesn't have permission to delete PDFs.
         """
         self.client.force_login(self.score.created_by)
         response = self.client.get(self.get_url())
@@ -813,7 +813,7 @@ class PdfsUploadTestSuite(TestMixin, TestCase):
     def test_succeeds_if_not_permission_but_is_author(self):
         """
         Should succeed if the user is the author,
-        even if the user doesn't have the `change_score` permission.
+        even if the user doesn't have permission to upload PDFs.
         """
         self.client.force_login(self.score.created_by)
         response = self.client.get(self.get_url())
