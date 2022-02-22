@@ -17,7 +17,8 @@ services:
       - ./.flake8:/app/.flake8:Z
       - ./pyproject.toml:/app/pyproject.toml:Z
       - ./setup/wait-for-it.sh:/app/wait-for-it.sh:Z
-    command: sh -c './wait-for-it.sh db:5432 -- ./site/manage.py runserver 0.0.0.0:8000'
+    command: sh -c './wait-for-it.sh db:5432 -- ./site/manage.py runserver --insecure 0.0.0.0:8000'
+      # '--insecure' in order to serve static files locally when DEBUG=0
     ports:
       - 8000:8000
     depends_on:
