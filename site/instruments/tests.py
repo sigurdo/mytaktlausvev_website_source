@@ -10,6 +10,7 @@ from .factories import (
     InstrumentFactory,
     InstrumentGroupFactory,
     InstrumentLocationFactory,
+    InstrumentTypeFactory,
 )
 from .forms import InstrumentUpdateFormset
 from .models import Instrument
@@ -43,14 +44,20 @@ class InstrumentLocationTestSuite(TestMixin, TestCase):
 
 class InstrumentTestSuite(TestMixin, TestCase):
     def setUp(self):
-        self.instrument = InstrumentFactory(name="Tuba 1")
+        self.instrument = InstrumentFactory()
 
     def test_to_str(self):
-        self.assertEqual(str(self.instrument), "Tuba 1")
+        """`__str__` should include instrument type and identifier."""
+        self.assertEqual(
+            str(self.instrument), f"{self.instrument.type} {self.instrument.identifier}"
+        )
 
-    def test_name_unique(self):
+    def test_type_and_identifier_unique_togther(self):
+        """Should enforce uniqueness of `type` and `identifier`."""
         with self.assertRaises(IntegrityError):
-            InstrumentFactory(name="Tuba 1")
+            InstrumentFactory(
+                type=self.instrument.type, identifier=self.instrument.identifier
+            )
 
 
 class InstrumentListTestSuite(TestMixin, TestCase):
@@ -74,11 +81,13 @@ class InstrumentsUpdateTestSuite(TestMixin, TestCase):
         )
 
     def setUp(self):
-        self.instrument = InstrumentFactory(name="Bassklarinett")
+        self.instrument = InstrumentFactory(
+            type=InstrumentTypeFactory(name="Bassklarinett")
+        )
         self.formset_data = [
             {
-                "name": self.instrument.name,
-                "group": self.instrument.group.pk,
+                "type": self.instrument.type.pk,
+                "identifier": self.instrument.identifier,
                 "user": "",
                 "location": self.instrument.location.pk,
                 "serial_number": self.instrument.serial_number,
@@ -97,12 +106,12 @@ class InstrumentsUpdateTestSuite(TestMixin, TestCase):
         )
 
     def test_create_instrument(self):
-        group = InstrumentGroupFactory()
+        type = InstrumentTypeFactory()
         location = InstrumentLocationFactory()
         self.formset_data.append(
             {
-                "name": "Klarinett 14",
-                "group": group.pk,
+                "type": type.pk,
+                "identifier": "14",
                 "location": location.pk,
                 "state": Instrument.State.GOOD,
             }
@@ -113,12 +122,12 @@ class InstrumentsUpdateTestSuite(TestMixin, TestCase):
 
     def test_update_instrument(self):
         user = UserFactory()
-        self.formset_data[0]["name"] = "Bassklarinett 1"
+        self.formset_data[0]["identifier"] = "plast, gul"
         self.formset_data[0]["user"] = user.pk
         self.client.force_login(SuperUserFactory())
         self.client.post(self.get_url(), self.create_post_data())
         self.instrument.refresh_from_db()
-        self.assertEqual(self.instrument.name, "Bassklarinett 1")
+        self.assertEqual(self.instrument.identifier, "plast, gul")
         self.assertEqual(self.instrument.user, user)
 
     def test_delete_instrument(self):

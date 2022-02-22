@@ -11,8 +11,8 @@ class InstrumentUpdateForm(ModelForm):
     class Meta:
         model = Instrument
         fields = [
-            "name",
-            "group",
+            "type",
+            "identifier",
             "user",
             "location",
             "serial_number",

@@ -8,6 +8,7 @@ from django.db.models import (
     Model,
     TextChoices,
     TextField,
+    UniqueConstraint,
 )
 
 
@@ -61,13 +62,13 @@ class InstrumentLocation(Model):
 
 
 class Instrument(Model):
-    name = CharField(max_length=255, verbose_name="namn", unique=True)
-    group = ForeignKey(
-        InstrumentGroup,
-        verbose_name="instrumentgruppe",
+    type = ForeignKey(
+        InstrumentType,
+        verbose_name="instrumenttype",
         related_name="instruments",
         on_delete=RESTRICT,
     )
+    identifier = CharField(max_length=255, verbose_name="identifikator", blank=True)
     user = ForeignKey(
         settings.AUTH_USER_MODEL,
         verbose_name="vert lånt av",
@@ -103,8 +104,10 @@ class Instrument(Model):
         return ordering.index(self.state)
 
     def __str__(self):
-        return self.name
+        return f"{self.type} {self.identifier}"
 
     class Meta:
         verbose_name = "instrument"
         verbose_name_plural = "instrument"
+        ordering = ["type", "identifier"]
+        constraints = [UniqueConstraint("type", "identifier", name="unique_instrument")]

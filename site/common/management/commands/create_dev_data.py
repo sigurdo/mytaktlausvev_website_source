@@ -204,7 +204,7 @@ class Command(BaseCommand):
         director = InstrumentGroupFactory(name="Dirigent")
         group_other = InstrumentGroupFactory(name="Anna")
 
-        InstrumentTypeFactory(name="Pikkolo", group=flute)
+        type_piccolo = InstrumentTypeFactory(name="Pikkolo", group=flute)
         type_flute = InstrumentTypeFactory(name="Fløyte", group=flute)
         InstrumentTypeFactory(name="Obo", group=flute)
         type_clarinet = InstrumentTypeFactory(name="Klarinett", group=clarinet)
@@ -258,20 +258,20 @@ class Command(BaseCommand):
         member.instrument_type = type_flute
         member.save()
         InstrumentFactory(
-            name="Piccolo 1", group=flute, user=member, location=main_storage
+            type=type_piccolo, identifier="1", user=member, location=main_storage
         )
         leader.instrument_type = type_synthesizer
         leader.save()
         musical_leader.instrument_type = type_grand_piano
         musical_leader.save()
         InstrumentFactory(
-            name="Piccolotrompet", group=trumpet, user=leader, location=main_storage
+            type=type_trumpet, identifier="piccolo", user=leader, location=main_storage
         )
         InstrumentFactory(
-            name="Tuba 2",
-            group=tuba,
+            type=type_tuba,
+            identifier="2",
             location=main_storage,
-            comment="Valset over på SMASH",
+            comment="Valsa over på SMASH",
             state=Instrument.State.UNPLAYABLE,
         )
         jacket_at_home = JacketLocationFactory(

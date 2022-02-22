@@ -30,8 +30,8 @@ class InstrumentFactory(DjangoModelFactory):
     class Meta:
         model = Instrument
 
-    name = "Instrument"
-    group = SubFactory(InstrumentGroupFactory)
+    type = SubFactory(InstrumentTypeFactory)
+    identifier = sequence(lambda n: n)
     user = None
     location = SubFactory(InstrumentLocationFactory)
     serial_number = "abc-123"

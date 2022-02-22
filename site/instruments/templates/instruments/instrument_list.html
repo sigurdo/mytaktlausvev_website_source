@@ -19,7 +19,6 @@
             <thead>
                 <tr>
                     <th> Instrument </th>
-                    <th> Instrumentgruppe </th>
                     <th> Stad </th>
                     <th> Vert lånt av </th>
                     <th> Serienummer </th>
@@ -40,10 +39,10 @@
                         {% elif instrument.get_state_order == 3 %}
                             bg-danger
                         {% endif %}
-                        ">
+                        "
+                    >
                         {{ instrument }}
                     </td>
-                    <td> {{ instrument.group }} </td>
                     <td> {{ instrument.location }} </td>
                     <td>
                         {% if instrument.user %}
