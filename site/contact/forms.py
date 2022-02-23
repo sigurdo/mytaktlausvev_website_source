@@ -1,14 +1,6 @@
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Div, Field, Layout, Submit
-from django.forms import (
-    CharField,
-    EmailField,
-    Form,
-    HiddenInput,
-    ModelChoiceField,
-    Textarea,
-    TextInput,
-)
+from django.forms import CharField, EmailField, Form, ModelChoiceField, Textarea
 
 from contact.models import ContactCategory
 
