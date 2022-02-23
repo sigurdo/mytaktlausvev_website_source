@@ -1,3 +1,4 @@
+import logging
 from smtplib import SMTPException
 
 from django.conf import settings
@@ -6,6 +7,8 @@ from django.shortcuts import render
 from django.views.generic import FormView
 
 from contact.forms import ContactForm
+
+logger = logging.getLogger(__name__)
 
 
 class ContactView(FormView):
@@ -39,7 +42,19 @@ class ContactView(FormView):
         """Returns the from mail, including the sender's name."""
         return f'"{form.cleaned_data["name"]}" <{form.cleaned_data["email"]}>'
 
+    def _is_spam(self, form) -> bool:
+        """
+        Returns `True` if the form is spam, otherwise `False`.
+        A form is considered to be spam if the hidden field `content`
+        has been modified.
+        """
+        return bool(form.cleaned_data["content"])
+
     def form_valid(self, form):
+        if self._is_spam(form):
+            logging.warn("Spam detected in contact form. Rejecting message.")
+            return render(self.request, self.template_success_name)
+
         try:
             EmailMessage(
                 self._get_email_subject(form),
