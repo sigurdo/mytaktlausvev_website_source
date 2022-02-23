@@ -125,7 +125,7 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
                 "common.context_processors.enable_pwa_manifest",
                 "common.context_processors.enable_serviceworker",
-                "navbar.processor.debug_flag",
+                "common.context_processors.debug_flag",
             ],
         },
     },
