@@ -124,9 +124,10 @@ class UserCustomTest(TestMixin, TestCase):
 
 class UserCustomCreateFormTestSuite(TestCase):
     def test_all_fields_except_student_card_number_required(self):
-        """Should require all fields except `student_card_number`."""
+        """Should require all fields except `student_card_number` and `no_storage_access`."""
         form = UserCustomCreateForm()
         form.fields.pop("student_card_number")
+        form.fields.pop("no_storage_access")
         for field in form.fields.values():
             self.assertTrue(field.required)
 
@@ -142,6 +143,27 @@ class UserCustomCreateFormTestSuite(TestCase):
             form.errors["username"],
         )
 
+    def test_require_no_storage_access_if_no_student_card_number(self):
+        """
+        Should require `no_storage_access`
+        if no student card number is provided.
+        """
+        form = UserCustomCreateForm({"no_storage_access": False})
+        self.assertIn(
+            "Feltet er påkrevd om du ikkje legg inn studentkortnummer.",
+            form.errors["no_storage_access"],
+        )
+
+    def test_no_storage_access_not_required_if_student_card_number(self):
+        """
+        Shouldn't require `no_storage_access`
+        if a student card number is provided.
+        """
+        form = UserCustomCreateForm(
+            {"no_storage_access": False, "student_card_number": "123"}
+        )
+        self.assertNotIn("no_storage_access", form.errors.keys())
+
 
 class UserCustomCreateTestSuite(TestMixin, TestCase):
     def setUp(self):
@@ -155,6 +177,7 @@ class UserCustomCreateTestSuite(TestMixin, TestCase):
             "birthdate": "2021-12-18",
             "address": "A server near you",
             "student_card_number": "6C696E74",
+            "no_storage_access": True,
             "instrument_type": InstrumentTypeFactory().pk,
             "membership_period": "2022, Spring - ",
         }
