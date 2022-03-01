@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
         "language": {
             "zeroRecords": "Inga svar funne",
             // Would otherwise say "showing page 1 of 1" even though we've turned off paging
-            "info": "",
+            "info": "Visar _TOTAL_ svar",
             "infoEmpty": "Inga svar funne",
             "infoFiltered": "(filtrert fra totalt _MAX_ svar)",
             "search": "Søk:",

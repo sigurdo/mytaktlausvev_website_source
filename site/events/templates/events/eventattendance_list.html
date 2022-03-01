@@ -8,11 +8,6 @@
 {% endblock css %}
 
 {% block content %}
-    <p>
-        Svar for <a href="{{ event.get_absolute_url }}">{{ event.title }}</a>.
-        {{attendances.count}} har svara.
-    </p>
-
     <div class="table-responsive">
         <table class="table table-striped table-sm" id="attendance_list">
             <thead>
