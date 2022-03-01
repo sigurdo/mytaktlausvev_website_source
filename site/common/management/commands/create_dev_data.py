@@ -283,7 +283,7 @@ class Command(BaseCommand):
         jacket_1 = JacketFactory(
             number=1,
             comment="",
-            state=Jacket.State.BAD,
+            state=Jacket.State.NEEDS_REPAIR,
             location=jacket_at_storage,
         )
         JacketFactory(
@@ -299,7 +299,7 @@ class Command(BaseCommand):
         )
         jacket_65 = JacketFactory(
             number=65,
-            state=Jacket.State.OK,
+            state=Jacket.State.NEEDS_REPAIR,
             location=jacket_at_storage,
         )
         JacketUserFactory(

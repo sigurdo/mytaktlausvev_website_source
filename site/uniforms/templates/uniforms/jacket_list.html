@@ -36,13 +36,14 @@
                         {% if jacket.get_state_order == 0 %}
                             bg-success
                         {% elif jacket.get_state_order == 1 %}
-                            bg-info
-                        {% elif jacket.get_state_order == 2 %}
                             bg-warning
-                        {% elif jacket.get_state_order == 3 %}
+                        {% elif jacket.get_state_order == 2 %}
                             bg-danger
                         {% endif %}
-                        "> {{ jacket.number }} </td>
+                        "
+                    >
+                        {{ jacket.number }}
+                    </td>
                     <td> {{ jacket.location }} </td>
                     <td>
                         {% with jacket.get_owner as owner %}
@@ -67,18 +68,18 @@
                     </td>
                     {% endif %}
                     <td> {{ jacket.comment }} </td>
-                    <td data-order="{{ jacket.get_state_order }}"
-                    class="
+                    <td
+                        data-order="{{ jacket.get_state_order }}"
+                        class="
                         {% if jacket.get_state_order == 0 %}
                             bg-success
                         {% elif jacket.get_state_order == 1 %}
-                            bg-info
-                        {% elif jacket.get_state_order == 2 %}
                             bg-warning
-                        {% elif jacket.get_state_order == 3 %}
+                        {% elif jacket.get_state_order == 2 %}
                             bg-danger
                         {% endif %}
-                        ">
+                        "
+                    >
                         {{ jacket.get_state_display }}
                     </td>
                 </tr>
