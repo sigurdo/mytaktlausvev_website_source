@@ -33,15 +33,14 @@ class Jacket(Model):
 
     class State(TextChoices):
         GOOD = "GOOD", "God"
-        OK = "OK", "Ok"
-        BAD = "BAD", "Dårleg"
+        NEEDS_REPAIR = "NEEDS_REPAIR", "Treng reparasjon"
         UNUSABLE = "UNUSABLE", "Ikkje brukbar"
 
     state = CharField(
         max_length=255,
         verbose_name="tilstand",
         choices=State.choices,
-        default=State.OK,
+        default=State.GOOD,
     )
 
     location = ForeignKey(
@@ -52,7 +51,7 @@ class Jacket(Model):
     )
 
     def get_state_order(self):
-        ordering = ["GOOD", "OK", "BAD", "UNUSABLE"]
+        ordering = ["GOOD", "NEEDS_REPAIR", "UNUSABLE"]
         return ordering.index(self.state)
 
     def get_owner(self):

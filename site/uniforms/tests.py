@@ -28,6 +28,10 @@ class JacketTestSuite(TestMixin, TestCase):
         with self.assertRaises(IntegrityError):
             self.jacket.location.delete()
 
+    def test_jacket_state_defaults_to_good(self):
+        """A jacket's `state` should default to `GOOD`."""
+        self.assertEqual(self.jacket.state, Jacket.State.GOOD)
+
 
 class JacketLocationTestSuite(TestMixin, TestCase):
     def setUp(self):
