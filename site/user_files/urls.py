@@ -6,4 +6,5 @@ app_name = "user_files"
 
 urlpatterns = [
     path("", views.FileList.as_view(), name="FileList"),
+    path("ny/", views.FileCreate.as_view(), name="FileCreate"),
 ]

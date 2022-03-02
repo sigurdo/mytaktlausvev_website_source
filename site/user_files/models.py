@@ -1,4 +1,5 @@
 from django.db.models import CharField, FileField
+from django.db.models.functions import Lower
 
 from common.models import CreatedModifiedMixin
 
@@ -14,6 +15,6 @@ class File(CreatedModifiedMixin):
         return self.file.url
 
     class Meta:
-        ordering = ["name"]
+        ordering = [Lower("name")]
         verbose_name = "brukarfil"
         verbose_name_plural = "brukarfiler"
