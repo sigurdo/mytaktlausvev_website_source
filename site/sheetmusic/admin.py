@@ -7,6 +7,7 @@ from .models import Part, Pdf, Score
 
 class PdfInline(TabularInline):
     model = Pdf
+    show_change_link = True
 
 
 class ScoreAdmin(ModelAdmin):
