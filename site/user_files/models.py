@@ -10,6 +10,9 @@ class File(CreatedModifiedMixin):
     def __str__(self):
         return self.name
 
+    def get_absolute_url(self):
+        return self.file.url
+
     class Meta:
         ordering = ["name"]
         verbose_name = "brukarfil"

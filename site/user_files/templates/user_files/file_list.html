@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title_page %}Brukarfiler{% endblock title_page %}
+{% block title_content %}Brukarfiler{% endblock title_content %}
+
+{% block content %}
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Fil</th>
+                <th>Lagt ut</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for user_file in user_files %}
+            <tr>
+                <td>
+                    <a href="{{ user_file.get_absolute_url }}">
+                        {{ user_file.name }}
+                    </a>
+                </td>
+
+                <td>{{ user_file.created }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock content %}
