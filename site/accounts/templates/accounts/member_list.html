@@ -7,8 +7,9 @@
 
 {% block title_page%}Medlemsliste{%endblock title_page%}
 
-{% block content %}
 {% block title_content%}Medlemsliste{% endblock title_content%}
+
+{% block content %}
     <dl class="dl-inline"> <dt><em>Aktive</em></dt> 
         <dd>Betalande medlemmar; Dei som er på aspirantsemesteret sitt eller har betalt semesteravgifta.</dd>
         <dt><em>Inaktive</em></dt> 
@@ -20,6 +21,19 @@
         <dt><em>Æresmedlemmar</em></dt> 
         <dd>Utnemde i spesielle tilfelle. Sjå ellers statuttane for riktige definisjonar av desse.</dd>
     </dl>
+    <label for="select-membership-status">
+        Medlemsstatus:
+    </label>
+    <select id="select-membership-status">
+        <option value="">
+            Alle
+        </option>
+        {% for choice, display in membership_status_enum.choices %}
+            <option value="{{display}}">
+                {{display}}
+            </option>
+        {% endfor %}
+    </select>
     <div class="table-responsive">
     <table class="table table-striped table-sm" id="member_overview">
         <thead>

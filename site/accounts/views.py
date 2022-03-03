@@ -61,3 +61,7 @@ class MemberList(LoginRequiredMixin, ListView):
     model = UserCustom
     template_name = "accounts/member_list.html"
     context_object_name = "members"
+
+    def get_context_data(self, **kwargs):
+        kwargs["membership_status_enum"] = UserCustom.MembershipStatus
+        return super().get_context_data(**kwargs)
