@@ -3,11 +3,11 @@ document.addEventListener('DOMContentLoaded', () => {
         "order": [[2, "asc"]],
         "paging": false,
         "language": {
-            "zeroRecords": "Ingen medlemar funne",
+            "zeroRecords": "Ingen medlemmar funne",
             // Would otherwise say "showing page 1 of 1" even though we've turned off paging
             "info": "Visar _TOTAL_ medlemmar",
-            "infoEmpty": "Ingen  medlemar funne",
-            "infoFiltered": "(filtrert fra totalt _MAX_ member)",
+            "infoEmpty": "Ingen  medlemmar funne",
+            "infoFiltered": "(filtrert fra totalt _MAX_ medlemmar)",
             "search": "Søk:",
         }
     });
