@@ -491,6 +491,13 @@ class Command(BaseCommand):
             parent=other_dropdown,
         )
         NavbarItemFactory(
+            text="Brukarfiler",
+            link=reverse("user_files:FileList"),
+            order=2.57,
+            requires_login=True,
+            parent=other_dropdown,
+        )
+        NavbarItemFactory(
             text="Forum",
             link=reverse("forum:ForumList"),
             order=2.6,

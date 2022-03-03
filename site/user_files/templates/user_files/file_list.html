@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title_page %}Brukarfiler{% endblock title_page %}
+{% block title_content %}Brukarfiler{% endblock title_content %}¨
+
+{% block header %}
+    {{ block.super }}
+
+    <a class="btn btn-primary btn-sm my-1" href="{% url 'user_files:FileCreate' %}">Ny fil</a>
+{% endblock header %}
+
+{% block content %}
+{% if user_files.exists %}
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Fil</th>
+                    <th>Laga av</th>
+                    <th>Lagt ut</th>
+                    <th><span class="visually-hidden">Slett</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for user_file in user_files %}
+                <tr>
+                    <td>
+                        <a href="{{ user_file.get_absolute_url }}">
+                            {{ user_file.name }}
+                        </a>
+                    </td>
+
+                    <td>
+                        <a href="{{ user_file.created_by.get_absolute_url }}">
+                            {{ user_file.created_by }}
+                        </a>
+                    </td>
+
+                    <td>{{ user_file.created }}</td>
+
+                    <td class="text-center">
+                        {% if user == user_file.created_by or perms.user_files.delete_file %}
+                        <a
+                            href="{% url 'user_files:FileDelete' user_file.slug %}"
+                            class="btn btn-danger btn-sm"
+                        >
+                            Slett
+                        </a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endif %}
+{% endblock content %}
