@@ -35,12 +35,12 @@
                     <td>
                         {{ attendance.person.get_jacket.number }}
                     </td>
-                    <td>
+                    <td data-order="{{ attendance.created | date:"c" }}">
                         <time datetime="{{ attendance.created | date:"c" }}">
                             {{ attendance.created }}
                         </time>
                     </td>
-                    <td>
+                    <td data-order="{{ attendance.modified | date:"c" }}">
                         <time datetime="{{ attendance.modified | date:"c" }}">
                             {{ attendance.modified }}
                         </time>
