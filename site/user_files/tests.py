@@ -1,5 +1,6 @@
 from django.test import TestCase
 from django.urls import reverse
+from django.utils.text import slugify
 
 from accounts.factories import SuperUserFactory
 from common.mixins import TestMixin
@@ -20,6 +21,28 @@ class FileTestCase(TestMixin, TestCase):
     def test_to_str(self):
         """Should equal the file's `name`."""
         self.assertEqual(str(self.file), self.file.name)
+
+    def test_creates_slug_from_name_automatically(self):
+        """Should create a slug from the name automatically during creation."""
+        self.assertEqual(self.file.slug, slugify(self.file.name))
+
+    def test_does_not_update_slug_when_name_is_changed(self):
+        """Should not change the slug when the name is changed."""
+        slug_before = self.file.slug
+        self.file.name = "Different name"
+        self.file.save()
+        self.assertEqual(self.file.slug, slug_before)
+
+    def test_creates_unique_slugs(self):
+        """Should create unique slugs even if names match."""
+        file_same_name = FileFactory(name=self.file.name)
+        self.assertNotEqual(self.file.slug, file_same_name.slug)
+
+    def test_does_not_override_provided_slug(self):
+        """Should not override the slug if provided during creation."""
+        slug = "this-is-a-slug"
+        file = FileFactory(name="Title that is very different from the slug", slug=slug)
+        self.assertEqual(file.slug, slug)
 
 
 class FileListTestSuite(TestMixin, TestCase):
