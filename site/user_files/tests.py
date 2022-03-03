@@ -1,3 +1,5 @@
+from http import HTTPStatus
+
 from django.test import TestCase
 from django.urls import reverse
 from django.utils.text import slugify
@@ -85,3 +87,39 @@ class FileCreateTestSuite(TestMixin, TestCase):
         )
 
         self.assertRedirects(response, reverse("user_files:FileList"))
+
+
+class FileDeleteTestSuite(TestMixin, TestCase):
+    def setUp(self):
+        self.file = FileFactory()
+
+    def get_url(self):
+        return reverse("user_files:FileDelete", args=[self.file.slug])
+
+    def test_redirects_to_poll_list_on_success(self):
+        """Should redirect to the file list on success."""
+        self.client.force_login(SuperUserFactory())
+        response = self.client.post(self.get_url())
+        self.assertRedirects(response, reverse("user_files:FileList"))
+
+    def test_requires_login(self):
+        """Should require login."""
+        self.assertLoginRequired(self.get_url())
+
+    def test_requires_permission(self):
+        """
+        Should require permissions for deleting polls, choices, and votes.
+        """
+        self.assertPermissionRequired(
+            self.get_url(),
+            "user_files.delete_file",
+        )
+
+    def test_succeeds_if_not_permission_but_is_author(self):
+        """
+        Should succeed if the user is the author,
+        even if the user doesn't have permission to delete user files.
+        """
+        self.client.force_login(self.file.created_by)
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.status_code, HTTPStatus.OK)

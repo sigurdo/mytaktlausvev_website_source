@@ -18,6 +18,7 @@
                     <th>Fil</th>
                     <th>Laga av</th>
                     <th>Lagt ut</th>
+                    <th><span class="visually-hidden">Slett</th>
                 </tr>
             </thead>
 
@@ -37,6 +38,17 @@
                     </td>
 
                     <td>{{ user_file.created }}</td>
+
+                    <td class="text-center">
+                        {% if user == user_file.created_by or perms.user_files.delete_file %}
+                        <a
+                            href="{% url 'user_files:FileDelete' user_file.slug %}"
+                            class="btn btn-danger btn-sm"
+                        >
+                            Slett
+                        </a>
+                        {% endif %}
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>

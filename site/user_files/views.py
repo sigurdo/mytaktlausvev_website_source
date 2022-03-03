@@ -35,3 +35,11 @@ class FileCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
         form.instance.created_by = self.request.user
         form.instance.modified_by = self.request.user
         return super().form_valid(form)
+
+
+class FileDelete(PermissionOrCreatedMixin, DeleteViewCustom):
+    model = File
+    permission_required = "user_files.delete_file"
+
+    def get_success_url(self):
+        return reverse("user_files:FileList")
