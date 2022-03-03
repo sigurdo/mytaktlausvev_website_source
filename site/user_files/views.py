@@ -37,9 +37,12 @@ class FileCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
         return super().form_valid(form)
 
 
-class FileDelete(PermissionOrCreatedMixin, DeleteViewCustom):
+class FileDelete(PermissionOrCreatedMixin, BreadcrumbsMixin, DeleteViewCustom):
     model = File
     permission_required = "user_files.delete_file"
+
+    def get_breadcrumbs(self):
+        return breadcrumbs()
 
     def get_success_url(self):
         return reverse("user_files:FileList")
