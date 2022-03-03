@@ -65,4 +65,3 @@ class MemberList(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         kwargs["membership_status_enum"] = UserCustom.MembershipStatus
         return super().get_context_data(**kwargs)
-    
