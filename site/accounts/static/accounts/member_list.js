@@ -4,7 +4,6 @@ document.addEventListener('DOMContentLoaded', () => {
         "paging": false,
         "language": {
             "zeroRecords": "Ingen medlemmar funne",
-            // Would otherwise say "showing page 1 of 1" even though we've turned off paging
             "info": "Visar _TOTAL_ medlemmar",
             "infoEmpty": "Ingen  medlemmar funne",
             "infoFiltered": "(filtrert fra totalt _MAX_ medlemmar)",
