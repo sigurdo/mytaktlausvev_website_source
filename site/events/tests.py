@@ -11,7 +11,11 @@ from django.utils.timezone import make_aware, now
 from accounts.factories import SuperUserFactory, UserFactory
 from common.mixins import TestMixin
 from events.models import Attendance, Event, EventAttendance
-from events.views import get_event_attendance_or_404, get_event_or_404
+from events.views import (
+    event_breadcrumbs,
+    get_event_attendance_or_404,
+    get_event_or_404,
+)
 
 from .factories import EventAttendanceFactory, EventFactory
 
@@ -123,6 +127,86 @@ class GetterTestCase(TestCase):
         """Should raise 404 if attendance doesn't exist."""
         with self.assertRaises(Http404):
             get_event_attendance_or_404(1913, "not-exist", "also-not-exist")
+
+
+class EventBreadcrumbsTestSuite(TestMixin, TestCase):
+    def test_normal(self):
+        """Calling without arguments should give a single breadcrumb to EventList."""
+        self.assertEqual(
+            event_breadcrumbs(),
+            [{"url": reverse("events:EventList"), "name": "Alle hendingar"}],
+        )
+
+    def test_year(self):
+        """
+        Calling with only a `year` argument should give 2 breadcrumbs to EventList and the
+        EventList for that year.
+        """
+        self.assertEqual(
+            event_breadcrumbs(year=2022),
+            [
+                {
+                    "url": reverse("events:EventList"),
+                    "name": "Alle hendingar",
+                },
+                {
+                    "url": reverse("events:EventList", args=[2022]),
+                    "name": "2022",
+                },
+            ],
+        )
+
+    def test_event(self):
+        """
+        Calling with an `event` argument should give 3 breadcrumbs to EventList, the
+        EventList for that year and EventDetail.
+        """
+        event = EventFactory()
+        self.assertEqual(
+            event_breadcrumbs(event=event),
+            [
+                {
+                    "url": reverse("events:EventList"),
+                    "name": "Alle hendingar",
+                },
+                {
+                    "url": reverse("events:EventList", args=[event.start_time.year]),
+                    "name": str(event.start_time.year),
+                },
+                {
+                    "url": reverse(
+                        "events:EventDetail", args=[event.start_time.year, event.slug]
+                    ),
+                    "name": str(event),
+                },
+            ],
+        )
+
+    def test_event_and_year(self):
+        """
+        Calling with both a `year`and an `event` argument should make `event.start_time.year`
+        override the given `year`.
+        """
+        event = EventFactory()
+        self.assertEqual(
+            event_breadcrumbs(year=event.start_time.year + 1, event=event),
+            [
+                {
+                    "url": reverse("events:EventList"),
+                    "name": "Alle hendingar",
+                },
+                {
+                    "url": reverse("events:EventList", args=[event.start_time.year]),
+                    "name": str(event.start_time.year),
+                },
+                {
+                    "url": reverse(
+                        "events:EventDetail", args=[event.start_time.year, event.slug]
+                    ),
+                    "name": str(event),
+                },
+            ],
+        )
 
 
 class EventListTestSuite(TestMixin, TestCase):

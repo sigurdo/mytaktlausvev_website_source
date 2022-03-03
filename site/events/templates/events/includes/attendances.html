@@ -1,68 +1,70 @@
 {% if attendances %}
-    <section class="my-4 table-responsive">
+    <section class="my-4">
         <h2 class="mb-3">{{ title }}</h2>
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th></th>
-                    <th>Namn</th>
-                    <th>Instrumentgruppe</th>
-                    <th>Jakkenr.</th>
-                    <th></th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody class="align-middle">
-                {% for attendance in attendances %}
-                <tr>
-                    <td class="w-16">
-                        <div class="mx-auto w-10 h-10">
-                            <a
-                                href="{{ attendance.person.get_absolute_url }}"
-                                class="d-flex justify-content-center w-100 h-100"
-                            >
-                                <img
-                                    src="{{ attendance.person.get_avatar_url }}"
-                                    class="object-fit-cover mw-100 mh-100"
-                                />
+        <div class="table-responsive">
+            <table class="table table-striped table-attendance">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Namn</th>
+                        <th>Instrumentgruppe</th>
+                        <th>Jakkenr.</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody class="align-middle">
+                    {% for attendance in attendances %}
+                    <tr>
+                        <td class="w-16">
+                            <div class="mx-auto w-10 h-10">
+                                <a
+                                    href="{{ attendance.person.get_absolute_url }}"
+                                    class="d-flex justify-content-center w-100 h-100"
+                                >
+                                    <img
+                                        src="{{ attendance.person.get_avatar_url }}"
+                                        class="object-fit-cover mw-100 mh-100"
+                                    />
+                                </a>
+                            </div>
+                        </td>
+                        <td>
+                            <a href="{{ attendance.person.get_absolute_url }}">
+                                {{ attendance.person.get_name }}
                             </a>
-                        </div>
-                    </td>
-                    <td>
-                        <a href="{{ attendance.person.get_absolute_url }}">
-                            {{ attendance.person.get_name }}
-                        </a>
-                    </td>
-                    <td>
-                        {{ attendance.person.instrument_type.group }}
-                    </td>
-                    <td>
-                        {{ attendance.person.get_jacket.number }}
-                    </td>
-                    <td class="text-center">
-                        {% if user == attendance.person or perms.events.delete_eventattendance %}
-                        <a
-                            href="{% url 'events:EventAttendanceDelete' attendance.event.start_time|date:"Y" attendance.event.slug attendance.person.slug %}"
-                            class="btn btn-danger btn-sm"
-                        >
-                            Meld av
-                        </a>
-                        {% endif %}
-                    </td>
-                    <td class="text-center">
-                        {% if user == attendance.person or perms.events.change_eventattendance %}
-                        <a
-                            href="{% url 'events:EventAttendanceUpdate' attendance.event.start_time|date:"Y" attendance.event.slug attendance.person.slug %}"
-                            class="btn btn-primary btn-sm"
-                        >
-                            Rediger
-                        </a>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                        </td>
+                        <td>
+                            {{ attendance.person.instrument_type.group }}
+                        </td>
+                        <td>
+                            {{ attendance.person.get_jacket.number }}
+                        </td>
+                        <td class="text-center">
+                            {% if user == attendance.person or perms.events.delete_eventattendance %}
+                            <a
+                                href="{% url 'events:EventAttendanceDelete' attendance.event.start_time|date:"Y" attendance.event.slug attendance.person.slug %}"
+                                class="btn btn-danger btn-sm"
+                            >
+                                Meld av
+                            </a>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            {% if user == attendance.person or perms.events.change_eventattendance %}
+                            <a
+                                href="{% url 'events:EventAttendanceUpdate' attendance.event.start_time|date:"Y" attendance.event.slug attendance.person.slug %}"
+                                class="btn btn-primary btn-sm"
+                            >
+                                Rediger
+                            </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
         ({{ attendances.count }} brukar{{attendances.count | pluralize:"ar"}})
     </section>
 {% endif %}

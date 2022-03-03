@@ -9,7 +9,7 @@ from django.utils.timezone import localtime, make_aware
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 from django_ical.views import ICalFeed
 
-from common.mixins import PermissionOrCreatedMixin
+from common.mixins import BreadcrumbsMixin, PermissionOrCreatedMixin
 from common.views import DeleteViewCustom
 
 from .forms import EventAttendanceForm, EventForm
@@ -31,9 +31,39 @@ def get_event_attendance_or_404(year, slug_event, slug_person):
     )
 
 
-class EventList(LoginRequiredMixin, ListView):
+def event_breadcrumbs(year=None, event=None):
+    """
+    Generates breadcrumbs for events. If `event` is given, its `start_time.year` will override the
+    given `year`.
+    """
+    breadcrumbs = [{"url": reverse("events:EventList"), "name": "Alle hendingar"}]
+    if event:
+        year = event.start_time.year
+    if year:
+        breadcrumbs.append(
+            {
+                "url": reverse("events:EventList", args=[year]),
+                "name": str(year),
+            }
+        )
+    if event:
+        breadcrumbs.append(
+            {
+                "url": reverse("events:EventDetail", args=[year, event.slug]),
+                "name": str(event),
+            }
+        )
+    return breadcrumbs
+
+
+class EventList(LoginRequiredMixin, BreadcrumbsMixin, ListView):
     model = Event
     context_object_name = "events"
+
+    def get_breadcrumbs(self):
+        if "year" in self.kwargs:
+            return event_breadcrumbs()
+        return []
 
     def get_queryset(self):
         match self.kwargs:
@@ -71,10 +101,13 @@ class EventList(LoginRequiredMixin, ListView):
         return form
 
 
-class EventDetail(LoginRequiredMixin, DetailView):
+class EventDetail(LoginRequiredMixin, BreadcrumbsMixin, DetailView):
     """View for viewing an event."""
 
     model = Event
+
+    def get_breadcrumbs(self):
+        return event_breadcrumbs(year=self.kwargs.get("year"))
 
     def get_object(self, queryset=None):
         return get_event_or_404(self.kwargs.get("year"), self.kwargs.get("slug"))
@@ -96,12 +129,15 @@ class EventDetail(LoginRequiredMixin, DetailView):
         return context
 
 
-class EventCreate(LoginRequiredMixin, CreateView):
+class EventCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
     """View for creating an event."""
 
     model = Event
     form_class = EventForm
     template_name = "common/form.html"
+
+    def get_breadcrumbs(self):
+        return event_breadcrumbs()
 
     def get_object(self, queryset=None):
         return get_event_or_404(self.kwargs.get("year"), self.kwargs.get("slug"))
@@ -112,13 +148,16 @@ class EventCreate(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class EventUpdate(PermissionOrCreatedMixin, UpdateView):
+class EventUpdate(PermissionOrCreatedMixin, BreadcrumbsMixin, UpdateView):
     """View for updating an event."""
 
     model = Event
     form_class = EventForm
     template_name = "common/form.html"
     permission_required = "events.change_event"
+
+    def get_breadcrumbs(self):
+        return event_breadcrumbs(event=self.get_object())
 
     def get_object(self, queryset=None):
         return get_event_or_404(self.kwargs.get("year"), self.kwargs.get("slug"))
@@ -128,7 +167,7 @@ class EventUpdate(PermissionOrCreatedMixin, UpdateView):
         return super().form_valid(form)
 
 
-class EventAttendanceList(PermissionRequiredMixin, ListView):
+class EventAttendanceList(PermissionRequiredMixin, BreadcrumbsMixin, ListView):
     """View for viewing the attendances for an event."""
 
     model = EventAttendance
@@ -136,6 +175,9 @@ class EventAttendanceList(PermissionRequiredMixin, ListView):
     permission_required = "events.view_eventattendance"
 
     event = None
+
+    def get_breadcrumbs(self):
+        return event_breadcrumbs(event=self.get_event())
 
     def get_event(self):
         if self.event:
@@ -179,7 +221,7 @@ class EventAttendanceCreateFromList(EventAttendanceCreate):
         return reverse("events:EventList")
 
 
-class EventAttendanceUpdate(PermissionOrCreatedMixin, UpdateView):
+class EventAttendanceUpdate(PermissionOrCreatedMixin, BreadcrumbsMixin, UpdateView):
     """View for updating event attendance."""
 
     model = EventAttendance
@@ -190,6 +232,9 @@ class EventAttendanceUpdate(PermissionOrCreatedMixin, UpdateView):
     field_created_by = "person"
 
     object = None
+
+    def get_breadcrumbs(self):
+        return event_breadcrumbs(event=self.get_object().event)
 
     def get_object(self):
         if self.object:
@@ -205,7 +250,9 @@ class EventAttendanceUpdate(PermissionOrCreatedMixin, UpdateView):
         return self.get_object().event.get_absolute_url()
 
 
-class EventAttendanceDelete(PermissionOrCreatedMixin, DeleteViewCustom):
+class EventAttendanceDelete(
+    PermissionOrCreatedMixin, BreadcrumbsMixin, DeleteViewCustom
+):
     """View for deleting event attendance."""
 
     model = EventAttendance
@@ -215,6 +262,9 @@ class EventAttendanceDelete(PermissionOrCreatedMixin, DeleteViewCustom):
     field_created_by = "person"
 
     object = None
+
+    def get_breadcrumbs(self):
+        return event_breadcrumbs(event=self.get_object().event)
 
     def get_object(self):
         if self.object:
