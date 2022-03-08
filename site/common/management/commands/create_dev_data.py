@@ -60,13 +60,13 @@ class Command(BaseCommand):
             "aspirant",
             "aspirant@taktlaus.no",
             "password",
-            membership_status=UserCustom.MembershipStatus.ACTIVE,
+            membership_status=UserCustom.MembershipStatus.ASPIRANT,
         )
         member = UserCustom.objects.create_user(
             "medlem",
             "medlem@taktlaus.no",
             "password",
-            membership_status=UserCustom.MembershipStatus.ACTIVE,
+            membership_status=UserCustom.MembershipStatus.PAYING,
         )
         retiree = UserCustom.objects.create_user(
             "pensjonist",
@@ -78,7 +78,7 @@ class Command(BaseCommand):
             "musikalsk",
             "muikalsk@taktlaus.no",
             "password",
-            membership_status=UserCustom.MembershipStatus.ACTIVE,
+            membership_status=UserCustom.MembershipStatus.PAYING,
         )
 
         article_about = ArticleFactory(

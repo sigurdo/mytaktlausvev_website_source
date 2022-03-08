@@ -47,10 +47,10 @@ class UserCustomTest(TestMixin, TestCase):
         user = UserFactory(name="")
         self.assertEqual(user.get_name(), user.username)
 
-    def test_default_membership_status_is_active(self):
-        """The default membership status should be `ACTIVE`."""
+    def test_default_membership_status_is_aspirant(self):
+        """The default membership status should be `ASPIRANT`."""
         user = UserFactory()
-        self.assertEqual(user.membership_status, UserCustom.MembershipStatus.ACTIVE)
+        self.assertEqual(user.membership_status, UserCustom.MembershipStatus.ASPIRANT)
 
     def test_can_login_with_newer_drupal_password_hashes(self):
         """Should be able to login with newer, Drupal 7+ password hashes."""
