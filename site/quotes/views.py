@@ -1,4 +1,6 @@
 """Views for quotes-app"""
+import random
+
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse
 from django.views.generic import ListView
@@ -32,6 +34,14 @@ class QuoteList(LoginRequiredMixin, ListView):
     model = Quote
     context_object_name = "quotes"
     paginate_by = 50
+
+    def get_template_names(self):
+        random_number = random.randint(50, 150)
+        random_number2 = random.randint(1, random_number)
+        random_number3 = random.randint(1, random_number)
+        if random_number2 == random_number3:
+            return "quotes/quote_list_shame.html"
+        return super().get_template_names()
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
