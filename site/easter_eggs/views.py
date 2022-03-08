@@ -20,16 +20,18 @@ class BrewView(FormView):
     
     def form_valid(self, form):
         answer = form.cleaned_data["drink"]
+        print(answer)
         if (answer=="coffee"):
             response = HttpResponse(content="Eg er ei tekanne!")
-        if (answer=="tea"):
+            response.status_code = 418
+        elif (answer=="tea"):
             with open(os.path.join("site", "easter_eggs", "templates", "easter_eggs", "tea.html")) as file:
                 content=file.read()
                 print(content)
             response = HttpResponse(content)
         else:
             response = HttpResponse(content="404 not found.")
-        response.status_code = 418
+        
         return response
 
 
