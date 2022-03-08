@@ -47,7 +47,7 @@
                     <td>
                         {% if instrument.user %}
                             <a href="{% url "accounts:ProfileDetail" instrument.user.slug %}"> {{ instrument.user }} </a>
-                            {% if instrument.user.membership_status != "ACTIVE" %}
+                            {% if instrument.user.membership_status != "PAYING" and instrument.user.membership_status != "ASPIRANT" %}
                                 ({{ instrument.user.get_membership_status_display }})
                             {% endif %}
                         {% endif %}

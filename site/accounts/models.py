@@ -53,16 +53,17 @@ class UserCustom(AbstractUser):
     )
 
     class MembershipStatus(TextChoices):
-        ACTIVE = "ACTIVE", "Aktiv"
-        INACTIVE = "INACTIVE", "Inaktiv"
-        RETIRED = "RETIRED", "Pensjonist"
+        PAYING = "PAYING", "Betalande"
+        ASPIRANT = "ASPIRANT", "Aspirant"
         HONORARY = "HONORARY", "Æresmedlem"
+        RETIRED = "RETIRED", "Pensjonist"
+        INACTIVE = "INACTIVE", "Inaktiv"
 
     membership_status = CharField(
         "medlemsstatus",
         max_length=30,
         choices=MembershipStatus.choices,
-        default=MembershipStatus.ACTIVE,
+        default=MembershipStatus.ASPIRANT,
     )
     # Maybe standardize this field?
     membership_period = CharField(
