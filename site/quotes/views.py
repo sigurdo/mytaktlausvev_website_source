@@ -31,7 +31,6 @@ class QuoteNew(LoginRequiredMixin, CreateView):
 class QuoteList(LoginRequiredMixin, ListView):
     """View-function for displaying all quotes"""
 
-
     model = Quote
     context_object_name = "quotes"
     paginate_by = 50
