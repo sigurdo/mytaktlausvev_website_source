@@ -45,7 +45,7 @@ class InstrumentType(Model):
     def unknown(cls):
         group_unknown, created = InstrumentGroup.objects.get_or_create(name="Ukjend")
         type_unknown, created = InstrumentType.objects.get_or_create(
-            name="Ukjend", group=group_unknown
+            name="Ukjend", defaults={"group": group_unknown}
         )
         return type_unknown
 
