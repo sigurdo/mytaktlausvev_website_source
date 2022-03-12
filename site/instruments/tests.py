@@ -13,7 +13,7 @@ from .factories import (
     InstrumentTypeFactory,
 )
 from .forms import InstrumentUpdateFormset
-from .models import Instrument
+from .models import Instrument, InstrumentType
 
 
 class InstrumentGroupTestSuite(TestMixin, TestCase):
@@ -27,6 +27,41 @@ class InstrumentGroupTestSuite(TestMixin, TestCase):
         """`name` should be unique."""
         with self.assertRaises(IntegrityError):
             InstrumentGroupFactory(name=self.instrument_group.name)
+
+
+class InstrumentTypeTestSuite(TestMixin, TestCase):
+    def setUp(self):
+        self.instrument_type = InstrumentTypeFactory()
+
+    def test_to_str(self):
+        """`__str__` should be equal to the instrument type's name."""
+        self.assertEqual(str(self.instrument_type), self.instrument_type.name)
+
+    def test_name_unique(self):
+        """`name` should be unique."""
+        with self.assertRaises(IntegrityError):
+            InstrumentTypeFactory(name=self.instrument_type.name)
+
+    def test_unknown_creates_new_instrument_type_if_not_exist(self):
+        """Should create a new instrument type if it doesn't already exist."""
+        self.assertEqual(InstrumentType.objects.count(), 1)
+        InstrumentType.unknown()
+        self.assertEqual(InstrumentType.objects.count(), 2)
+
+    def test_unknown_reuses_existing_instrument_type(self):
+        """Should re-use existing instrument type if it exists."""
+        unknown = InstrumentType.unknown()
+        self.assertEqual(InstrumentType.objects.count(), 2)
+        self.assertEqual(unknown, InstrumentType.unknown())
+        self.assertEqual(InstrumentType.objects.count(), 2)
+
+    def test_should_reuse_existing_instrument_type_even_if_different_group(self):
+        """Should re-use the existing instrument type, even if it has a different group."""
+        unknown = InstrumentType.unknown()
+        self.assertEqual(InstrumentType.objects.count(), 2)
+        unknown.instrument_group = InstrumentGroupFactory()
+        self.assertEqual(unknown, InstrumentType.unknown())
+        self.assertEqual(InstrumentType.objects.count(), 2)
 
 
 class InstrumentLocationTestSuite(TestMixin, TestCase):
