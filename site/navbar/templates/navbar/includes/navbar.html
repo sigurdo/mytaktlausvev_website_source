@@ -12,7 +12,7 @@
         </button>
 
         <div class="collapse navbar-collapse" id="collapsable">
-            <ul class="navbar-nav me-auto">
+            <ul class="navbar-nav navbar-nav-scroll me-auto" style="--bs-scroll-height: 65vh;">
                 {% load get_navbar_items %}
                 {% get_navbar_items as navbar_items %}
                 {% for item in navbar_items %}
