@@ -1,11 +1,8 @@
-from datetime import date, datetime
-
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.db.models.functions.datetime import TruncMonth
-from django.db.models.query_utils import Q
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
-from django.utils.timezone import localtime, make_aware
+from django.utils.timezone import localtime
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 from django_ical.views import ICalFeed
 
@@ -68,17 +65,11 @@ class EventList(LoginRequiredMixin, BreadcrumbsMixin, ListView):
     def get_queryset(self):
         match self.kwargs:
             case {"year": year}:
-                filter = Q(start_time__year=year)
+                queryset = Event.objects.filter(start_time__year=year)
             case _:
-                filter = Q(
-                    start_time__gte=make_aware(
-                        datetime.combine(date.today(), datetime.min.time())
-                    )
-                )
+                queryset = Event.objects.upcoming()
 
-        return Event.objects.filter(filter).annotate(
-            start_month=TruncMonth("start_time")
-        )
+        return queryset.annotate(start_month=TruncMonth("start_time"))
 
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)

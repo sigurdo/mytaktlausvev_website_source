@@ -35,9 +35,7 @@ class Dashboard(LoginRequiredMixin, TemplateView):
 
     def get_events(self):
         """Returns the 4 closest upcoming events."""
-        return Event.objects.filter(
-            start_time__gte=make_aware(datetime.now() - timedelta(1))
-        )[:4]
+        return Event.objects.upcoming()[:4]
 
     def get_minutes(self):
         """Returns the 5 most recent minutes."""

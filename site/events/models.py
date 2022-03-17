@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from autoslug.fields import AutoSlugField
 from django.conf import settings
@@ -7,19 +7,30 @@ from django.db.models import (
     CharField,
     DateTimeField,
     ForeignKey,
+    Manager,
     Model,
     TextChoices,
     UniqueConstraint,
 )
+from django.db.models.query_utils import Q
 from django.urls import reverse
 from django.utils.timezone import localtime, make_aware, now
 
 from common.models import ArticleMixin
 
 
+class EventManager(Manager):
+    def upcoming(self):
+        return super().filter(
+            Q(end_time__gte=make_aware(datetime.now()))
+            | Q(start_time__gte=make_aware(datetime.now() - timedelta(hours=12)))
+        )
+
+
 class Event(ArticleMixin):
     """Model representing an event."""
 
+    objects = EventManager()
     start_time = DateTimeField("starttid", default=now)
     end_time = DateTimeField("sluttid", default=None, blank=True, null=True)
 
