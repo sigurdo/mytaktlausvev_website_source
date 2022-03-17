@@ -12,12 +12,18 @@
 
 	{% load sass_tags %}
 	<link
-		href="{% sass_src 'scss/bootstrap-themed.scss' %}"
+		href="{% sass_src 'scss/bootstrap-dark.scss' %}"
+		rel="stylesheet"
+		type="text/css"
+	>
+	<link
+		href="{% sass_src 'scss/bootstrap-light.scss' %}"
+		media="(prefers-color-scheme: light)"
 		rel="stylesheet"
 		type="text/css"
 	>
 
-	<meta name="color-scheme" content="dark">
+	<meta name="color-scheme" content="dark light">
 	<meta name="theme-color" content="#a50104">
 
 	{% if ENABLE_PWA_MANIFEST %}
