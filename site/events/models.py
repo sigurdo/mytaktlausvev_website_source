@@ -23,7 +23,7 @@ class EventManager(Manager):
     def upcoming(self):
         return super().filter(
             Q(end_time__gte=make_aware(datetime.now()))
-            | Q(start_time__gte=make_aware(datetime.now() - timedelta(1)))
+            | Q(start_time__gte=make_aware(datetime.now() - timedelta(hours=12)))
         )
 
 

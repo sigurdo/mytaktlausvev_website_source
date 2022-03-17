@@ -26,8 +26,8 @@ class EventManagerTestCase(TestCase):
         upcoming = list(Event.objects.upcoming())
         self.assertEqual(len(upcoming), 0)
 
-    def test_upcoming_no_end_time_last_24_hours(self):
-        EventFactory(start_time=make_aware(datetime.now() - timedelta(hours=12)))
+    def test_upcoming_no_end_time_last_12_hours(self):
+        EventFactory(start_time=make_aware(datetime.now() - timedelta(hours=6)))
         upcoming = list(Event.objects.upcoming())
         self.assertEqual(len(upcoming), 1)
 
@@ -44,10 +44,10 @@ class EventManagerTestCase(TestCase):
         upcoming = list(Event.objects.upcoming())
         self.assertEqual(len(upcoming), 0)
 
-    def test_upcoming_end_time_last_24_hours(self):
+    def test_upcoming_end_time_last_12_hours(self):
         EventFactory(
             start_time=make_aware(datetime.now() - timedelta(3)),
-            end_time=make_aware(datetime.now() - timedelta(hours=12)),
+            end_time=make_aware(datetime.now() - timedelta(hours=6)),
         )
         upcoming = list(Event.objects.upcoming())
         self.assertEqual(len(upcoming), 0)
