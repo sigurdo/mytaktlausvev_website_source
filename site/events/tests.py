@@ -20,6 +20,47 @@ from events.views import (
 from .factories import EventAttendanceFactory, EventFactory
 
 
+class EventManagerTestCase(TestCase):
+    def test_upcoming_no_end_time_old(self):
+        EventFactory(start_time=make_aware(datetime.now() - timedelta(2)))
+        upcoming = list(Event.objects.upcoming())
+        self.assertEqual(len(upcoming), 0)
+
+    def test_upcoming_no_end_time_last_24_hours(self):
+        EventFactory(start_time=make_aware(datetime.now() - timedelta(hours=12)))
+        upcoming = list(Event.objects.upcoming())
+        self.assertEqual(len(upcoming), 1)
+
+    def test_upcoming_no_end_time_upcoming(self):
+        EventFactory(start_time=make_aware(datetime.now() + timedelta(1)))
+        upcoming = list(Event.objects.upcoming())
+        self.assertEqual(len(upcoming), 1)
+
+    def test_upcoming_end_time_old(self):
+        EventFactory(
+            start_time=make_aware(datetime.now() - timedelta(3)),
+            end_time=make_aware(datetime.now() - timedelta(2)),
+        )
+        upcoming = list(Event.objects.upcoming())
+        self.assertEqual(len(upcoming), 0)
+
+    def test_upcoming_end_time_last_24_hours(self):
+        EventFactory(
+            start_time=make_aware(datetime.now() - timedelta(3)),
+            end_time=make_aware(datetime.now() - timedelta(hours=12)),
+        )
+        upcoming = list(Event.objects.upcoming())
+        self.assertEqual(len(upcoming), 0)
+
+    def test_upcoming_end_time_upcoming(self):
+        EventFactory(
+            start_time=make_aware(datetime.now() - timedelta(3)),
+            end_time=make_aware(datetime.now() + timedelta(1)),
+        )
+        upcoming = list(Event.objects.upcoming())
+        self.assertEqual(len(upcoming), 1)
+
+
 class EventTestCase(TestCase):
     def setUp(self):
         self.event = EventFactory()
