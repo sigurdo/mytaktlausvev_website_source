@@ -21,7 +21,17 @@
             </div>
 
             {% if request.user == profile or perms.accounts.change_usercustom %}
-                <a class="btn btn-primary btn-sm w-100 my-2" href="{% url 'accounts:UserCustomUpdate' profile.slug %}">Rediger profil</a>
+            <div class="container">
+                <div class="row justify-content-center">
+                    <a class="btn btn-primary btn-sm col-12 col-sm-6 col-lg-12 my-2" href="{% url 'accounts:UserCustomUpdate' profile.slug %}">Rediger profil</a>
+                </div>
+
+                {% if request.user == profile %}
+                    <div class="row justify-content-center">
+                        <a class="btn btn-primary btn-sm col-12 col-sm-6 col-lg-12 my-2" href="{% url 'password_change' %}">Endre passord</a>
+                    </div>
+                {% endif %}
+            </div>
             {% endif %}
         </div>
 
