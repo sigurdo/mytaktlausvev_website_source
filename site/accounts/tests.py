@@ -121,6 +121,11 @@ class UserCustomTest(TestMixin, TestCase):
         user = UserFactory()
         self.assertIsNone(user.get_jacket())
 
+    def test_light_mode_defaults_to_false(self):
+        """`light_mode` should default to false."""
+        user = UserFactory()
+        self.assertFalse(user.light_mode)
+
 
 class UserCustomCreateFormTestSuite(TestCase):
     def test_all_fields_except_student_card_number_required(self):
