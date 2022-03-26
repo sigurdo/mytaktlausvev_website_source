@@ -1,6 +1,10 @@
+from ast import parse
+from curses import tigetflag
 from os.path import basename
+from urllib.parse import urlencode
 
 from django import template
+from django.utils.dateparse import parse_datetime
 
 register = template.Library()
 
@@ -26,3 +30,8 @@ def filename(file):
 def contained_in(list, container):
     """Returns whether all elements of `list` are also in `container`."""
     return all(element in container for element in list)
+
+
+@register.filter
+def parse_iso8601(value):
+    return parse_datetime(value)

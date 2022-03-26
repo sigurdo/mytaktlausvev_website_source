@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     "sass_processor",
     "pgtrigger",
     "watson",
+    "search",
     "authentication",
     "accounts",
     "common",

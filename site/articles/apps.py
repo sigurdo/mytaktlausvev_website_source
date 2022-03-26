@@ -10,5 +10,5 @@ class ArticlesConfig(AppConfig):
         search.register(
             self.get_model("Article"),
             fields=("title", "content"),
-            store=("created",),
+            store=("created", "created_by__username", "created_by__slug"),
         )

@@ -17,11 +17,6 @@
 	</header>
 	{% endif %}
 
-	<form action="{% url 'watson:search' %}">
-		<input name="q" value="{{request.GET.q}}">
-		<input type="submit" value="Søk">
-	</form>
-
 	<div class="mt-4 {% block container_class %}container{% endblock container_class %}">
 		<div class="row">
 			<main class="col">
