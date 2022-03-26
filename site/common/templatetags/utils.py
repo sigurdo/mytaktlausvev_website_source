@@ -1,7 +1,4 @@
-from ast import parse
-from curses import tigetflag
 from os.path import basename
-from urllib.parse import urlencode
 
 from django import template
 from django.utils.dateparse import parse_datetime

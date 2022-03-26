@@ -510,6 +510,12 @@ class Command(BaseCommand):
             order=3,
             parent=other_dropdown,
         )
+        NavbarItemFactory(
+            text="Søk",
+            link=reverse("search:Search"),
+            order=5,
+            type=NavbarItem.Type.LINK,
+        )
         pause_waltz = ScoreFactory(
             title="Pausevalsen",
             arrangement="Ukjend",
