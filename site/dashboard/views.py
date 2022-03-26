@@ -34,12 +34,12 @@ class Dashboard(LoginRequiredMixin, TemplateView):
         return random_sample_queryset(Quote.objects.all(), 2)
 
     def get_events(self):
-        """Returns the 4 closest upcoming events."""
-        return Event.objects.upcoming()[:4]
+        """Returns the 6 closest upcoming events."""
+        return Event.objects.upcoming()[:6]
 
     def get_minutes(self):
-        """Returns the 5 most recent minutes."""
-        return Minutes.objects.all()[:5]
+        """Returns the 6 most recent minutes."""
+        return Minutes.objects.all()[:6]
 
     def get_latest_galleries(self):
         """Returns the 2 galleries with most recent image uploads."""
