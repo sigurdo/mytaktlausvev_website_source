@@ -448,7 +448,6 @@ class Command(BaseCommand):
             link=reverse("articles:ArticleCreate"),
             order=4,
             parent=admin_dropdown,
-            permissions=["articles.add_article"],
         )
         NavbarItemFactory(
             text="Lagertilgjenge",
