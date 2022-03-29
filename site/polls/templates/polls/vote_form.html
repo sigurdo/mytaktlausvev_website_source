@@ -4,6 +4,11 @@
 {% block title_page %}{{ poll }}{% endblock %}
 {% block title_content %}{{ poll }}{% endblock %}
 
+{% block header %}
+    {{ block.super }}
+    {% include "common/includes/created_modified.html" with object=poll only %}
+{% endblock header %}
+
 {% block content %}
     {% load crispy_forms_tags %}
     {% crispy form %}
