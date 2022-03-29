@@ -2,14 +2,14 @@ Pikkolo:
     include: ["pikkolo", "piccolo"]
     exceptions: []
 Fløyte:
-    include: ["flute", "fløyte",  "flauta", "flute"]
+    include: ["flute", "fløyte",  "flauta", "flute", "phloitte"]
     exceptions: ["piccolo", "pikkolo"]
 Obo:
     include: ["oboe", "obo"]
     exceptions: []
 Klarinett:
-    include: ["klarinet", "clarinet", "clarinete"]
-    exceptions: ["bass", "alt", "eb"]
+    include: ["klarinet", "clarinet", "clarinete", "lakris", "lakriids"]
+    exceptions: ["bass", "alt", "eb", "boeugd-guld-lakriids"]
 Altklarinett:
     include: ["altklarinet", "alto clarinet"]
     exceptions: []
@@ -23,19 +23,19 @@ Fagott:
     include: ["bassoon", "fagott"]
     exceptions: []
 Trompet:
-    include: ["trumpet", "trompet", "trompeta", "fliscorno", "fliscomo"]
-    exceptions: []
+    include: ["trumpet", "trompet", "trompeta", "fliscorno", "fliscomo", "trompang"]
+    exceptions: ["bass-trompang"]
 Kornett:
-    include: ["kornett", "komett", "cornet", "comet"]
+    include: ["kornett", "komett", "cornet", "comet", "chornæt"]
     exceptions: []
 Flugelhorn:
     include: ["flugelhorn", "flugelhom"]
     exceptions: []
 Horn:
-    include: ["horn", "hom", "trompa", "f-horn", "f horn"]
-    exceptions: ["althorn", "althom", "eb-horn", "eb horn", "tenororn", "tenorhom", "bb-horn", "bb horn"]
+    include: ["horn", "hom", "trompa", "f-horn", "f horn", "ephterslags-speciialiist"]
+    exceptions: ["althorn", "althom", "eb-horn", "eb horn", "tenororn", "tenorhom", "bb-horn", "bb horn", "ephterslags-speciialiist eb"]
 Althorn:
-    include: ["althorn", "althom", "eb-horn", "eb horn"]
+    include: ["althorn", "althom", "eb-horn", "eb horn", "ephterslags-speciialiist eb"]
     exceptions: []
 Tenorhorn:
     include: ["tenororn", "tenorhom", "bb-horn", "bb horn"]
@@ -44,16 +44,16 @@ Sopransaksofon:
     include: ["sopransaks", "sopransax", "sopransaxofon", "sopransaksofon", "soprano saxophone", "soprano sax", "saxo soprano"]
     exceptions: []
 Altsaksofon:
-    include: ["altsax", "altsaxofon", "saxofon", "altsaks", "altsaksofon", "saksofon", "saxophone", "alto saxophone", "alto sax", "saxo alto"]
+    include: ["altsax", "altsaxofon", "saxofon", "altsaks", "altsaksofon", "saksofon", "saxophone", "alto saxophone", "alto sax", "saxo alto", "alt-boeugd-guld-lakriids"]
     exceptions: ["sopran", "tenor", "baryton", "baritone", "barítono"]
 Tenorsaksofon:
-    include: ["tenorsaks", "tenorsaksofon", "tenorsax", "tenorsaxofon", "tenor sax", "saxo tenore"]
+    include: ["tenorsaks", "tenorsaksofon", "tenorsax", "tenorsaxofon", "tenor sax", "saxo tenore", "tenor-boeugd-guld-lakriids"]
     exceptions: []
 Barytonsaksofon:
-    include: ["barytonsaxofon", "barytonsaksofon", "barysax", "barysaks", "saxo barítono", "baritone saxophone", "baritone sax"]
+    include: ["barytonsaxofon", "barytonsaksofon", "barysax", "barysaks", "saxo barítono", "baritone saxophone", "baritone sax", "bariton-boeugd-guld-lakriids"]
     exceptions: []
 Trombone:
-    include: ["trombone", "trombón"]
+    include: ["trombone", "trombón", "trækbasun"]
     exceptions: ["sopran", "bass"]
 Soprantrombone:
     include: ["soprantrombone", "soprano trombone", "trombón soprano"]
@@ -62,14 +62,14 @@ Basstrombone:
     include: ["basstrombone", "bass trombone", "trombón basso"]
     exceptions: []
 Eufonium:
-    include: ["eufonium", "euphonium", "juff"]
+    include: ["eufonium", "euphonium", "juff", "reiisetuba"]
     exceptions: []
 Baryton:
     include: ["baryton", "baritone", "bombardíno"]
     exceptions: ["barytonsaxofon", "barytonsaksofon", "baritone sax"]
 Tuba:
-    include: ["tuba", "bass", "eb-tuba", "eb tuba", "bb-tuba", "bb tuba"]
-    exceptions: ["trombone", "clarinet", "klarinett", "guitar", "bassoon", "el-bass", "el bass", "electric bass", "string bass", "bass drum"]
+    include: ["tuba", "bass", "eb-tuba", "eb tuba", "bb-tuba", "bb tuba", "bass-trompang"]
+    exceptions: ["trombone", "clarinet", "klarinett", "guitar", "bassoon", "el-bass", "el bass", "electric bass", "string bass", "bass drum", "reiisetuba"]
 Trommesett:
     include: ["slagverk", "tromme", "drum", "trommesett", "drum set", "drumset", "platos y campanas"]
     exceptions: ["caja", "snare drum", "skarptromme", "stortromme", "bass"]
