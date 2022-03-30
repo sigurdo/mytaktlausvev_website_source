@@ -61,6 +61,7 @@ class Command(BaseCommand):
             "aspirant@taktlaus.no",
             "password",
             membership_status=UserCustom.MembershipStatus.ASPIRANT,
+            light_mode=True,
         )
         member = UserCustom.objects.create_user(
             "medlem",

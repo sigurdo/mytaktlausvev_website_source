@@ -2,6 +2,7 @@ from autoslug import AutoSlugField
 from django.contrib.auth.models import AbstractUser, UserManager
 from django.db.models import (
     SET_NULL,
+    BooleanField,
     CharField,
     DateField,
     ForeignKey,
@@ -74,6 +75,12 @@ class UserCustom(AbstractUser):
             "Årstal, semester - Årstal, semester. "
             'Til dømes "2005, Haust - 2009, Vår" eller "2009, Haust -"'
         ),
+    )
+
+    light_mode = BooleanField(
+        "lys modus",
+        default=False,
+        help_text="Aktiver lys modus. Lys modus vert ikkje aktivt støtta, og er difor ikkje anbefalt.",
     )
 
     objects = UserManagerCustom()

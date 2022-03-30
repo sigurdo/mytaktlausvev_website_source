@@ -8,9 +8,10 @@ DIR_SCSS = path.join(BASE_DIR, "static", "scss")
 
 
 def codestyles_exist() -> bool:
-    """Returns `True` if the  code style SCSS file exists, `False` otherwise."""
+    """Returns `True` if both code style SCSS files exist, `False` otherwise."""
+    path_default = path.join(DIR_SCSS, "codestyle-default.scss")
     path_monokai = path.join(DIR_SCSS, "codestyle-monokai.scss")
-    return path.exists(path_monokai)
+    return path.exists(path_default) and path.exists(path_monokai)
 
 
 def submodule_cloned(path_submodule: str) -> bool:

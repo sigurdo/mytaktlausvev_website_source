@@ -109,6 +109,7 @@ class UserCustomUpdateForm(ModelForm):
             "student_card_number",
         ),
         Fieldset("Taktlaus-ting", "instrument_type", "membership_period"),
+        Fieldset("Anna", "light_mode"),
         Submit("submit", "Rediger brukar"),
     )
 
@@ -125,5 +126,6 @@ class UserCustomUpdateForm(ModelForm):
             "student_card_number",
             "instrument_type",
             "membership_period",
+            "light_mode",
         ]
         widgets = {"birthdate": DateDateInput}
