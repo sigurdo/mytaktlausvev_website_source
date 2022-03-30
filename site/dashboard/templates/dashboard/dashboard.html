@@ -30,10 +30,9 @@
 					</li>
 					{% endfor %}
 				</ul>
-				<p>
+				<p class="d-flex justify-content-evenly">
 					<a class="btn btn-primary" href="{% url "events:EventList" %}"> Alle hendingar </a>
-				</p>
-				<p>
+
 					{% include "events/includes/ical_button.html" with event_feed_absolute_url=event_feed_absolute_url %}
 				</p>
 			</div>

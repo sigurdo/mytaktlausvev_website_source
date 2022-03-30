@@ -201,12 +201,25 @@ class ArticleDetailTestCase(TestMixin, TestCase):
 
 
 class ArticleCreateTestCase(TestMixin, TestCase):
+    def get_url(self):
+        return reverse("articles:ArticleCreate")
+
+    def test_all_user_can_create_articles(self):
+        """All users should be able to create an article."""
+        self.client.force_login(UserFactory())
+        self.client.post(
+            self.get_url(),
+            {"title": "A Title", "content": "Article text"},
+        )
+
+        self.assertEqual(Article.objects.count(), 1)
+
     def test_created_by_modified_by_set_to_current_user(self):
         """Should set `created_by` and `modified_by` to the current user on creation."""
-        user = SuperUserFactory()
+        user = UserFactory()
         self.client.force_login(user)
         self.client.post(
-            reverse("articles:ArticleCreate"),
+            self.get_url(),
             {"title": "A Title", "content": "Article text"},
         )
 
@@ -217,18 +230,12 @@ class ArticleCreateTestCase(TestMixin, TestCase):
 
     def test_requires_login(self):
         """Should require login."""
-        self.assertLoginRequired(reverse("articles:ArticleCreate"))
-
-    def test_requires_permission(self):
-        """Should require the `create_article` permission."""
-        self.assertPermissionRequired(
-            reverse("articles:ArticleCreate"), "articles.add_article"
-        )
+        self.assertLoginRequired(self.get_url())
 
 
 class SubarticleCreateTestCase(TestCase):
     def setUp(self):
-        self.client.force_login(SuperUserFactory())
+        self.client.force_login(UserFactory())
 
     def test_form_initial_data_based_on_parent(self):
         """Should set the form's initial data based on the parent."""
@@ -250,25 +257,31 @@ class ArticleUpdateTestCase(TestMixin, TestCase):
     def setUp(self):
         self.article = ArticleFactory()
 
+    def get_url(self):
+        return reverse("articles:ArticleUpdate", args=[self.article.path()])
+
     def test_requires_login(self):
         """Should require login."""
-        self.assertLoginRequired(
-            reverse("articles:ArticleUpdate", args=[self.article.path()])
-        )
+        self.assertLoginRequired(self.get_url())
 
     def test_requires_permission(self):
         """Should require the `change_article` permission."""
-        self.assertPermissionRequired(
-            reverse("articles:ArticleUpdate", args=[self.article.path()]),
-            "articles.change_article",
-        )
+        self.assertPermissionRequired(self.get_url(), "articles.change_article")
+
+    def test_succeeds_if_not_permission_but_is_author(self):
+        """
+        Should succeed if the user is the author,
+        even if the user doesn't have the `change_event` permission.
+        """
+        self.client.force_login(self.article.created_by)
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_created_by_not_changed(self):
         """Should not change `created_by` when updating article."""
         self.client.force_login(SuperUserFactory())
         self.client.post(
-            reverse("articles:ArticleUpdate", args=[self.article.path()]),
-            {"title": "A Title", "content": "Article text"},
+            self.get_url(), {"title": "A Title", "content": "Article text"}
         )
 
         created_by_previous = self.article.created_by
@@ -280,8 +293,7 @@ class ArticleUpdateTestCase(TestMixin, TestCase):
         user = SuperUserFactory()
         self.client.force_login(user)
         self.client.post(
-            reverse("articles:ArticleUpdate", args=[self.article.path()]),
-            {"title": "A Title", "content": "Article text"},
+            self.get_url(), {"title": "A Title", "content": "Article text"}
         )
 
         self.article.refresh_from_db()

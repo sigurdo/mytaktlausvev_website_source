@@ -2,13 +2,14 @@ from datetime import datetime, timedelta
 
 from django.test import TestCase
 from django.urls import reverse
-from django.utils.timezone import make_aware
+from django.utils.timezone import make_aware, now
 
 from accounts.factories import UserFactory
 from articles.factories import ArticleFactory
 from comments.factories import CommentFactory
 from common.mixins import TestMixin
 from events.factories import EventFactory
+from events.models import Event
 from minutes.factories import MinutesFactory
 from pictures.factories import GalleryFactory, ImageFactory
 
@@ -54,6 +55,40 @@ class DashboardTestSuite(TestMixin, TestCase):
         context = self.get_context()
         self.assertIn("events", context)
         self.assertEquals(len(list(context["events"])), 1)
+
+    def test_shows_all_events_upcoming_the_next_month(self):
+        """Should should all events happening the next month."""
+        for _ in range(10):
+            EventFactory(start_time=now())
+            EventFactory(start_time=now() + timedelta(days=365))
+
+        context = self.get_context()
+        self.assertIn("events", context)
+        self.assertQuerysetEqual(
+            context["events"],
+            Event.objects.upcoming().filter(start_time__lte=now() + timedelta(days=31)),
+        )
+
+    def test_shows_5_events_if_less_than_five_the_next_month(self):
+        """
+        Should show up to 5 events happening later than the next month,
+        if there are less than 5 upcoming events the next month.
+        """
+        for _ in range(10):
+            EventFactory(start_time=now() + timedelta(days=365))
+
+        context = self.get_context()
+        self.assertIn("events", context)
+        self.assertQuerysetEqual(context["events"], Event.objects.upcoming()[:5])
+
+    def test_shows_all_upcoming_events_if_5_or_less_upcoming(self):
+        """Should show all upcoming events if there are less than 5 upcoming events."""
+        for _ in range(3):
+            EventFactory(start_time=now())
+
+        context = self.get_context()
+        self.assertIn("events", context)
+        self.assertQuerysetEqual(context["events"], Event.objects.upcoming())
 
     def test_minutes_in_context(self):
         MinutesFactory()

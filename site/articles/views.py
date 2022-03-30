@@ -1,7 +1,9 @@
-from django.contrib.auth.mixins import PermissionRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.http.response import Http404
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
+
+from common.mixins import PermissionOrCreatedMixin
 
 from .forms import ArticleForm
 from .models import Article
@@ -44,13 +46,12 @@ class ArticleDetail(UserPassesTestMixin, SlugPathMixin, DetailView):
         return context
 
 
-class ArticleCreate(PermissionRequiredMixin, CreateView):
+class ArticleCreate(LoginRequiredMixin, CreateView):
     """View for creating a article."""
 
     model = Article
     form_class = ArticleForm
     template_name = "common/form.html"
-    permission_required = "articles.add_article"
 
     def form_valid(self, form):
         form.instance.created_by = self.request.user
@@ -70,7 +71,7 @@ class SubarticleCreate(SlugPathMixin, ArticleCreate):
         }
 
 
-class ArticleUpdate(PermissionRequiredMixin, SlugPathMixin, UpdateView):
+class ArticleUpdate(PermissionOrCreatedMixin, SlugPathMixin, UpdateView):
     """View for updating a article."""
 
     model = Article

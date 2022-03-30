@@ -26,14 +26,13 @@
         </nav>
     {% endif %}
 
-    {% if perms.articles.change_article or perms.articles.add_article %}
+    {% if user.is_authenticated %}
         <footer class="my-4">
-            {% if perms.articles.add_article %}
             <a href="{% url 'articles:SubarticleCreate' article.path %}" class="btn btn-primary">
                 Lag underartikkel
             </a>
-            {% endif %}
-            {% if perms.articles.change_article %}
+
+            {% if perms.articles.change_article or article.created_by == request.user %}
             <a href="{% url 'articles:ArticleUpdate' article.path %}" class="btn btn-primary">
                 Rediger artikkel
             </a>

@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Max
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.timezone import make_aware
 from django.views.generic import RedirectView, TemplateView
 
@@ -34,12 +35,18 @@ class Dashboard(LoginRequiredMixin, TemplateView):
         return random_sample_queryset(Quote.objects.all(), 2)
 
     def get_events(self):
-        """Returns the 4 closest upcoming events."""
-        return Event.objects.upcoming()[:4]
+        """Returns all upcoming events the next month, or up to 5 later events."""
+        upcoming_next_month = Event.objects.upcoming().filter(
+            start_time__lte=timezone.now() + timedelta(days=31),
+        )
+        if upcoming_next_month.count() >= 5:
+            return upcoming_next_month
+
+        return Event.objects.upcoming()[:5]
 
     def get_minutes(self):
-        """Returns the 5 most recent minutes."""
-        return Minutes.objects.all()[:5]
+        """Returns the 6 most recent minutes."""
+        return Minutes.objects.all()[:6]
 
     def get_latest_galleries(self):
         """Returns the 2 galleries with most recent image uploads."""
