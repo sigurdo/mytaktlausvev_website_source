@@ -39,6 +39,7 @@ urlpatterns = [
     path("fotoarkiv/", include("pictures.urls")),
     path("referat/", include("minutes.urls")),
     path("brukarfiler/", include("user_files.urls")),
+    path("", include("search.urls")),
     path("", include("easter_eggs.urls")),
     path("", include("articles.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
