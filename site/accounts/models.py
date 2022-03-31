@@ -43,6 +43,7 @@ class UserCustom(AbstractUser):
     phone_number = CharField("telefonnummer", max_length=255, blank=True)
     address = TextField("adresse", blank=True)
     home_page = URLField("heimeside", max_length=255, blank=True)
+
     student_card_number = CharField(
         "studentkort-nummer",
         max_length=255,
@@ -52,6 +53,12 @@ class UserCustom(AbstractUser):
             "du vil ha tilgang til lageret. Nummeret er det som byrjar med EM."
         ),
     )
+    has_storage_access = BooleanField(
+        "har lagertilgjenge",
+        default=False,
+        help_text="Om brukaren har fått tilgjenge til lageret.",
+    )
+
     avatar = ImageField("profilbilde", upload_to="profile/", blank=True)
     instrument_type = ForeignKey(
         "instruments.InstrumentType",

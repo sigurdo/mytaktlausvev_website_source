@@ -177,6 +177,11 @@ class UserCustomTest(TestMixin, TestCase):
             ).is_active_member()
         )
 
+    def test_has_storage_access_defaults_to_false(self):
+        """`has_storage_access` should default to false."""
+        user = UserFactory()
+        self.assertFalse(user.has_storage_access)
+
 
 class UserCustomCreateFormTestSuite(TestCase):
     def test_all_fields_except_student_card_number_required(self):
