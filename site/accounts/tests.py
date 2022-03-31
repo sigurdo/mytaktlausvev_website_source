@@ -182,6 +182,43 @@ class UserCustomTest(TestMixin, TestCase):
         user = UserFactory()
         self.assertFalse(user.has_storage_access)
 
+    def test_is_active_member_returns_true_for_active_members(self):
+        """
+        `is_active_member` should return true for active members,
+        meaning paying members and aspirants.
+        """
+        self.assertTrue(
+            UserFactory(
+                membership_status=UserCustom.MembershipStatus.ASPIRANT
+            ).is_active_member()
+        )
+        self.assertTrue(
+            UserFactory(
+                membership_status=UserCustom.MembershipStatus.PAYING
+            ).is_active_member()
+        )
+
+    def test_is_active_member_returns_false_for_not_active_members(self):
+        """
+        `is_active_member` should return false for members that aren't active,
+        meaning all members except paying members and aspirants.
+        """
+        self.assertFalse(
+            UserFactory(
+                membership_status=UserCustom.MembershipStatus.HONORARY
+            ).is_active_member()
+        )
+        self.assertFalse(
+            UserFactory(
+                membership_status=UserCustom.MembershipStatus.RETIRED
+            ).is_active_member()
+        )
+        self.assertFalse(
+            UserFactory(
+                membership_status=UserCustom.MembershipStatus.INACTIVE
+            ).is_active_member()
+        )
+
 
 class UserCustomCreateFormTestSuite(TestCase):
     def test_all_fields_except_student_card_number_required(self):
