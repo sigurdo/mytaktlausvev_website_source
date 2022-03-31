@@ -49,7 +49,7 @@
                         {% with jacket.get_owner as owner %}
                             {% if owner %}
                                 <a href="{% url "accounts:ProfileDetail" owner.slug %}"> {{ owner }} </a>
-                                {% if owner.membership_status != "PAYING" and owner.membership_status != "ASPIRANT" %}
+                                {% if not owner.is_active_member %}
                                     ({{ owner.get_membership_status_display }})
                                 {% endif %}
                             {% endif %}

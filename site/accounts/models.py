@@ -21,6 +21,15 @@ class UserManagerCustom(UserManager):
     def get_by_natural_key(self, username):
         return self.get(username__iexact=username)
 
+    def active(self):
+        """Returns only active members, which means paying members and aspirants."""
+        return super().filter(
+            membership_status__in=[
+                UserCustom.MembershipStatus.PAYING,
+                UserCustom.MembershipStatus.ASPIRANT,
+            ]
+        )
+
 
 class UserCustom(AbstractUser):
     slug = AutoSlugField(
@@ -91,6 +100,16 @@ class UserCustom(AbstractUser):
     def get_name(self):
         """Returns `name` if it exists, else `username`."""
         return self.name or self.username
+
+    def is_active_member(self):
+        """
+        Returns whether `self` is an active member.
+        Active members include paying members and aspirants.
+        """
+        return self.membership_status in [
+            UserCustom.MembershipStatus.PAYING,
+            UserCustom.MembershipStatus.ASPIRANT,
+        ]
 
     def get_avatar_url(self):
         """
