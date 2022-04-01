@@ -19,6 +19,7 @@ class UserAdminCustom(UserAdmin):
                     "address",
                     "home_page",
                     "student_card_number",
+                    "has_storage_access",
                     "avatar",
                     "light_mode",
                 )
