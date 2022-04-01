@@ -20,6 +20,7 @@ class UserAdminCustom(UserAdmin):
                     "home_page",
                     "student_card_number",
                     "avatar",
+                    "light_mode",
                 )
             },
         ),
