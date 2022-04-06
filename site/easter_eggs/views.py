@@ -2,8 +2,8 @@ import os
 
 import PIL
 from django.http import FileResponse, HttpResponse
-from django.views.generic import FormView, View
 from django.template.loader import render_to_string
+from django.views.generic import FormView, View
 
 from buttons.button_pdf_generator import button_pdf_generator
 
