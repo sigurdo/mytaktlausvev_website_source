@@ -3,6 +3,7 @@ import os
 import PIL
 from django.http import FileResponse, HttpResponse
 from django.views.generic import FormView, View
+from django.template.loader import render_to_string
 
 from buttons.button_pdf_generator import button_pdf_generator
 
@@ -24,13 +25,8 @@ class BrewView(FormView):
             response = HttpResponse(content="Eg er ei tekanne!")
             response.status_code = 418
         elif answer == "tea":
-            with open(
-                os.path.join(
-                    "site", "easter_eggs", "templates", "easter_eggs", "tea.html"
-                )
-            ) as file:
-                content = file.read()
-            response = HttpResponse(content)
+            content = render_to_string("easter_eggs/tea.html")
+            return HttpResponse(content)
         else:
             response = HttpResponse(content="404 not found.")
         return response
