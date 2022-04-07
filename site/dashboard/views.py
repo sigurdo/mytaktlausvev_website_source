@@ -45,8 +45,8 @@ class Dashboard(LoginRequiredMixin, TemplateView):
         return Event.objects.upcoming()[:5]
 
     def get_minutes(self):
-        """Returns the 6 most recent minutes."""
-        return Minutes.objects.all()[:6]
+        """Returns the 5 most recent minutes."""
+        return Minutes.objects.all()[:5]
 
     def get_latest_galleries(self):
         """Returns the 2 galleries with most recent image uploads."""
