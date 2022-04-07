@@ -77,7 +77,7 @@ class Dashboard(LoginRequiredMixin, TemplateView):
                 Q(membership_status=UserCustom.MembershipStatus.PAYING)
                 | Q(membership_status=UserCustom.MembershipStatus.ASPIRANT)
             )
-            .filter(~Q(birthdate=None))
+            .exclude(birthdate=None)
             .order_by("birthdate__month", "birthdate__day")
         )
 
