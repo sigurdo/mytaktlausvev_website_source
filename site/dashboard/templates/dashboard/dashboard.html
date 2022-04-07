@@ -6,6 +6,16 @@
 
 {% block content %}
 <div class="row gy-4">
+	{% if current_birthdays %}
+		<div class="col-md-12">
+			<div class="card h-100 p-3 shadow-sm">
+				<div class="card-body">
+					<h2> {{current_birthdays}} har bursdag!!! 🎉🥳🎈 </h2>
+				</div>
+			</div>
+		</div>
+	{% endif %}
+
 	<div class="col-md-6">
 		<div class="card h-100 p-3 shadow-sm">
 			<div class="card-body">
@@ -86,6 +96,28 @@
 	<div class="col-md-6">
 		<div class="card h-100 p-3 shadow-sm">
 			<div class="card-body">
+				<h2> Snaraste bursdagar </h2>
+				<ul>
+					{% for birthday_user in upcoming_birthdays %}
+					<li>
+						<time
+							datetime="{{ birthday_user.birthdate | date:"c" }}"
+							title="{{ birthday_user.birthdate }}"
+						>
+							{{birthday_user.birthdate | date:"j. F"}}
+						</time>
+						–
+						<a href={{birthday_user.get_absolute_url}}>{{birthday_user}}</a>
+					</li>
+					{% endfor %}
+				</ul>
+			</div>
+		</div>
+	</div>
+
+	<div class="col-md-6">
+		<div class="card h-100 p-3 shadow-sm">
+			<div class="card-body">
 				<h2>Nyaste kommentarar</h2>
 				<ul>
 					{% for comment in latest_comments %}
@@ -104,6 +136,21 @@
 								{{comment.created_by}}
 							</a>
 						</div>
+					</li>
+					{% endfor %}
+				</ul>
+			</div>
+		</div>
+	</div>
+
+	<div class="col-md-6">
+		<div class="card h-100 p-3 shadow-sm">
+			<div class="card-body">
+				<h2> Nyaste notar </h2>
+				<ul>
+					{% for score in latest_scores %}
+					<li>
+						<a href={{score.get_absolute_url}}>{{score}}</a>
 					</li>
 					{% endfor %}
 				</ul>
