@@ -73,10 +73,7 @@ class Dashboard(LoginRequiredMixin, TemplateView):
 
     def get_all_birthdays(self):
         return (
-            UserCustom.objects.filter(
-                Q(membership_status=UserCustom.MembershipStatus.PAYING)
-                | Q(membership_status=UserCustom.MembershipStatus.ASPIRANT)
-            )
+            UserCustom.objects.active()
             .exclude(birthdate=None)
             .order_by("birthdate__month", "birthdate__day")
         )
