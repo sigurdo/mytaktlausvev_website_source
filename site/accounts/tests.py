@@ -18,6 +18,20 @@ from .forms import UserCustomCreateForm
 from .models import UserCustom
 
 
+class UserCustomManagerTestCase(TestCase):
+    def test_active_includes_only_paying_members_and_aspirants(self):
+        aspirant = UserFactory(membership_status=UserCustom.MembershipStatus.ASPIRANT)
+        paying = UserFactory(membership_status=UserCustom.MembershipStatus.PAYING)
+        UserFactory(membership_status=UserCustom.MembershipStatus.RETIRED)
+        UserFactory(membership_status=UserCustom.MembershipStatus.HONORARY)
+
+        self.assertQuerysetEqual(
+            UserCustom.objects.active(),
+            [aspirant, paying],
+            ordered=False,
+        )
+
+
 class UserCustomTest(TestMixin, TestCase):
     def test_get_absolute_url(self):
         """Should link to the user's profile page."""
@@ -125,6 +139,43 @@ class UserCustomTest(TestMixin, TestCase):
         """`light_mode` should default to false."""
         user = UserFactory()
         self.assertFalse(user.light_mode)
+
+    def test_is_active_member_returns_true_for_active_members(self):
+        """
+        `is_active_member` should return true for active members,
+        meaning paying members and aspirants.
+        """
+        self.assertTrue(
+            UserFactory(
+                membership_status=UserCustom.MembershipStatus.ASPIRANT
+            ).is_active_member()
+        )
+        self.assertTrue(
+            UserFactory(
+                membership_status=UserCustom.MembershipStatus.PAYING
+            ).is_active_member()
+        )
+
+    def test_is_active_member_returns_false_for_not_active_members(self):
+        """
+        `is_active_member` should return false for members that aren't active,
+        meaning all members except paying members and aspirants.
+        """
+        self.assertFalse(
+            UserFactory(
+                membership_status=UserCustom.MembershipStatus.HONORARY
+            ).is_active_member()
+        )
+        self.assertFalse(
+            UserFactory(
+                membership_status=UserCustom.MembershipStatus.RETIRED
+            ).is_active_member()
+        )
+        self.assertFalse(
+            UserFactory(
+                membership_status=UserCustom.MembershipStatus.INACTIVE
+            ).is_active_member()
+        )
 
 
 class UserCustomCreateFormTestSuite(TestCase):
