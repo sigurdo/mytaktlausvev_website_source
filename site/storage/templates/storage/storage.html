@@ -12,6 +12,13 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs5/jq-3.6.0/dt-1.11.3/datatables.min.css"/>
 {% endblock css %}
 
+{% block header %}
+    {{ block.super }}
+    {% if perms.accounts.view_storage_access and perms.accounts.edit_storage_access %}
+        <a class="btn btn-primary btn-sm my-1" href="{% url 'storage:StorageAccessUpdate' %}">Rediger lagertilgjenge</a>
+    {% endif %}
+{% endblock header %}
+
 {% block content %}
     <div class="table-responsive">
         <table class="table table-striped table-sm" id="storage-access">

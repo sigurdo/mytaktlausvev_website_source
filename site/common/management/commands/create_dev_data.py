@@ -452,7 +452,7 @@ class Command(BaseCommand):
         )
         NavbarItemFactory(
             text="Lagertilgjenge",
-            link=reverse("storage:StorageAccessView"),
+            link=reverse("storage:StorageAccess"),
             order=5,
             requires_login=True,
             parent=admin_dropdown,

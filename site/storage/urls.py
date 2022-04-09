@@ -4,4 +4,7 @@ from . import views
 
 app_name = "storage"
 
-urlpatterns = [path("", views.StorageAccessView.as_view(), name="StorageAccessView")]
+urlpatterns = [
+    path("", views.StorageAccess.as_view(), name="StorageAccess"),
+    path("rediger/", views.StorageAccessUpdate.as_view(), name="StorageAccessUpdate"),
+]

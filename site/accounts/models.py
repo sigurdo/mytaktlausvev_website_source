@@ -141,4 +141,8 @@ class UserCustom(AbstractUser):
         constraints = [
             UniqueConstraint(Lower("username"), name="username_case_insensitive")
         ]
-        permissions = (("view_storage_access", "Kan sjå lagertilgjenge"),)
+
+        permissions = (
+            ("view_storage_access", "Kan sjå lagertilgjenge"),
+            ("edit_storage_access", "Kan redigere lagertilgjenge"),
+        )
