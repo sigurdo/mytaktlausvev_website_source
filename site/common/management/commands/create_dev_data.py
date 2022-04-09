@@ -456,7 +456,7 @@ class Command(BaseCommand):
             order=5,
             requires_login=True,
             parent=admin_dropdown,
-            permissions=["common.view_storage_access"],
+            permissions=["accounts.view_storage_access"],
         )
         other_dropdown = NavbarItemFactory(
             text="Anna",

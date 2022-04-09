@@ -15,5 +15,5 @@ class StorageAccessViewTestSuite(TestMixin, TestCase):
     def test_requires_permission(self):
         self.assertPermissionRequired(
             self.get_url(),
-            "common.view_storage_access",
+            "accounts.view_storage_access",
         )
