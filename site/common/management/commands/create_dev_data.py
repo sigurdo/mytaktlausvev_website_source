@@ -1,6 +1,7 @@
 from datetime import date, datetime, time, timedelta
 
 from django.conf import settings
+from django.contrib.auth.models import Group
 from django.contrib.sites.models import Site
 from django.core.management.base import BaseCommand
 from django.urls import reverse
@@ -81,6 +82,14 @@ class Command(BaseCommand):
             "password",
             membership_status=UserCustom.MembershipStatus.PAYING,
         )
+
+        board = Group.objects.create(name="Styret")
+        board.user_set.add(leader)
+        board.user_set.add(musical_leader)
+        lurkar = Group.objects.create(name="Lurkargjengen")
+        lurkar.user_set.add(leader)
+        lurkar.user_set.add(retiree)
+        lurkar.user_set.add(aspirant)
 
         article_about = ArticleFactory(
             title="Om oss",

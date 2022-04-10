@@ -102,6 +102,18 @@
 
                                 <dt>Medlemsperiode</dt>
                                 <dd>{% firstof profile.membership_period "Ukjent" %}</dd>
+
+                                <dt>Roller</dt>
+                                <dd>
+                                    {% if not profile.groups.exists %}
+                                        Ingen
+                                    {% endif %}
+                                    <ul>
+                                        {% for group in profile.groups.all %}
+                                        <li>{{ group }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </dd>
                             </dl>
                         </div>
                     </section>
