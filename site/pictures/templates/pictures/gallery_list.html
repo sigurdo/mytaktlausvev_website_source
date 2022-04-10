@@ -3,6 +3,12 @@
 {% block title_page %}Fotoarkiv{% endblock title_page %}
 {% block title_content %}Fotoarkiv{% endblock title_content %}
 
+{% block header %}
+    {{ block.super }}
+
+    <a href="{% url 'pictures:GalleryCreate' %}" class="btn btn-primary btn-sm my-1">Nytt galleri</a>
+{% endblock header %}
+
 {% block content %}
     <ul class="list-unstyled">
         {% for gallery in galleries %}
@@ -20,8 +26,6 @@
     </ul>
 
     <footer>
-        <a href="{% url 'pictures:GalleryCreate' %}" class="btn btn-primary">Nytt galleri</a>
-
         {% include "common/includes/pagination.html" with pagination_label="Gallerisider" %}
     </footer>
 {% endblock content %}

@@ -13,6 +13,14 @@
 
 {% block sidebar %}{% endblock sidebar %}
 
+{% block header %}
+    {{ block.super }}
+
+    {% if perms.uniforms.add_jacket and perms.uniforms.change_jacket and perms.uniforms.delete_jacket %}
+    <a href="{% url "uniforms:JacketsUpdate" %}" class="btn btn-primary btn-sm my-1"> Rediger jakker </a>
+    {% endif %}
+{% endblock header %}
+
 {% block content %}
     <div class="table-responsive">
         <table class="table table-striped table-sm" id="jacket_overview">
@@ -87,9 +95,6 @@
             </tbody>
         </table>
     </div>
-    {% if perms.uniforms.add_jacket and perms.uniforms.change_jacket and perms.uniforms.delete_jacket %}
-    <a href="{% url "uniforms:JacketsUpdate" %}" class="btn btn-primary"> Rediger jakker </a>
-    {% endif %}
 {% endblock content %}
 
 {% block js %}

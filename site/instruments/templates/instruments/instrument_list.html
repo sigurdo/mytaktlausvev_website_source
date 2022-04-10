@@ -13,6 +13,14 @@
 
 {% block sidebar %}{% endblock sidebar %}
 
+{% block header %}
+    {{ block.super }}
+
+    {% if perms.instruments.add_instrument and perms.instruments.change_instrument and perms.instruments.delete_instrument %}
+    <a href="{% url "instruments:InstrumentsUpdate" %}" class="btn btn-primary btn-sm my-1"> Rediger </a>
+    {% endif %}
+{% endblock header %}
+
 {% block content %}
     <div class="table-responsive">
         <table class="table table-striped table-sm" id="instrument_overview">
@@ -73,9 +81,6 @@
             </tbody>
         </table>
     </div>
-    {% if perms.instruments.add_instrument and perms.instruments.change_instrument and perms.instruments.delete_instrument %}
-    <a href="{% url "instruments:InstrumentsUpdate" %}" class="btn btn-primary"> Rediger </a>
-    {% endif %}
 {% endblock content %}
 
 {% block js %}

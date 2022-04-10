@@ -6,6 +6,27 @@
 {% block header %}
     {{ block.super }}
     {% include "common/includes/created_modified.html" with object=gallery only %}
+
+    <ul class="list-inline">
+        <li class="list-inline-item">
+            <a
+                href="{% url 'pictures:GalleryUpdate' gallery.slug %}"
+                class="btn btn-primary btn-sm"
+            >
+                Rediger galleri
+            </a>
+        </li>
+        <li class="list-inline-item">
+            <a
+                href="{% url 'pictures:ImageCreate' gallery.slug %}"
+                class="btn btn-primary btn-sm"
+            >
+                Last opp bilete
+            </a>
+        </li>
+    </ul>
+
+    {% include "common/includes/pagination.html" with pagination_label="Biletesider" %}
 {% endblock header %}
 
 {% block content %}
@@ -27,29 +48,6 @@
         </li>
     {% endfor %}
     </ul>
-
-    <footer>
-        <ul class="list-inline">
-            <li class="list-inline-item">
-                <a
-                    href="{% url 'pictures:GalleryUpdate' gallery.slug %}"
-                    class="btn btn-primary"
-                >
-                    Rediger galleri
-                </a>
-            </li>
-            <li class="list-inline-item">
-                <a
-                    href="{% url 'pictures:ImageCreate' gallery.slug %}"
-                    class="btn btn-primary"
-                >
-                    Last opp bilete
-                </a>
-            </li>
-        </ul>
-
-        {% include "common/includes/pagination.html" with pagination_label="Biletesider" %}
-    </footer>
 
     {% load comments %}
     {% comment_list gallery %}

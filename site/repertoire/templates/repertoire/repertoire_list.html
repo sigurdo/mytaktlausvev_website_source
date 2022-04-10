@@ -7,6 +7,14 @@
     Repertoar
 {% endblock title_content %}
 
+{% block header %}
+    {{ block.super }}
+
+    {% if perms.repertoire.add_repertoire %}
+    <a href="{% url 'repertoire:RepertoireCreate' %}" class="btn btn-primary btn-sm my-1"> Nytt repertoar </a>
+    {% endif %}
+{% endblock header %}
+
 {% block content %}
     {% for repertoire in repertoires %}
         <section class="my-3 table-responsive">
@@ -48,9 +56,4 @@
             {% endif %}
         </section>
     {% endfor %}
-    {% if perms.repertoire.add_repertoire %}
-    <section class="my-3">
-        <a href="{% url 'repertoire:RepertoireCreate' %}" class="btn btn-primary"> Nytt repertoar </a>
-    <section>
-    {% endif %}
 {% endblock content %}
