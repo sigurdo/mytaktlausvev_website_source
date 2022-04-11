@@ -3,6 +3,12 @@
 {% block title_page %}{{ forum.title }}{% endblock title_page %}
 {% block title_content %}{{ forum.title }}{% endblock title_content %}
 
+{% block header %}
+    {{ block.super }}
+
+    <a href="{% url 'forum:TopicCreate' forum.slug %}" class="btn btn-primary btn-sm my-1"> Nytt emne </a>
+{% endblock header %}
+
 {% block content %}
     {% if topics %}
     <div class="table-responsive">
@@ -43,6 +49,4 @@
     {% endif %}
 
     {% include "common/includes/pagination.html" with pagination_label="Emnesider" %}
-
-    <a href="{% url 'forum:TopicCreate' forum.slug %}" class="btn btn-primary"> Nytt emne </a>
 {% endblock content %}

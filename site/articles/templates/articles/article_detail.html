@@ -6,7 +6,25 @@
 {% block header %}
     {{ block.super }}
     {% if user.is_authenticated %}
-        {% include "common/includes/created_modified.html" with object=article only %}
+    {% include "common/includes/created_modified.html" with object=article only %}
+    {% endif %}
+
+    {% if user.is_authenticated %}
+    <ul class="list-inline">
+        <li class="list-inline-item">
+            <a href="{% url 'articles:SubarticleCreate' article.path %}" class="btn btn-primary btn-sm">
+                Lag underartikkel
+            </a>
+        </li>
+
+        <li class="list-inline-item">
+            {% if perms.articles.change_article or article.created_by == request.user %}
+            <a href="{% url 'articles:ArticleUpdate' article.path %}" class="btn btn-primary btn-sm">
+                Rediger artikkel
+            </a>
+            {% endif %}
+        </li>
+    </ul>
     {% endif %}
 {% endblock header %}
 
@@ -26,19 +44,6 @@
         </nav>
     {% endif %}
 
-    {% if user.is_authenticated %}
-        <footer class="my-4">
-            <a href="{% url 'articles:SubarticleCreate' article.path %}" class="btn btn-primary">
-                Lag underartikkel
-            </a>
-
-            {% if perms.articles.change_article or article.created_by == request.user %}
-            <a href="{% url 'articles:ArticleUpdate' article.path %}" class="btn btn-primary">
-                Rediger artikkel
-            </a>
-            {% endif %}
-        </footer>
-    {% endif %}
 
     {% if article.comments_allowed %}
         {% load comments %}

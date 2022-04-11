@@ -11,6 +11,31 @@
 {% block header %}
     {{ block.super }}
     {% include "common/includes/created_modified.html" with object=event only %}
+
+    {% if perms.events.change_event or event.created_by == request.user or perms.events.view_eventattendance %}
+        <ul class="list-inline">
+            {% if perms.events.change_event or event.created_by == request.user %}
+            <li class="list-inline-item">
+                <a
+                    href="{% url 'events:EventUpdate' event.start_time|date:"Y" event.slug %}"
+                    class="btn btn-primary btn-sm"
+                >
+                    Rediger hending
+                </a>
+            </li>
+            {% endif %}
+            {% if perms.events.view_eventattendance %}
+            <li class="list-inline-item">
+                <a
+                    href="{% url 'events:EventAttendanceList' event.start_time|date:"Y" event.slug %}"
+                    class="btn btn-primary btn-sm"
+                >
+                    Sjå svar
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    {% endif %}
 {% endblock header %}
 
 {% block content %}
@@ -23,33 +48,6 @@
     </p>
     {% load markdown %}
     {{ event.content | markdown }}
-
-    {% if perms.events.change_event or event.created_by == request.user or perms.events.view_eventattendance %}
-        <footer class="my-4">
-            <ol class="list-unstyled d-flex">
-                {% if perms.events.change_event or event.created_by == request.user %}
-                <li class="me-3">
-                    <a
-                        href="{% url 'events:EventUpdate' event.start_time|date:"Y" event.slug %}"
-                        class="btn btn-primary"
-                    >
-                        Rediger hending
-                    </a>
-                </li>
-                {% endif %}
-                {% if perms.events.view_eventattendance %}
-                <li>
-                    <a
-                        href="{% url 'events:EventAttendanceList' event.start_time|date:"Y" event.slug %}"
-                        class="btn btn-primary"
-                    >
-                        Sjå svar
-                    </a>
-                </li>
-                {% endif %}
-            </ol>
-        </footer>
-    {% endif %}
 
     {% if not is_registered %}
         {% load crispy_forms_tags %}
