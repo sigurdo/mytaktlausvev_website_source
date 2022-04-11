@@ -256,6 +256,18 @@
 						<dd>{{ jacket.number }}</dd>
 					{% endif %}
 					{% endwith %}
+
+					<dt>Roller</dt>
+					<dd>
+						{% if not user.groups.exists %}
+							Ingen
+						{% endif %}
+						<ul>
+							{% for group in user.groups.all %}
+							<li>{{ group }}</li>
+							{% endfor %}
+						</ul>
+					</dd>
 				</dl>
 			</div>
 		</div>
