@@ -17,8 +17,9 @@ class MinutesTestSuite(TestCase):
 
     def test_get_absolute_url(self):
         """Should link to the minutes' detail page."""
+        self.assertFalse(True)
         self.assertEqual(
-            self.minutes.get_absolute_url(),  
+            self.minutes.get_absolute_url(),
             reverse("minutes:MinutesDetail", args=[self.minutes.slug]),
         )
 
