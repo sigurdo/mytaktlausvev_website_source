@@ -8,23 +8,48 @@
     Lagertilgjenge
 {% endblock title_content %}
 
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs5/jq-3.6.0/dt-1.11.3/datatables.min.css"/>
+{% endblock css %}
+
+{% block header %}
+    {{ block.super }}
+    {% if perms.accounts.view_storage_access and perms.accounts.edit_storage_access %}
+        <a class="btn btn-primary btn-sm my-1" href="{% url 'storage:StorageAccessUpdate' %}">Rediger lagertilgjenge</a>
+    {% endif %}
+{% endblock header %}
+
 {% block content %}
     <div class="table-responsive">
-        <table class="table table-striped table-sm">
+        <table class="table table-striped table-sm" id="storage-access">
             <thead>
                 <tr>
                     <th> Namn </th>
                     <th> Studentkortnummer </th>
+                    <th> Har fått lagertilgjenge </th>
                 </tr>
             </thead>
             <tbody>
-                {% for user in users_with_storage_access %}
+                {% for user in active_users %}
                         <tr>
                             <td> <a href="{{ user.get_absolute_url }}"> {{ user.get_name }} </a> </td>
                             <td> {{ user.student_card_number }} </td>
+                            <td>
+                                {% if user.has_storage_access %}
+                                    Ja
+                                {% else %}
+                                    Nei
+                                {% endif %}
+                            </td>
                         </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
 {% endblock %}
+
+{% block js %}
+    <script src="https://cdn.datatables.net/v/bs5/jq-3.6.0/dt-1.11.3/datatables.min.js"></script>
+    {% load static %}
+    <script src="{% static "storage/storage.js" %}"></script>
+{% endblock js %}

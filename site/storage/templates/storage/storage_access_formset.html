@@ -1,0 +1,48 @@
+<form class="table-responsive" method="post">
+    {% csrf_token %}
+    {{ formset.management_form }}
+
+    <table class="table table-striped table-sm">
+        <thead>
+            <tr>
+                <th>Namn</th>
+                <th>Har fått lagertilgjenge</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for form in formset %}
+            <tr>
+                <td>
+                    {{ form.instance.get_name }}
+                    <input
+                        type="hidden"
+                        name="{{ formset.prefix }}-{{ forloop.counter0 }}-id"
+                        value="{{ form.instance.pk }}"
+                    />
+                </td>
+                <td>
+                    <div class="form-check">
+                        <label class="form-check-label">
+                            <input
+                                class="checkboxinput form-check-input"
+                                type="checkbox"
+                                name="{{ formset.prefix }}-{{ forloop.counter0 }}-has_storage_access"
+                                {% if form.instance.has_storage_access %}checked{% endif %}
+                            >
+                            <span class="visually-hidden">Har fått lagertilgjenge</span>
+                        </label>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <input
+        type="submit"
+        name="submit"
+        value="Lagre lagertilgjenge"
+        class="btn btn-primary"
+    />
+</form>
