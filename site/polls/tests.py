@@ -129,6 +129,14 @@ class PollTestSuite(TestCase):
         """`has_voted` should return `False` if the user hasn't voted for the poll."""
         self.assertFalse(self.poll.has_voted(UserFactory()))
 
+    def test_winner(self):
+        """Should return the winning choice of the poll."""
+        winning_choice = ChoiceFactory(poll=self.poll)
+        ChoiceFactory(poll=self.poll)
+        VoteFactory(choice=winning_choice)
+
+        self.assertEqual(self.poll.winner(), winning_choice)
+
 
 class ChoiceTestSuite(TestCase):
     def setUp(self):
