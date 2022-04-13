@@ -7,6 +7,7 @@ from django.utils.text import slugify
 
 from accounts.factories import SuperUserFactory
 from common.mixins import TestMixin
+from events.factories import EventFactory
 from minutes.factories import MinutesFactory
 from minutes.models import Minutes
 
