@@ -7,7 +7,7 @@ from common.mixins import TestMixin
 
 from .factories import NavbarItemFactory, NavbarItemPermissionRequirementFactory
 from .models import NavbarItem
-from .templatetags.get_navbar_items import get_navbar_items
+from .templatetags.navbar import get_navbar_items
 
 
 class NavbarItemTestSuite(TestMixin, TestCase):
@@ -160,9 +160,7 @@ class GetNavbarItemsTestSuite(TestMixin, TestCase):
         Assert entire output from `get_navbar_items` for an AnonymousUser.
         """
         request = RequestFactory().get("/normal/noe/undergreier/")
-        request.user = AnonymousUser()
-        context = {"request": request}
-        navbar_items = get_navbar_items(context)
+        navbar_items = get_navbar_items(AnonymousUser(), request.path)
         self.assertEqual(len(navbar_items), 2)
         self.assert_annotations(
             item_annotated=navbar_items[0],
@@ -192,9 +190,7 @@ class GetNavbarItemsTestSuite(TestMixin, TestCase):
         `test_unauthenticated` for a regular user.
         """
         request = RequestFactory().get("/normal/noe/undergreier/")
-        request.user = UserFactory()
-        context = {"request": request}
-        navbar_items = get_navbar_items(context)
+        navbar_items = get_navbar_items(UserFactory(), request.path)
         self.assertEqual(len(navbar_items), 3)
         self.assert_annotations(
             item_annotated=navbar_items[1],
@@ -216,9 +212,7 @@ class GetNavbarItemsTestSuite(TestMixin, TestCase):
         `test_normal_user` for a superuser.
         """
         request = RequestFactory().get("/normal/noe/undergreier/")
-        request.user = SuperUserFactory()
-        context = {"request": request}
-        navbar_items = get_navbar_items(context)
+        navbar_items = get_navbar_items(SuperUserFactory(), request.path)
         self.assertEqual(len(navbar_items), 4)
         self.assert_annotations(
             item_annotated=navbar_items[2],

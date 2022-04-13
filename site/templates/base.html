@@ -1,6 +1,7 @@
 {% extends 'base_base.html' %}
 {% block navbar %}
-	{% include "navbar/includes/navbar.html" %}
+	{% load navbar %}
+	{% navbar user request.path %}
 {% endblock navbar %}
 
 {% block body %}
