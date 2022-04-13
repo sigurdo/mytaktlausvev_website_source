@@ -45,16 +45,14 @@ class NavbarItem(Model):
         """Returns True if navbar_item is active and False if not."""
         match self.type:
             case NavbarItem.Type.LINK:
-                item_paths = [self.link]
+                return request_path.startswith(self.link)
             case NavbarItem.Type.DROPDOWN:
-                item_paths = [subitem.link for subitem in self.sub_items()]
+                return any(
+                    request_path.startswith(subitem.link)
+                    for subitem in self.sub_items()
+                )
             case _:
-                item_paths = []
-
-        for item_path in item_paths:
-            if request_path.startswith(item_path):
-                return True
-        return False
+                return False
 
     def permitted(self, user):
         """

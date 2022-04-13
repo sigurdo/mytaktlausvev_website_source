@@ -137,6 +137,9 @@ class UserCustom(AbstractUser):
     def get_absolute_url(self):
         return reverse("accounts:ProfileDetail", args=[self.slug])
 
+    def get_edit_url(self):
+        return reverse("accounts:UserCustomUpdate", args=[self.slug])
+
     class Meta(AbstractUser.Meta):
         constraints = [
             UniqueConstraint(Lower("username"), name="username_case_insensitive")

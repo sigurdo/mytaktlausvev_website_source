@@ -1,8 +1,8 @@
-<nav class="navbar navbar-expand-xl fixed-top navbar-dark {% if not DEBUG %} bg-primary {% else %}" style="background-color:#058104; {% endif %}">
+<nav class="navbar p-1 navbar-expand-xl fixed-top navbar-dark {% if  DEBUG %} bg-primary {% else %}" style="background-color:#058104; {% endif %}">
     <div class="container-fluid">
         <a class="navbar-brand" href="/"/>
             {% load static %}
-            <img class="w-16 me-2" src="{% static 'images/logo_flag.svg' %}">
+            <img class="w-14 me-2" src="{% static 'images/logo_flag.svg' %}">
             <span class="d-none d-sm-inline fw-bold">Studentorchesteret Dei Taktlause</span>
         </a>
 
@@ -11,62 +11,9 @@
             <span class="navbar-toggler-icon"></span>
         </button>
 
-        <div class="collapse navbar-collapse" id="collapsable">
-            <ul class="navbar-nav navbar-nav-scroll me-auto" style="--bs-scroll-height: 65vh;">
-                {% load get_navbar_items %}
-                {% get_navbar_items as navbar_items %}
-                {% for item in navbar_items %}
-                    <li class="nav-item dropdown">
-                        <a class="
-                            nav-link
-                            {% if item.is_active %} active {% endif %}
-                            {% if item.is_dropdown %} dropdown-toggle {% endif %}
-                            "
-                            href="{{item.href}}"
-                            {% if item.is_dropdown %}
-                                id="dropdown-button-{{item.pk}}"
-                                role="button"
-                                data-bs-toggle="dropdown"
-                                {% if item.is_active %}
-                                    aria-expanded="true"
-                                {% else %}
-                                    aria-expanded="false"
-                                {% endif %}
-                            {% endif %}>
-                            {{item.text}}
-                        </a>
-                        {% if item.is_dropdown %}
-                            <ul class="dropdown-menu navbar-dropdown-menu" aria-labelledby="dropdown-button-{{item.pk}}">
-                                {% for sub_item in item.sub_items_annotated %}
-                                    <li class="nav-item">
-                                        <a class="
-                                            dropdown-item
-                                            nav-link
-                                            bg-reset
-                                            {% if sub_item.is_active %}active{% endif %}
-                                            "
-                                            href="{{sub_item.link}}">
-                                            {{sub_item.text}}
-                                        </a>
-                                    </li>
-                                {% endfor %}
-                            </ul>
-                        {% endif %}
-                    </li>
-                {% endfor %}
-            </ul>
-            <ul class="nav navbar-nav">
-                <li class="nav-item">
-                    <span class="navbar-text">
-                        {% if user.is_authenticated %}
-                        <span>Innlogga som <a href="{% url 'accounts:ProfileDetail' user.slug %}">{{user.username}}</a>!</span>
-                        <a href="{% url 'logout' %}?next=/">Logg ut</a>
-                        {% else %}
-                        <span>Du er ikkje innlogga. <a href="{% url 'login' %}">Logg inn</a></span>
-                        {% endif %}
-                    </span>
-                </li>
-            </ul>
+        <div class="collapse navbar-collapse navbar-nav-scroll" style="--bs-scroll-height: 65vh;" id="collapsable">
+            {% include "navbar/includes/navbar_items.html" %}
+            {% include "navbar/includes/profile_dropdown.html" %}
         </div>
     </div>
 </nav>
