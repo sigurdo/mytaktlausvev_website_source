@@ -12,7 +12,7 @@ stages:
   - test
   - deploy
 
-test:
+verify-merge-request:
   stage: test
   before_script:
     - apk update
@@ -37,6 +37,20 @@ test:
     - docker-compose down
   only:
     - merge_requests
+  tags:
+    - docker
+
+verify-deploy:
+  stage: test
+  script:
+    - sh setup/init.sh
+    - docker-compose run django site/manage.py test site/
+    - docker-compose run django isort . -c
+    - docker-compose run django black . --check
+    - docker-compose run django flake8
+    - docker-compose down
+  only:
+    - new-deploy-flow
   tags:
     - docker
 
