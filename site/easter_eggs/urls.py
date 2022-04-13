@@ -9,6 +9,7 @@ urlpatterns = [
     path(
         "dQw4w9WgXcQ/",
         RedirectView.as_view(url="https://www.youtube.com/watch?v=dQw4w9WgXcQ"),
+        name="IceCream",
     ),
     path("brygg/", BrewView.as_view(), name="BrewView"),
     path("skiltmerke/", EasterEggButton.as_view(), name="EasterEggButton"),
