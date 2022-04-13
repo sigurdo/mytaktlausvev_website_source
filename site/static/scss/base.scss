@@ -46,6 +46,9 @@ th {
 }
 
 .navbar-dropdown-menu {
+  // Set background-color explictly to the card-bg for dark mode, so the
+  // text is readable on light mode as well.
+  background-color: $gray-800;
   border: 1px solid white;
 }
 
