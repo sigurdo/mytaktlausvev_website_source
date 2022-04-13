@@ -5,6 +5,8 @@ from django.contrib.auth.mixins import (
     UserPassesTestMixin,
 )
 from django.core.mail import send_mail
+from django.db.models import CharField, F, IntegerField
+from django.db.models.functions import Cast, Concat
 from django.template.loader import render_to_string
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
@@ -65,3 +67,13 @@ class MemberList(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         kwargs["membership_status_enum"] = UserCustom.MembershipStatus
         return super().get_context_data(**kwargs)
+
+
+class BirthdayList(LoginRequiredMixin, ListView):
+
+    model = UserCustom
+    template_name = "accounts/birthday_list.html"
+    context_object_name = "users"
+
+    def get_queryset(self):
+        return UserCustom.objects.active().exclude(birthdate__isnull=True)

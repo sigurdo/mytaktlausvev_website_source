@@ -1,6 +1,12 @@
 from django.urls import path
 
-from .views import MemberList, ProfileDetail, UserCustomCreate, UserCustomUpdate
+from .views import (
+    BirthdayList,
+    MemberList,
+    ProfileDetail,
+    UserCustomCreate,
+    UserCustomUpdate,
+)
 
 app_name = "accounts"
 
@@ -13,4 +19,5 @@ urlpatterns = [
         UserCustomUpdate.as_view(),
         name="UserCustomUpdate",
     ),
+    path("bursdagar/", BirthdayList.as_view(), name="BirthdayList"),
 ]
