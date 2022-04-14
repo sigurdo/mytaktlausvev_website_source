@@ -114,7 +114,11 @@
 						<a href={{birthday_user.get_absolute_url}}>{{birthday_user}}</a>
 					</li>
 					{% endfor %}
+
 				</ul>
+				<p>
+					<a class="btn btn-primary" href="{% url "accounts:BirthdayList" %}">Alle bursdagar</a>
+				</p>
 			</div>
 		</div>
 	</div>
@@ -158,6 +162,9 @@
 					</li>
 					{% endfor %}
 				</ul>
+				<p>
+					<a class="btn btn-primary" href="{% url "sheetmusic:ScoreList" %}">Alle notar</a>
+				</p>
 			</div>
 		</div>
 	</div>

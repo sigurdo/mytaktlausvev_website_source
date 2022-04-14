@@ -7,6 +7,7 @@ from django.templatetags.static import static
 from django.test import TestCase
 from django.urls import reverse
 from django.utils.text import slugify
+from django.utils.timezone import now
 
 from common.mixins import TestMixin
 from common.test_utils import test_image
@@ -291,3 +292,43 @@ class ProfileDetailTest(TestMixin, TestCase):
         """Should require login."""
         user = UserFactory()
         self.assertLoginRequired(reverse("accounts:ProfileDetail", args=[user.slug]))
+
+
+class BirthdayListTestSuite(TestMixin, TestCase):
+    def get_url(self):
+        return reverse("accounts:BirthdayList")
+
+    def test_requires_login(self):
+        """Should require login."""
+        self.assertLoginRequired(self.get_url())
+
+    def test_includes_active_user_with_birthdate(self):
+        """Should include active users with a birthdate."""
+        user = UserFactory(
+            membership_status=UserCustom.MembershipStatus.PAYING, birthdate=now()
+        )
+
+        self.client.force_login(user)
+        response = self.client.get(self.get_url())
+
+        self.assertIn(user, response.context["users"])
+
+    def test_excludes_not_active_users(self):
+        """Should exclude users that aren't active."""
+        retired = UserFactory(
+            membership_status=UserCustom.MembershipStatus.RETIRED, birthdate=now()
+        )
+
+        self.client.force_login(retired)
+        response = self.client.get(self.get_url())
+
+        self.assertNotIn(retired, response.context["users"])
+
+    def test_excludes_users_without_birthdate(self):
+        """Should exclude users that don't have a birthdate."""
+        no_birthday = UserFactory(birthdate=None)
+
+        self.client.force_login(no_birthday)
+        response = self.client.get(self.get_url())
+
+        self.assertNotIn(no_birthday, response.context["users"])
