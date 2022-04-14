@@ -1,4 +1,4 @@
-<nav class="navbar p-1 navbar-expand-xl fixed-top navbar-dark {% if  DEBUG %} bg-primary {% else %}" style="background-color:#058104; {% endif %}">
+<nav class="navbar p-1 navbar-expand-xl fixed-top navbar-dark {% if not DEBUG %} bg-primary {% else %}" style="background-color:#058104; {% endif %}">
     <div class="container-fluid">
         <a class="navbar-brand" href="/"/>
             {% load static %}
