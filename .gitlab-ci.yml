@@ -78,17 +78,18 @@ success-notification:
   image: alpine:latest
   script:
     - apk add --update git curl
-    - wget https://raw.githubusercontent.com/DiscordHooks/gitlab-ci-discord-webhook/6c85938ced05da55fbf6ecaceb083e5baf98ee96/send.sh
+    - wget https://raw.githubusercontent.com/Shybert/gitlab-ci-discord-webhook/proper-logos/send.sh
     - chmod +x send.sh
     - sh send.sh success $WEBHOOK_URL
   rules:
-    - if: $CI_COMMIT_BRANCH == "fix-success-notification"
+    - if: $CI_COMMIT_TAG =~ /^v.*/
+  when: on_success
 failure-notification:
   stage: notification
   image: alpine:latest
   script:
     - apk add --update git curl
-    - wget https://raw.githubusercontent.com/DiscordHooks/gitlab-ci-discord-webhook/6c85938ced05da55fbf6ecaceb083e5baf98ee96/send.sh
+    - wget https://raw.githubusercontent.com/Shybert/gitlab-ci-discord-webhook/proper-logos/send.sh
     - chmod +x send.sh
     - sh send.sh failure $WEBHOOK_URL
   rules:
