@@ -12,7 +12,7 @@ stages:
   - test
   - deploy
 
-test:
+verify-merge-request:
   stage: test
   before_script:
     - apk update
@@ -35,8 +35,22 @@ test:
     - docker-compose run django flake8
     - if [ "`git diff`" != "" ]; then git commit --all -m "Lint"; git push git@$CI_SERVER_HOST:$CI_PROJECT_PATH.git; fi
     - docker-compose down
-  only:
-    - merge_requests
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+  tags:
+    - docker
+
+verify-deploy:
+  stage: test
+  script:
+    - sh setup/init.sh
+    - docker-compose run django site/manage.py test site/
+    - docker-compose run django isort . -c
+    - docker-compose run django black . --check
+    - docker-compose run django flake8
+    - docker-compose down
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^v.*/
   tags:
     - docker
 
@@ -52,7 +66,7 @@ deploy:
   script:
     - ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no "$SERVER_USER"@"$SERVER_IP" "~/veven/taktlausveven/deployment/deploy.sh"
     # Variables ID_RSA, SERVER_USER and SERVER_IP are set in settings -> ci/cd -> variables
-  only:
-    - master
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^v.*/
   tags:
     - taktlaustenaren
