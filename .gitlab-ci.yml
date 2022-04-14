@@ -11,6 +11,7 @@ services:
 stages:
   - test
   - deploy
+  - notification
 
 verify-merge-request:
   stage: test
@@ -70,3 +71,22 @@ deploy:
     - if: $CI_COMMIT_TAG =~ /^v.*/
   tags:
     - taktlaustenaren
+
+success_notification:
+  stage: notification
+  script:
+    - wget https://raw.githubusercontent.com/DiscordHooks/gitlab-ci-discord-webhook/6c85938ced05da55fbf6ecaceb083e5baf98ee96/send.sh
+    - chmod +x send.sh
+    - ./send.sh success $WEBHOOK_URL
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^v.*/
+  when: on_success
+failure_notification:
+  stage: notification
+  script:
+    - wget https://raw.githubusercontent.com/DiscordHooks/gitlab-ci-discord-webhook/6c85938ced05da55fbf6ecaceb083e5baf98ee96/send.sh
+    - chmod +x send.sh
+    - ./send.sh failure $WEBHOOK_URL
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^v.*/
+  when: on_failure
