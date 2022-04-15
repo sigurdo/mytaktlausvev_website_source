@@ -507,6 +507,13 @@ class Command(BaseCommand):
             parent=other_dropdown,
         )
         NavbarItemFactory(
+            text="Avstemmingar",
+            link=reverse("polls:PollList"),
+            order=2.58,
+            requires_login=False,
+            parent=other_dropdown,
+        )
+        NavbarItemFactory(
             text="Forum",
             link=reverse("forum:ForumList"),
             order=2.6,
