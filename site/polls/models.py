@@ -5,6 +5,7 @@ from django.db.models import (
     CASCADE,
     BooleanField,
     CharField,
+    Count,
     DateTimeField,
     FloatField,
     ForeignKey,
@@ -67,6 +68,18 @@ class Poll(CreatedModifiedMixin):
     def num_voting(self):
         """Returns the amount of people who have voted for this people."""
         return self.votes().distinct("user").count()
+
+    def winner(self):
+        """
+        Returns the winning choice of the poll.
+
+        If there are multiple winning choices, an arbitrary choice is returned.
+        While the function should return all winning choices,
+        this is prohibitively difficult to do in the Django ORM,
+        because of lack of support for filters in window expressions.
+        https://code.djangoproject.com/ticket/28333
+        """
+        return self.choices.alias(num_votes=Count("votes")).latest("num_votes")
 
     def has_voted(self, user):
         """Returns whether or not `user` has voted for this poll."""

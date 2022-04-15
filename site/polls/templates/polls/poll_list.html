@@ -12,14 +12,57 @@
 {% endblock header %}
 
 {% block content %}
-    <ul>
-        {% for poll in polls %}
-        <li>
-            <a href="{{ poll.get_absolute_url }}">{{ poll }}</a>
-            - {{ poll.num_voting }} har stemt
-        </li>
-        {% endfor %}
-    </ul>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Spørsmål</th>
+                    <th>Antal stemmer</th>
+                    {% if user.is_authenticated %}
+                    <th>Du har stemt</th>
+                    {% endif %}
+                    <th>Vinnar</th>
+                    <th>Laga</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for poll in polls %}
+                <tr>
+                    <td>
+                        <a href="{{ poll.get_absolute_url }}">
+                            {{ poll.question }}
+                        </a>
+                    </td>
+                    <td>{{ poll.num_voting }}</td>
+                    {% if user.is_authenticated %}
+                    <td>
+                        {% load polls %}
+                        {% votes_for_user poll user as user_votes %}
+
+                        {% if user_votes.count == 0 %}
+                            <span class="fst-italic">Ikkje stemt</span>
+                        {% elif user_votes.count == 1 %}
+                            {{ user_votes.0.choice }}
+                        {% else %}
+                            <ul class="ps-3 mb-0">
+                                {% for vote in user_votes %}
+                                <li>{{ vote.choice }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </td>
+                    {% endif %}
+                    <td>
+                        {{ poll.winner }}
+                    </td>
+                    <td>
+                        <time datetime="{{ poll.created | date:"c" }}">{{ poll.created }}</time>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
     <footer>
         {% include "common/includes/pagination.html" with pagination_label="Avstemmingsider" %}

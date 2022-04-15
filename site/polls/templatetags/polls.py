@@ -15,3 +15,9 @@ def vote_or_results(poll: Poll, user, next=None):
     should_vote = user.is_authenticated and not poll.has_voted(user)
 
     return {"poll": poll, "form": form, "should_vote": should_vote}
+
+
+@register.simple_tag
+def votes_for_user(poll: Poll, user):
+    """Returns the votes for a user on a poll."""
+    return poll.votes().filter(user=user)
