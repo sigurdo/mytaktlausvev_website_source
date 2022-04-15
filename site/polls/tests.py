@@ -275,7 +275,9 @@ class PollTemplateTagsTestSuite(TestCase):
             VoteFactory(choice__poll=poll, user=user)
             VoteFactory(choice__poll=poll)
 
-        self.assertQuerysetEqual(votes_for_user(poll, user), Vote.objects.filter(user=user), ordered=False)
+        self.assertQuerysetEqual(
+            votes_for_user(poll, user), Vote.objects.filter(user=user), ordered=False
+        )
 
 
 class PollListTestSuite(TestCase):
