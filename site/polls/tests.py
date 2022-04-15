@@ -13,6 +13,7 @@ from django.utils.timezone import make_aware
 from accounts.factories import SuperUserFactory, UserFactory
 from common.mixins import TestMixin
 from common.test_utils import create_formset_post_data
+from polls.templatetags.polls import votes_for_user
 
 from .factories import ChoiceFactory, PollFactory, VoteFactory
 from .forms import ChoiceFormset, MultiVoteForm, SingleVoteForm
@@ -263,6 +264,18 @@ class MultiVoteFormTestSuite(TestCase):
         for vote, choice in zip(Vote.objects.all(), choices):
             self.assertEqual(vote.choice, choice)
             self.assertEqual(vote.user, self.user)
+
+
+class PollTemplateTagsTestSuite(TestCase):
+    def test_votes_for_user(self):
+        """Should return only the votes for a specific user."""
+        poll = PollFactory()
+        user = UserFactory()
+        for _ in range(3):
+            VoteFactory(choice__poll=poll, user=user)
+            VoteFactory(choice__poll=poll)
+
+        self.assertQuerysetEqual(votes_for_user(poll, user), Vote.objects.filter(user=user), ordered=False)
 
 
 class PollListTestSuite(TestCase):
