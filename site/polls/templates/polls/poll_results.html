@@ -25,6 +25,10 @@
 {% endblock header %}
 
 {% block content %}
+    <p>
+        <span class="fw-bold">Vinnar:</span> {{ poll.winner }}
+    </p>
+
     {% include "polls/includes/poll.html" with poll=poll only %}
 
     {% if user.is_authenticated %}
