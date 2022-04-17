@@ -6,7 +6,6 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.forms import FileField, ValidationError
 from django.test import TestCase, override_settings
 from django.urls import reverse
-from django.views.generic import View
 
 from accounts.factories import UserFactory
 

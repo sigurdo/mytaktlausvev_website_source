@@ -50,7 +50,7 @@ class ArticleDetail(UserPassesTestMixin, BreadcrumbsMixin, SlugPathMixin, Detail
 
 
 class ArticleCreate(LoginRequiredMixin, CreateView):
-    """View for creating a article."""
+    """View for creating an article."""
 
     model = Article
     form_class = ArticleForm
@@ -62,8 +62,11 @@ class ArticleCreate(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class SubarticleCreate(SlugPathMixin, ArticleCreate):
+class SubarticleCreate(SlugPathMixin, BreadcrumbsMixin, ArticleCreate):
     """View for creating a subarticle."""
+
+    def get_breadcrumbs(self) -> list:
+        return self.get_object().breadcrumbs(include_self=True)
 
     def get_initial(self):
         parent = self.get_object()

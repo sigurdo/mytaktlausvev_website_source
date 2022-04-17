@@ -6,18 +6,22 @@ from django.urls import reverse
 from django.views.generic import ListView
 from django.views.generic.edit import CreateView, UpdateView
 
+from common.breadcrumbs import Breadcrumb, BreadcrumbsMixin
 from common.mixins import PermissionOrCreatedMixin
 from quotes.models import Quote
 
 from .forms import QuoteForm
 
 
-class QuoteNew(LoginRequiredMixin, CreateView):
+class QuoteNew(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
     """View-function for new-quote-form"""
 
     model = Quote
     form_class = QuoteForm
     template_name = "common/form.html"
+
+    def get_breadcrumbs(self) -> list:
+        return [Breadcrumb(reverse("quotes:quotes"), "Sitat")]
 
     def form_valid(self, form):
         form.instance.created_by = self.request.user
@@ -49,7 +53,7 @@ class QuoteList(LoginRequiredMixin, ListView):
         return super().get_queryset().filter(public=True)
 
 
-class QuoteUpdate(PermissionOrCreatedMixin, UpdateView):
+class QuoteUpdate(PermissionOrCreatedMixin, BreadcrumbsMixin, UpdateView):
     """View-function for editing quotes"""
 
     model = Quote
@@ -57,9 +61,8 @@ class QuoteUpdate(PermissionOrCreatedMixin, UpdateView):
     template_name = "common/form.html"
     permission_required = "quotes.change_quote"
 
-    def get_context_data(self, **kwargs):
-        # kwargs["breadcrumbs"] = self.object.breadcrumbs(include_self=True)
-        return super().get_context_data(**kwargs)
+    def get_breadcrumbs(self) -> list:
+        return [Breadcrumb(reverse("quotes:quotes"), "Sitat")]
 
     def form_valid(self, form):
         form.instance.modified_by = self.request.user

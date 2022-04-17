@@ -6,9 +6,22 @@ from django.urls import reverse
 from django.views.generic import FormView, ListView, View
 
 from accounts.models import UserCustom
+from common.breadcrumbs import Breadcrumb, BreadcrumbsMixin
 
 from .forms import AddJacketUserForm, JacketsUpdateFormset, RemoveJacketUserForm
 from .models import Jacket, JacketUser
+
+
+def breadcrumbs(jacket=None):
+    """Returns breadcrumbs for the uniforms views."""
+    breadcrumbs = [Breadcrumb(reverse("uniforms:JacketList"), "Jakkeoversikt")]
+    if jacket:
+        breadcrumbs.append(
+            Breadcrumb(
+                reverse("uniforms:JacketUsers", args=[jacket.number]), str(jacket)
+            )
+        )
+    return breadcrumbs
 
 
 class JacketList(LoginRequiredMixin, ListView):
@@ -16,7 +29,7 @@ class JacketList(LoginRequiredMixin, ListView):
     context_object_name = "jackets"
 
 
-class JacketsUpdate(PermissionRequiredMixin, FormView):
+class JacketsUpdate(PermissionRequiredMixin, BreadcrumbsMixin, FormView):
     form_class = JacketsUpdateFormset
     template_name = "common/form.html"
     permission_required = (
@@ -28,6 +41,9 @@ class JacketsUpdate(PermissionRequiredMixin, FormView):
     def get_success_url(self):
         return reverse("uniforms:JacketList")
 
+    def get_breadcrumbs(self) -> list:
+        return breadcrumbs()
+
     def get_context_data(self, **kwargs):
         kwargs["form_title"] = "Rediger jakkeoversikt"
         return super().get_context_data(**kwargs)
@@ -38,7 +54,7 @@ class JacketsUpdate(PermissionRequiredMixin, FormView):
         return super().form_valid(form)
 
 
-class JacketUsers(PermissionRequiredMixin, ListView):
+class JacketUsers(PermissionRequiredMixin, BreadcrumbsMixin, ListView):
     model = UserCustom
     context_object_name = "jacket_users"
     template_name = "uniforms/jacket_user_list.html"
@@ -52,6 +68,9 @@ class JacketUsers(PermissionRequiredMixin, ListView):
         "uniforms.delete_jacketuser",
     )
 
+    def get_breadcrumbs(self) -> list:
+        return breadcrumbs()
+
     def get_context_data(self, **kwargs):
         kwargs["jacket"] = self.jacket
         return super().get_context_data(**kwargs)
@@ -64,7 +83,7 @@ class JacketUsers(PermissionRequiredMixin, ListView):
         return JacketUser.objects.filter(jacket=self.jacket)
 
 
-class AddJacketUser(PermissionRequiredMixin, FormView):
+class AddJacketUser(PermissionRequiredMixin, BreadcrumbsMixin, FormView):
     form_class = AddJacketUserForm
     template_name = "common/form.html"
     permission_required = "uniforms.add_jacketuser"
@@ -75,6 +94,9 @@ class AddJacketUser(PermissionRequiredMixin, FormView):
 
     def get_success_url(self):
         return reverse("uniforms:JacketList")
+
+    def get_breadcrumbs(self) -> list:
+        return breadcrumbs(self.jacket)
 
     def get_context_data(self, **kwargs):
         kwargs["form_title"] = f"Legg til brukar av jakke {self.jacket.number}"
@@ -95,7 +117,9 @@ class AddJacketUser(PermissionRequiredMixin, FormView):
         return super().form_valid(form)
 
 
-class RemoveJacketUser(PermissionRequiredMixin, SuccessMessageMixin, FormView):
+class RemoveJacketUser(
+    PermissionRequiredMixin, SuccessMessageMixin, BreadcrumbsMixin, FormView
+):
     form_class = RemoveJacketUserForm
     template_name = "common/form.html"
     permission_required = "uniforms.delete_jacketuser"
@@ -105,6 +129,9 @@ class RemoveJacketUser(PermissionRequiredMixin, SuccessMessageMixin, FormView):
         self.user = UserCustom.objects.get(slug=kwargs["user_slug"])
         self.jacket_user = JacketUser.objects.get(jacket=self.jacket, user=self.user)
         return super().setup(request, *args, **kwargs)
+
+    def get_breadcrumbs(self) -> list:
+        return breadcrumbs(self.jacket)
 
     def get_context_data(self, **kwargs):
         kwargs[
@@ -131,7 +158,7 @@ class RemoveJacketUser(PermissionRequiredMixin, SuccessMessageMixin, FormView):
         return f"{self.jacket_user.user} vart fjerna som brukar av {self.jacket_user.jacket}."
 
 
-class JacketUserMakeOwner(PermissionRequiredMixin, View):
+class JacketUserMakeOwner(PermissionRequiredMixin, BreadcrumbsMixin, View):
     http_method_names = ["post"]
     permission_required = "uniforms.change_jacketuser"
 
@@ -151,3 +178,6 @@ class JacketUserMakeOwner(PermissionRequiredMixin, View):
             self.jacket_user.is_owner = True
             self.jacket_user.save()
         return HttpResponseRedirect(self.get_succes_url())
+
+    def get_breadcrumbs(self) -> list:
+        return breadcrumbs(self.jacket)
