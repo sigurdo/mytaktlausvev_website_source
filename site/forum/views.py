@@ -6,6 +6,8 @@ from django.shortcuts import get_object_or_404
 from django.urls.base import reverse
 from django.views.generic import CreateView, DetailView, ListView
 
+from common.breadcrumbs import Breadcrumb, BreadcrumbsMixin
+
 from .forms import TopicCreateForm
 from .models import Forum, Topic
 
@@ -23,7 +25,7 @@ class ForumList(LoginRequiredMixin, ListView):
         )
 
 
-class TopicList(LoginRequiredMixin, ListView):
+class TopicList(LoginRequiredMixin, BreadcrumbsMixin, ListView):
     model = Topic
     context_object_name = "topics"
     paginate_by = 25
@@ -41,11 +43,11 @@ class TopicList(LoginRequiredMixin, ListView):
             .order_by("-latest_created")
         )
 
+    def get_breadcrumbs(self) -> list:
+        return [Breadcrumb(reverse("forum:ForumList"), "Alle forum")]
+
     def get_context_data(self, **kwargs):
         kwargs["forum"] = self.forum
-        kwargs["breadcrumbs"] = [
-            {"url": reverse("forum:ForumList"), "name": "Alle forum"}
-        ]
         return super().get_context_data(**kwargs)
 
 
@@ -71,7 +73,7 @@ class TopicCreate(LoginRequiredMixin, CreateView):
         return HttpResponseRedirect(self.get_success_url())
 
 
-class TopicDetail(LoginRequiredMixin, DetailView):
+class TopicDetail(LoginRequiredMixin, BreadcrumbsMixin, DetailView):
     model = Topic
     context_object_name = "topic"
     paginate_by = 25
@@ -79,9 +81,8 @@ class TopicDetail(LoginRequiredMixin, DetailView):
     def get_queryset(self):
         return super().get_queryset().filter(forum__slug=self.kwargs["slug_forum"])
 
-    def get_context_data(self, **kwargs):
-        kwargs["breadcrumbs"] = [
-            {"url": reverse("forum:ForumList"), "name": "Alle forum"},
-            {"url": self.object.forum.get_absolute_url(), "name": self.object.forum},
+    def get_breadcrumbs(self) -> list:
+        return [
+            Breadcrumb(reverse("forum:ForumList"), "Alle forum"),
+            Breadcrumb(self.object.forum.get_absolute_url(), self.object.forum),
         ]
-        return super().get_context_data(**kwargs)

@@ -22,7 +22,8 @@ from django.views.generic.edit import (
     UpdateView,
 )
 
-from common.mixins import BreadcrumbsMixin, PermissionOrCreatedMixin
+from common.breadcrumbs import Breadcrumb, BreadcrumbsMixin
+from common.mixins import PermissionOrCreatedMixin
 from common.views import DeleteViewCustom
 
 from .forms import (
@@ -62,20 +63,20 @@ def nav_tabs_score_edit(score, user):
 
 
 def sheetmusic_breadcrumbs(score=None, parts_update_index=False):
-    breadcrumbs = [{"url": reverse("sheetmusic:ScoreList"), "name": "Alle notar"}]
+    breadcrumbs = [Breadcrumb(reverse("sheetmusic:ScoreList"), "Alle notar")]
     if score:
         breadcrumbs.append(
-            {
-                "url": reverse("sheetmusic:ScoreView", args=[score.slug]),
-                "name": str(score),
-            }
+            Breadcrumb(
+                reverse("sheetmusic:ScoreView", args=[score.slug]),
+                str(score),
+            )
         )
     if parts_update_index:
         breadcrumbs.append(
-            {
-                "url": reverse("sheetmusic:PartsUpdateIndex", args=[score.slug]),
-                "name": "Rediger stemmer",
-            }
+            Breadcrumb(
+                reverse("sheetmusic:PartsUpdateIndex", args=[score.slug]),
+                "Rediger stemmer",
+            )
         )
     return breadcrumbs
 

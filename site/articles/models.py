@@ -3,6 +3,7 @@ from django.db import models
 from django.urls import reverse
 from tree_queries.models import TreeNode
 
+from common.breadcrumbs import Breadcrumb
 from common.models import ArticleMixin
 
 
@@ -28,9 +29,9 @@ class Article(ArticleMixin, TreeNode):
         slugs = [ancestor.slug for ancestor in self.ancestors(include_self=True)]
         return "/".join(slugs)
 
-    def breadcrumbs(self, include_self=False):
+    def breadcrumbs(self, include_self=False) -> list[Breadcrumb]:
         return [
-            {"url": ancestor.get_absolute_url(), "name": ancestor.title}
+            Breadcrumb(ancestor.get_absolute_url(), ancestor.title)
             for ancestor in self.ancestors(include_self=include_self)
         ]
 

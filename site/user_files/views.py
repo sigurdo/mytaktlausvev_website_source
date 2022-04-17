@@ -2,7 +2,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, ListView
 
-from common.mixins import BreadcrumbsMixin, PermissionOrCreatedMixin
+from common.breadcrumbs import Breadcrumb, BreadcrumbsMixin
+from common.mixins import PermissionOrCreatedMixin
 from common.views import DeleteViewCustom
 
 from .forms import FileForm
@@ -11,7 +12,7 @@ from .models import File
 
 def breadcrumbs():
     """Returns breadcrumbs for the user_files views."""
-    return [{"url": reverse("user_files:FileList"), "name": "Brukarfiler"}]
+    return [Breadcrumb(reverse("user_files:FileList"), "Brukarfiler")]
 
 
 class FileList(LoginRequiredMixin, ListView):

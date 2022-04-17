@@ -4,7 +4,7 @@ from django.urls import reverse, reverse_lazy
 from django.utils.text import slugify
 from django.views.generic import DetailView, FormView, ListView
 
-from common.mixins import BreadcrumbsMixin
+from common.breadcrumbs import Breadcrumb, BreadcrumbsMixin
 from common.views import (
     DeleteViewCustom,
     InlineFormsetCreateView,
@@ -19,10 +19,10 @@ from .models import Repertoire
 class ReperoireBreadcrumbsMixin(BreadcrumbsMixin):
     def get_breadcrumbs(self):
         return [
-            {
-                "url": reverse("repertoire:RepertoireList"),
-                "name": "Repertoar",
-            }
+            Breadcrumb(
+                reverse("repertoire:RepertoireList"),
+                "Repertoar",
+            )
         ]
 
 

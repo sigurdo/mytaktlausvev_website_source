@@ -8,6 +8,7 @@ from django.views.generic.detail import SingleObjectMixin
 
 from accounts.factories import SuperUserFactory, UserFactory
 from articles.views import SlugPathMixin
+from common.breadcrumbs import Breadcrumb
 from common.mixins import TestMixin
 
 from .factories import ArticleFactory
@@ -90,8 +91,8 @@ class ArticleTestCase(TestCase):
         self.assertEqual(
             self.grandchild.breadcrumbs(),
             [
-                {"url": self.article.get_absolute_url(), "name": self.article.title},
-                {"url": self.child.get_absolute_url(), "name": self.child.title},
+                Breadcrumb(self.article.get_absolute_url(), self.article.title),
+                Breadcrumb(self.child.get_absolute_url(), self.child.title),
             ],
         )
 
@@ -103,12 +104,9 @@ class ArticleTestCase(TestCase):
         self.assertEqual(
             self.grandchild.breadcrumbs(include_self=True),
             [
-                {"url": self.article.get_absolute_url(), "name": self.article.title},
-                {"url": self.child.get_absolute_url(), "name": self.child.title},
-                {
-                    "url": self.grandchild.get_absolute_url(),
-                    "name": self.grandchild.title,
-                },
+                Breadcrumb(self.article.get_absolute_url(), self.article.title),
+                Breadcrumb(self.child.get_absolute_url(), self.child.title),
+                Breadcrumb(self.grandchild.get_absolute_url(), self.grandchild.title),
             ],
         )
 

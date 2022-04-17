@@ -68,27 +68,6 @@ class CleanAllFilesMixin:
                         self.add_error(name, exception)
 
 
-class BreadcrumbsMixin(View):
-    def get_breadcrumbs(self) -> list:
-        """
-        Should be overrided and return a list of breadcrumb dicts on the following format:
-        [
-            {
-                "url": "<URL the breadcrumb should redirect to>",
-                "name": "<name or label for the breadcrumb>",
-            },
-            ...
-        ]
-        """
-        raise NotImplementedError(
-            "BreadcrumbsMixin.get_breadcrumbs() must be overridden"
-        )
-
-    def get_context_data(self, **kwargs):
-        kwargs["breadcrumbs"] = self.get_breadcrumbs()
-        return super().get_context_data(**kwargs)
-
-
 class PermissionOrCreatedMixin(PermissionRequiredMixin):
     """
     Mixin that permits the user if the user has the correct permissions,

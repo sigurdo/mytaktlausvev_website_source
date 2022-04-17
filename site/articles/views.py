@@ -3,6 +3,7 @@ from django.http.response import Http404
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 
+from common.breadcrumbs import BreadcrumbsMixin
 from common.mixins import PermissionOrCreatedMixin
 
 from .forms import ArticleForm
@@ -28,7 +29,7 @@ class SlugPathMixin:
         raise Http404(f"Couldn't find and article matching path '{path}'.")
 
 
-class ArticleDetail(UserPassesTestMixin, SlugPathMixin, DetailView):
+class ArticleDetail(UserPassesTestMixin, BreadcrumbsMixin, SlugPathMixin, DetailView):
     """View for viewing an article."""
 
     model = Article
@@ -36,9 +37,11 @@ class ArticleDetail(UserPassesTestMixin, SlugPathMixin, DetailView):
     def test_func(self):
         return self.get_object().public or self.request.user.is_authenticated
 
+    def get_breadcrumbs(self) -> list:
+        return self.object.breadcrumbs()
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["breadcrumbs"] = self.object.breadcrumbs()
         if self.request.user.is_authenticated:
             context["subarticles"] = self.object.children.all()
         else:
@@ -71,7 +74,9 @@ class SubarticleCreate(SlugPathMixin, ArticleCreate):
         }
 
 
-class ArticleUpdate(PermissionOrCreatedMixin, SlugPathMixin, UpdateView):
+class ArticleUpdate(
+    PermissionOrCreatedMixin, BreadcrumbsMixin, SlugPathMixin, UpdateView
+):
     """View for updating a article."""
 
     model = Article
@@ -79,9 +84,8 @@ class ArticleUpdate(PermissionOrCreatedMixin, SlugPathMixin, UpdateView):
     template_name = "common/form.html"
     permission_required = "articles.change_article"
 
-    def get_context_data(self, **kwargs):
-        kwargs["breadcrumbs"] = self.object.breadcrumbs(include_self=True)
-        return super().get_context_data(**kwargs)
+    def get_breadcrumbs(self) -> list:
+        return self.object.breadcrumbs(include_self=True)
 
     def form_valid(self, form):
         form.instance.modified_by = self.request.user

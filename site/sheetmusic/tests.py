@@ -8,6 +8,7 @@ from django.utils.text import slugify
 from PyPDF2 import PdfFileReader
 
 from accounts.factories import SuperUserFactory, UserFactory
+from common.breadcrumbs import Breadcrumb
 from common.mixins import TestMixin
 from common.test_utils import (
     create_formset_post_data,
@@ -303,7 +304,7 @@ class SheetmusicBreadcrumbsTestSuite(TestMixin, TestCase):
     def test_normal(self):
         self.assertEqual(
             sheetmusic_breadcrumbs(),
-            [{"url": reverse("sheetmusic:ScoreList"), "name": "Alle notar"}],
+            [Breadcrumb(reverse("sheetmusic:ScoreList"), "Alle notar")],
         )
 
     def test_score(self):
@@ -311,14 +312,14 @@ class SheetmusicBreadcrumbsTestSuite(TestMixin, TestCase):
         self.assertEqual(
             sheetmusic_breadcrumbs(score=score),
             [
-                {
-                    "url": reverse("sheetmusic:ScoreList"),
-                    "name": "Alle notar",
-                },
-                {
-                    "url": reverse("sheetmusic:ScoreView", args=[score.slug]),
-                    "name": str(score),
-                },
+                Breadcrumb(
+                    reverse("sheetmusic:ScoreList"),
+                    "Alle notar",
+                ),
+                Breadcrumb(
+                    reverse("sheetmusic:ScoreView", args=[score.slug]),
+                    str(score),
+                ),
             ],
         )
 
@@ -327,18 +328,18 @@ class SheetmusicBreadcrumbsTestSuite(TestMixin, TestCase):
         self.assertEqual(
             sheetmusic_breadcrumbs(score=score, parts_update_index=True),
             [
-                {
-                    "url": reverse("sheetmusic:ScoreList"),
-                    "name": "Alle notar",
-                },
-                {
-                    "url": reverse("sheetmusic:ScoreView", args=[score.slug]),
-                    "name": str(score),
-                },
-                {
-                    "url": reverse("sheetmusic:PartsUpdateIndex", args=[score.slug]),
-                    "name": "Rediger stemmer",
-                },
+                Breadcrumb(
+                    reverse("sheetmusic:ScoreList"),
+                    "Alle notar",
+                ),
+                Breadcrumb(
+                    reverse("sheetmusic:ScoreView", args=[score.slug]),
+                    str(score),
+                ),
+                Breadcrumb(
+                    reverse("sheetmusic:PartsUpdateIndex", args=[score.slug]),
+                    "Rediger stemmer",
+                ),
             ],
         )
 

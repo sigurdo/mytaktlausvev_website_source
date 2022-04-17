@@ -9,7 +9,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
-from common.mixins import BreadcrumbsMixin
+from common.breadcrumbs import Breadcrumb, BreadcrumbsMixin
 from common.templatetags.markdown import markdown
 
 from .forms import UserCustomCreateForm, UserCustomUpdateForm
@@ -18,9 +18,9 @@ from .models import UserCustom
 
 def breadcrumbs(user=None):
     """Returns breadcrumbs for the accounts views."""
-    breadcrumbs = [{"url": reverse("accounts:MemberList"), "name": "Alle medlemmar"}]
+    breadcrumbs = [Breadcrumb(reverse("accounts:MemberList"), "Alle medlemmar")]
     if user:
-        breadcrumbs.append({"url": user.get_absolute_url(), "name": user})
+        breadcrumbs.append(Breadcrumb(user.get_absolute_url(), user))
     return breadcrumbs
 
 
