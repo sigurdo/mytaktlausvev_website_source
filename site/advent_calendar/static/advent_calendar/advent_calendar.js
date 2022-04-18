@@ -1,7 +1,7 @@
 const modalElement = document.getElementById("modal");
 const modal = new bootstrap.Modal(modalElement);
 const formContainer = document.getElementById("form-container");
-const form = document.querySelector("form");
+const form = document.getElementById("form-window");
 
 document
   .querySelectorAll(".window-modal")

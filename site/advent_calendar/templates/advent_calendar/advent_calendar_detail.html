@@ -19,9 +19,20 @@
         <div class="modal-dialog modal-dialog-centered">
             {% for window in advent_calendar.windows.all %}
                 <article class="modal-content window-modal d-none" data-index="{{ window.index }}">
-                    <header class="modal-header">
-                        <h2 class="modal-title">{{ window.title }}</h2>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <header class="modal-header flex-column align-items-start">
+                        <div class="d-flex align-items-center justify-content-between w-100">
+                            <h2 class="modal-title">{{ window.title }}</h2>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+
+                        {% if window.created_by == user or perms.advent_calendar.change_window %}
+                        <a
+                            href="{% url 'advent_calendar:WindowUpdate' advent_calendar.year window.index %}"
+                            class="btn btn-advent-calendar text-white mt-2"
+                        >
+                            Rediger luke
+                        </a>
+                        {% endif %}
                     </header>
 
                     <div class="modal-body">
@@ -30,19 +41,14 @@
                         </p>
                         {% load markdown %}
                         {{ window.content | markdown }}
+
+                        <hr />
+
+                        {% load comments %}
+                        {% comment_list window %}
                     </div>
 
 
-                    {% if window.created_by == user or perms.advent_calendar.change_window %}
-                    <footer class="modal-footer">
-                        <a
-                            href="{% url 'advent_calendar:WindowUpdate' advent_calendar.year window.index %}"
-                            class="btn btn-advent-calendar text-white"
-                        >
-                            Rediger luke
-                        </a>
-                    </footer>
-                    {% endif %}
                 </article>
             {% endfor %}
 

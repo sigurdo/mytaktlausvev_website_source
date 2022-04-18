@@ -22,6 +22,7 @@ class WindowCreateForm(forms.ModelForm):
 
     helper = FormHelper()
     helper.add_input(Submit("submit", "Legg ut luke"))
+    helper.form_id = "form-window"
 
     def __init__(self, advent_calendar=None, *args, **kwargs):
         if advent_calendar:

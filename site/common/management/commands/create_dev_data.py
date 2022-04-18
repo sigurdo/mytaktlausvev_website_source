@@ -8,6 +8,7 @@ from django.urls import reverse
 from django.utils.timezone import make_aware
 
 from accounts.models import UserCustom
+from advent_calendar.factories import AdventCalendarFactory, WindowFactory
 from articles.factories import ArticleFactory
 from comments.factories import CommentFactory
 from common.test_utils import test_pdf_multipage
@@ -370,6 +371,16 @@ class Command(BaseCommand):
             date=date(3018, 10, 25),
             created_by=leader,
             modified_by=leader,
+        )
+
+        advent_calendar = AdventCalendarFactory(year=2077)
+        WindowFactory(
+            advent_calendar=advent_calendar,
+            index=1,
+            title="Kybernetikk og pønk",
+            content="Det var ein gong i ein by på natta...",
+            created_by=member,
+            modified_by=member,
         )
 
         NavbarItemFactory(
