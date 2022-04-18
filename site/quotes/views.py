@@ -13,6 +13,11 @@ from quotes.models import Quote
 from .forms import QuoteForm
 
 
+def breadcrumbs(poll=None):
+    """Returns breadcrumbs for the quotes views."""
+    return [Breadcrumb(reverse("quotes:quotes"), "Sitat")]
+
+
 class QuoteNew(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
     """View-function for new-quote-form"""
 
@@ -21,7 +26,7 @@ class QuoteNew(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
     template_name = "common/form.html"
 
     def get_breadcrumbs(self) -> list:
-        return [Breadcrumb(reverse("quotes:quotes"), "Sitat")]
+        return breadcrumbs()
 
     def form_valid(self, form):
         form.instance.created_by = self.request.user
@@ -62,7 +67,7 @@ class QuoteUpdate(PermissionOrCreatedMixin, BreadcrumbsMixin, UpdateView):
     permission_required = "quotes.change_quote"
 
     def get_breadcrumbs(self) -> list:
-        return [Breadcrumb(reverse("quotes:quotes"), "Sitat")]
+        return breadcrumbs()
 
     def form_valid(self, form):
         form.instance.modified_by = self.request.user
