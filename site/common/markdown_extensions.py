@@ -47,17 +47,30 @@ class UnderlineExtension(Extension):
 
 
 class CensorshipProcessor(InlineProcessor):
-    """Censors everything except the first letter of the matched string."""
+    """
+    Censors everything except the first letter of the matched string.
+    Censorship can be escaped with `\\`
+    """
+
+    def __init__(self, pattern, md=None):
+        """
+        Match \\ at the beginning of the pattern,
+        to enable escaping the censor.
+        """
+        super().__init__(f"(\\\)?{pattern}", md)
 
     def handleMatch(self, m, data):
-        censored = m.group(0)[0] + "*" * (len(m.group(0)) - 1)
+        if m.group(1) == "\\":
+            censored = m.group(0)[1:]
+        else:
+            censored = m.group(0)[0] + "*" * (len(m.group(0)) - 1)
         return censored, m.start(0), m.end(0)
 
 
 class KWordCensorExtension(Extension):
     """Markdown extension that censors the dreaded K-word."""
 
-    RE = r"(K|k)orps"
+    RE = r"korps(?i)"
 
     def extendMarkdown(self, md):
         md.inlinePatterns.register(CensorshipProcessor(self.RE), "k-word-censor", 451)

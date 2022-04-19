@@ -3,11 +3,13 @@ from os.path import basename
 import magic
 from django.forms import ValidationError
 from django.test import TestCase
+from markdown import Markdown
 
 from articles.factories import ArticleFactory
 from articles.models import Article
 from comments.factories import CommentFactory
 from comments.models import Comment
+from common.markdown_extensions import KWordCensorExtension
 from sheetmusic.factories import PdfFactory
 
 from .mixins import TestMixin
@@ -89,3 +91,22 @@ class FileTypeValidatorTestSuite(TestCase):
     def test_wrong_multiple_extensions(self):
         with self.assertRaises(ValidationError):
             self.validator(test_pdf(name="test.pdff"))
+
+
+class KWordCensorTestSuite(TestCase):
+    def setUp(self):
+        self.md = Markdown(extensions=[KWordCensorExtension()])
+
+    def test_case_insensitive_censor(self):
+        """Censor should be case-insensitive."""
+        self.assertEqual(self.md.convert("korps"), "<p>k****</p>")
+        self.assertEqual(self.md.convert("KORPS"), "<p>K****</p>")
+        self.assertEqual(self.md.convert("Korps"), "<p>K****</p>")
+        self.assertEqual(self.md.convert("kOrPs"), "<p>k****</p>")
+
+    def test_can_escape_censor(self):
+        """Should be able to escape the censor with \\"""
+        self.assertEqual(self.md.convert("\korps"), "<p>korps</p>")
+        self.assertEqual(self.md.convert("\KORPS"), "<p>KORPS</p>")
+        self.assertEqual(self.md.convert("\Korps"), "<p>Korps</p>")
+        self.assertEqual(self.md.convert("\kOrPs"), "<p>kOrPs</p>")
