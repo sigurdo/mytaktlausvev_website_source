@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.views.generic import CreateView, ListView
 
+from common.breadcrumbs import Breadcrumb, BreadcrumbsMixin
 from common.views import InlineFormsetUpdateView
 
 from .forms import GalleryForm, ImageCreateForm, ImageFormSet
@@ -12,9 +13,9 @@ from .models import Gallery, Image
 
 def breadcrumbs(gallery=None):
     """Returns breadcrumbs for the gallery views."""
-    breadcrumbs = [{"url": reverse("pictures:GalleryList"), "name": "Fotoarkiv"}]
+    breadcrumbs = [Breadcrumb(reverse("pictures:GalleryList"), "Fotoarkiv")]
     if gallery:
-        breadcrumbs.append({"url": gallery.get_absolute_url(), "name": gallery})
+        breadcrumbs.append(Breadcrumb(gallery.get_absolute_url(), gallery))
     return breadcrumbs
 
 
@@ -49,7 +50,7 @@ class GalleryList(LoginRequiredMixin, ListView):
         )
 
 
-class GalleryDetail(LoginRequiredMixin, ListView):
+class GalleryDetail(LoginRequiredMixin, BreadcrumbsMixin, ListView):
     """View for viewing a single gallery."""
 
     model = Image
@@ -67,22 +68,23 @@ class GalleryDetail(LoginRequiredMixin, ListView):
     def get_queryset(self):
         return super().get_queryset().filter(gallery=self.get_gallery())
 
+    def get_breadcrumbs(self) -> list:
+        return breadcrumbs()
+
     def get_context_data(self, **kwargs):
         kwargs["gallery"] = self.get_gallery()
-        kwargs["breadcrumbs"] = breadcrumbs()
         return super().get_context_data(**kwargs)
 
 
-class GalleryCreate(LoginRequiredMixin, CreateView):
+class GalleryCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
     """View for creating a gallery."""
 
     model = Gallery
     form_class = GalleryForm
     template_name = "common/form.html"
 
-    def get_context_data(self, **kwargs):
-        kwargs["breadcrumbs"] = breadcrumbs()
-        return super().get_context_data(**kwargs)
+    def get_breadcrumbs(self) -> list:
+        return breadcrumbs()
 
     def form_valid(self, form):
         form.instance.created_by = self.request.user
@@ -93,7 +95,7 @@ class GalleryCreate(LoginRequiredMixin, CreateView):
         return reverse("pictures:ImageCreate", args=[self.object.slug])
 
 
-class ImageCreate(LoginRequiredMixin, CreateView):
+class ImageCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
     model = Image
     form_class = ImageCreateForm
     template_name = "common/form.html"
@@ -111,10 +113,12 @@ class ImageCreate(LoginRequiredMixin, CreateView):
         kwargs["user"] = self.request.user
         return kwargs
 
+    def get_breadcrumbs(self) -> list:
+        return breadcrumbs(self.get_gallery())
+
     def get_context_data(self, **kwargs):
         kwargs["gallery"] = self.get_gallery()
         kwargs["form_title"] = f'Last opp bilete til "{self.get_gallery()}"'
-        kwargs["breadcrumbs"] = breadcrumbs(self.get_gallery())
         kwargs["nav_tabs"] = nav_tabs_gallery_edit(self.get_gallery())
         return super().get_context_data(**kwargs)
 
@@ -122,7 +126,7 @@ class ImageCreate(LoginRequiredMixin, CreateView):
         return reverse("pictures:GalleryUpdate", args=[self.get_gallery().slug])
 
 
-class GalleryUpdate(LoginRequiredMixin, InlineFormsetUpdateView):
+class GalleryUpdate(LoginRequiredMixin, BreadcrumbsMixin, InlineFormsetUpdateView):
     """View for updating a gallery and its images."""
 
     model = Gallery
@@ -130,8 +134,10 @@ class GalleryUpdate(LoginRequiredMixin, InlineFormsetUpdateView):
     formset_class = ImageFormSet
     template_name_suffix = "_form_update"
 
+    def get_breadcrumbs(self) -> list:
+        return breadcrumbs(self.object)
+
     def get_context_data(self, **kwargs):
-        kwargs["breadcrumbs"] = breadcrumbs(self.object)
         kwargs["nav_tabs"] = nav_tabs_gallery_edit(self.object)
         return super().get_context_data(**kwargs)
 

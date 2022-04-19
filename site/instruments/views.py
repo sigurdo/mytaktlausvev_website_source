@@ -2,6 +2,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.urls import reverse
 from django.views.generic import FormView, ListView
 
+from common.breadcrumbs import Breadcrumb, BreadcrumbsMixin
+
 from .forms import InstrumentUpdateFormset
 from .models import Instrument
 
@@ -13,6 +15,7 @@ class InstrumentList(LoginRequiredMixin, ListView):
 
 class InstrumentsUpdate(
     PermissionRequiredMixin,
+    BreadcrumbsMixin,
     FormView,
 ):
     form_class = InstrumentUpdateFormset
@@ -25,6 +28,9 @@ class InstrumentsUpdate(
 
     def get_success_url(self) -> str:
         return reverse("instruments:InstrumentList")
+
+    def get_breadcrumbs(self) -> list:
+        return [Breadcrumb(reverse("instruments:InstrumentList"), "Instrumentoversikt")]
 
     def get_context_data(self, **kwargs):
         kwargs["form_title"] = "Rediger instrumentoversikt"

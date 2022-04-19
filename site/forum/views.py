@@ -6,8 +6,18 @@ from django.shortcuts import get_object_or_404
 from django.urls.base import reverse
 from django.views.generic import CreateView, DetailView, ListView
 
+from common.breadcrumbs import Breadcrumb, BreadcrumbsMixin
+
 from .forms import TopicCreateForm
 from .models import Forum, Topic
+
+
+def breadcrumbs(forum=None):
+    """Returns breadcrumbs for the forum views."""
+    breadcrumbs = [Breadcrumb(reverse("forum:ForumList"), "Alle forum")]
+    if forum:
+        breadcrumbs.append(Breadcrumb(forum.get_absolute_url(), str(forum)))
+    return breadcrumbs
 
 
 class ForumList(LoginRequiredMixin, ListView):
@@ -23,7 +33,7 @@ class ForumList(LoginRequiredMixin, ListView):
         )
 
 
-class TopicList(LoginRequiredMixin, ListView):
+class TopicList(LoginRequiredMixin, BreadcrumbsMixin, ListView):
     model = Topic
     context_object_name = "topics"
     paginate_by = 25
@@ -41,15 +51,15 @@ class TopicList(LoginRequiredMixin, ListView):
             .order_by("-latest_created")
         )
 
+    def get_breadcrumbs(self) -> list:
+        return breadcrumbs()
+
     def get_context_data(self, **kwargs):
         kwargs["forum"] = self.forum
-        kwargs["breadcrumbs"] = [
-            {"url": reverse("forum:ForumList"), "name": "Alle forum"}
-        ]
         return super().get_context_data(**kwargs)
 
 
-class TopicCreate(LoginRequiredMixin, CreateView):
+class TopicCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
     model = Topic
     form_class = TopicCreateForm
     template_name = "common/form.html"
@@ -57,6 +67,9 @@ class TopicCreate(LoginRequiredMixin, CreateView):
     def setup(self, request, *args, **kwargs):
         self.forum = get_object_or_404(Forum, slug=kwargs["slug_forum"])
         return super().setup(request, *args, **kwargs)
+
+    def get_breadcrumbs(self) -> list:
+        return breadcrumbs(self.forum)
 
     def form_valid(self, form):
         self.object = Topic(
@@ -71,7 +84,7 @@ class TopicCreate(LoginRequiredMixin, CreateView):
         return HttpResponseRedirect(self.get_success_url())
 
 
-class TopicDetail(LoginRequiredMixin, DetailView):
+class TopicDetail(LoginRequiredMixin, BreadcrumbsMixin, DetailView):
     model = Topic
     context_object_name = "topic"
     paginate_by = 25
@@ -79,9 +92,5 @@ class TopicDetail(LoginRequiredMixin, DetailView):
     def get_queryset(self):
         return super().get_queryset().filter(forum__slug=self.kwargs["slug_forum"])
 
-    def get_context_data(self, **kwargs):
-        kwargs["breadcrumbs"] = [
-            {"url": reverse("forum:ForumList"), "name": "Alle forum"},
-            {"url": self.object.forum.get_absolute_url(), "name": self.object.forum},
-        ]
-        return super().get_context_data(**kwargs)
+    def get_breadcrumbs(self) -> list:
+        return breadcrumbs(self.object.forum)

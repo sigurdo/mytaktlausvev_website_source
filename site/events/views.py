@@ -6,7 +6,8 @@ from django.utils.timezone import localtime
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 from django_ical.views import ICalFeed
 
-from common.mixins import BreadcrumbsMixin, PermissionOrCreatedMixin
+from common.breadcrumbs import Breadcrumb, BreadcrumbsMixin
+from common.mixins import PermissionOrCreatedMixin
 from common.views import DeleteViewCustom
 
 from .forms import EventAttendanceForm, EventForm
@@ -33,22 +34,22 @@ def event_breadcrumbs(year=None, event=None):
     Generates breadcrumbs for events. If `event` is given, its `start_time.year` will override the
     given `year`.
     """
-    breadcrumbs = [{"url": reverse("events:EventList"), "name": "Alle hendingar"}]
+    breadcrumbs = [Breadcrumb(reverse("events:EventList"), "Alle hendingar")]
     if event:
         year = event.start_time.year
     if year:
         breadcrumbs.append(
-            {
-                "url": reverse("events:EventList", args=[year]),
-                "name": str(year),
-            }
+            Breadcrumb(
+                reverse("events:EventList", args=[year]),
+                str(year),
+            )
         )
     if event:
         breadcrumbs.append(
-            {
-                "url": reverse("events:EventDetail", args=[year, event.slug]),
-                "name": str(event),
-            }
+            Breadcrumb(
+                reverse("events:EventDetail", args=[year, event.slug]),
+                str(event),
+            )
         )
     return breadcrumbs
 

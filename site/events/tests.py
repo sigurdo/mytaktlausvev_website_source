@@ -9,6 +9,7 @@ from django.utils.text import slugify
 from django.utils.timezone import make_aware, now
 
 from accounts.factories import SuperUserFactory, UserFactory
+from common.breadcrumbs import Breadcrumb
 from common.mixins import TestMixin
 from events.models import Attendance, Event, EventAttendance
 from events.views import (
@@ -175,7 +176,7 @@ class EventBreadcrumbsTestSuite(TestMixin, TestCase):
         """Calling without arguments should give a single breadcrumb to EventList."""
         self.assertEqual(
             event_breadcrumbs(),
-            [{"url": reverse("events:EventList"), "name": "Alle hendingar"}],
+            [Breadcrumb(reverse("events:EventList"), "Alle hendingar")],
         )
 
     def test_year(self):
@@ -186,14 +187,14 @@ class EventBreadcrumbsTestSuite(TestMixin, TestCase):
         self.assertEqual(
             event_breadcrumbs(year=2022),
             [
-                {
-                    "url": reverse("events:EventList"),
-                    "name": "Alle hendingar",
-                },
-                {
-                    "url": reverse("events:EventList", args=[2022]),
-                    "name": "2022",
-                },
+                Breadcrumb(
+                    reverse("events:EventList"),
+                    "Alle hendingar",
+                ),
+                Breadcrumb(
+                    reverse("events:EventList", args=[2022]),
+                    "2022",
+                ),
             ],
         )
 
@@ -206,20 +207,20 @@ class EventBreadcrumbsTestSuite(TestMixin, TestCase):
         self.assertEqual(
             event_breadcrumbs(event=event),
             [
-                {
-                    "url": reverse("events:EventList"),
-                    "name": "Alle hendingar",
-                },
-                {
-                    "url": reverse("events:EventList", args=[event.start_time.year]),
-                    "name": str(event.start_time.year),
-                },
-                {
-                    "url": reverse(
+                Breadcrumb(
+                    reverse("events:EventList"),
+                    "Alle hendingar",
+                ),
+                Breadcrumb(
+                    reverse("events:EventList", args=[event.start_time.year]),
+                    str(event.start_time.year),
+                ),
+                Breadcrumb(
+                    reverse(
                         "events:EventDetail", args=[event.start_time.year, event.slug]
                     ),
-                    "name": str(event),
-                },
+                    str(event),
+                ),
             ],
         )
 
@@ -232,20 +233,21 @@ class EventBreadcrumbsTestSuite(TestMixin, TestCase):
         self.assertEqual(
             event_breadcrumbs(year=event.start_time.year + 1, event=event),
             [
-                {
-                    "url": reverse("events:EventList"),
-                    "name": "Alle hendingar",
-                },
-                {
-                    "url": reverse("events:EventList", args=[event.start_time.year]),
-                    "name": str(event.start_time.year),
-                },
-                {
-                    "url": reverse(
-                        "events:EventDetail", args=[event.start_time.year, event.slug]
+                Breadcrumb(
+                    reverse("events:EventList"),
+                    "Alle hendingar",
+                ),
+                Breadcrumb(
+                    reverse("events:EventList", args=[event.start_time.year]),
+                    str(event.start_time.year),
+                ),
+                Breadcrumb(
+                    reverse(
+                        "events:EventDetail",
+                        args=[event.start_time.year, event.slug],
                     ),
-                    "name": str(event),
-                },
+                    str(event),
+                ),
             ],
         )
 

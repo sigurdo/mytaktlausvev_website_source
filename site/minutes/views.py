@@ -2,7 +2,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
-from common.mixins import BreadcrumbsMixin, PermissionOrCreatedMixin
+from common.breadcrumbs import Breadcrumb, BreadcrumbsMixin
+from common.mixins import PermissionOrCreatedMixin
 
 from .forms import MinutesForm
 from .models import Minutes
@@ -10,9 +11,9 @@ from .models import Minutes
 
 def breadcrumbs(minutes=None):
     """Returns breadcrumbs for the minutes views."""
-    breadcrumbs = [{"url": reverse("minutes:MinutesList"), "name": "Alle referat"}]
+    breadcrumbs = [Breadcrumb(reverse("minutes:MinutesList"), "Alle referat")]
     if minutes:
-        breadcrumbs.append({"url": minutes.get_absolute_url(), "name": minutes})
+        breadcrumbs.append(Breadcrumb(minutes.get_absolute_url(), minutes))
     return breadcrumbs
 
 

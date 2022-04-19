@@ -6,7 +6,6 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.forms import FileField, ValidationError
 from django.test import TestCase, override_settings
 from django.urls import reverse
-from django.views.generic import View
 
 from accounts.factories import UserFactory
 
@@ -66,27 +65,6 @@ class CleanAllFilesMixin:
                         field.clean(file)
                     except ValidationError as exception:
                         self.add_error(name, exception)
-
-
-class BreadcrumbsMixin(View):
-    def get_breadcrumbs(self) -> list:
-        """
-        Should be overrided and return a list of breadcrumb dicts on the following format:
-        [
-            {
-                "url": "<URL the breadcrumb should redirect to>",
-                "name": "<name or label for the breadcrumb>",
-            },
-            ...
-        ]
-        """
-        raise NotImplementedError(
-            "BreadcrumbsMixin.get_breadcrumbs() must be overridden"
-        )
-
-    def get_context_data(self, **kwargs):
-        kwargs["breadcrumbs"] = self.get_breadcrumbs()
-        return super().get_context_data(**kwargs)
 
 
 class PermissionOrCreatedMixin(PermissionRequiredMixin):
