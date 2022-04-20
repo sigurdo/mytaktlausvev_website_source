@@ -165,6 +165,13 @@
                                 <dd>
                                     {% if profile.light_mode %}Ja{% else %}Nei{% endif %}
                                 </dd>
+
+                                {% if user == profile or perms.accounts.view_image_sharing_consent %}
+                                <dt>Samtykkje til deling av bilete</dt>
+                                <dd>
+                                    {{ profile.get_image_sharing_consent_display }}
+                                </dd>
+                                {% endif %}
                             </dl>
                         </div>
                     </section>

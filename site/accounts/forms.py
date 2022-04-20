@@ -109,7 +109,7 @@ class UserCustomUpdateForm(ModelForm):
             "student_card_number",
         ),
         Fieldset("Taktlaus-ting", "instrument_type", "membership_period"),
-        Fieldset("Anna", "light_mode"),
+        Fieldset("Anna", "light_mode", "image_sharing_consent"),
         Submit("submit", "Rediger brukar"),
     )
 
@@ -127,5 +127,6 @@ class UserCustomUpdateForm(ModelForm):
             "instrument_type",
             "membership_period",
             "light_mode",
+            "image_sharing_consent",
         ]
         widgets = {"birthdate": DateDateInput}

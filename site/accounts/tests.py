@@ -141,6 +141,13 @@ class UserCustomTest(TestMixin, TestCase):
         user = UserFactory()
         self.assertFalse(user.light_mode)
 
+    def test_image_sharing_consent_defaults_to_unknown(self):
+        """`image_sharing_consent` should default to unknown."""
+        user = UserFactory()
+        self.assertEqual(
+            user.image_sharing_consent, UserCustom.ImageSharingConsent.UNKNOWN
+        )
+
     def test_is_active_member_returns_true_for_active_members(self):
         """
         `is_active_member` should return true for active members,

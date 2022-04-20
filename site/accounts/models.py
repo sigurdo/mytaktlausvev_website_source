@@ -99,6 +99,20 @@ class UserCustom(AbstractUser):
         help_text="Aktiver lys modus. Lys modus vert ikkje aktivt støtta, og er difor ikkje anbefalt.",
     )
 
+    class ImageSharingConsent(TextChoices):
+        YES = "YES", "Ja"
+        GROUP_ONLY = "GROUP_ONLY", "Berre gruppebilete"
+        NO = "NO", "Nei"
+        UNKNOWN = "UNKNOWN", "Ukjent"
+
+    image_sharing_consent = CharField(
+        "samtykkje til deling av bilete",
+        max_length=30,
+        choices=ImageSharingConsent.choices,
+        default=ImageSharingConsent.UNKNOWN,
+        help_text="Om bilete av deg kan delast på sosiale medier.",
+    )
+
     objects = UserManagerCustom()
 
     def __str__(self):
@@ -148,4 +162,5 @@ class UserCustom(AbstractUser):
         permissions = (
             ("view_storage_access", "Kan sjå lagertilgjenge"),
             ("edit_storage_access", "Kan redigere lagertilgjenge"),
+            ("view_image_sharing_consent", "Kan sjå samtykkje til deling av bilete"),
         )
