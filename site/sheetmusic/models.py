@@ -326,7 +326,10 @@ class Part(Model):
         verbose_name_plural = "stemmer"
 
     def get_absolute_url(self):
-        return reverse("sheetmusic:ScoreView", kwargs={"slug": self.pdf.score.slug})
+        return reverse(
+            "sheetmusic:PartPdf",
+            kwargs={"score_slug": self.pdf.score.slug, "slug": self.slug},
+        )
 
     def pdf_file(self):
         """Returns the PDF that contains only this part"""

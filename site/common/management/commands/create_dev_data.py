@@ -51,7 +51,7 @@ class Command(BaseCommand):
             "leiar@taktlaus.no",
             "password",
             name="Leiar Leiarsen",
-            birthdate=date(2012, 12, 12),
+            birthdate=date.today(),
             student_card_number="42069420",
             phone_number="12345678",
             address="The Milky Way",
@@ -664,5 +664,15 @@ class Command(BaseCommand):
             to_page=13,
         )
         FavoritePartFactory(user=leader, part=pause_waltz_vco)
+        birthday_song = ScoreFactory(title="Hurra for deg")
+        birthday_song_part = PartFactory(
+            pdf__score=birthday_song,
+            instrument_type=type_grand_piano,
+            part_number=None,
+        )
+        FavoritePartFactory(
+            user=leader,
+            part=birthday_song_part,
+        )
         concert_repertoire = RepertoireFactory(name="Konsert")
         RepertoireEntryFactory(repertoire=concert_repertoire, score=pause_waltz)
