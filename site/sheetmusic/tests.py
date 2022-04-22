@@ -245,7 +245,10 @@ class PartTestSuite(TestMixin, TestCase):
     def test_get_absolute_url(self):
         self.assertEqual(
             self.part.get_absolute_url(),
-            reverse("sheetmusic:ScoreView", kwargs={"slug": self.pdf.score.slug}),
+            reverse(
+                "sheetmusic:PartPdf",
+                kwargs={"score_slug": self.pdf.score.slug, "slug": self.part.slug},
+            ),
         )
 
     def test_pdf_file(self):

@@ -1,6 +1,7 @@
 """Views for the 'dashboard'-module."""
 from datetime import datetime, timedelta
 
+from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Max, Q
 from django.urls import reverse
@@ -112,6 +113,14 @@ class Dashboard(LoginRequiredMixin, TemplateView):
             result += str(birthday_user)
         return result
 
+    def get_birthday_song(self):
+        """Returns birthday song score if it exists."""
+        birthday_songs = Score.objects.filter(slug=settings.BIRTHDAY_SONG_SLUG)
+        if birthday_songs.exists():
+            birthday_song = birthday_songs.first()
+            birthday_song.part = birthday_song.find_user_part(self.request.user)
+            return birthday_song
+
     def get_latest_scores(self):
         """Returns 5 most recent scores."""
         return Score.objects.order_by("-created")[:5]
@@ -126,5 +135,7 @@ class Dashboard(LoginRequiredMixin, TemplateView):
         kwargs["latest_comments"] = self.get_latest_comments()
         kwargs["upcoming_birthdays"] = self.get_upcoming_birthdays()
         kwargs["current_birthdays"] = self.get_current_birthdays()
+        if kwargs["current_birthdays"]:
+            kwargs["birthday_song"] = self.get_birthday_song()
         kwargs["latest_scores"] = self.get_latest_scores()
         return super().get_context_data(**kwargs)

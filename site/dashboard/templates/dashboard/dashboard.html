@@ -11,6 +11,15 @@
 			<div class="card h-100 p-3 shadow-sm">
 				<div class="card-body">
 					<h2> {{current_birthdays}} har bursdag!!! 🎉🥳🎈 </h2>
+					{% if birthday_song %}
+						<p class="mb-0">
+							Spill gjerne
+							{% if birthday_song.part %}
+								<a href="{{birthday_song.part.get_absolute_url}}">{{birthday_song.part}}</a> på
+							{% endif %}
+							<a href="{{birthday_song.get_absolute_url}}">{{birthday_song.title}}</a>!
+						</p>
+					{% endif %}
 				</div>
 			</div>
 		</div>

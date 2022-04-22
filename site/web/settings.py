@@ -303,3 +303,6 @@ SASS_PROCESSOR_INCLUDE_DIRS = [
 
 ENABLE_PWA_MANIFEST = True
 ENABLE_SERVICEWORKER = not DEBUG
+
+# Miscellangeous constants
+BIRTHDAY_SONG_SLUG = "hurra-for-deg"
