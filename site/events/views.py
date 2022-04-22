@@ -6,6 +6,7 @@ from django.utils.timezone import localtime
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 from django_ical.views import ICalFeed
 
+from accounts.models import UserCustom
 from common.breadcrumbs import Breadcrumb, BreadcrumbsMixin
 from common.mixins import PermissionOrCreatedMixin
 from common.views import DeleteViewCustom
@@ -137,7 +138,20 @@ class EventCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
     def form_valid(self, form):
         form.instance.created_by = self.request.user
         form.instance.modified_by = self.request.user
-        return super().form_valid(form)
+        response = super().form_valid(form)
+
+        sivert = UserCustom.objects.filter(username="Sivert").first()
+        if sivert:
+            EventAttendance.objects.create(
+                event=self.object, person=sivert, status=Attendance.ATTENDING
+            )
+        sigurd = UserCustom.objects.filter(username="SigurdT").first()
+        if sigurd:
+            EventAttendance.objects.create(
+                event=self.object, person=sigurd, status=Attendance.ATTENDING_MAYBE
+            )
+
+        return response
 
 
 class EventUpdate(PermissionOrCreatedMixin, BreadcrumbsMixin, UpdateView):
