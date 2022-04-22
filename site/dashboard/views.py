@@ -1,6 +1,7 @@
 """Views for the 'dashboard'-module."""
 from datetime import datetime, timedelta
 
+from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Max, Q
 from django.urls import reverse
@@ -111,10 +112,10 @@ class Dashboard(LoginRequiredMixin, TemplateView):
                     result += ", "
             result += str(birthday_user)
         return result
-    
+
     def get_birthday_song(self):
         """Returns birthday song score if it exists."""
-        birthday_songs = Score.objects.filter(slug="hurra-for-deg")
+        birthday_songs = Score.objects.filter(slug=settings.BIRTHDAY_SONG_SLUG)
         if birthday_songs.exists():
             birthday_song = birthday_songs.first()
             birthday_song.part = birthday_song.find_user_part(self.request.user)
