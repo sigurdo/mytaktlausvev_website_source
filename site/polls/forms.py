@@ -7,6 +7,7 @@ from django.forms import (
     ModelChoiceField,
     ModelForm,
     ModelMultipleChoiceField,
+    NumberInput,
     RadioSelect,
 )
 from django.forms.models import inlineformset_factory
@@ -49,7 +50,11 @@ class ChoiceForm(ModelForm):
 
     class Meta:
         model = Choice
-        fields = ["text"]
+        fields = ["text", "order"]
+        help_texts = {"order": ""}
+        widgets = {
+            "order": NumberInput(attrs={"size": 4}),
+        }
 
 
 class ChoiceFormsetHelper(FormHelper):
