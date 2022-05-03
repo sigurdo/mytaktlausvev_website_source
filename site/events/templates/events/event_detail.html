@@ -47,10 +47,8 @@
         {% endif %}
     </p>
 
-    <article class="text-break">
-        {% load markdown %}
-        {{ event.content | markdown }}
-    </article>
+    {% load markdown %}
+    {{ event.content | markdown }}
 
     {% if not is_registered %}
         {% load crispy_forms_tags %}

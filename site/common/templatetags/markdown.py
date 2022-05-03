@@ -65,6 +65,11 @@ ALLOWED_TAGS = [
 ALLOWED_ATTRIBUTES = ["src", "alt", "width", "height", "class", "href"]
 
 
+def set_text_break(attrs, new=False):
+    attrs[(None, "class")] = "text-break"
+    return attrs
+
+
 @register.filter(is_safe=True)
 def markdown(string):
     converted = md.markdown(
@@ -84,7 +89,13 @@ def markdown(string):
     cleaner = Cleaner(
         tags=ALLOWED_TAGS,
         attributes=ALLOWED_ATTRIBUTES,
-        filters=[partial(LinkifyFilter, url_re=build_url_re(tlds=TLDS))],
+        filters=[
+            partial(
+                LinkifyFilter,
+                url_re=build_url_re(tlds=TLDS),
+                callbacks=[set_text_break],
+            )
+        ],
     )
     bleached = cleaner.clean(converted)
     return mark_safe(bleached)
