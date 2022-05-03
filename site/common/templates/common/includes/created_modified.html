@@ -2,10 +2,18 @@
     Lagt ut av
     <a href="{{ object.created_by.get_absolute_url }}">{{ object.created_by }}</a>
     den
-    <time datetime="{{ object.created | date:"c" }}">{{ object.created | date }}</time>.
+    <time
+        datetime="{{ object.created | date:"c" }}"
+        title="{{ object.created }}"
+    >
+        {{ object.created | date }}</time>.
 
     Sist redigert av
     <a href="{{ object.modified_by.get_absolute_url }}">{{ object.modified_by }}</a>
     den
-    <time datetime="{{ object.modified | date:"c" }}">{{ object.modified | date }}</time>.
+    <time
+        datetime="{{ object.modified | date:"c" }}"
+        title="{{ object.modified }}"
+    >
+        {{ object.modified | date }}</time>.
 </p>
