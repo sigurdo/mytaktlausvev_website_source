@@ -46,8 +46,11 @@
         <time datetime="{{ event.end_time | date:"c" }}">{{event.end_time | date:"l, j. F, Y - H:i"}}</time>
         {% endif %}
     </p>
-    {% load markdown %}
-    {{ event.content | markdown }}
+
+    <article class="text-break">
+        {% load markdown %}
+        {{ event.content | markdown }}
+    </article>
 
     {% if not is_registered %}
         {% load crispy_forms_tags %}
