@@ -240,51 +240,7 @@
 	<div class="col-md-6">
 		<div class="card h-100 p-3 shadow-sm">
 			<div class="card-body">
-				<div class="h-16 d-flex align-items-center">
-					<a class="h-100" href="{{user.get_absolute_url}}">
-						<img
-							src="{{ user.get_avatar_url }}"
-							class="img-fluid mh-100"
-						/>
-					</a>
-					<h2 class="m-3">{{user}}</h2>
-				</div>
-
-				<dl class="dl-inline mt-3">
-					<dt> Medlemsstatus </dt>
-					<dd> {{ user.get_membership_status_display }} </dd>
-
-					<dt>Instrumentgruppe</dt>
-					<dd>
-						{% if user.instrument_type %}
-							{{ user.instrument_type.group }}
-							{% if user.instrument_type.name != user.instrument_type.group.name %}
-							({{ user.instrument_type }})
-							{% endif %}
-						{% else %}
-							Ukjent
-						{% endif %}
-					</dd>
-
-					{% with user.get_jacket as jacket %}
-					{% if jacket %}
-						<dt>Jakkenummer</dt>
-						<dd>{{ jacket.number }}</dd>
-					{% endif %}
-					{% endwith %}
-
-					<dt>Roller</dt>
-					<dd>
-						{% if not user.groups.exists %}
-							Ingen
-						{% endif %}
-						<ul>
-							{% for group in user.groups.all %}
-							<li>{{ group }}</li>
-							{% endfor %}
-						</ul>
-					</dd>
-				</dl>
+				{% include "dashboard/includes/profile.html" with user=user only %}
 			</div>
 		</div>
 	</div>
