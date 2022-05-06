@@ -1,0 +1,49 @@
+<div class="d-flex align-items-center">
+    <div class="h-16 flex-shrink-0">
+        <a href="{{user.get_absolute_url}}">
+            <img
+                src="{{ user.get_avatar_url }}"
+                class="img-fluid mh-100"
+            />
+        </a>
+    </div>
+
+    <h2 class="ms-3">{{ user }}</h2>
+</div>
+
+<dl class="dl-inline mt-3">
+    <dt> Medlemsstatus </dt>
+    <dd> {{ user.get_membership_status_display }} </dd>
+
+    <dt>Instrumentgruppe</dt>
+    <dd>
+        {% if user.instrument_type %}
+            {{ user.instrument_type.group }}
+            {% if user.instrument_type.name != user.instrument_type.group.name %}
+            ({{ user.instrument_type }})
+            {% endif %}
+        {% else %}
+            Ukjent
+        {% endif %}
+    </dd>
+
+    {% with user.get_jacket as jacket %}
+    {% if jacket %}
+        <dt>Jakkenummer</dt>
+        <dd>{{ jacket.number }}</dd>
+    {% endif %}
+    {% endwith %}
+
+    <dt>Roller</dt>
+    <dd>
+        {% if not user.groups.exists %}
+            Ingen
+        {% else %}
+            <ul>
+                {% for group in user.groups.all %}
+                <li>{{ group }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </dd>
+</dl>
