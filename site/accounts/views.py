@@ -97,3 +97,17 @@ class BirthdayList(LoginRequiredMixin, BreadcrumbsMixin, ListView):
 
     def get_queryset(self):
         return UserCustom.objects.active().exclude(birthdate__isnull=True)
+
+
+class ImageSharingConsentList(PermissionRequiredMixin, BreadcrumbsMixin, ListView):
+
+    model = UserCustom
+    template_name = "accounts/image_sharing_consent_list.html"
+    context_object_name = "users"
+    permission_required = "accounts.view_image_sharing_consent"
+
+    def get_breadcrumbs(self) -> list:
+        return breadcrumbs()
+
+    def get_queryset(self):
+        return UserCustom.objects.active()

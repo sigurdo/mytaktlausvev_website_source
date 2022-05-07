@@ -339,3 +339,29 @@ class BirthdayListTestSuite(TestMixin, TestCase):
         response = self.client.get(self.get_url())
 
         self.assertNotIn(no_birthday, response.context["users"])
+
+
+class ImageSharingConsentListTestSuite(TestMixin, TestCase):
+    def get_url(self):
+        return reverse("accounts:ImageSharingConsentList")
+
+    def test_requires_login(self):
+        """Should require login."""
+        self.assertLoginRequired(self.get_url())
+
+    def test_requires_permission_for_viewing_consent(self):
+        """Should require permission for viewing image sharing consent."""
+        self.assertPermissionRequired(
+            self.get_url(), "accounts.view_image_sharing_consent"
+        )
+
+    def test_includes_active_users_only(self):
+        """Should include only active users."""
+        active = UserFactory(membership_status=UserCustom.MembershipStatus.PAYING)
+        retired = UserFactory(membership_status=UserCustom.MembershipStatus.RETIRED)
+
+        self.client.force_login(SuperUserFactory())
+        response = self.client.get(self.get_url())
+
+        self.assertIn(active, response.context["users"])
+        self.assertNotIn(retired, response.context["users"])

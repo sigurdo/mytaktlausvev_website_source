@@ -442,6 +442,7 @@ class Command(BaseCommand):
             text="Administrasjon",
             order=3,
             type=NavbarItem.Type.DROPDOWN,
+            requires_login=True,
         )
         NavbarItemFactory(
             text="Administrasjonspanel",
@@ -468,6 +469,7 @@ class Command(BaseCommand):
             text="Opprett artikkel",
             link=reverse("articles:ArticleCreate"),
             order=4,
+            requires_login=True,
             parent=admin_dropdown,
         )
         NavbarItemFactory(
@@ -477,6 +479,14 @@ class Command(BaseCommand):
             requires_login=True,
             parent=admin_dropdown,
             permissions=["accounts.view_storage_access"],
+        )
+        NavbarItemFactory(
+            text="Deling av bilete",
+            link=reverse("accounts:ImageSharingConsentList"),
+            order=6,
+            requires_login=True,
+            parent=admin_dropdown,
+            permissions=["accounts.view_image_sharing_consent"],
         )
         other_dropdown = NavbarItemFactory(
             text="Anna",
