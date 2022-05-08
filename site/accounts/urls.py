@@ -2,6 +2,8 @@ from django.urls import path
 
 from .views import (
     BirthdayList,
+    ImageSharingConsentList,
+    ImageSharingConsentUpdate,
     MemberList,
     ProfileDetail,
     UserCustomCreate,
@@ -20,4 +22,14 @@ urlpatterns = [
         name="UserCustomUpdate",
     ),
     path("bursdagar/", BirthdayList.as_view(), name="BirthdayList"),
+    path(
+        "biletedeling/",
+        ImageSharingConsentList.as_view(),
+        name="ImageSharingConsentList",
+    ),
+    path(
+        "biletedeling/rediger/",
+        ImageSharingConsentUpdate.as_view(),
+        name="ImageSharingConsentUpdate",
+    ),
 ]

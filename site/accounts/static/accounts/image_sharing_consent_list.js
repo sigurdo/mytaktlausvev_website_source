@@ -1,6 +1,9 @@
 document.addEventListener("DOMContentLoaded", () => {
-  new DataTable("#birthday-table", {
-    order: [[1, "asc"]],
+  new DataTable("#image-sharing-consent-table", {
+    order: [
+      [1, "asc"],
+      [0, "asc"],
+    ],
     paging: false,
     language: {
       zeroRecords: "Ingen medlemmar funne",
