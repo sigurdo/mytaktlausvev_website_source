@@ -110,7 +110,7 @@ class UserCustom(AbstractUser):
         max_length=30,
         choices=ImageSharingConsent.choices,
         default=ImageSharingConsent.UNKNOWN,
-        help_text="Om bilete av deg kan delast på sosiale medier.",
+        help_text="Om bilete du er med i kan delast på DT sine sosiale medier.",
     )
 
     objects = UserManagerCustom()
