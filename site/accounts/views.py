@@ -118,6 +118,7 @@ class ImageSharingConsentUpdate(LoginRequiredMixin, BreadcrumbsMixin, FormView):
     model = UserCustom
     form_class = ImageSharingConsentForm
     template_name = "common/form.html"
+    http_method_names = ["post", "put"]
 
     def get_breadcrumbs(self) -> list:
         return breadcrumbs(self.request.user)

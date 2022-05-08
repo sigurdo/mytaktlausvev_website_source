@@ -392,6 +392,12 @@ class ImageSharingConsentUpdateTestSuite(TestMixin, TestCase):
         """Should require login."""
         self.assertLoginRequired(self.get_url())
 
+    def test_get_not_allowed(self):
+        """Should not allow GET requests."""
+        self.client.force_login(SuperUserFactory())
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.status_code, HTTPStatus.METHOD_NOT_ALLOWED)
+
     def test_updates_image_sharing_consent(self):
         """Should update the image sharing consent of the current user."""
         user = UserFactory()
