@@ -23,12 +23,12 @@ urlpatterns = [
     ),
     path("bursdagar/", BirthdayList.as_view(), name="BirthdayList"),
     path(
-        "deling-av-bilete/",
+        "biletedeling/",
         ImageSharingConsentList.as_view(),
         name="ImageSharingConsentList",
     ),
     path(
-        "deling-av-bilete/rediger/",
+        "biletedeling/rediger/",
         ImageSharingConsentUpdate.as_view(),
         name="ImageSharingConsentUpdate",
     ),
