@@ -1,4 +1,5 @@
 from http import HTTPStatus
+from urllib.parse import urlencode
 
 from django.contrib.auth import authenticate
 from django.core import mail
@@ -15,7 +16,7 @@ from instruments.factories import InstrumentTypeFactory
 from uniforms.factories import JacketUserFactory
 
 from .factories import SuperUserFactory, UserFactory
-from .forms import UserCustomCreateForm
+from .forms import ImageSharingConsentForm, UserCustomCreateForm
 from .models import UserCustom
 
 
@@ -365,3 +366,59 @@ class ImageSharingConsentListTestSuite(TestMixin, TestCase):
 
         self.assertIn(active, response.context["users"])
         self.assertNotIn(retired, response.context["users"])
+
+
+class ImageSharingConsentFormTestSuite(TestCase):
+    def test_form_action_is_update_view_by_default(self):
+        form = ImageSharingConsentForm()
+        self.assertEqual(
+            form.helper.form_action, reverse("accounts:ImageSharingConsentUpdate")
+        )
+
+    def test_form_action_includes_next_url_if_specified(self):
+        next_url = reverse("dashboard:Dashboard")
+        form = ImageSharingConsentForm(next_url)
+        self.assertEqual(
+            form.helper.form_action,
+            f"{reverse('accounts:ImageSharingConsentUpdate')}?{urlencode({'next': next_url})}",
+        )
+
+
+class ImageSharingConsentUpdateTestSuite(TestMixin, TestCase):
+    def get_url(self):
+        return reverse("accounts:ImageSharingConsentUpdate")
+
+    def test_requires_login(self):
+        """Should require login."""
+        self.assertLoginRequired(self.get_url())
+
+    def test_updates_image_sharing_consent(self):
+        """Should update the image sharing consent of the current user."""
+        user = UserFactory()
+        self.client.force_login(user)
+        self.client.post(
+            self.get_url(),
+            {"image_sharing_consent": UserCustom.ImageSharingConsent.YES},
+        )
+        user.refresh_from_db()
+        self.assertEqual(user.image_sharing_consent, UserCustom.ImageSharingConsent.YES)
+
+    def test_redirects_to_profile_page_if_no_next_url(self):
+        """Should redirect to the profile page if no next URL is specified."""
+        user = UserFactory()
+        self.client.force_login(user)
+        response = self.client.post(
+            self.get_url(),
+            {"image_sharing_consent": UserCustom.ImageSharingConsent.YES},
+        )
+        self.assertRedirects(response, user.get_absolute_url())
+
+    def test_redirects_to_next_url_if_specified(self):
+        """Should redirect to the next URL, if specified."""
+        user = UserFactory()
+        self.client.force_login(user)
+        url = f"{self.get_url()}?{urlencode({'next': reverse('dashboard:Dashboard')})}"
+        response = self.client.post(
+            url, {"image_sharing_consent": UserCustom.ImageSharingConsent.YES}
+        )
+        self.assertRedirects(response, reverse("dashboard:Dashboard"))

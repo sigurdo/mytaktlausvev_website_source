@@ -1,8 +1,11 @@
+from urllib.parse import urlencode
+
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML, Fieldset, Layout, Submit
 from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
 from django.forms import BooleanField, ModelForm
+from django.urls import reverse
 
 from common.widgets import DateDateInput
 
@@ -130,3 +133,20 @@ class UserCustomUpdateForm(ModelForm):
             "image_sharing_consent",
         ]
         widgets = {"birthdate": DateDateInput}
+
+
+class ImageSharingConsentForm(ModelForm):
+    helper = FormHelper()
+    helper.add_input(Submit("submit", "Send inn svar"))
+
+    def __init__(self, next_url=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper.form_action = reverse("accounts:ImageSharingConsentUpdate")
+        if next_url:
+            self.helper.form_action += f"?{urlencode({'next': next_url})}"
+
+    class Meta:
+        model = UserCustom
+        fields = ["image_sharing_consent"]
+        help_texts = {"image_sharing_consent": ""}

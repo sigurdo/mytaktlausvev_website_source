@@ -1,6 +1,7 @@
 from django import template
 from django.db.models.query_utils import Q
 
+from accounts.forms import ImageSharingConsentForm
 from authentication.forms import LoginForm
 from polls.models import Poll
 
@@ -19,5 +20,6 @@ def sidebar(user, request_path):
         "user": user,
         "request_path": request_path,
         "form_login": LoginForm(autofocus=False),
+        "form_image_sharing_consent": ImageSharingConsentForm(request_path),
         "poll": poll,
     }

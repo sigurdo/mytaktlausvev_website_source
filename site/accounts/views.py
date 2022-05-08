@@ -7,12 +7,13 @@ from django.contrib.auth.mixins import (
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.urls import reverse
-from django.views.generic import CreateView, DetailView, ListView, UpdateView
+from django.utils.http import url_has_allowed_host_and_scheme
+from django.views.generic import CreateView, DetailView, FormView, ListView, UpdateView
 
 from common.breadcrumbs import Breadcrumb, BreadcrumbsMixin
 from common.templatetags.markdown import markdown
 
-from .forms import UserCustomCreateForm, UserCustomUpdateForm
+from .forms import ImageSharingConsentForm, UserCustomCreateForm, UserCustomUpdateForm
 from .models import UserCustom
 
 
@@ -111,3 +112,41 @@ class ImageSharingConsentList(PermissionRequiredMixin, BreadcrumbsMixin, ListVie
 
     def get_queryset(self):
         return UserCustom.objects.active()
+
+
+class ImageSharingConsentUpdate(LoginRequiredMixin, BreadcrumbsMixin, FormView):
+    model = UserCustom
+    form_class = ImageSharingConsentForm
+    template_name = "common/form.html"
+
+    def get_breadcrumbs(self) -> list:
+        return breadcrumbs(self.request.user)
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["instance"] = self.request.user
+        return kwargs
+
+    def form_valid(self, form):
+        form.save()
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        kwargs["form_title"] = "Samtykkje til deling av bilete"
+        return super().get_context_data(**kwargs)
+
+    def get_next_url(self):
+        """Returns the next URL if it exists and is safe, else `None`."""
+        next = self.request.GET.get(self.redirect_field_name, "")
+        url_is_safe = url_has_allowed_host_and_scheme(
+            url=next,
+            allowed_hosts=self.request.get_host(),
+            require_https=self.request.is_secure(),
+        )
+        return next if next and url_is_safe else None
+
+    def get_success_url(self) -> str:
+        next = self.get_next_url()
+        if next:
+            return next
+        return self.request.user.get_absolute_url()
