@@ -1,0 +1,14 @@
+<h2>{{ title }}</h2>
+
+{% load show_quote %}
+<ul class="list-unstyled">
+    {% for quote in quotes %}
+    <li>
+        {% show_quote quote %}
+    </li>
+    {% endfor %}
+</ul>
+
+<p>
+    <a class="btn btn-primary" href="{% url "quotes:quotes" %}"> Alle sitat </a>
+</p>

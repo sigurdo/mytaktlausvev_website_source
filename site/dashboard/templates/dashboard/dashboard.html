@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-{% load show_quote %}
 
 {% block title_page %}Dashbord{% endblock title_page %}
 {% block title_content %}Dashbord{% endblock title_content %}
@@ -10,16 +9,7 @@
 		<div class="col-md-12">
 			<div class="card h-100 p-3 shadow-sm">
 				<div class="card-body">
-					<h2> {{current_birthdays}} har bursdag!!! 🎉🥳🎈 </h2>
-					{% if birthday_song %}
-						<p class="mb-0">
-							Spill gjerne
-							{% if birthday_song.part %}
-								<a href="{{birthday_song.part.get_absolute_url}}">{{birthday_song.part}}</a> på
-							{% endif %}
-							<a href="{{birthday_song.get_absolute_url}}">{{birthday_song.title}}</a>!
-						</p>
-					{% endif %}
+					{% include "dashboard/includes/birthdays_current.html" with current_birthdays=current_birthdays birthday_song=birthday_song only %}
 				</div>
 			</div>
 		</div>
@@ -28,36 +18,7 @@
 	<div class="col-md-6">
 		<div class="card h-100 p-3 shadow-sm">
 			<div class="card-body">
-				<h2>Hendingar</h2>
-				<ul>
-					{% for event in events %}
-					<li>
-						<a href="{% url 'events:EventDetail' event.start_time|date:"Y" event.slug %}">
-							{{event.title}}
-						</a>
-						<div>
-							<time datetime="{{ event.start_time | date:"c" }}">
-								{{event.start_time | date:"d.m.Y - H:i"}}
-							</time>
-							{% if event.end_time %}
-								til
-								<time datetime="{{ event.end_time | date:"c" }}">
-									{{event.end_time | date:"d.m.Y - H:i"}}
-								</time>
-							{% endif %}
-						</div>
-					</li>
-					{% endfor %}
-				</ul>
-				<ul class="d-flex flex-wrap list-unstyled">
-					<li class="m-2">
-						<a class="btn btn-primary" href="{% url "events:EventList" %}"> Alle hendingar </a>
-					</li>
-
-					<li class="m-2">
-						{% include "events/includes/ical_button.html" with event_feed_absolute_url=event_feed_absolute_url %}
-					</li>
-				</p>
+				{% include "dashboard/includes/events.html" with events=events event_feed_absolute_url=event_feed_absolute_url only %}
 			</div>
 		</div>
 	</div>
@@ -65,25 +26,7 @@
 	<div class="col-md-6">
 		<div class="card h-100 p-3 shadow-sm">
 			<div class="card-body">
-				<h2>Nyaste referat</h2>
-				<ul>
-					{% for minute in minutes %}
-					<li>
-						<a href={{minute.get_absolute_url}}>{{minute}}</a>
-						<div>
-							<time
-								datetime="{{ minute.date | date:"c" }}"
-								title="{{ minute.date }}"
-							>
-								{{minute.date}}
-							</time>
-						</div>
-					</li>
-					{% endfor %}
-				</ul>
-				<p>
-					<a class="btn btn-primary" href="{% url "minutes:MinutesList" %}"> Alle referat </a>
-				</p>
+				{% include "dashboard/includes/minutes.html" with minutes=minutes only %}
 			</div>
 		</div>
 	</div>
@@ -91,17 +34,7 @@
 	<div class="col-md-6">
 		<div class="card h-100 p-3 shadow-sm">
 			<div class="card-body">
-				<h2>Nyaste sitat</h2>
-				<ul class="list-unstyled">
-					{% for quote in latest_quotes %}
-					<li>
-						{% show_quote quote %}
-					</li>
-					{% endfor %}
-				</ul>
-				<p>
-					<a class="btn btn-primary" href="{% url "quotes:quotes" %}"> Alle sitat </a>
-				</p>
+				{% include "dashboard/includes/quotes.html" with title="Nyaste sitat" quotes=latest_quotes only %}
 			</div>
 		</div>
 	</div>
@@ -109,25 +42,7 @@
 	<div class="col-md-6">
 		<div class="card h-100 p-3 shadow-sm">
 			<div class="card-body">
-				<h2> Snaraste bursdagar </h2>
-				<ul>
-					{% for birthday_user in upcoming_birthdays %}
-					<li>
-						<time
-							datetime="{{ birthday_user.birthdate | date:"c" }}"
-							title="{{ birthday_user.birthdate }}"
-						>
-							{{birthday_user.birthdate | date:"j. F"}}
-						</time>
-						–
-						<a href={{birthday_user.get_absolute_url}}>{{birthday_user}}</a>
-					</li>
-					{% endfor %}
-
-				</ul>
-				<p>
-					<a class="btn btn-primary" href="{% url "accounts:BirthdayList" %}">Alle bursdagar</a>
-				</p>
+				{% include "dashboard/includes/birthdays_upcoming.html" with upcoming_birthdays=upcoming_birthdays only %}
 			</div>
 		</div>
 	</div>
@@ -135,27 +50,7 @@
 	<div class="col-md-6">
 		<div class="card h-100 p-3 shadow-sm">
 			<div class="card-body">
-				<h2>Nyaste kommentarar</h2>
-				<ul>
-					{% for comment in latest_comments %}
-					<li>
-						<a href="{{comment.get_absolute_url}}">{{comment}}</a>
-						<div>
-							{% load humanize %}
-							<time
-								datetime="{{ comment.created | date:"c" }}"
-								title="{{ comment.created }}"
-							>
-								{{ comment.created | naturaltime }}
-							</time>
-							av
-							<a href="{{comment.created_by.get_absolute_url}}">
-								{{comment.created_by}}
-							</a>
-						</div>
-					</li>
-					{% endfor %}
-				</ul>
+				{% include "dashboard/includes/comments.html" with comments=latest_comments only %}
 			</div>
 		</div>
 	</div>
@@ -163,17 +58,7 @@
 	<div class="col-md-6">
 		<div class="card h-100 p-3 shadow-sm">
 			<div class="card-body">
-				<h2> Nyaste notar </h2>
-				<ul>
-					{% for score in latest_scores %}
-					<li>
-						<a href={{score.get_absolute_url}}>{{score}}</a>
-					</li>
-					{% endfor %}
-				</ul>
-				<p>
-					<a class="btn btn-primary" href="{% url "sheetmusic:ScoreList" %}">Alle notar</a>
-				</p>
+				{% include "dashboard/includes/scores.html" with scores=latest_scores only %}
 			</div>
 		</div>
 	</div>
@@ -181,22 +66,7 @@
 	<div class="col-md-12">
 		<div class="card h-100 p-3 shadow-sm">
 			<div class="card-body">
-				<h2>Nyaste bilete</h2>
-				<ul class="list-unstyled d-flex flex-wrap">
-					{% for gallery in latest_galleries %}
-						{% for image in gallery.images_latest|slice:":1" %}
-                			<li class="col-md-6">
-								<h3><a href="{{ gallery.get_absolute_url }}">{{ gallery.title }}</a></h3>
-								<div class="d-flex justify-content-center align-items-center p-3 h-52">
-									{% include "pictures/includes/image.html" with image=image bp_gallery="latest" only %}
-								</div>
-							</li>
-						{% endfor %}
-					{% endfor %}
-				</ul>
-				<p>
-					<a class="btn btn-primary" href="{% url "pictures:GalleryList" %}"> Alle bilete </a>
-				</p>
+				{% include "dashboard/includes/images_latest.html" with galleries=latest_galleries only %}
 			</div>
 		</div>
 	</div>
@@ -204,17 +74,7 @@
 	<div class="col-md-12">
 		<div class="card h-100 p-3 shadow-sm">
 			<div class="card-body">
-				<h2>Hine hårde dagar</h2>
-				<ul class="list-unstyled d-flex flex-wrap">
-					{% for image in random_images %}
-						<li class="col-md-6">
-							<h3><a href="{{ image.gallery.get_absolute_url }}">{{ image.gallery.title }}</a></h3>
-							<div class="d-flex justify-content-center align-items-center p-3 h-52">
-								{% include "pictures/includes/image.html" with image=image bp_gallery="random" only %}
-							</div>
-						</li>
-					{% endfor %}
-				</ul>
+				{% include "dashboard/includes/images_random.html" with images=random_images only %}
 			</div>
 		</div>
 	</div>
@@ -222,17 +82,7 @@
 	<div class="col-md-6">
 		<div class="card h-100 p-3 shadow-sm">
 			<div class="card-body">
-				<h2>Gullkorn</h2>
-				<ul class="list-unstyled">
-					{% for quote in random_quotes %}
-					<li>
-						{% show_quote quote %}
-					</li>
-					{% endfor %}
-				</ul>
-				<p>
-					<a class="btn btn-primary" href="{% url "quotes:quotes" %}"> Alle sitat </a>
-				</p>
+				{% include "dashboard/includes/quotes.html" with title="Gullkorn" quotes=random_quotes only %}
 			</div>
 		</div>
 	</div>
@@ -252,4 +102,4 @@
     {% load static %}
     <script src="{% static "events/ical_button.js" %}"></script>
     <script src="{% static "common/js/lightbox.js" %}"></script>
-	{% endblock js %}
+{% endblock js %}

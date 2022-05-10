@@ -1,0 +1,22 @@
+<h2>Nyaste kommentarar</h2>
+
+<ul>
+    {% for comment in comments %}
+    <li>
+        <a href="{{ comment.get_absolute_url }}">{{ comment }}</a>
+        <div>
+            {% load humanize %}
+            <time
+                datetime="{{ comment.created | date:"c" }}"
+                title="{{ comment.created }}"
+            >
+                {{ comment.created | naturaltime }}
+            </time>
+            av
+            <a href="{{ comment.created_by.get_absolute_url }}">
+                {{ comment.created_by }}
+            </a>
+        </div>
+    </li>
+    {% endfor %}
+</ul>

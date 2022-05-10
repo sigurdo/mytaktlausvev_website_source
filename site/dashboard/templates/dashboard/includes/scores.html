@@ -1,0 +1,13 @@
+<h2> Nyaste notar </h2>
+
+<ul>
+    {% for score in scores %}
+    <li>
+        <a href={{ score.get_absolute_url }}>{{ score }}</a>
+    </li>
+    {% endfor %}
+</ul>
+
+<p>
+    <a class="btn btn-primary" href="{% url "sheetmusic:ScoreList" %}">Alle notar</a>
+</p>
