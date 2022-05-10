@@ -32,8 +32,12 @@
     {% load markdown %}
     {{ article.content | markdown }}
 
+    {% if article.content and subarticles %}
+        <hr />
+    {% endif %}
+
     {% if subarticles %}
-        <nav class="my-4">
+        <nav class="mb-4">
             <ul>
             {% for subarticle in subarticles %}
                 <li>
