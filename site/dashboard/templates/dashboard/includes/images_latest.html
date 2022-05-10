@@ -1,6 +1,6 @@
 <h2>Nyaste bilete</h2>
 
-<ul class="list-unstyled d-flex flex-wrap">
+<ul class="list-unstyled d-flex flex-wrap row">
     {% for gallery in galleries %}
         {% for image in gallery.images_latest|slice:":1" %}
             <li class="col-md-6">
