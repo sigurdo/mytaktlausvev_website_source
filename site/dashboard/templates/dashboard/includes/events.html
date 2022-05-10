@@ -1,0 +1,32 @@
+<h2>Hendingar</h2>
+
+<ul>
+    {% for event in events %}
+    <li>
+        <a href="{% url 'events:EventDetail' event.start_time|date:"Y" event.slug %}">
+            {{event.title}}
+        </a>
+        <div>
+            <time datetime="{{ event.start_time | date:"c" }}">
+                {{event.start_time | date:"d.m.Y - H:i"}}
+            </time>
+            {% if event.end_time %}
+                til
+                <time datetime="{{ event.end_time | date:"c" }}">
+                    {{event.end_time | date:"d.m.Y - H:i"}}
+                </time>
+            {% endif %}
+        </div>
+    </li>
+    {% endfor %}
+</ul>
+
+<ul class="d-flex flex-wrap list-unstyled">
+    <li class="m-2">
+        <a class="btn btn-primary" href="{% url "events:EventList" %}"> Alle hendingar </a>
+    </li>
+
+    <li class="m-2">
+        {% include "events/includes/ical_button.html" with event_feed_absolute_url=event_feed_absolute_url %}
+    </li>
+</ul>

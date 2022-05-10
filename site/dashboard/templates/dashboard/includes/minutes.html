@@ -1,0 +1,21 @@
+<h2>Nyaste referat</h2>
+
+<ul>
+    {% for minute in minutes %}
+    <li>
+        <a href={{minute.get_absolute_url}}>{{minute}}</a>
+        <div>
+            <time
+                datetime="{{ minute.date | date:"c" }}"
+                title="{{ minute.date }}"
+            >
+                {{minute.date}}
+            </time>
+        </div>
+    </li>
+    {% endfor %}
+</ul>
+
+<p>
+    <a class="btn btn-primary" href="{% url "minutes:MinutesList" %}"> Alle referat </a>
+</p>
