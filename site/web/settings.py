@@ -270,7 +270,8 @@ STATICFILES_FINDERS = [
     "sass_processor.finders.CssFinder",
 ]
 
-MEDIA_URL = "/media/"
+MEDIA_URL = "/mediafilar/"
+MEDIA_URL_NGINX = "/media/"
 MEDIA_ROOT = (
     os.path.join(BASE_DIR, "media") if DEBUG else os.path.join(BASE_DIR, "..", "media")
 )
