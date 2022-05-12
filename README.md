@@ -69,13 +69,8 @@ USE_LOCAL_CA=1
 ```
 
 2. Add `localhost` to the `server_name` properties in [`nginx.conf`](deployment/nginx.conf).
-3. `docker-compose -f docker-compose.prod.yaml up -d --build --force-recreate`
-4. `docker-compose -f docker-compose.prod.yaml exec -T django site/manage.py migrate`
-5. `docker-compose -f docker-compose.prod.yaml exec -T django site/manage.py generate_code_styles site/static/scss default monokai`
-6. `docker-compose -f docker-compose.prod.yaml exec -T django site/manage.py compilescss`
-7. `docker-compose -f docker-compose.prod.yaml exec -T django site/manage.py collectstatic --no-input`
-8. `docker-compose -f docker-compose.prod.yaml exec -T django site/manage.py create_dev_data`
-9.  You can now load the page, but you will be met by a security warning, because the https certificate is not valid. You can either add the certificate manually as explained [here](https://github.com/JonasAlfredsson/docker-nginx-certbot/blob/master/docs/advanced_usage.md#local-ca), or you can press "Advanced options" and "Accept risk", and it will work totally fine.
-10. `docker-compose -f docker-compose.prod.yaml down`
+3. `sh setup/init_production.sh`
 
-That was all for the first-time setup. You can hereby start and build the production server with `docker-compose -f docker-compose.prod.yaml up --build --force-recreate`. If you add migrations or change other dependencies for the above commands, you have to re-run the respective commands as well. Remember repeating point 3 and 10 before and after.
+That was all for the first-time setup. You can hereby start and build the production server with `docker-compose -f docker-compose.prod.yaml up --build --force-recreate`. If you add migrations or change other dependencies for the commands in [`init_production.sh`](setup/init_production.sh), you have to re-run the respective commands as well. Remember repeating line 5 and 24 before and after.
+
+The site is now served at port 443 and not the usual 8000. You get that port automatically when opening [https://localhost](https://localhost). When you load the page you will be met by a security warning, because the https certificate is not valid. You can either add the certificate manually as explained [here](https://github.com/JonasAlfredsson/docker-nginx-certbot/blob/master/docs/advanced_usage.md#local-ca), or you can press "Advanced options" and "Accept risk", and it will work totally fine.

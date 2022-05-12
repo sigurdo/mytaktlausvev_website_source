@@ -24,7 +24,7 @@ class ServeAllMediaFilesTestSuite(TestMixin, TestCase):
         """Should require login."""
         self.assertLoginRequired(self.get_url())
 
-    def test_serve_file(self):
+    def test_x_sendfile_headers(self):
         """Check that X-Sendfile headers for nginx are set correctly."""
         self.client.force_login(UserFactory())
         response = self.client.get(self.get_url())
