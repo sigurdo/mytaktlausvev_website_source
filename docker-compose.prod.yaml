@@ -27,8 +27,8 @@ services:
     build:
       context: deployment
       dockerfile: Dockerfile.nginx
-    environment:
-      - CERTBOT_EMAIL=www@taktlaus.no
+    env_file:
+      - deployment/.prod.env
     volumes:
       - nginx_secrets:/etc/letsencrypt
       - static_files:/app/staticfiles
