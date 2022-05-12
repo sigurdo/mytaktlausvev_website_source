@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 set -e
 
+# Set workdir to project root
+cd "$(dirname "$0")/../"
+
+echo Stopping Docker container and dropping database
+docker-compose -f docker-compose.prod.yaml down -v
+
 echo Rebuilding and running Docker container
 docker-compose -f docker-compose.prod.yaml up -d --build --force-recreate
 
@@ -20,5 +26,5 @@ docker-compose -f docker-compose.prod.yaml exec -T django site/manage.py migrate
 echo Creating development data
 docker-compose -f docker-compose.prod.yaml exec -T django site/manage.py create_dev_data
 
-echo Shutting down Docker container
+echo Stopping Docker container
 docker-compose -f docker-compose.prod.yaml down
