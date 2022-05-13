@@ -271,6 +271,7 @@ STATICFILES_FINDERS = [
 ]
 
 MEDIA_URL = "/media/"
+MEDIA_URL_NGINX = "/media_nginx/"
 MEDIA_ROOT = (
     os.path.join(BASE_DIR, "media") if DEBUG else os.path.join(BASE_DIR, "..", "media")
 )
