@@ -690,7 +690,7 @@ class Command(BaseCommand):
         EmbeddableTextFactory(
             name="Framgangsmåte for buttonpdfgenerator",
             content="""
-### Framgangsmåte
+## Framgangsmåte
 
 1. Design nokre motiv du vil lage buttons av. Designet må vere like langt som det er breidt (om ikkje vert det strekt) og ikkje ha noke viktig motiv utanfor sirkelen med sentrum midt i motivet og diameter lik breidda/høgda (om ikkje vert det borte).
 2. Last opp motiva her som bilete og oppgje kor mange buttons du ynskjer av kvart motiv. Om du skal lage buttons i ei anna storleik enn Dei Taktlause sin standard, endre ynskja diameter.

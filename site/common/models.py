@@ -42,8 +42,8 @@ class ArticleMixin(CreatedModifiedMixin):
 
 class EmbeddableText(Model):
     """
-    This is simply a piece of text to be configured in the admin panel.
-    It is intended to be embedded with hardcoded `name` in whichever app that needs a text that should be easy for site admins to update.
+    A piece of text that can be configured in the admin panel.
+    Intended to be embedded with a hardcoded `name` in apps that need text that is easy for site admins to update.
     """
 
     name = CharField("namn", max_length=255, unique=True)

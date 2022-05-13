@@ -6,4 +6,4 @@ from . import checks  # noqa
 
 class CommonConfig(AppConfig):
     name = "common"
-    verbose_name = "Hendingar"
+    verbose_name = "Diverse"
