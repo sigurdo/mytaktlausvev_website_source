@@ -38,3 +38,21 @@ class ArticleMixin(CreatedModifiedMixin):
 
     class Meta:
         abstract = True
+
+
+class EmbeddableText(Model):
+    """
+    This is simply a piece of text to be configured in the admin panel.
+    It is intended to be embedded with hardcoded `name` in whichever app that needs a text that should be easy for site admins to update.
+    """
+
+    name = CharField("namn", max_length=255, unique=True)
+    content = TextField("innhald", blank=True, default="")
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        ordering = ["name"]
+        verbose_name = "innbyggbar tekst"
+        verbose_name_plural = "innbyggbare tekster"
