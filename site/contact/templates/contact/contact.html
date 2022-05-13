@@ -1,14 +1,12 @@
 {% extends 'base.html' %}
 
-{% block title_page %}Kontakt{% endblock title_page %}
-{% block title_content %}Kontakt{% endblock title_content %}
+{% block title_page %}Kontakt oss{% endblock title_page %}
+{% block title_content %}Kontakt oss{% endblock title_content %}
 
 {% block content %}
-    <p>
-        Her kan du kontakta dei i styret, eller tillitsvalde.
-        Om du vil vere med oss å spele, gjerne legg til kva instrument du spelar,
-        og om du vil låne instrument.
-    </p>
+    {% load embeddable_text markdown %}
+    {% get_embeddable_text "Kontakt oss" as text %}
+    {{ text | markdown }}
 
     {% load crispy_forms_tags %}
     {% crispy form %}
