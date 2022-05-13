@@ -1,4 +1,4 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, ListView, UpdateView
 
@@ -21,11 +21,19 @@ class FileList(LoginRequiredMixin, ListView):
     context_object_name = "user_files"
 
 
-class FileServe(ServeMediaFiles):
+class FileServe(UserPassesTestMixin, ServeMediaFiles):
+    def setup(self, request, *args, **kwargs):
+        slug = kwargs["slug"]
+        self.file = File.objects.only("file", "public").get(slug=slug)
+        return super().setup(request, *args, **kwargs)
+
     def get_file_path(self):
-        slug = self.kwargs["slug"]
-        file = File.objects.only("file").get(slug=slug)
-        return file.file.name
+        return self.file.file.name
+
+    def test_func(self):
+        if self.file.public:
+            return True
+        return self.request.user.is_authenticated
 
 
 class FileCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):

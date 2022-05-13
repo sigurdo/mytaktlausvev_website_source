@@ -18,6 +18,7 @@
                     <th>Fil</th>
                     <th>Laga av</th>
                     <th>Lagt ut</th>
+                    <th><span class="visually-hidden">Offentleg</span></th>
                     <th><span class="visually-hidden">Rediger</span></th>
                     <th><span class="visually-hidden">Slett</span></th>
                 </tr>
@@ -38,7 +39,15 @@
                         </a>
                     </td>
 
-                    <td>{{ user_file.created }}</td>
+                    <td>
+                        {{ user_file.created | date:"d. M Y" }}
+                    </td>
+
+                    <td>
+                        {% if user_file.public %}
+                        Offentleg
+                        {% endif %}
+                    </td>
 
                     <td class="text-center">
                         {% if user == user_file.created_by or perms.user_files.change_file %}

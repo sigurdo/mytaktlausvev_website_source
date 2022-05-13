@@ -1,5 +1,5 @@
 from autoslug import AutoSlugField
-from django.db.models import CharField, FileField
+from django.db.models import BooleanField, CharField, FileField
 from django.db.models.functions import Lower
 from django.urls import reverse
 
@@ -12,6 +12,7 @@ class File(CreatedModifiedMixin):
     slug = AutoSlugField(
         verbose_name="lenkjenamn", populate_from="name", editable=True, unique=True
     )
+    public = BooleanField("offentleg", default=False)
 
     def __str__(self):
         return self.name

@@ -50,6 +50,11 @@ class FileTestCase(TestMixin, TestCase):
         file = FileFactory(name="Title that is very different from the slug", slug=slug)
         self.assertEqual(file.slug, slug)
 
+    def test_default_no_public(self):
+        """`public` should default to `False`"""
+        file = FileFactory()
+        self.assertFalse(file.public)
+
 
 class FileListTestSuite(TestMixin, TestCase):
     def get_url(self):
@@ -63,22 +68,27 @@ class FileListTestSuite(TestMixin, TestCase):
 class FileServeTestSuite(TestMixin, TestCase):
     def setUp(self):
         self.file = FileFactory()
+        self.public_file = FileFactory(public=True)
 
-    def get_url(self):
-        return reverse("user_files:FileServe", args=[self.file.slug])
+    def get_url(self, file):
+        return reverse("user_files:FileServe", args=[file.slug])
 
-    def test_no_requires_login(self):
-        """Should not require login."""
+    def test_requires_login(self):
+        """Should require login."""
+        self.assertLoginRequired(self.get_url(self.file))
+
+    def test_public_no_requires_login(self):
+        """Public file should not require login."""
         self.client.logout()
-        response = self.client.get(self.get_url())
+        response = self.client.get(self.get_url(self.public_file))
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_serve(self):
         """Should serve the correct file."""
-        response = self.client.get(self.get_url())
+        response = self.client.get(self.get_url(self.public_file))
         self.assertEqual(
             response["X-Accel-Redirect"],
-            f"{settings.MEDIA_URL_NGINX}{self.file.file.name}",
+            f"{settings.MEDIA_URL_NGINX}{self.public_file.file.name}",
         )
 
 
