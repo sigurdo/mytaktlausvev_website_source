@@ -32,7 +32,7 @@ def check_codestyles_exist(app_configs, **kwargs):
         return [
             Warning(
                 "Missing code styles",
-                hint="Code style SCSS files are missing. You might need to rerun `setup/init.sh`.",
+                hint="Code style SCSS files are missing. You might need to rerun `scripts/reset.sh`.",
                 id="common.W001",
             )
         ]

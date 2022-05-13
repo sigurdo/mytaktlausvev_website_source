@@ -5,7 +5,7 @@ set -e
 cd "$(dirname "$0")/../"
 
 echo Stopping Docker container and dropping database
-docker-compose down -v
+docker-compose down -v --remove-orphans
 
 echo Deleting media files
 rm -rf site/media/

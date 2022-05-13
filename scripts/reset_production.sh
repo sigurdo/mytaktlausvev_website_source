@@ -5,7 +5,7 @@ set -e
 cd "$(dirname "$0")/../"
 
 echo Stopping Docker container and dropping database
-docker-compose -f docker-compose.prod.yaml down -v
+docker-compose -f docker-compose.prod.yaml down -v --remove-orphans
 
 echo Rebuilding and running Docker container
 docker-compose -f docker-compose.prod.yaml up -d --build --force-recreate

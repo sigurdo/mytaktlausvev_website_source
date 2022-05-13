@@ -6,8 +6,6 @@ Studentorchesteret Dei Taktlause's new website.
 
 ### Installation
 
-(For more details, see [setup/DOCKER.md](./setup/DOCKER.md).)
-
 Requires [Docker](https://docs.docker.com/get-docker/) and [docker-compose](https://docs.docker.com/compose/install/).
 
 - Clone the repository.
@@ -69,8 +67,8 @@ USE_LOCAL_CA=1
 ```
 
 2. Add `localhost` to the `server_name` properties in [`nginx.conf`](deployment/nginx.conf).
-3. `sh scripts/init_production.sh`
+3. `sh scripts/reset_production.sh`
 
-That was all for the first-time setup. You can hereby start and build the production server with `docker-compose -f docker-compose.prod.yaml up --build --force-recreate`. If you add migrations or change other dependencies for the commands in [`init_production.sh`](setup/init_production.sh), you have to re-run the respective commands as well. Remember repeating line 5 and 24 before and after.
+That was all for the first-time setup. You can hereby start and build the production server with `docker-compose -f docker-compose.prod.yaml up --build --force-recreate`. If you add migrations or change other dependencies of the commands in [`scripts/reset_production.sh`](scripts/reset_production.sh), you have to rerun the script.
 
 The site is now served at port 443 and not the usual 8000. You get that port automatically when opening [https://localhost](https://localhost). When you load the page you will be met by a security warning, because the https certificate is not valid. You can either add the certificate manually as explained [here](https://github.com/JonasAlfredsson/docker-nginx-certbot/blob/master/docs/advanced_usage.md#local-ca), or you can press "Advanced options" and "Accept risk", and it will work totally fine.

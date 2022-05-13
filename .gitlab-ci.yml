@@ -44,7 +44,7 @@ verify-merge-request:
 verify-deploy:
   stage: test
   script:
-    - sh setup/init.sh
+    - sh scripts/reset.sh
     - docker-compose run django site/manage.py test site/
     - docker-compose run django isort . -c
     - docker-compose run django black . --check
