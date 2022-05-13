@@ -34,5 +34,5 @@ class ServeAllMediaFilesTestSuite(TestMixin, TestCase):
         )
         self.assertEqual(
             response["X-Accel-Redirect"],
-            f"{settings.MEDIA_URL_NGINX}brukarfilar/{self.filename}",
+            f'"{settings.MEDIA_URL_NGINX}brukarfilar/{self.filename}"',
         )

@@ -33,7 +33,7 @@ class ServeMediaFiles(View):
             content_type="",
             headers={
                 "Content-Disposition": f'inline; filename="{file_name}"',
-                "X-Accel-Redirect": f"{settings.MEDIA_URL_NGINX}{file_path}",
+                "X-Accel-Redirect": f'"{settings.MEDIA_URL_NGINX}{file_path}"',
             },
         )
         return response
