@@ -15,13 +15,13 @@ docker-compose -f docker-compose.prod.yaml exec -T django site/manage.py generat
 docker-compose -f docker-compose.prod.yaml exec -T django site/manage.py compilescss
 docker-compose -f docker-compose.prod.yaml exec -T django site/manage.py collectstatic --no-input
 
+echo Migrating database
+docker-compose -f docker-compose.prod.yaml exec -T django site/manage.py migrate
+
 # This isn't actually needed in practice, but it's good practice and it can't hurt
 echo Installing and building watson
 docker-compose -f docker-compose.prod.yaml exec -T django ./site/manage.py installwatson
 docker-compose -f docker-compose.prod.yaml exec -T django ./site/manage.py buildwatson
-
-echo Migrating database
-docker-compose -f docker-compose.prod.yaml exec -T django site/manage.py migrate
 
 echo Creating development data
 docker-compose -f docker-compose.prod.yaml exec -T django site/manage.py create_dev_data

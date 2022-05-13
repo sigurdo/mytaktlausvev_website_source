@@ -2,6 +2,7 @@ from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core import exceptions
 from django.http.response import HttpResponse
+from django.utils.encoding import escape_uri_path
 from django.views import View
 from django.views.static import serve
 
@@ -33,7 +34,9 @@ class ServeMediaFiles(View):
             content_type="",
             headers={
                 "Content-Disposition": f'inline; filename="{file_name}"',
-                "X-Accel-Redirect": f'"{settings.MEDIA_URL_NGINX}{file_path}"',
+                "X-Accel-Redirect": escape_uri_path(
+                    f"{settings.MEDIA_URL_NGINX}{file_path}"
+                ),
             },
         )
         return response
