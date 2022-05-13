@@ -13,6 +13,7 @@ from articles.factories import ArticleFactory
 from comments.factories import CommentFactory
 from common.test_utils import test_pdf_multipage
 from contact.factories import ContactCategoryFactory
+from embeddable_text.factories import EmbeddableTextFactory
 from events.factories import EventAttendanceFactory, EventFactory
 from events.models import Attendance
 from forum.factories import ForumFactory, TopicFactory
@@ -686,3 +687,13 @@ class Command(BaseCommand):
         )
         concert_repertoire = RepertoireFactory(name="Konsert")
         RepertoireEntryFactory(repertoire=concert_repertoire, score=pause_waltz)
+        EmbeddableTextFactory(
+            name="Framgangsmåte for buttonpdfgenerator",
+            content="""
+## Framgangsmåte
+
+1. Design nokre motiv du vil lage buttons av. Designet må vere like langt som det er breidt (om ikkje vert det strekt) og ikkje ha noke viktig motiv utanfor sirkelen med sentrum midt i motivet og diameter lik breidda/høgda (om ikkje vert det borte).
+2. Last opp motiva her som bilete og oppgje kor mange buttons du ynskjer av kvart motiv. Om du skal lage buttons i ei anna storleik enn Dei Taktlause sin standard, endre ynskja diameter.
+3. Trykk generer PDF, vent til sida svarar (dette kan ta nokre sekund om du provar å lage mange eller store buttons) og print ut.
+""",
+        )
