@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 
-{% block title_page %}Kontakt{% endblock title_page %}
+{% block title_page %}Kontakt oss{% endblock title_page %}
 {% block title_content %}Tusen takk!{% endblock title_content %}
 
 {% block content %}
-    <p>
-        Me har motteke meldinga di, og vil svare så fort me kan.
-    </p>
+    {% load embeddable_text markdown %}
+    {% get_embeddable_text "Kontakt oss - Suksess" as text %}
+    {{ text | markdown }}
 {% endblock content %}

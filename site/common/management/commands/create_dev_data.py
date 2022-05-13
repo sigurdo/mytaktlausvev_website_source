@@ -409,6 +409,13 @@ class Command(BaseCommand):
             parent=about_dropdown,
         )
         NavbarItemFactory(
+            text="Kontakt oss",
+            link=reverse("contact:ContactView"),
+            order=3,
+            requires_login=False,
+            parent=about_dropdown,
+        )
+        NavbarItemFactory(
             text="Hendingar",
             link=reverse("events:EventList"),
             order=1.5,
@@ -696,4 +703,12 @@ class Command(BaseCommand):
 2. Last opp motiva her som bilete og oppgje kor mange buttons du ynskjer av kvart motiv. Om du skal lage buttons i ei anna storleik enn Dei Taktlause sin standard, endre ynskja diameter.
 3. Trykk generer PDF, vent til sida svarar (dette kan ta nokre sekund om du provar å lage mange eller store buttons) og print ut.
 """,
+        )
+        EmbeddableTextFactory(
+            name="Kontakt oss",
+            content="Her kan du kontakta dei i styret, eller tillitsvalde. Om du vil vere med oss å spele, gjerne legg til kva instrument du spelar, og om du vil låne instrument.",
+        )
+        EmbeddableTextFactory(
+            name="Kontakt oss - Suksess",
+            content="Me har motteke meldinga di, og vil svare så fort me kan.",
         )
