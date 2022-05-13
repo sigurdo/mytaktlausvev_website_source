@@ -19,9 +19,8 @@ echo Migrating database
 docker-compose -f docker-compose.prod.yaml exec -T django site/manage.py migrate
 
 # This isn't actually needed in practice, but it's good practice and it can't hurt
-echo Installing and building watson
+echo Installing watson
 docker-compose -f docker-compose.prod.yaml exec -T django ./site/manage.py installwatson
-docker-compose -f docker-compose.prod.yaml exec -T django ./site/manage.py buildwatson
 
 echo Creating development data
 docker-compose -f docker-compose.prod.yaml exec -T django site/manage.py create_dev_data
