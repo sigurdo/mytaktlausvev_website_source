@@ -1,5 +1,6 @@
 from http import HTTPStatus
 
+from django.conf import settings
 from django.test import TestCase
 from django.urls import reverse
 from django.utils.text import slugify
@@ -17,8 +18,11 @@ class FileTestCase(TestMixin, TestCase):
         self.file = FileFactory()
 
     def test_get_absolute_url(self):
-        """Should link directly to the file."""
-        self.assertEqual(self.file.get_absolute_url(), self.file.file.url)
+        """Should link to the serve view for the file."""
+        self.assertEqual(
+            self.file.get_absolute_url(),
+            reverse("user_files:FileServe", args=[self.file.slug]),
+        )
 
     def test_to_str(self):
         """Should equal the file's `name`."""
@@ -56,6 +60,28 @@ class FileListTestSuite(TestMixin, TestCase):
         self.assertLoginRequired(self.get_url())
 
 
+class FileServeTestSuite(TestMixin, TestCase):
+    def setUp(self):
+        self.file = FileFactory()
+
+    def get_url(self):
+        return reverse("user_files:FileServe", args=[self.file.slug])
+
+    def test_no_requires_login(self):
+        """Should not require login."""
+        self.client.logout()
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+    def test_serve(self):
+        """Should serve the correct file."""
+        response = self.client.get(self.get_url())
+        self.assertEqual(
+            response["X-Accel-Redirect"],
+            f"{settings.MEDIA_URL_NGINX}{self.file.file.name}",
+        )
+
+
 class FileCreateTestSuite(TestMixin, TestCase):
     def get_url(self):
         return reverse("user_files:FileCreate")
@@ -89,6 +115,61 @@ class FileCreateTestSuite(TestMixin, TestCase):
         self.assertRedirects(response, reverse("user_files:FileList"))
 
 
+class FileUpdateTestSuite(TestMixin, TestCase):
+    def setUp(self):
+        self.file = FileFactory()
+
+    def get_url(self):
+        return reverse("user_files:FileUpdate", args=[self.file.slug])
+
+    def test_requires_login(self):
+        """Should require login."""
+        self.assertLoginRequired(self.get_url())
+
+    def test_requires_permission(self):
+        """
+        Should require permission to change user files.
+        """
+        self.assertPermissionRequired(
+            self.get_url(),
+            "user_files.change_file",
+        )
+
+    def test_succeeds_if_not_permission_but_is_author(self):
+        """
+        Should succeed if the user is the author,
+        even if the user doesn't have permission to delete user files.
+        """
+        self.client.force_login(self.file.created_by)
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+    def test_modified_by_set_to_current_user(self):
+        """Should set `modified_by`and not `created_by` to the current user on update."""
+        previous_created_by = self.file.created_by
+        user = SuperUserFactory()
+        self.client.force_login(user)
+        self.client.post(
+            self.get_url(),
+            {"name": "616.mp3", "file": test_txt_file()},
+        )
+
+        self.assertEqual(File.objects.count(), 1)
+        file = File.objects.last()
+        self.assertEqual(file.created_by, previous_created_by)
+        self.assertEqual(file.modified_by, user)
+
+    def test_redirects_to_file_list_on_success(self):
+        """Should redirect to the file list on success."""
+        self.client.force_login(SuperUserFactory())
+        response = self.client.post(
+            self.get_url(),
+            {"name": "616.mp3", "file": test_txt_file()},
+        )
+
+        self.assertRedirects(response, reverse("user_files:FileList"))
+
+
 class FileDeleteTestSuite(TestMixin, TestCase):
     def setUp(self):
         self.file = FileFactory()
@@ -108,7 +189,7 @@ class FileDeleteTestSuite(TestMixin, TestCase):
 
     def test_requires_permission(self):
         """
-        Should require permissions for deleting polls, choices, and votes.
+        Should require permission to delete user files.
         """
         self.assertPermissionRequired(
             self.get_url(),

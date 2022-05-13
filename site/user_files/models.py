@@ -1,6 +1,7 @@
 from autoslug import AutoSlugField
 from django.db.models import CharField, FileField
 from django.db.models.functions import Lower
+from django.urls import reverse
 
 from common.models import CreatedModifiedMixin
 
@@ -16,7 +17,7 @@ class File(CreatedModifiedMixin):
         return self.name
 
     def get_absolute_url(self):
-        return self.file.url
+        return reverse("user_files:FileServe", args=[self.slug])
 
     class Meta:
         ordering = [Lower("name")]
