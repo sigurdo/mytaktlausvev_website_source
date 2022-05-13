@@ -88,7 +88,7 @@ class FileServeTestSuite(TestMixin, TestCase):
         response = self.client.get(self.get_url(self.public_file))
         self.assertEqual(
             response["X-Accel-Redirect"],
-            f"{settings.MEDIA_URL_NGINX}{self.public_file.file.name}",
+            f'"{settings.MEDIA_URL_NGINX}{self.public_file.file.name}"',
         )
 
 
