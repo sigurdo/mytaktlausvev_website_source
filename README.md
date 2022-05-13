@@ -64,6 +64,10 @@ CSRF_TRUSTED_ORIGINS=https://localhost
 
 CERTBOT_EMAIL=www@taktlaus.no
 USE_LOCAL_CA=1
+
+POSTGRES_DB=taktlaus_db
+POSTGRES_USER=taktlaus
+POSTGRES_PASSWORD=taktlaus
 ```
 
 2. Add `localhost` to the `server_name` properties in [`nginx.conf`](deployment/nginx.conf).
@@ -71,4 +75,4 @@ USE_LOCAL_CA=1
 
 That was all for the first-time setup. You can hereby start and build the production server with `docker-compose -f docker-compose.prod.yaml up --build --force-recreate`. If you add migrations or change other dependencies of the commands in [`scripts/reset_production.sh`](scripts/reset_production.sh), you have to rerun the script.
 
-The site is now served at port 443 and not the usual 8000. You get that port automatically when opening [https://localhost](https://localhost). When you load the page you will be met by a security warning, because the https certificate is not valid. You can either add the certificate manually as explained [here](https://github.com/JonasAlfredsson/docker-nginx-certbot/blob/master/docs/advanced_usage.md#local-ca), or you can press "Advanced options" and "Accept risk", and it will work totally fine.
+The site is now served at `localhost`, at the browser's default ports (80/443), instead of usual 8000. Loading the page gives you a security warning because the browser doesn't recognize the custom HTTPS certificate, this can safely be ignored. Another solution is to import the certificate into your browser, as explained [here](https://github.com/JonasAlfredsson/docker-nginx-certbot/blob/master/docs/advanced_usage.md#local-ca).
