@@ -1,10 +1,11 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse, reverse_lazy
-from django.views.generic import CreateView, ListView
+from django.views.generic import CreateView, ListView, UpdateView
 
 from common.breadcrumbs import Breadcrumb, BreadcrumbsMixin
 from common.mixins import PermissionOrCreatedMixin
 from common.views import DeleteViewCustom
+from serve_media_files.views import ServeMediaFiles
 
 from .forms import FileForm
 from .models import File
@@ -20,13 +21,25 @@ class FileList(LoginRequiredMixin, ListView):
     context_object_name = "user_files"
 
 
+class FileServe(UserPassesTestMixin, ServeMediaFiles):
+    def setup(self, request, *args, **kwargs):
+        slug = kwargs["slug"]
+        self.file = File.objects.only("file", "public").get(slug=slug)
+        return super().setup(request, *args, **kwargs)
+
+    def get_file_path(self):
+        return self.file.file.name
+
+    def test_func(self):
+        if self.file.public:
+            return True
+        return self.request.user.is_authenticated
+
+
 class FileCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
     model = File
     form_class = FileForm
     template_name = "common/form.html"
-
-    # The `get_absolute_url` default doesn't work well
-    # when the URL is the file itself
     success_url = reverse_lazy("user_files:FileList")
 
     def get_breadcrumbs(self):
@@ -34,6 +47,21 @@ class FileCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.created_by = self.request.user
+        form.instance.modified_by = self.request.user
+        return super().form_valid(form)
+
+
+class FileUpdate(PermissionOrCreatedMixin, BreadcrumbsMixin, UpdateView):
+    model = File
+    form_class = FileForm
+    template_name = "common/form.html"
+    permission_required = "user_files.change_file"
+    success_url = reverse_lazy("user_files:FileList")
+
+    def get_breadcrumbs(self):
+        return breadcrumbs()
+
+    def form_valid(self, form):
         form.instance.modified_by = self.request.user
         return super().form_valid(form)
 

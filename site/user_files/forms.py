@@ -11,4 +11,4 @@ class FileForm(ModelForm):
 
     class Meta:
         model = File
-        fields = ["name", "file"]
+        fields = ["name", "file", "public"]
