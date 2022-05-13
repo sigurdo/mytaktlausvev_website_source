@@ -3,6 +3,7 @@ import os
 from django.conf import settings
 from django.test import TestCase
 from django.urls import reverse
+from django.utils.encoding import escape_uri_path
 
 from accounts.factories import UserFactory
 from common.mixins import TestMixin
@@ -34,5 +35,5 @@ class ServeAllMediaFilesTestSuite(TestMixin, TestCase):
         )
         self.assertEqual(
             response["X-Accel-Redirect"],
-            f'"{settings.MEDIA_URL_NGINX}brukarfilar/{self.filename}"',
+            escape_uri_path(f"{settings.MEDIA_URL_NGINX}brukarfilar/{self.filename}"),
         )
