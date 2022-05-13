@@ -40,9 +40,6 @@ class FileCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
     model = File
     form_class = FileForm
     template_name = "common/form.html"
-
-    # The `get_absolute_url` default doesn't work well
-    # when the URL is the file itself
     success_url = reverse_lazy("user_files:FileList")
 
     def get_breadcrumbs(self):
@@ -59,9 +56,6 @@ class FileUpdate(PermissionOrCreatedMixin, BreadcrumbsMixin, UpdateView):
     form_class = FileForm
     template_name = "common/form.html"
     permission_required = "user_files.change_file"
-
-    # The `get_absolute_url` default doesn't work well
-    # when the URL is the file itself
     success_url = reverse_lazy("user_files:FileList")
 
     def get_breadcrumbs(self):

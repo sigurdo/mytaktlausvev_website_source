@@ -155,7 +155,7 @@ class FileUpdateTestSuite(TestMixin, TestCase):
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_modified_by_set_to_current_user(self):
-        """Should set `modified_by`and not `created_by` to the current user on update."""
+        """Should set `modified_by` and not `created_by` to the current user on update."""
         previous_created_by = self.file.created_by
         user = SuperUserFactory()
         self.client.force_login(user)

@@ -12,7 +12,9 @@ class File(CreatedModifiedMixin):
     slug = AutoSlugField(
         verbose_name="lenkjenamn", populate_from="name", editable=True, unique=True
     )
-    public = BooleanField("offentleg", default=False)
+    public = BooleanField(
+        "offentleg", default=False, help_text="Om fila er open for ålmente."
+    )
 
     def __str__(self):
         return self.name
