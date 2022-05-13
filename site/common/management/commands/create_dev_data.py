@@ -11,9 +11,9 @@ from accounts.models import UserCustom
 from advent_calendar.factories import AdventCalendarFactory, WindowFactory
 from articles.factories import ArticleFactory
 from comments.factories import CommentFactory
-from common.factories import EmbeddableTextFactory
 from common.test_utils import test_pdf_multipage
 from contact.factories import ContactCategoryFactory
+from embeddable_text.factories import EmbeddableTextFactory
 from events.factories import EventAttendanceFactory, EventFactory
 from events.models import Attendance
 from forum.factories import ForumFactory, TopicFactory

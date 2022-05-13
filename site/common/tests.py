@@ -1,7 +1,6 @@
 from os.path import basename
 
 import magic
-from django.db import IntegrityError
 from django.forms import ValidationError
 from django.test import TestCase
 from markdown import Markdown
@@ -13,9 +12,7 @@ from comments.models import Comment
 from common.markdown_extensions import KWordCensorExtension
 from sheetmusic.factories import PdfFactory
 
-from .factories import EmbeddableTextFactory
 from .mixins import TestMixin
-from .models import EmbeddableText
 from .templatetags.utils import contained_in, filename, verbose_name
 from .test_utils import test_image, test_pdf, test_txt_file
 from .validators import FileTypeValidator
@@ -113,28 +110,3 @@ class KWordCensorTestSuite(TestCase):
         self.assertEqual(self.md.convert("\KORPS"), "<p>KORPS</p>")
         self.assertEqual(self.md.convert("\Korps"), "<p>Korps</p>")
         self.assertEqual(self.md.convert("\kOrPs"), "<p>kOrPs</p>")
-
-
-class EmbeddableTextTestSuite(TestMixin, TestCase):
-    def test_to_str(self):
-        text = EmbeddableTextFactory(name="example_text")
-        self.assertEqual(str(text), "example_text")
-
-    def test_content_blank_by_default(self):
-        """Default `content` should be an empty string."""
-        text = EmbeddableTextFactory()
-        self.assertEqual(text.content, "")
-
-    def test_name_unique(self):
-        """`name` must be unique."""
-        text = EmbeddableTextFactory()
-        with self.assertRaises(IntegrityError):
-            EmbeddableTextFactory(name=text.name)
-
-    def test_ordering(self):
-        """`EmbeddableText`s should be ordered by name."""
-        texts = [
-            EmbeddableTextFactory(name=f"text_{letter}") for letter in ["a", "b", "c"]
-        ]
-        for i, text in enumerate(EmbeddableText.objects.all()):
-            self.assertEqual(text, texts[i])

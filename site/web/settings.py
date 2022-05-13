@@ -89,6 +89,7 @@ INSTALLED_APPS = [
     "pictures",
     "minutes",
     "user_files",
+    "embeddable_text",
 ]
 
 MIDDLEWARE = [
