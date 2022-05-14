@@ -105,7 +105,7 @@ def markdown(string):
                 ClassApplyFilter,
                 class_map={
                     "table": "table table-striped",
-                    "img": "img-fluid",
+                    "img": "img-fluid d-block m-auto",
                     "a": "text-break",
                 },
             ),
