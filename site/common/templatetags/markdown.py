@@ -100,7 +100,7 @@ def markdown(string):
         tags=ALLOWED_TAGS,
         attributes=ALLOWED_ATTRIBUTES,
         filters=[
-            partial(LinkifyFilter, url_re=build_url_re(tlds=TLDS)),
+            partial(LinkifyFilter, url_re=build_url_re(tlds=TLDS), parse_email=True),
             partial(
                 ClassApplyFilter,
                 class_map={
