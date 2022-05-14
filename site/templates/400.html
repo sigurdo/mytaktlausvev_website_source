@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 
-{% block title_content%}
-    400
-{% endblock %}
+{% block title_page %}400{% endblock title_page %}
+{% block title_content %}400{% endblock title_content %}
+
 {% block content %}
-    Dårleg førespurnad, prøv på nytt.
-    <div class="d-flex justify-content-center mt-5 mb-5"><img src="https://taktlaus.no/media/pictures/IMG_0330.jpeg" alt="Pizzagruppeleder på spillkveld" class="h-96"></div>
-    Du er nå oppteken i Lurkargjengen.
+    {% load embeddable_text markdown %}
+    {% get_embeddable_text "400" as text %}
+    {{ text | markdown }}
 {% endblock %}

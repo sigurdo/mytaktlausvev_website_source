@@ -712,3 +712,19 @@ class Command(BaseCommand):
             name="Kontakt oss - Suksess",
             content="Me har motteke meldinga di, og vil svare så fort me kan.",
         )
+        EmbeddableTextFactory(
+            name="400",
+            content="Dårleg førespurnad, prøv på nytt.",
+        )
+        EmbeddableTextFactory(
+            name="403",
+            content="Søk styret, få løyve!",
+        )
+        EmbeddableTextFactory(
+            name="404",
+            content="Kunne ikkje finne denne sida. Synast du denne sida burde eksistere? Send ein epost til vevansvarleg på www@taktlaus.no.",
+        )
+        EmbeddableTextFactory(
+            name="500",
+            content="Tenarfeil! Send ein epost snarast til vevansvarleg på www@taktlaus.no",
+        )

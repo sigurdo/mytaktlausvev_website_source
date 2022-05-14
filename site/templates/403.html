@@ -1,9 +1,10 @@
 {% extends "base.html" %}
 
-{% block title_content%}
-    403
-{% endblock %}
+{% block title_page %}403{% endblock title_page %}
+{% block title_content %}403{% endblock title_content %}
+
 {% block content %}
-    Søk styret, få løyve!
-    <div class="d-flex justify-content-center mt-5"><img src="https://taktlaus.no/media/pictures/IMG_0415.JPG" alt="Styret på medaljegalla" class="h-96"></div>
+    {% load embeddable_text markdown %}
+    {% get_embeddable_text "403" as text %}
+    {{ text | markdown }}
 {% endblock %}
