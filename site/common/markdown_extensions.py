@@ -1,6 +1,5 @@
 from markdown.extensions import Extension
 from markdown.inlinepatterns import InlineProcessor, SimpleTagPattern
-from markdown.treeprocessors import Treeprocessor
 
 
 class StrikethroughExtension(Extension):
