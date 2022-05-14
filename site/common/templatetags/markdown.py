@@ -2,12 +2,12 @@ from functools import partial
 
 import markdown as md
 from bleach import Cleaner
+from bleach.html5lib_shim import Filter
 from bleach.linkifier import LinkifyFilter, build_url_re
 from django import template
 from django.utils.safestring import mark_safe
 
 from common.markdown_extensions import (
-    BootstrapTableExtension,
     KWordCensorExtension,
     StrikethroughExtension,
     UnderlineExtension,
@@ -65,9 +65,20 @@ ALLOWED_TAGS = [
 ALLOWED_ATTRIBUTES = ["src", "alt", "width", "height", "class", "href"]
 
 
-def set_text_break(attrs, new=False):
-    attrs[(None, "class")] = "text-break"
-    return attrs
+class ClassApplyFilter(Filter):
+    """Filter that applies specified classes to specified tags."""
+
+    def __init__(self, source, class_map):
+        """`class_map` must be a dict of the form `{<class_name>: <classes_to_apply>}`."""
+        super().__init__(source)
+        self.class_map = class_map
+
+    def __iter__(self):
+        for token in Filter.__iter__(self):
+            if token["type"] in ("StartTag", "EmptyTag"):
+                if token["name"] in self.class_map:
+                    token["data"][(None, "class")] = self.class_map[token["name"]]
+            yield token
 
 
 @register.filter(is_safe=True)
@@ -79,7 +90,6 @@ def markdown(string):
             "fenced_code",
             "codehilite",
             "tables",
-            BootstrapTableExtension(),
             StrikethroughExtension(),
             UnderlineExtension(),
             KWordCensorExtension(),
@@ -90,11 +100,15 @@ def markdown(string):
         tags=ALLOWED_TAGS,
         attributes=ALLOWED_ATTRIBUTES,
         filters=[
+            partial(LinkifyFilter, url_re=build_url_re(tlds=TLDS)),
             partial(
-                LinkifyFilter,
-                url_re=build_url_re(tlds=TLDS),
-                callbacks=[set_text_break],
-            )
+                ClassApplyFilter,
+                class_map={
+                    "table": "table table-striped",
+                    "img": "img-fluid",
+                    "a": "text-break",
+                },
+            ),
         ],
     )
     bleached = cleaner.clean(converted)

@@ -1,6 +1,8 @@
+from functools import partial
 from os.path import basename
 
 import magic
+from bleach import Cleaner
 from django.forms import ValidationError
 from django.test import TestCase
 from markdown import Markdown
@@ -10,6 +12,7 @@ from articles.models import Article
 from comments.factories import CommentFactory
 from comments.models import Comment
 from common.markdown_extensions import KWordCensorExtension
+from common.templatetags.markdown import ClassApplyFilter
 from sheetmusic.factories import PdfFactory
 
 from .mixins import TestMixin
@@ -110,3 +113,27 @@ class KWordCensorTestSuite(TestCase):
         self.assertEqual(self.md.convert("\KORPS"), "<p>KORPS</p>")
         self.assertEqual(self.md.convert("\Korps"), "<p>Korps</p>")
         self.assertEqual(self.md.convert("\kOrPs"), "<p>kOrPs</p>")
+
+
+class ClassApplyTestSuite(TestCase):
+    def setUp(self):
+        self.cleaner = Cleaner(
+            tags=["p", "span"],
+            attributes=["class"],
+            filters=[
+                partial(
+                    ClassApplyFilter,
+                    class_map={"p": "test"},
+                ),
+            ],
+        )
+
+    def test_applies_class_if_specified(self):
+        """Should apply the specified classes for the tag."""
+        cleaned = self.cleaner.clean("<p>Test!</p>")
+        self.assertEqual(cleaned, '<p class="test">Test!</p>')
+
+    def test_does_not_appli_class_if_not_specified(self):
+        """Should do nothing if no class has been specified for the tag."""
+        cleaned = self.cleaner.clean("<span>Test!</span>")
+        self.assertEqual(cleaned, "<span>Test!</span>")
