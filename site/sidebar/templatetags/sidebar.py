@@ -10,7 +10,9 @@ register = template.Library()
 
 @register.inclusion_tag("sidebar/sidebar.html")
 def sidebar(user, request_path):
-    poll_filter = Q(public=True) if not user.is_authenticated else Q()
+    poll_filter = poll_filter = (
+        Q(public=True) if not (user and user.is_authenticated) else Q()
+    )
     try:
         poll = Poll.objects.filter(poll_filter).latest()
     except Poll.DoesNotExist:
