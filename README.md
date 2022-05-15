@@ -59,6 +59,7 @@ You can run in production mode locally, by following these steps:
 
 ```env
 DEBUG=0
+PRODUCTION=1
 ALLOWED_HOSTS=.localhost 127.0.0.1 [::1]
 CSRF_TRUSTED_ORIGINS=https://localhost
 
