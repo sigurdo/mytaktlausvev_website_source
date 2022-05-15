@@ -9,6 +9,8 @@ urlpatterns = [
     path("", views.ScoreList.as_view(), name="ScoreList"),
     path("ny/", views.ScoreCreate.as_view(), name="ScoreCreate"),
     path("<slug:slug>/", views.ScoreView.as_view(), name="ScoreView"),
+    path("<slug:slug>/pdf/", views.ScorePdf.as_view(), name="ScorePdf"),
+    path("<slug:slug>/zip/", views.ScoreZip.as_view(), name="ScoreZip"),
     path("<slug:slug>/rediger/", views.ScoreUpdate.as_view(), name="ScoreUpdate"),
     path("<slug:slug>/rediger/pdfar/", views.PdfsUpdate.as_view(), name="PdfsUpdate"),
     path(

@@ -95,6 +95,15 @@
     </section>
     {% endif %}
 
+    <section>
+        <h2 class="fs-3"> Samlingar </h2>
+
+        <ul class="list-unstyled">
+            <li> <a href="{% url "sheetmusic:ScorePdf" score.slug %}"> PDF med alle stemmer </a> </li>
+            <li> <a href="{% url "sheetmusic:ScoreZip" score.slug %}"> ZIP med alle stemmer </a> </li>
+        </ul>
+    </section>
+
     {% load comments %}
     {% comment_list score %}
 {% endblock content %}

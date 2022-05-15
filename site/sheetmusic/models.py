@@ -2,6 +2,7 @@
 
 import io
 import os
+from zipfile import ZipFile, ZIP_DEFLATED
 
 from autoslug import AutoSlugField
 from django.conf import settings
@@ -24,7 +25,7 @@ from django.db.models.signals import pre_delete, pre_save
 from django.dispatch import receiver
 from django.urls import reverse
 from django.utils.text import slugify
-from PyPDF2 import PdfFileReader, PdfFileWriter
+from PyPDF2 import PdfFileReader, PdfFileWriter, PdfFileMerger
 from sheatless import PdfPredictor, predict_part_from_string
 
 from common.models import ArticleMixin
@@ -113,6 +114,39 @@ class Score(ArticleMixin):
 
     def favorite_parts_pdf_filename(self, user):
         return slugify(f"{self.title} {user}") + ".pdf"
+
+    def pdf_filename(self):
+        """Returns a nice filename for the PDF that contains only this part"""
+        return slugify(f"{self.title} alle stemmer") + ".pdf"
+
+    def pdf_file(self):
+        """Returns the PDF that contains only this part"""
+        pdf_merger = PdfFileMerger()
+        for part in Part.objects.filter(pdf__score=self):
+            part_pdf_stream = part.pdf_file()
+            part_pdf_reader = PdfFileReader(part_pdf_stream)
+            pdf_merger.append(part_pdf_reader)
+        pdf_stream = io.BytesIO()
+        pdf_merger.write(pdf_stream)
+        pdf_stream.seek(0)
+        pdf_name = self.pdf_filename()
+        return pdf_stream, pdf_name
+
+    def zip_filename(self):
+        """Returns a nice filename for the PDF that contains only this part"""
+        return slugify(f"{self.title} alle stemmer") + ".zip"
+
+    def zip_file(self):
+        """Returns the PDF that contains only this part"""
+        zip_stream = io.BytesIO()
+        with ZipFile(zip_stream, mode="w", compression=ZIP_DEFLATED) as zip:
+            for part in Part.objects.filter(pdf__score=self):
+                pdf_stream = part.pdf_file()
+                pdf_filename = part.pdf_filename()
+                zip.writestr(pdf_filename, pdf_stream.read())
+        zip_stream.seek(0)
+        zip_name = self.zip_filename()
+        return zip_stream, zip_name
 
 
 @receiver(pre_save, sender=Score, dispatch_uid="score_pre_save_receiver")
