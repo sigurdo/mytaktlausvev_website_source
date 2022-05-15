@@ -108,6 +108,28 @@ class ScoreView(LoginRequiredMixin, BreadcrumbsMixin, DetailView):
         return context
 
 
+class ScorePdf(LoginRequiredMixin, DetailView):
+    model = Score
+    content_type = "application/pdf"
+
+    def render_to_response(self, _):
+        pdf_stream, pdf_name = self.get_object().pdf_file()
+        return FileResponse(
+            pdf_stream, content_type=self.content_type, filename=pdf_name
+        )
+
+
+class ScoreZip(LoginRequiredMixin, DetailView):
+    model = Score
+    content_type = "application/zip"
+
+    def render_to_response(self, _):
+        zip_stream, zip_name = self.get_object().zip_file()
+        return FileResponse(
+            zip_stream, content_type=self.content_type, filename=zip_name
+        )
+
+
 class ScoreCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
     model = Score
     form_class = ScoreForm
