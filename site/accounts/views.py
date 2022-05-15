@@ -5,6 +5,7 @@ from django.contrib.auth.mixins import (
     UserPassesTestMixin,
 )
 from django.core.mail import send_mail
+from django.template import RequestContext, Template
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.http import url_has_allowed_host_and_scheme
@@ -12,6 +13,7 @@ from django.views.generic import CreateView, DetailView, FormView, ListView, Upd
 
 from common.breadcrumbs import Breadcrumb, BreadcrumbsMixin
 from common.templatetags.markdown import markdown
+from embeddable_text.models import EmbeddableText
 
 from .forms import ImageSharingConsentForm, UserCustomCreateForm, UserCustomUpdateForm
 from .models import UserCustom
@@ -37,13 +39,15 @@ class UserCustomCreate(PermissionRequiredMixin, BreadcrumbsMixin, CreateView):
     def form_valid(self, form):
         response = super().form_valid(form)
 
-        plain_text = render_to_string(
-            "accounts/welcome_mail.md", {"username": self.object.username}
+        context = RequestContext(self.request, {"username": self.object.username})
+        embeddable_text, _ = EmbeddableText.objects.get_or_create(
+            name="Velkomen e-post"
         )
-        html = markdown(plain_text)
+        template = Template(embeddable_text.content).render(context)
+        html = markdown(template)
         send_mail(
             "Velkomen til Studentorchesteret Dei Taktlause!",
-            plain_text,
+            embeddable_text.content,
             settings.EMAIL_HOST_USER,
             [self.object.email],
             html_message=html,
