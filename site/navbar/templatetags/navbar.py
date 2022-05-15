@@ -36,7 +36,7 @@ def navbar(user, request_path):
     return {
         "user": user,
         "request_path": request_path,
-        "DEBUG": settings.DEBUG,
+        "PRODUCTION": settings.PRODUCTION,
         "form_login": LoginForm(autofocus=False),
         "navbar_items": get_navbar_items(user, request_path),
     }
