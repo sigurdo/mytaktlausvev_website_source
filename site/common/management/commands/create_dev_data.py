@@ -737,6 +737,6 @@ class Command(BaseCommand):
             content="Tenarfeil! Send ein epost snarast til vevansvarleg på www@taktlaus.no",
         )
         EmbeddableTextFactory(
-            name="Velkomen e-post",
+            name="Velkomenepost",
             content='Hei og velkomen til Studentorchesteret Dei Taktlause! Brukarnavnet ditt er "{{ username }}".',
         )
