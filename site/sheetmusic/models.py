@@ -2,7 +2,7 @@
 
 import io
 import os
-from zipfile import ZipFile, ZIP_DEFLATED
+from zipfile import ZIP_DEFLATED, ZipFile
 
 from autoslug import AutoSlugField
 from django.conf import settings
@@ -25,7 +25,7 @@ from django.db.models.signals import pre_delete, pre_save
 from django.dispatch import receiver
 from django.urls import reverse
 from django.utils.text import slugify
-from PyPDF2 import PdfFileReader, PdfFileWriter, PdfFileMerger
+from PyPDF2 import PdfFileMerger, PdfFileReader, PdfFileWriter
 from sheatless import PdfPredictor, predict_part_from_string
 
 from common.models import ArticleMixin
