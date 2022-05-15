@@ -116,11 +116,11 @@ class Score(ArticleMixin):
         return slugify(f"{self.title} {user}") + ".pdf"
 
     def pdf_filename(self):
-        """Returns a nice filename for the PDF that contains only this part"""
+        """Returns a nice filename for a PDF containing all parts of this score."""
         return slugify(f"{self.title} alle stemmer") + ".pdf"
 
     def pdf_file(self):
-        """Returns the PDF that contains only this part"""
+        """Returns a PDF containing all parts of this score."""
         pdf_merger = PdfFileMerger()
         for part in Part.objects.filter(pdf__score=self):
             part_pdf_stream = part.pdf_file()
@@ -133,11 +133,11 @@ class Score(ArticleMixin):
         return pdf_stream, pdf_name
 
     def zip_filename(self):
-        """Returns a nice filename for the PDF that contains only this part"""
+        """Returns a nice filename for a ZIP file containing all parts of this score."""
         return slugify(f"{self.title} alle stemmer") + ".zip"
 
     def zip_file(self):
-        """Returns the PDF that contains only this part"""
+        """Returns a ZIP file containing all parts of this score."""
         zip_stream = io.BytesIO()
         with ZipFile(zip_stream, mode="w", compression=ZIP_DEFLATED) as zip:
             for part in Part.objects.filter(pdf__score=self):
