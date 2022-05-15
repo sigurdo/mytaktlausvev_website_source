@@ -496,6 +496,14 @@ class Command(BaseCommand):
             parent=admin_dropdown,
             permissions=["accounts.view_image_sharing_consent"],
         )
+        NavbarItemFactory(
+            text="Ny brukar",
+            link=reverse("accounts:UserCustomCreate"),
+            order=7,
+            requires_login=True,
+            parent=admin_dropdown,
+            permissions=["accounts.add_usercustom"],
+        )
         other_dropdown = NavbarItemFactory(
             text="Anna",
             order=4,
@@ -727,4 +735,8 @@ class Command(BaseCommand):
         EmbeddableTextFactory(
             name="500",
             content="Tenarfeil! Send ein epost snarast til vevansvarleg på www@taktlaus.no",
+        )
+        EmbeddableTextFactory(
+            name="Velkomenepost",
+            content='Hei og velkomen til Studentorchesteret Dei Taktlause! Brukarnavnet ditt er "{{ username }}".',
         )
