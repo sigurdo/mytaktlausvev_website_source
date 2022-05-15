@@ -496,6 +496,14 @@ class Command(BaseCommand):
             parent=admin_dropdown,
             permissions=["accounts.view_image_sharing_consent"],
         )
+        NavbarItemFactory(
+            text="Ny brukar",
+            link=reverse("accounts:UserCustomCreate"),
+            order=7,
+            requires_login=True,
+            parent=admin_dropdown,
+            permissions=["accounts.add_usercustom"],
+        )
         other_dropdown = NavbarItemFactory(
             text="Anna",
             order=4,
