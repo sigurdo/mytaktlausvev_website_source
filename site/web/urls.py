@@ -16,6 +16,7 @@ Including another URLconf
 from django.conf import settings
 from django.contrib import admin
 from django.urls import include, path
+from django.shortcuts import render
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -43,3 +44,7 @@ urlpatterns = [
     path("", include("easter_eggs.urls")),
     path("", include("articles.urls")),
 ]
+
+def handler500(request, template_name="500.html"):
+    """Have to override this simple view to get context for the 500-template."""
+    return render(request, template_name)
