@@ -131,7 +131,7 @@ class Command(BaseCommand):
             created_by=leader,
             modified_by=leader,
         )
-        ArticleFactory(
+        article_calendar_feed_help = ArticleFactory(
             title="Kalenderfeed-vegvisar",
             content="Importer kalenderfeeden frå [denne](/hendingar/taktlaushendingar.ics) lenkja i kalender-appen din og sett han opp til å oppdatere seg automatisk.",
             public=True,
@@ -739,4 +739,8 @@ class Command(BaseCommand):
         EmbeddableTextFactory(
             name="Velkomenepost",
             content='Hei og velkomen til Studentorchesteret Dei Taktlause! Brukarnavnet ditt er "{{ username }}".',
+        )
+        EmbeddableTextFactory(
+            name="Hjelpetekst kalenderfeedknapp",
+            content=f'Ta ein kikk [her]({reverse("articles:ArticleDetail", args=[article_calendar_feed_help.slug])}) for hjelp med å leggje inn lenkja i kalenderen din.',
         )

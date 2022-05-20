@@ -11,6 +11,8 @@
         <span id="ical-link-collapse-clipboard-feedback"></span>
     </p>
     <p>
-        Ta ein kikk <a href="{% url "articles:ArticleDetail" "kalenderfeed-vegvisar" %}">her</a> for hjelp med å leggje inn lenkja i kalenderen din.
+        {% load embeddable_text markdown %}
+        {% get_embeddable_text "Hjelpetekst kalenderfeedknapp" as text %}
+        {{ text | markdown }}
     </p>
 </div>
