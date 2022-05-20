@@ -6,7 +6,7 @@ from django.http.response import Http404
 from django.test import TestCase
 from django.urls import reverse
 from django.utils.text import slugify
-from django.utils.timezone import make_aware, now
+from django.utils.timezone import localtime, make_aware, now
 
 from accounts.factories import SuperUserFactory, UserFactory
 from common.breadcrumbs import Breadcrumb
@@ -172,79 +172,112 @@ class GetterTestCase(TestCase):
 
 
 class EventBreadcrumbsTestSuite(TestMixin, TestCase):
-    def test_normal(self):
-        """Calling without arguments should give a single breadcrumb to EventList."""
-        self.assertEqual(
-            event_breadcrumbs(),
-            [Breadcrumb(reverse("events:EventList"), "Alle hendingar")],
-        )
-
-    def test_year(self):
+    def test_event_list_upcoming(self):
         """
-        Calling with only a `year` argument should give 2 breadcrumbs to EventList and the
-        EventList for that year.
+        Calling for `EventList` for upcoming events should give 1 breadcrumb;
+        - To `EventList` for the current year.
         """
+        current_year = localtime(now()).year
         self.assertEqual(
-            event_breadcrumbs(year=2022),
+            event_breadcrumbs(event_list_upcoming=True),
             [
                 Breadcrumb(
-                    reverse("events:EventList"),
-                    "Alle hendingar",
+                    reverse("events:EventList", args=[current_year]),
+                    f"Hendingar {current_year}",
+                )
+            ],
+        )
+
+    def test_future_event_detail(self):
+        """
+        Calling for `EventDetail` for a future event should give 2 breadcrumbs;
+        - To `EventList` for the event's year
+        - To `EventList` for all upcoming events.
+        """
+        event = EventFactory(start_time=(now() + timedelta(days=370)))
+        year = localtime(event.start_time).year
+        self.assertEqual(
+            event_breadcrumbs(event=event, event_detail=True),
+            [
+                Breadcrumb(
+                    reverse("events:EventList", args=[year]),
+                    f"Hendingar {year}",
                 ),
                 Breadcrumb(
-                    reverse("events:EventList", args=[2022]),
-                    "2022",
+                    reverse("events:EventList"),
+                    "Alle framtidige",
                 ),
             ],
         )
 
-    def test_event(self):
+    def test_future_event_update(self):
         """
-        Calling with an `event` argument should give 3 breadcrumbs to EventList, the
-        EventList for that year and EventDetail.
+        Calling for `EventUpdate` or another deeper view than `EventDetail` for a future event should
+        give 3 breadcrumbs;
+        - To `EventList` for the event's year
+        - To `EventList` for all upcoming events
+        - To `EventDetail` for the event.
         """
-        event = EventFactory()
+        event = EventFactory(start_time=(now() + timedelta(days=370)))
+        year = localtime(event.start_time).year
         self.assertEqual(
             event_breadcrumbs(event=event),
             [
                 Breadcrumb(
-                    reverse("events:EventList"),
-                    "Alle hendingar",
+                    reverse("events:EventList", args=[year]),
+                    f"Hendingar {year}",
                 ),
                 Breadcrumb(
-                    reverse("events:EventList", args=[event.start_time.year]),
-                    str(event.start_time.year),
+                    reverse("events:EventList"),
+                    "Alle framtidige",
                 ),
                 Breadcrumb(
                     reverse(
-                        "events:EventDetail", args=[event.start_time.year, event.slug]
+                        "events:EventDetail",
+                        args=[year, event.slug],
                     ),
                     str(event),
                 ),
             ],
         )
 
-    def test_event_and_year(self):
+    def test_past_event_detail(self):
         """
-        Calling with both a `year`and an `event` argument should make `event.start_time.year`
-        override the given `year`.
+        Calling for `EventDetail` for a past event should give 1 breadcrumb;
+        - To `EventList` for the event's year.
         """
-        event = EventFactory()
+        event = EventFactory(start_time=(now() - timedelta(days=370)))
+        year = localtime(event.start_time).year
         self.assertEqual(
-            event_breadcrumbs(year=event.start_time.year + 1, event=event),
+            event_breadcrumbs(event=event, event_detail=True),
             [
                 Breadcrumb(
-                    reverse("events:EventList"),
-                    "Alle hendingar",
+                    reverse("events:EventList", args=[year]),
+                    f"Hendingar {year}",
                 ),
+            ],
+        )
+
+    def test_past_event_update(self):
+        """
+        Calling for EventUpdate or another deeper view than EventDetail for a past event should
+        give 2 breadcrumbs;
+        - To EventList for the event's year
+        - To EventDetail for the event
+        """
+        event = EventFactory(start_time=(now() - timedelta(days=370)))
+        year = localtime(event.start_time).year
+        self.assertEqual(
+            event_breadcrumbs(event=event),
+            [
                 Breadcrumb(
-                    reverse("events:EventList", args=[event.start_time.year]),
-                    str(event.start_time.year),
+                    reverse("events:EventList", args=[year]),
+                    f"Hendingar {year}",
                 ),
                 Breadcrumb(
                     reverse(
                         "events:EventDetail",
-                        args=[event.start_time.year, event.slug],
+                        args=[year, event.slug],
                     ),
                     str(event),
                 ),
