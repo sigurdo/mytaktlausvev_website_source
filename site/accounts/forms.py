@@ -112,6 +112,9 @@ class UserCustomUpdateForm(ModelForm):
             "student_card_number",
         ),
         Fieldset("Taktlaus-ting", "instrument_type", "membership_period"),
+        Fieldset(
+            "Kalenderfeed", "calendar_feed_only_upcoming", "calendar_feed_start_date"
+        ),
         Fieldset("Anna", "light_mode", "image_sharing_consent"),
         Submit("submit", "Rediger brukar"),
     )
@@ -131,8 +134,13 @@ class UserCustomUpdateForm(ModelForm):
             "membership_period",
             "light_mode",
             "image_sharing_consent",
+            "calendar_feed_only_upcoming",
+            "calendar_feed_start_date",
         ]
-        widgets = {"birthdate": DateDateInput}
+        widgets = {
+            "birthdate": DateDateInput,
+            "calendar_feed_start_date": DateDateInput,
+        }
 
 
 class ImageSharingConsentForm(ModelForm):

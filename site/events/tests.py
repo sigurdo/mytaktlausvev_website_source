@@ -276,14 +276,6 @@ class EventListTestSuite(TestMixin, TestCase):
             attendance_form = getattr(event, "attendance_form", None)
             self.assertIsNotNone(attendance_form)
 
-    def test_event_feed_absolute_url_in_context(self):
-        self.client.force_login(UserFactory())
-        response = self.client.get(self.get_url())
-        event_feed_absolute_url = response.context["event_feed_absolute_url"]
-        self.assertEquals(
-            event_feed_absolute_url, "http://testserver/hendingar/taktlaushendingar.ics"
-        )
-
     def test_filter_future_events(self):
         """
         Create 1 past and 1 future event and check if the number of events in context is correct.

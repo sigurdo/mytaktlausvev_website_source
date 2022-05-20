@@ -4,8 +4,9 @@
 <div class="collapse m-3" id="ical-link-collapse">
     <p>
         {% load get_event_feed_absolute_url %}
-        <a id="ical-link" href="{% get_event_feed_absolute_url %}">
-            {% get_event_feed_absolute_url %}
+        {% get_event_feed_absolute_url as event_feed_absolute_url %}
+        <a class="text-break" id="ical-link" href="{{ event_feed_absolute_url }}">
+            {{ event_feed_absolute_url }}
         </a>
         <span id="ical-link-collapse-clipboard-feedback"></span>
     </p>
