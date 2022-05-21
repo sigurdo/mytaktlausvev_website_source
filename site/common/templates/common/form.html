@@ -39,7 +39,7 @@
                 {% load crispy_forms_tags %}
                 {% crispy form %}
             {% endif %}
-            {% if formset %}
+            {% if formset and render_formset is not False %}
                 {% load crispy_forms_tags %}
                 {% crispy formset %}
             {% endif %}

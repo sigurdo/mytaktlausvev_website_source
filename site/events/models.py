@@ -6,6 +6,7 @@ from django.db.models import (
     CASCADE,
     CharField,
     DateTimeField,
+    FloatField,
     ForeignKey,
     Manager,
     Model,
@@ -66,6 +67,13 @@ class Event(ArticleMixin):
         """Returns True if the event is in the future."""
         return self.start_time > make_aware(datetime.now())
 
+    def tldr(self):
+        """Returns the TL;DR section in markdown format."""
+        tldr = ""
+        for entry in self.tldr_entries.all():
+            tldr += f"**{entry.key}:** {entry.value}\n"
+        return tldr
+
     class Meta:
         ordering = ["start_time"]
         verbose_name = "hending"
@@ -108,3 +116,29 @@ class EventAttendance(Model):
         constraints = [
             UniqueConstraint(fields=["event", "person"], name="unique_event_attendance")
         ]
+
+
+class EventTldrEntry(Model):
+    """Model representing a TL;DR entry for an event."""
+
+    key = CharField("nykelord", max_length=255, blank=True)
+    value = CharField("innhald", max_length=1023, blank=True)
+    order = FloatField(
+        "rekkjefølgje",
+        default=0,
+        help_text="Definerer rekkjefølgja til oppføringar. Oppføringar med lik rekkjefølgje vert sortert etter nykelord.",
+    )
+    event = ForeignKey(
+        Event,
+        on_delete=CASCADE,
+        verbose_name="hending",
+        related_name="tldr_entries",
+    )
+
+    def __str__(self):
+        return f"{self.event} - {self.key}"
+
+    class Meta:
+        verbose_name = "TL;DR-oppføring for hending"
+        verbose_name_plural = "TL;DR-oppføringar for hending"
+        ordering = ["order", "key"]

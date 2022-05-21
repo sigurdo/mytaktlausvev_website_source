@@ -744,3 +744,7 @@ class Command(BaseCommand):
             name="Hjelpetekst kalenderfeedknapp",
             content=f'Ta ein kikk [her]({reverse("articles:ArticleDetail", args=[article_calendar_feed_help.slug])}) for hjelp med å leggje inn lenkja i kalenderen din.',
         )
+        EmbeddableTextFactory(
+            name="Hjelpetekst TL;DR-seksjon for hendingar",
+            content="Her kan du skrive par av nykelord og innhald som skal gje ein kortfatta oppsummering av nykelinfo om hendinga.",
+        )

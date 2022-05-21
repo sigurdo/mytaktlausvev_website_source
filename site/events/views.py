@@ -10,9 +10,9 @@ from django_ical.views import ICalFeed
 from accounts.models import UserCustom
 from common.breadcrumbs import Breadcrumb, BreadcrumbsMixin
 from common.mixins import PermissionOrCreatedMixin
-from common.views import DeleteViewCustom
+from common.views import DeleteViewCustom, InlineFormsetUpdateView
 
-from .forms import EventAttendanceForm, EventForm
+from .forms import EventAttendanceForm, EventForm, EventTldrEntryFormset
 from .models import Attendance, Event, EventAttendance
 
 
@@ -166,11 +166,12 @@ class EventCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
         return response
 
 
-class EventUpdate(PermissionOrCreatedMixin, BreadcrumbsMixin, UpdateView):
+class EventUpdate(PermissionOrCreatedMixin, BreadcrumbsMixin, InlineFormsetUpdateView):
     """View for updating an event."""
 
     model = Event
     form_class = EventForm
+    formset_class = EventTldrEntryFormset
     template_name = "common/form.html"
     permission_required = "events.change_event"
 
@@ -179,6 +180,11 @@ class EventUpdate(PermissionOrCreatedMixin, BreadcrumbsMixin, UpdateView):
 
     def get_object(self, queryset=None):
         return get_event_or_404(self.kwargs.get("year"), self.kwargs.get("slug"))
+
+    def get_context_data(self, **kwargs):
+        # Tell `common/form.html` not to render the formset, since this is done by the form
+        kwargs["render_formset"] = False
+        return super().get_context_data(**kwargs)
 
     def form_valid(self, form):
         form.instance.modified_by = self.request.user

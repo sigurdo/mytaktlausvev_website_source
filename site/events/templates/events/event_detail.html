@@ -39,14 +39,7 @@
 {% endblock header %}
 
 {% block content %}
-    <p>
-        <time datetime="{{ event.start_time | date:"c" }}">{{event.start_time | date:"l, j. F, Y - H:i"}}</time>
-        {% if event.end_time %}
-        til
-        <time datetime="{{ event.end_time | date:"c" }}">{{event.end_time | date:"l, j. F, Y - H:i"}}</time>
-        {% endif %}
-    </p>
-
+    {% include "events/includes/tldr_section.html" with event=event only %}
     {% load markdown %}
     {{ event.content | markdown }}
 

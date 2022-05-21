@@ -5,21 +5,8 @@
                 {{ event }}
             </a>
         </h3>
-        <p>
-            <time datetime="{{ event.start_time | date:"c" }}">
-                {{ event.start_time | date:"d.m.Y - H:i" }}
-            </time>
-            {% if event.end_time %}
-                til
-                <time datetime="{{ event.end_time | date:"c" }}">
-                    {{ event.end_time | date:"d.m.Y - H:i" }}
-                </time>
-            {% endif %}
-        </p>
-        <p>
-            {% load markdown %}
-            {{ event.content|truncatechars:400|markdown }}
-        </p>
+
+        {% include "events/includes/tldr_section.html" with event=event only %}
 
         {% load get_event_attendance %}
         {% get_event_attendance user event as attendance %}
