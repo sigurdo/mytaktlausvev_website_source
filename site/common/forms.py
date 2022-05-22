@@ -38,4 +38,7 @@ class FormsetLayoutObject(LayoutObject):
 
     def render(self, form, form_style, context, template_pack=TEMPLATE_PACK):
         formset = context[self.formset_name_in_context]
-        return render_to_string(self.template, {"wrapper": self, "formset": formset})
+        return render_to_string(
+            self.template,
+            {"wrapper": self, "formset": formset, "form_show_errors": True},
+        )
