@@ -9,7 +9,7 @@ from django.forms import (
 )
 from django.utils.timezone import now
 
-from common.forms import FormsetLayoutObject, DynamicFormsetButton
+from common.forms import DynamicFormsetButton, FormsetLayoutObject
 from common.widgets import SplitDateTimeWidgetCustom
 
 from .models import Event, EventAttendance, EventKeyinfoEntry
@@ -84,10 +84,12 @@ EventKeyinfoEntryFormset = inlineformset_factory(
     extra=1,
 )
 
+
 class EventKeyinfoEntryFormsetHelper(FormHelper):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.add_input(DynamicFormsetButton("Legg til enda en nykelinfo"))
         self.template = "common/table_inline_formset_shade_delete.html"
+
 
 EventKeyinfoEntryFormset.helper = EventKeyinfoEntryFormsetHelper()

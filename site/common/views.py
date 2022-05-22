@@ -83,6 +83,7 @@ class InlineFormsetCreateView(CreateView):
 
         class FormInvalid(Exception):
             pass
+
         class FormsetInvalid(Exception):
             pass
 
@@ -173,6 +174,7 @@ class InlineFormsetUpdateView(UpdateView):
 
         class FormInvalid(Exception):
             pass
+
         class FormsetInvalid(Exception):
             pass
 
