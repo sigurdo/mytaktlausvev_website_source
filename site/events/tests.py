@@ -11,6 +11,7 @@ from django.utils.timezone import localtime, make_aware, now
 from accounts.factories import SuperUserFactory, UserFactory
 from common.breadcrumbs import Breadcrumb
 from common.mixins import TestMixin
+from common.test_utils import create_formset_post_data
 from events.models import Attendance, Event, EventAttendance
 from events.views import (
     event_breadcrumbs,
@@ -19,6 +20,7 @@ from events.views import (
 )
 
 from .factories import EventAttendanceFactory, EventFactory
+from .forms import EventKeyinfoEntryFormset
 
 
 class EventManagerTestCase(TestCase):
@@ -347,6 +349,14 @@ class EventDetailTestCase(TestMixin, TestCase):
 
 
 class EventCreateTestCase(TestMixin, TestCase):
+    def create_formset_post_data(self):
+        return create_formset_post_data(
+            EventKeyinfoEntryFormset,
+            data=[],
+            total_forms=0,
+            initial_forms=0,
+        )
+
     def test_requires_login(self):
         """Should require login."""
         self.assertLoginRequired(reverse("events:EventCreate"))
@@ -362,6 +372,7 @@ class EventCreateTestCase(TestMixin, TestCase):
                 "start_time_0": "2021-11-25",
                 "start_time_1": "16:30",
                 "content": "Event text",
+                **self.create_formset_post_data(),
             },
         )
 
@@ -379,7 +390,16 @@ class EventUpdateTestCase(TestMixin, TestCase):
             "start_time_0": "2021-11-25",
             "start_time_1": "16:30",
             "content": "Event text",
+            **self.create_formset_post_data(),
         }
+
+    def create_formset_post_data(self):
+        return create_formset_post_data(
+            EventKeyinfoEntryFormset,
+            data=[],
+            total_forms=0,
+            initial_forms=0,
+        )
 
     def get_url(self):
         """Returns the URL for the event update view for `event`."""
