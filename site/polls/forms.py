@@ -64,7 +64,7 @@ class ChoiceFormsetHelper(FormHelper):
         super().__init__(*args, **kwargs)
         self.template = "common/table_inline_formset_shade_delete.html"
         self.form_tag = False
-        self.add_input(DynamicFormsetButton("Legg til enda et val"))
+        self.add_input(DynamicFormsetButton("Legg til endå eit val"))
         self.add_input(Submit("submit", "Lagre avstemming"))
 
 

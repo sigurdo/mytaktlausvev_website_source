@@ -34,7 +34,7 @@ class JacketsFormsetHelper(FormHelper):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.render_required_fields = True
-        self.add_input(DynamicFormsetButton("Legg til enda en jakke"))
+        self.add_input(DynamicFormsetButton("Legg til endå ein jakke"))
         self.add_input(Submit("submit", "Lagre"))
         self.template = "common/table_inline_formset_shade_delete.html"
 

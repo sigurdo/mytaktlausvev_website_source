@@ -29,6 +29,8 @@ function renumberForm(form, newIndex) {
 }
 
 resetTotalForms();
-document
-  .querySelector("[data-formset-add-form]")
-  .addEventListener("click", addForm);
+
+const formsetAddButton = document.querySelector("[data-formset-add-form]");
+if (formsetAddButton) {
+  formsetAddButton.addEventListener("click", addForm);
+}

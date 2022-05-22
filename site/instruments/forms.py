@@ -28,7 +28,7 @@ class InstrumentFormsetHelper(FormHelper):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.render_required_fields = True
-        self.add_input(DynamicFormsetButton("Legg til enda et instrument"))
+        self.add_input(DynamicFormsetButton("Legg til endå eit instrument"))
         self.add_input(Submit("submit", "Lagre"))
         self.template = "common/table_inline_formset_shade_delete.html"
 
