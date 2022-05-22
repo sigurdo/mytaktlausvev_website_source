@@ -10,4 +10,4 @@ class DynamicFormsetButton(Button):
 
     def __init__(self, button_text, **kwargs):
         super().__init__("Add form", button_text, data_formset_add_form=True, **kwargs)
-        self.field_classes = "btn btn-primary d-block mb-3"
+        self.field_classes = "btn btn-secondary d-block mb-3"
