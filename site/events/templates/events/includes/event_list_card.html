@@ -6,7 +6,7 @@
             </a>
         </h3>
 
-        {% include "events/includes/tldr_section.html" with event=event only %}
+        {% include "events/includes/keyinfo_section.html" with event=event only %}
 
         {% load markdown %}
         {{ event.content_first_paragraph|markdown }}

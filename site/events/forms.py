@@ -12,7 +12,7 @@ from django.utils.timezone import now
 from common.forms import FormsetLayoutObject
 from common.widgets import SplitDateTimeWidgetCustom
 
-from .models import Event, EventAttendance, EventTldrEntry
+from .models import Event, EventAttendance, EventKeyinfoEntry
 
 
 class EventForm(ModelForm):
@@ -32,11 +32,11 @@ class EventForm(ModelForm):
         "start_time",
         "end_time",
         Fieldset(
-            "TL;DR",
+            "Nykelinfo",
             HTML(
                 """
                 {% load embeddable_text markdown %}
-                {% get_embeddable_text "Hjelpetekst TL;DR-seksjon for hendingar" as text %}
+                {% get_embeddable_text "Hjelpetekst nykelinfo-seksjon for hendingar" as text %}
                 {{ text | markdown }}
                 """
             ),
@@ -64,12 +64,12 @@ class EventAttendanceForm(ModelForm):
         fields = ["status"]
 
 
-class EventTldrEntryForm(ModelForm):
-    """Form for updating a TL;DR entry."""
+class EventKeyinfoEntryForm(ModelForm):
+    """Form for updating a keyinfo entry."""
 
     class Meta:
-        model = EventTldrEntry
-        fields = ["key", "value", "order"]
+        model = EventKeyinfoEntry
+        fields = ["key", "info", "order"]
         help_texts = {"order": ""}
         widgets = {
             "key": TextInput(attrs={"size": 8}),
@@ -77,9 +77,9 @@ class EventTldrEntryForm(ModelForm):
         }
 
 
-EventTldrEntryFormset = inlineformset_factory(
+EventKeyinfoEntryFormset = inlineformset_factory(
     Event,
-    EventTldrEntry,
-    form=EventTldrEntryForm,
+    EventKeyinfoEntry,
+    form=EventKeyinfoEntryForm,
     extra=5,
 )

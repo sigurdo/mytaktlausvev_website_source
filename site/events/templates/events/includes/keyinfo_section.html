@@ -7,8 +7,8 @@
         <time datetime="{{ event.end_time | date:"c" }}">{{event.end_time | date:"l, j. F, Y - H:i"}}</time>
         {% endif %}
     </dd>
-    {% for entry in event.tldr_entries.all %}
+    {% for entry in event.keyinfo_entries.all %}
         <dt>{{ entry.key }}</dt>
-        <dd>{{ entry.value }}</dd>
+        <dd>{{ entry.info }}</dd>
     {% endfor %}
 </dl>

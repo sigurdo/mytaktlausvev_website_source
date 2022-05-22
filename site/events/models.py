@@ -66,7 +66,7 @@ class Event(ArticleMixin):
     def is_in_future(self):
         """Returns True if the event is in the future."""
         return self.start_time > make_aware(datetime.now())
-    
+
     def content_first_paragraph(self):
         """Returns content until first newline."""
         try:
@@ -119,27 +119,27 @@ class EventAttendance(Model):
         ]
 
 
-class EventTldrEntry(Model):
-    """Model representing a TL;DR entry for an event."""
+class EventKeyinfoEntry(Model):
+    """Model representing a keyinfo entry for an event."""
 
-    key = CharField("nykelord", max_length=255, blank=True)
-    value = CharField("innhald", max_length=1023, blank=True)
+    key = CharField("nykel", max_length=255, unique=True)
+    info = CharField("info", max_length=1023, blank=True)
     order = FloatField(
         "rekkjefølgje",
         default=0,
-        help_text="Definerer rekkjefølgja til oppføringar. Oppføringar med lik rekkjefølgje vert sortert etter nykelord.",
+        help_text="Definerer rekkjefølgja til oppføringar. Oppføringar med lik rekkjefølgje vert sortert etter nykel.",
     )
     event = ForeignKey(
         Event,
         on_delete=CASCADE,
         verbose_name="hending",
-        related_name="tldr_entries",
+        related_name="keyinfo_entries",
     )
 
     def __str__(self):
         return f"{self.event} - {self.key}"
 
     class Meta:
-        verbose_name = "TL;DR-oppføring for hending"
-        verbose_name_plural = "TL;DR-oppføringar for hending"
+        verbose_name = "Nykelinfo-oppføring for hending"
+        verbose_name_plural = "Nykelinfo-oppføringar for hending"
         ordering = ["order", "key"]

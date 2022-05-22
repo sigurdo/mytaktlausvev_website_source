@@ -14,7 +14,11 @@ from comments.factories import CommentFactory
 from common.test_utils import test_pdf_multipage
 from contact.factories import ContactCategoryFactory
 from embeddable_text.factories import EmbeddableTextFactory
-from events.factories import EventAttendanceFactory, EventFactory
+from events.factories import (
+    EventAttendanceFactory,
+    EventFactory,
+    EventKeyinfoEntryFactory,
+)
 from events.models import Attendance
 from forum.factories import ForumFactory, TopicFactory
 from instruments.factories import (
@@ -173,12 +177,27 @@ class Command(BaseCommand):
             modified_by=leader,
             start_time=make_aware(first_wednesday),
         )
-        EventFactory(
+        board_game_night = EventFactory(
             title="Brettspelkveld",
             content="Brettspelkveld i KJL4.",
             created_by=leader,
             modified_by=leader,
             start_time=make_aware(first_wednesday + timedelta(days=1)),
+        )
+        EventKeyinfoEntryFactory(
+            event=board_game_night,
+            key="Mat",
+            info="Pizza",
+        )
+        EventKeyinfoEntryFactory(
+            event=board_game_night,
+            key="FFETT",
+            info="Nei",
+        )
+        EventKeyinfoEntryFactory(
+            event=board_game_night,
+            key="Ta med",
+            info="Brettspel",
         )
         month = datetime.now().month
         year = datetime.now().year
@@ -745,6 +764,15 @@ class Command(BaseCommand):
             content=f'Ta ein kikk [her]({reverse("articles:ArticleDetail", args=[article_calendar_feed_help.slug])}) for hjelp med å leggje inn lenkja i kalenderen din.',
         )
         EmbeddableTextFactory(
-            name="Hjelpetekst TL;DR-seksjon for hendingar",
-            content="Her kan du skrive par av nykelord og innhald som skal gje ein kortfatta oppsummering av nykelinfo om hendinga.",
+            name="Hjelpetekst nykelinfo-seksjon for hendingar",
+            content="""
+Her kan du skrive nykelinformasjon om hendinga. Oppføringane du skriv vil verte vist oppramsa med kolon slik:
+
+---
+
+**Nykel:** Info
+**Anna nykel:** Anna info
+
+---
+""",
         )

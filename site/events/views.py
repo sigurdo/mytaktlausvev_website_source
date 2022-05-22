@@ -10,9 +10,13 @@ from django_ical.views import ICalFeed
 from accounts.models import UserCustom
 from common.breadcrumbs import Breadcrumb, BreadcrumbsMixin
 from common.mixins import PermissionOrCreatedMixin
-from common.views import DeleteViewCustom, InlineFormsetUpdateView
+from common.views import (
+    DeleteViewCustom,
+    InlineFormsetCreateView,
+    InlineFormsetUpdateView,
+)
 
-from .forms import EventAttendanceForm, EventForm, EventTldrEntryFormset
+from .forms import EventAttendanceForm, EventForm, EventKeyinfoEntryFormset
 from .models import Attendance, Event, EventAttendance
 
 
@@ -134,11 +138,12 @@ class EventDetail(LoginRequiredMixin, BreadcrumbsMixin, DetailView):
         return context
 
 
-class EventCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
+class EventCreate(LoginRequiredMixin, BreadcrumbsMixin, InlineFormsetCreateView):
     """View for creating an event."""
 
     model = Event
     form_class = EventForm
+    formset_class = EventKeyinfoEntryFormset
     template_name = "common/form.html"
 
     def get_breadcrumbs(self):
@@ -146,6 +151,11 @@ class EventCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
 
     def get_object(self, queryset=None):
         return get_event_or_404(self.kwargs.get("year"), self.kwargs.get("slug"))
+
+    def get_context_data(self, **kwargs):
+        # Tell `common/form.html` not to render the formset, since this is done by the form
+        kwargs["render_formset"] = False
+        return super().get_context_data(**kwargs)
 
     def form_valid(self, form):
         form.instance.created_by = self.request.user
@@ -171,7 +181,7 @@ class EventUpdate(PermissionOrCreatedMixin, BreadcrumbsMixin, InlineFormsetUpdat
 
     model = Event
     form_class = EventForm
-    formset_class = EventTldrEntryFormset
+    formset_class = EventKeyinfoEntryFormset
     template_name = "common/form.html"
     permission_required = "events.change_event"
 
