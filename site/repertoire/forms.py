@@ -43,7 +43,7 @@ class RepertoireEntryFormsetHelper(FormHelper):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.render_required_fields = True
-        self.add_input(DynamicFormsetButton("Legg til enda en oppføring"))
+        self.add_input(DynamicFormsetButton("Legg til enda ein oppføring"))
         self.add_input(Submit("submit", "Lagre"))
         self.form_tag = False
         self.template = "common/table_inline_formset_shade_delete.html"
