@@ -1,12 +1,5 @@
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import (
-    HTML,
-    TEMPLATE_PACK,
-    Fieldset,
-    Layout,
-    LayoutObject,
-    Submit,
-)
+from crispy_forms.layout import HTML, Fieldset, Layout, Submit
 from django.forms import (
     ModelForm,
     NumberInput,
@@ -14,32 +7,12 @@ from django.forms import (
     TextInput,
     inlineformset_factory,
 )
-from django.template.loader import render_to_string
 from django.utils.timezone import now
 
+from common.forms import FormsetLayoutObject
 from common.widgets import SplitDateTimeWidgetCustom
 
 from .models import Event, EventAttendance, EventTldrEntry
-
-
-class EventTldrFormsetLayoutObject(LayoutObject):
-    """
-    Boiled from https://stackoverflow.com/questions/15157262/django-crispy-forms-nesting-a-formset-within-a-form
-
-    Layout object. It renders an entire formset, as though it was a Field.
-    """
-
-    template = "common/table_inline_formset_shade_delete.html"
-
-    def __init__(self, formset_name_in_context, template=None):
-        self.formset_name_in_context = formset_name_in_context
-
-        if template:
-            self.template = template
-
-    def render(self, form, form_style, context, template_pack=TEMPLATE_PACK):
-        formset = context[self.formset_name_in_context]
-        return render_to_string(self.template, {"wrapper": self, "formset": formset})
 
 
 class EventForm(ModelForm):
@@ -67,7 +40,7 @@ class EventForm(ModelForm):
                 {{ text | markdown }}
                 """
             ),
-            EventTldrFormsetLayoutObject("formset"),
+            FormsetLayoutObject("formset"),
         ),
         "content",
     )

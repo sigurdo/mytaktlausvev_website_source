@@ -1,7 +1,5 @@
 <dl class="dl-inline">
-    <dt>
-        Tidspunkt
-    </dt>
+    <dt>Tidspunkt</dt>
     <dd> 
         <time datetime="{{ event.start_time | date:"c" }}">{{event.start_time | date:"l, j. F, Y - H:i"}}</time>
         {% if event.end_time %}
@@ -10,7 +8,7 @@
         {% endif %}
     </dd>
     {% for entry in event.tldr_entries.all %}
-        <dt> {{ entry.key }} </dt>
-        <dd> {{ entry.value }} </dd>
+        <dt>{{ entry.key }}</dt>
+        <dd>{{ entry.value }}</dd>
     {% endfor %}
 </dl>

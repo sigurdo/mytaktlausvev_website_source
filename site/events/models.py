@@ -66,13 +66,14 @@ class Event(ArticleMixin):
     def is_in_future(self):
         """Returns True if the event is in the future."""
         return self.start_time > make_aware(datetime.now())
-
-    def tldr(self):
-        """Returns the TL;DR section in markdown format."""
-        tldr = ""
-        for entry in self.tldr_entries.all():
-            tldr += f"**{entry.key}:** {entry.value}\n"
-        return tldr
+    
+    def content_first_paragraph(self):
+        """Returns content until first newline."""
+        try:
+            index = self.content.index("\n")
+        except ValueError:
+            index = len(self.content)
+        return self.content[:index]
 
     class Meta:
         ordering = ["start_time"]
