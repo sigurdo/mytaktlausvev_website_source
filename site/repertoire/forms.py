@@ -53,7 +53,7 @@ RepertoireEntryFormset = inlineformset_factory(
     Repertoire,
     RepertoireEntry,
     form=RepertoireEntryForm,
-    extra=10,
+    extra=1,
 )
 
 RepertoireEntryFormset.helper = RepertoireEntryFormsetHelper()

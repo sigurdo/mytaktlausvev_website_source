@@ -73,7 +73,7 @@ ChoiceFormset = inlineformset_factory(
     Choice,
     form=ChoiceForm,
     can_delete=True,
-    extra=5,
+    extra=1,
 )
 
 

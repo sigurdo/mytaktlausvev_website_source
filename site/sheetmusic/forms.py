@@ -67,7 +67,7 @@ PartsUpdateFormset = modelformset_factory(
     Part,
     form=PartsUpdateForm,
     can_delete=True,
-    extra=20,
+    extra=1,
 )
 
 
@@ -99,7 +99,7 @@ PartsUpdateAllFormset = modelformset_factory(
     Part,
     form=PartsUpdateAllForm,
     can_delete=True,
-    extra=20,
+    extra=1,
 )
 
 
