@@ -2,6 +2,8 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 from django.forms import ModelForm, TextInput, modelformset_factory
 
+from common.forms import DynamicFormsetButton
+
 from .models import Instrument
 
 
@@ -26,6 +28,7 @@ class InstrumentFormsetHelper(FormHelper):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.render_required_fields = True
+        self.add_input(DynamicFormsetButton("Legg til instrument"))
         self.add_input(Submit("submit", "Lagre"))
         self.template = "common/table_inline_formset_shade_delete.html"
 

@@ -14,6 +14,7 @@ from django.forms import (
     modelformset_factory,
 )
 
+from common.forms import DynamicFormsetButton
 from common.mixins import CleanAllFilesMixin
 
 from .models import Part, Pdf, Score, pdf_file_validators
@@ -58,6 +59,7 @@ class PartsUpdateFormsetHelper(FormHelper):
         super().__init__(*args, **kwargs)
         self.render_required_fields = True
         self.template = "common/table_inline_formset_shade_delete.html"
+        self.add_input(DynamicFormsetButton("Legg til stemme"))
         self.add_input(Submit("submit", "Lagre"))
 
 
