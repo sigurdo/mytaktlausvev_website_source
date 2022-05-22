@@ -88,7 +88,7 @@ EventKeyinfoEntryFormset = inlineformset_factory(
 class EventKeyinfoEntryFormsetHelper(FormHelper):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.add_input(DynamicFormsetButton("Legg til enda en nykelinfo"))
+        self.add_input(DynamicFormsetButton("Legg til endå ein nykelinfo"))
         self.template = "common/table_inline_formset_shade_delete.html"
 
 
