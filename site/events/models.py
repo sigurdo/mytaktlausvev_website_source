@@ -67,14 +67,6 @@ class Event(ArticleMixin):
         """Returns True if the event is in the future."""
         return self.start_time > make_aware(datetime.now())
 
-    def content_first_paragraph(self):
-        """Returns content until first newline."""
-        try:
-            index = self.content.index("\n")
-        except ValueError:
-            index = len(self.content)
-        return self.content[:index]
-
     class Meta:
         ordering = ["start_time"]
         verbose_name = "hending"
@@ -122,7 +114,7 @@ class EventAttendance(Model):
 class EventKeyinfoEntry(Model):
     """Model representing a keyinfo entry for an event."""
 
-    key = CharField("nykel", max_length=255, unique=True)
+    key = CharField("nykel", max_length=255)
     info = CharField("info", max_length=1023, blank=True)
     order = FloatField(
         "rekkjefølgje",
@@ -143,3 +135,6 @@ class EventKeyinfoEntry(Model):
         verbose_name = "Nykelinfo-oppføring for hending"
         verbose_name_plural = "Nykelinfo-oppføringar for hending"
         ordering = ["order", "key"]
+        constraints = [
+            UniqueConstraint(fields=["key", "event"], name="unique_EventKeyinfoEntry"),
+        ]

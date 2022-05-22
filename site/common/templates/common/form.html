@@ -41,7 +41,8 @@
             {% endif %}
             {% if formset and render_formset is not False %}
                 {% load crispy_forms_tags %}
-                {% crispy formset %}
+                {{ formset }}
+                {% comment %} {% crispy formset %} {% endcomment %}
             {% endif %}
         {% if form and formset %}
         </form>

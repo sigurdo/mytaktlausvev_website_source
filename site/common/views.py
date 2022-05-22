@@ -80,21 +80,34 @@ class InlineFormsetCreateView(CreateView):
 
     def post(self, request, *args, **kwargs):
         self.object = None
-        with transaction.atomic():
-            form = self.get_form()
-            if form.is_valid():
-                self.form_valid(form)
-            else:
-                return self.form_invalid(form)
 
-            formset = self.get_formset()
-            if formset.is_valid():
-                self.formset_valid(formset)
-            else:
-                transaction.set_rollback(True)
-                return self.formset_invalid(formset)
+        class FormInvalid(Exception):
+            pass
+        class FormsetInvalid(Exception):
+            pass
 
-        return self.form_and_formset_valid()
+        try:
+            with transaction.atomic():
+                form = self.get_form()
+                if form.is_valid():
+                    self.form_valid(form)
+                else:
+                    raise FormInvalid()
+
+                formset = self.get_formset()
+                if formset.is_valid():
+                    self.formset_valid(formset)
+                else:
+                    transaction.set_rollback(True)
+                    return FormsetInvalid
+            return self.form_and_formset_valid()
+
+        # We cannot call form_invalid or formset_invalid inside the transaction
+        # because we can not do queries in a transaction.
+        except FormInvalid:
+            return self.form_invalid(form)
+        except FormsetInvalid:
+            return self.formset_invalid(formset)
 
 
 class InlineFormsetUpdateView(UpdateView):
@@ -157,21 +170,34 @@ class InlineFormsetUpdateView(UpdateView):
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
-        with transaction.atomic():
-            form = self.get_form()
-            if form.is_valid():
-                self.form_valid(form)
-            else:
-                return self.form_invalid(form)
 
-            formset = self.get_formset()
-            if formset.is_valid():
-                self.formset_valid(formset)
-            else:
-                transaction.set_rollback(True)
-                return self.formset_invalid(formset)
+        class FormInvalid(Exception):
+            pass
+        class FormsetInvalid(Exception):
+            pass
 
-        return self.form_and_formset_valid()
+        try:
+            with transaction.atomic():
+                form = self.get_form()
+                if form.is_valid():
+                    self.form_valid(form)
+                else:
+                    raise FormInvalid()
+
+                formset = self.get_formset()
+                if formset.is_valid():
+                    self.formset_valid(formset)
+                else:
+                    transaction.set_rollback(True)
+                    raise FormsetInvalid()
+            return self.form_and_formset_valid()
+
+        # We cannot call form_invalid or formset_invalid inside the transaction
+        # because we can not do queries in a transaction.
+        except FormInvalid:
+            return self.form_invalid(form)
+        except FormsetInvalid:
+            return self.formset_invalid(formset)
 
 
 class DeleteMixin:

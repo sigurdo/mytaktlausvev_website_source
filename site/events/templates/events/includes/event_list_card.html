@@ -8,8 +8,8 @@
 
         {% include "events/includes/keyinfo_section.html" with event=event only %}
 
-        {% load markdown %}
-        {{ event.content_first_paragraph|markdown }}
+        {% load markdown utils %}
+        {{ event.content|first_paragraph|markdown }}
 
         {% load get_event_attendance %}
         {% get_event_attendance user event as attendance %}

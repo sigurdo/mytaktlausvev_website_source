@@ -32,3 +32,13 @@ def contained_in(list, container):
 @register.filter
 def parse_iso8601(value):
     return parse_datetime(value)
+
+
+@register.filter
+def first_paragraph(text):
+    """Returns `text` until first newline or end of string."""
+    try:
+        index = text.index("\n")
+    except ValueError:
+        index = len(text)
+    return text[:index]

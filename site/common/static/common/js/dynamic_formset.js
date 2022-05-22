@@ -28,9 +28,11 @@ function renumberForm(form, newIndex) {
   });
 }
 
-resetTotalForms();
-
-const formsetAddButton = document.querySelector("[data-formset-add-form]");
-if (formsetAddButton) {
-  formsetAddButton.addEventListener("click", addForm);
-}
+window.onload = () => {
+  resetTotalForms();
+  
+  const formsetAddButton = document.querySelector("[data-formset-add-form]");
+  if (formsetAddButton) {
+    formsetAddButton.addEventListener("click", addForm);
+  }
+};
