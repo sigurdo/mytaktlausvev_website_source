@@ -11,12 +11,13 @@ from django.forms import (
 )
 
 from accounts.models import UserCustom
+from common.forms import DynamicFormsetButton
 
 from .models import Jacket
 
 
-class JacketUpdateForm(ModelForm):
-    """Form for updating a Jacket"""
+class JacketForm(ModelForm):
+    """Form for creating and/or updating a jacket."""
 
     class Meta:
         model = Jacket
@@ -29,23 +30,24 @@ class JacketUpdateForm(ModelForm):
         widgets = {"comment": TextInput}
 
 
-class JacketsUpdateFormsetHelper(FormHelper):
+class JacketsFormsetHelper(FormHelper):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.render_required_fields = True
+        self.add_input(DynamicFormsetButton("Legg til enda en jakke"))
         self.add_input(Submit("submit", "Lagre"))
         self.template = "common/table_inline_formset_shade_delete.html"
 
 
-JacketsUpdateFormset = modelformset_factory(
+JacketsFormset = modelformset_factory(
     Jacket,
-    form=JacketUpdateForm,
+    form=JacketForm,
     can_delete=True,
-    extra=5,
+    extra=1,
 )
 
 
-JacketsUpdateFormset.helper = JacketsUpdateFormsetHelper()
+JacketsFormset.helper = JacketsFormsetHelper()
 
 
 class AddJacketUserForm(Form):

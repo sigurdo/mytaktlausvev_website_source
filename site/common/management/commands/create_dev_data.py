@@ -740,3 +740,7 @@ class Command(BaseCommand):
             name="Velkomenepost",
             content='Hei og velkomen til Studentorchesteret Dei Taktlause! Brukarnavnet ditt er "{{ username }}".',
         )
+        EmbeddableTextFactory(
+            name="Stemmeredigeringstips",
+            content="Her kan ein redigere stemmane til denne nota.",
+        )

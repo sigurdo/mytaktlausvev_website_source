@@ -9,7 +9,7 @@ from common.mixins import TestMixin
 from common.test_utils import create_formset_post_data
 
 from .factories import JacketFactory, JacketLocationFactory, JacketUserFactory
-from .forms import JacketsUpdateFormset
+from .forms import JacketsFormset
 from .models import Jacket, JacketUser
 
 
@@ -74,7 +74,7 @@ class JacketsUpdateTestSuite(TestMixin, TestCase):
 
     def create_post_data(self, num_of_new=0):
         return create_formset_post_data(
-            JacketsUpdateFormset,
+            JacketsFormset,
             data=self.formset_post_data,
             total_forms=1 + num_of_new,
             initial_forms=1,
