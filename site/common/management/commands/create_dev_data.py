@@ -747,4 +747,3 @@ class Command(BaseCommand):
             name="Stemmeredigeringstips",
             content="Her kan ein redigere stemmane til denne nota.",
         )
-    
