@@ -374,6 +374,9 @@ class Command(BaseCommand):
             modified_by=leader,
         )
 
+        group = Group.objects.create(name="Vevkom")
+        leader.groups.add(group)
+
         advent_calendar = AdventCalendarFactory(year=2077)
         WindowFactory(
             advent_calendar=advent_calendar,
@@ -744,3 +747,4 @@ class Command(BaseCommand):
             name="Stemmeredigeringstips",
             content="Her kan ein redigere stemmane til denne nota.",
         )
+    
