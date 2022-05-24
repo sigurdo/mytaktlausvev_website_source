@@ -2,11 +2,13 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 from django.forms import ModelForm, TextInput, modelformset_factory
 
+from common.forms import DynamicFormsetButton
+
 from .models import Instrument
 
 
-class InstrumentUpdateForm(ModelForm):
-    """Form for creating a Instrument entry"""
+class InstrumentForm(ModelForm):
+    """Form for creating and/or updating instruments."""
 
     class Meta:
         model = Instrument
@@ -22,19 +24,20 @@ class InstrumentUpdateForm(ModelForm):
         widgets = {"comment": TextInput}
 
 
-class InstrumentUpdateFormsetHelper(FormHelper):
+class InstrumentFormsetHelper(FormHelper):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.render_required_fields = True
+        self.add_input(DynamicFormsetButton("Legg til endå eit instrument"))
         self.add_input(Submit("submit", "Lagre"))
         self.template = "common/table_inline_formset_shade_delete.html"
 
 
-InstrumentUpdateFormset = modelformset_factory(
+InstrumentFormset = modelformset_factory(
     Instrument,
-    form=InstrumentUpdateForm,
+    form=InstrumentForm,
     can_delete=True,
-    extra=5,
+    extra=1,
 )
 
-InstrumentUpdateFormset.helper = InstrumentUpdateFormsetHelper()
+InstrumentFormset.helper = InstrumentFormsetHelper()

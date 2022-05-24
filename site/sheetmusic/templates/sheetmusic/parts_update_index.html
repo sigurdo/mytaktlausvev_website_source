@@ -8,24 +8,10 @@
 {% endblock title_content %}
 
 {% block content %}
-    <p>
-        Her kan ein relativt enkelt redigere stemmer for {{score}}.
-    </p>
+    {% load embeddable_text markdown %}
+    {% get_embeddable_text "Stemmeredigeringstips" as text %}
+    {{ text | markdown }}
 
-    <section>
-        <h2> Tips </h2>
-        <ul>
-            <li>
-                Nytt høgreklikk på lenkja til PDFen og velg opne i nytt vindauge. Så kan ein sette vindauget med PDFen til venstre og vindauget med nettsida til høgre og få betre oversikt.
-            </li>
-            <li>
-                Nytt tab til å flytte tekstpeikaren mellom inntastingsfelta.
-            </li>
-            <li>
-                Om du treng fleire enn dei 20 radane som er der frå før, lagre det du har og opne skjemaet på nytt, så får du 20 radar til.
-            </li>
-        </ul>
-    </section>
     <div class="table-responsive">
         <table class="table table-striped table-sm">
             <thead>
