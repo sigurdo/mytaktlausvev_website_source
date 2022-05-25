@@ -4,7 +4,7 @@ from crispy_forms.layout import Button
 class DynamicFormsetButton(Button):
     """
     Creates a button used to dynamically add more forms to a formset,
-    through `common/js/dynamic_formset.js`.
+    through `common/forms/dynamic_formset.js`.
     The button is styled to set it apart from other components in the form.
     """
 

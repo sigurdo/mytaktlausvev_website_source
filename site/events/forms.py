@@ -3,7 +3,7 @@ from crispy_forms.layout import Submit
 from django.forms import ModelForm, SplitDateTimeField
 from django.utils.timezone import now
 
-from common.widgets import SplitDateTimeWidgetCustom
+from common.forms.widgets import SplitDateTimeWidgetCustom
 
 from .models import Event, EventAttendance
 

@@ -54,7 +54,7 @@ class ArticleCreate(LoginRequiredMixin, CreateView):
 
     model = Article
     form_class = ArticleForm
-    template_name = "common/form.html"
+    template_name = "common/forms/form.html"
 
     def form_valid(self, form):
         form.instance.created_by = self.request.user
@@ -84,7 +84,7 @@ class ArticleUpdate(
 
     model = Article
     form_class = ArticleForm
-    template_name = "common/form.html"
+    template_name = "common/forms/form.html"
     permission_required = "articles.change_article"
 
     def get_breadcrumbs(self) -> list:

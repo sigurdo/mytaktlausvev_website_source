@@ -28,8 +28,8 @@ from django.utils.text import slugify
 from PyPDF2 import PdfFileMerger, PdfFileReader, PdfFileWriter
 from sheatless import PdfPredictor, predict_part_from_string
 
+from common.forms.validators import FileTypeValidator
 from common.models import ArticleMixin
-from common.validators import FileTypeValidator
 from instruments.models import InstrumentType
 from web.settings import INSTRUMENTS_YAML_PATH, TESSDATA_DIR
 

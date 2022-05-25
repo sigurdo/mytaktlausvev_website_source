@@ -23,8 +23,8 @@ from django.views.generic.edit import (
 )
 
 from common.breadcrumbs import Breadcrumb, BreadcrumbsMixin
+from common.forms.views import DeleteViewCustom
 from common.mixins import PermissionOrCreatedMixin
-from common.views import DeleteViewCustom
 
 from .forms import (
     EditPdfFormset,
@@ -133,7 +133,7 @@ class ScoreZip(LoginRequiredMixin, DetailView):
 class ScoreCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
     model = Score
     form_class = ScoreForm
-    template_name = "common/form.html"
+    template_name = "common/forms/form.html"
 
     def get_success_url(self):
         return reverse("sheetmusic:PdfsUpload", args=[self.object.slug])
@@ -150,7 +150,7 @@ class ScoreCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
 class ScoreUpdate(PermissionOrCreatedMixin, BreadcrumbsMixin, UpdateView):
     model = Score
     form_class = ScoreForm
-    template_name = "common/form.html"
+    template_name = "common/forms/form.html"
     permission_required = "sheetmusic.change_score"
 
     def get_breadcrumbs(self):
@@ -358,7 +358,7 @@ class PdfsUpdate(
 ):
     model = Score
     form_class = EditPdfFormset
-    template_name = "common/form.html"
+    template_name = "common/forms/form.html"
     context_object_name = "score"
     permission_required = "sheetmusic.delete_pdf"
 
@@ -399,7 +399,7 @@ class PdfsUpdate(
 
 class PdfsUpload(PermissionOrCreatedMixin, BreadcrumbsMixin, FormView):
     form_class = UploadPdfForm
-    template_name = "common/form.html"
+    template_name = "common/forms/form.html"
     context_object_name = "score"
     permission_required = ("sheetmusic.add_pdf", "sheetmusic.add_part")
 

@@ -5,7 +5,7 @@ from django.utils.text import slugify
 from django.views.generic import DetailView, FormView, ListView
 
 from common.breadcrumbs import Breadcrumb, BreadcrumbsMixin
-from common.views import (
+from common.forms.views import (
     DeleteViewCustom,
     InlineFormsetCreateView,
     InlineFormsetUpdateView,
@@ -37,7 +37,7 @@ class RepertoireCreate(
     model = Repertoire
     form_class = RepertoireForm
     formset_class = RepertoireEntryFormset
-    template_name = "common/form.html"
+    template_name = "common/forms/form.html"
     success_url = reverse_lazy("repertoire:RepertoireList")
     permission_required = "repertoire.add_repertoire"
 
@@ -48,7 +48,7 @@ class RepertoireUpdate(
     model = Repertoire
     form_class = RepertoireForm
     formset_class = RepertoireEntryFormset
-    template_name = "common/form.html"
+    template_name = "common/forms/form.html"
     success_url = reverse_lazy("repertoire:RepertoireList")
     permission_required = "repertoire.change_repertoire"
 

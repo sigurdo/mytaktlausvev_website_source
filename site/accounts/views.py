@@ -29,7 +29,7 @@ def breadcrumbs(user=None):
 class UserCustomCreate(PermissionRequiredMixin, BreadcrumbsMixin, CreateView):
     model = UserCustom
     form_class = UserCustomCreateForm
-    template_name = "common/form.html"
+    template_name = "common/forms/form.html"
     permission_required = "accounts.add_usercustom"
 
     def get_breadcrumbs(self) -> list:
@@ -57,7 +57,7 @@ class UserCustomCreate(PermissionRequiredMixin, BreadcrumbsMixin, CreateView):
 class UserCustomUpdate(UserPassesTestMixin, BreadcrumbsMixin, UpdateView):
     model = UserCustom
     form_class = UserCustomUpdateForm
-    template_name = "common/form.html"
+    template_name = "common/forms/form.html"
 
     def get_breadcrumbs(self) -> list:
         return breadcrumbs(self.object)
@@ -119,7 +119,7 @@ class ImageSharingConsentList(PermissionRequiredMixin, BreadcrumbsMixin, ListVie
 class ImageSharingConsentUpdate(LoginRequiredMixin, BreadcrumbsMixin, FormView):
     model = UserCustom
     form_class = ImageSharingConsentForm
-    template_name = "common/form.html"
+    template_name = "common/forms/form.html"
     http_method_names = ["post", "put"]
 
     def get_breadcrumbs(self) -> list:

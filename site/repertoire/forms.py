@@ -14,7 +14,7 @@ from django.forms import (
 from django.urls import reverse
 from PyPDF2 import PdfFileReader, PdfFileWriter
 
-from common.forms import DynamicFormsetButton
+from common.forms.layouts import DynamicFormsetButton
 from sheetmusic.models import Part, Score
 
 from .models import Repertoire, RepertoireEntry
@@ -46,7 +46,7 @@ class RepertoireEntryFormsetHelper(FormHelper):
         self.add_input(DynamicFormsetButton("Legg til endå ein oppføring"))
         self.add_input(Submit("submit", "Lagre"))
         self.form_tag = False
-        self.template = "common/table_inline_formset_shade_delete.html"
+        self.template = "common/forms/table_inline_formset_shade_delete.html"
 
 
 RepertoireEntryFormset = inlineformset_factory(
@@ -110,7 +110,7 @@ class RepertoirePdfFormsetHelper(FormHelper):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.add_input(Submit("submit", "Generer PDF"))
-        self.template = "common/table_inline_formset_shade_delete.html"
+        self.template = "common/forms/table_inline_formset_shade_delete.html"
 
 
 def RepertoirePdfFormset_save(self):

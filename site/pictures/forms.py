@@ -3,7 +3,7 @@ from crispy_forms.layout import Submit
 from django.forms import ClearableFileInput, DateInput, ModelForm
 from django.forms.models import inlineformset_factory
 
-from common.mixins import CleanAllFilesMixin
+from common.forms.mixins import CleanAllFilesMixin
 
 from .models import Gallery, Image
 

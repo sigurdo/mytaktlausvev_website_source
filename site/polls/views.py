@@ -13,7 +13,7 @@ from django.views.generic import DetailView, FormView, ListView
 from django.views.generic.base import RedirectView
 
 from common.breadcrumbs import Breadcrumb, BreadcrumbsMixin
-from common.views import (
+from common.forms.views import (
     DeleteViewCustom,
     InlineFormsetCreateView,
     InlineFormsetUpdateView,
@@ -125,7 +125,7 @@ class PollCreate(PermissionRequiredMixin, BreadcrumbsMixin, InlineFormsetCreateV
     model = Poll
     form_class = PollCreateForm
     formset_class = ChoiceFormset
-    template_name = "common/form.html"
+    template_name = "common/forms/form.html"
     permission_required = ("polls.add_poll", "polls.add_choice")
 
     def get_breadcrumbs(self) -> list:
@@ -141,7 +141,7 @@ class PollUpdate(PermissionRequiredMixin, BreadcrumbsMixin, InlineFormsetUpdateV
     model = Poll
     form_class = PollUpdateForm
     formset_class = ChoiceFormset
-    template_name = "common/form.html"
+    template_name = "common/forms/form.html"
     permission_required = (
         "polls.change_poll",
         "polls.add_choice",

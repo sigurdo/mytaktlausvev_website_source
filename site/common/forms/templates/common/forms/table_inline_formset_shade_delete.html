@@ -1,0 +1,12 @@
+{% include "bootstrap5/table_inline_formset.html" %}
+
+{% block js %}
+    {% load static %}
+    <script src="{% static 'common/forms/shade_delete.js' %}"></script>
+    <script src="{% static 'common/forms/dynamic_formset.js' %}"></script>
+{% endblock js %}
+
+{% block css %}
+    {% load sass_tags %}
+    <link href="{% sass_src 'common/forms/table_inline_formset.scss' %}" rel="stylesheet" type="text/css">
+{% endblock css %}

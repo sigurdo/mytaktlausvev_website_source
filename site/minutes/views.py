@@ -33,7 +33,7 @@ class MinutesDetail(LoginRequiredMixin, BreadcrumbsMixin, DetailView):
 class MinutesCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
     model = Minutes
     form_class = MinutesForm
-    template_name = "common/form.html"
+    template_name = "common/forms/form.html"
 
     def get_breadcrumbs(self):
         return breadcrumbs()
@@ -47,7 +47,7 @@ class MinutesCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
 class MinutesUpdate(PermissionOrCreatedMixin, BreadcrumbsMixin, UpdateView):
     model = Minutes
     form_class = MinutesForm
-    template_name = "common/form.html"
+    template_name = "common/forms/form.html"
     permission_required = "minutes.change_minutes"
 
     def get_breadcrumbs(self):

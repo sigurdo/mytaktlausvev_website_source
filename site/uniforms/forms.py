@@ -11,7 +11,7 @@ from django.forms import (
 )
 
 from accounts.models import UserCustom
-from common.forms import DynamicFormsetButton
+from common.forms.layouts import DynamicFormsetButton
 
 from .models import Jacket
 
@@ -36,7 +36,7 @@ class JacketsFormsetHelper(FormHelper):
         self.render_required_fields = True
         self.add_input(DynamicFormsetButton("Legg til endå ein jakke"))
         self.add_input(Submit("submit", "Lagre"))
-        self.template = "common/table_inline_formset_shade_delete.html"
+        self.template = "common/forms/table_inline_formset_shade_delete.html"
 
 
 JacketsFormset = modelformset_factory(
