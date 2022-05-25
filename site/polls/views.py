@@ -171,7 +171,7 @@ class PollDelete(PermissionRequiredMixin, BreadcrumbsMixin, DeleteViewCustom):
         return breadcrumbs(self.object)
 
 
-class VoteCreate(LoginRequiredMixin, PollMixin, FormView):
+class VoteCreate(LoginRequiredMixin, BreadcrumbsMixin, PollMixin, FormView):
     template_name = "polls/vote_form.html"
 
     def get_form_class(self):
@@ -211,7 +211,9 @@ class VoteCreate(LoginRequiredMixin, PollMixin, FormView):
         return reverse("polls:PollResults", args=[self.get_poll().slug])
 
 
-class VoteDelete(LoginRequiredMixin, PollMixin, SuccessMessageMixin, FormView):
+class VoteDelete(
+    LoginRequiredMixin, BreadcrumbsMixin, PollMixin, SuccessMessageMixin, FormView
+):
     template_name = "polls/vote_delete.html"
     form_class = Form
     success_message = "Stemma di vart fjerna."
