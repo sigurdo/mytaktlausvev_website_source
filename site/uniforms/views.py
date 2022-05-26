@@ -8,7 +8,7 @@ from django.views.generic import FormView, ListView, View
 from accounts.models import UserCustom
 from common.breadcrumbs import Breadcrumb, BreadcrumbsMixin
 
-from .forms import AddJacketUserForm, JacketsUpdateFormset, RemoveJacketUserForm
+from .forms import AddJacketUserForm, JacketsFormset, RemoveJacketUserForm
 from .models import Jacket, JacketUser
 
 
@@ -30,7 +30,7 @@ class JacketList(LoginRequiredMixin, ListView):
 
 
 class JacketsUpdate(PermissionRequiredMixin, BreadcrumbsMixin, FormView):
-    form_class = JacketsUpdateFormset
+    form_class = JacketsFormset
     template_name = "common/form.html"
     permission_required = (
         "uniforms.add_jacket",

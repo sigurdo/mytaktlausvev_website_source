@@ -16,7 +16,7 @@ from .forms import RepertoireEntryFormset, RepertoireForm, RepertoirePdfFormset
 from .models import Repertoire
 
 
-class ReperoireBreadcrumbsMixin(BreadcrumbsMixin):
+class RepertoireBreadcrumbsMixin(BreadcrumbsMixin):
     def get_breadcrumbs(self):
         return [
             Breadcrumb(
@@ -32,7 +32,7 @@ class RepertoireList(LoginRequiredMixin, ListView):
 
 
 class RepertoireCreate(
-    PermissionRequiredMixin, ReperoireBreadcrumbsMixin, InlineFormsetCreateView
+    PermissionRequiredMixin, RepertoireBreadcrumbsMixin, InlineFormsetCreateView
 ):
     model = Repertoire
     form_class = RepertoireForm
@@ -43,7 +43,7 @@ class RepertoireCreate(
 
 
 class RepertoireUpdate(
-    PermissionRequiredMixin, ReperoireBreadcrumbsMixin, InlineFormsetUpdateView
+    PermissionRequiredMixin, RepertoireBreadcrumbsMixin, InlineFormsetUpdateView
 ):
     model = Repertoire
     form_class = RepertoireForm
@@ -54,7 +54,7 @@ class RepertoireUpdate(
 
 
 class RepertoireDelete(
-    PermissionRequiredMixin, ReperoireBreadcrumbsMixin, DeleteViewCustom
+    PermissionRequiredMixin, RepertoireBreadcrumbsMixin, DeleteViewCustom
 ):
     model = Repertoire
     success_url = reverse_lazy("repertoire:RepertoireList")
@@ -62,7 +62,7 @@ class RepertoireDelete(
 
 
 class RepertoirePdf(
-    LoginRequiredMixin, ReperoireBreadcrumbsMixin, FormView, DetailView
+    LoginRequiredMixin, RepertoireBreadcrumbsMixin, FormView, DetailView
 ):
     model = Repertoire
     template_name = "repertoire/repertoire_pdf.html"

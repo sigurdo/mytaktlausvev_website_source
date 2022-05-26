@@ -4,7 +4,7 @@ from django.views.generic import FormView, ListView
 
 from common.breadcrumbs import Breadcrumb, BreadcrumbsMixin
 
-from .forms import InstrumentUpdateFormset
+from .forms import InstrumentFormset
 from .models import Instrument
 
 
@@ -18,7 +18,7 @@ class InstrumentsUpdate(
     BreadcrumbsMixin,
     FormView,
 ):
-    form_class = InstrumentUpdateFormset
+    form_class = InstrumentFormset
     template_name = "common/form.html"
     permission_required = (
         "instruments.add_instrument",

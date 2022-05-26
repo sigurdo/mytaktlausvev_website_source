@@ -760,6 +760,10 @@ class Command(BaseCommand):
             content='Hei og velkomen til Studentorchesteret Dei Taktlause! Brukarnavnet ditt er "{{ username }}".',
         )
         EmbeddableTextFactory(
+            name="Stemmeredigeringstips",
+            content="Her kan ein redigere stemmane til denne nota.",
+        )
+        EmbeddableTextFactory(
             name="Hjelpetekst kalenderfeedknapp",
             content=f'Ta ein kikk [her]({reverse("articles:ArticleDetail", args=[article_calendar_feed_help.slug])}) for hjelp med å leggje inn lenkja i kalenderen din.',
         )
