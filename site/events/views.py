@@ -305,8 +305,11 @@ class EventFeed(ICalFeed):
     description = "Kalender for taktlause hendingar"
 
     def __call__(self, request, *args, **kwargs):
-        token = request.GET["token"]
-        if UserCustom.objects.filter(calendar_feed_token=token).exists():
+        token = request.GET.get("token", None)
+        if (
+            token is not None
+            and UserCustom.objects.filter(calendar_feed_token=token).exists()
+        ):
             self.user = UserCustom.objects.only(
                 "calendar_feed_only_upcoming", "calendar_feed_start_date"
             ).get(calendar_feed_token=token)

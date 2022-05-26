@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from http import HTTPStatus
+from secrets import token_urlsafe
 
 from django.db import IntegrityError
 from django.http.response import Http404
@@ -579,3 +580,31 @@ class EventAttendanceDeleteTestCase(TestMixin, TestCase):
                 ],
             ),
         )
+
+
+class EventFeedTestSuite(TestMixin, TestCase):
+    def get_url(self, token=None):
+        """Returns the URL for the event feed."""
+        url = reverse(
+            "events:EventFeed",
+        )
+        if token is not None:
+            url += f"?token={token}"
+        return url
+
+    def test_no_token(self):
+        """Accessing the event feed without a token should return 403."""
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+
+    def test_wrong_token(self):
+        """Accessing the event feed with a wrong token should return 403."""
+        token = token_urlsafe()
+        response = self.client.get(self.get_url(token))
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+
+    def test_correct_token(self):
+        """Accessing the event feed with a correct token should return 200."""
+        token = UserFactory().calendar_feed_token
+        response = self.client.get(self.get_url(token))
+        self.assertEqual(response.status_code, HTTPStatus.OK)
