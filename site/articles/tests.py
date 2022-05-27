@@ -302,12 +302,19 @@ class ArticleDeleteTestCase(TestMixin, TestCase):
     def setUp(self):
         self.article = ArticleFactory()
 
-    def get_url(self):
-        return reverse("articles:ArticleDelete", args=[self.article.path()])
+    def get_url(self, path=None):
+        return reverse("articles:ArticleDelete", args=[path or self.article.path()])
 
-    def test_should_redirect_to_dashboard_on_success(self):
-        """Should redirect to the dashboard on success."""
-        self.client.force_login(self.article.created_by)
+    def test_should_redirect_to_parent_on_success_if_exists(self):
+        """Should redirect to the parent article on success, if it exists."""
+        self.child = ArticleFactory(parent=self.article)
+        self.client.force_login(SuperUserFactory())
+        response = self.client.post(self.get_url(self.child.path()))
+        self.assertRedirects(response, self.article.get_absolute_url())
+
+    def test_should_redirect_to_dashboard_on_success_if_no_parent(self):
+        """Should redirect to the dashboard on success, if the article doesn't have a parent."""
+        self.client.force_login(SuperUserFactory())
         response = self.client.post(self.get_url())
         self.assertRedirects(response, reverse("dashboard:Dashboard"))
 

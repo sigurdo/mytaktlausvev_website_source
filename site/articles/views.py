@@ -1,12 +1,12 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.http.response import Http404
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 
 from common.breadcrumbs import BreadcrumbsMixin
+from common.forms.views import DeleteViewCustom
 from common.mixins import PermissionOrCreatedMixin
-from common.views import DeleteViewCustom
 
 from .forms import ArticleForm
 from .models import Article
@@ -101,8 +101,14 @@ class ArticleDelete(
     PermissionOrCreatedMixin, BreadcrumbsMixin, SlugPathMixin, DeleteViewCustom
 ):
     model = Article
-    success_url = reverse_lazy("dashboard:Dashboard")
     permission_required = "articles.delete_article"
 
     def get_breadcrumbs(self) -> list:
         return self.object.breadcrumbs(include_self=True)
+
+    def get_success_url(self) -> str:
+        return (
+            self.object.parent.get_absolute_url()
+            if self.object.parent
+            else reverse("dashboard:Dashboard")
+        )
