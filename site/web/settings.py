@@ -71,6 +71,7 @@ INSTALLED_APPS = [
     "common.forms",
     "common.embeddable_text",
     "common.comments",
+    "common.markdown",
     "sidebar",
     "articles",
     "storage",

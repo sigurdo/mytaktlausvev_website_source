@@ -12,7 +12,7 @@ from django.views.generic import CreateView, DetailView, FormView, ListView, Upd
 
 from common.breadcrumbs import Breadcrumb, BreadcrumbsMixin
 from common.embeddable_text.models import EmbeddableText
-from common.templatetags.markdown import markdown
+from common.markdown.templatetags.markdown import markdown
 
 from .forms import ImageSharingConsentForm, UserCustomCreateForm, UserCustomUpdateForm
 from .models import UserCustom
