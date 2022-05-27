@@ -69,6 +69,7 @@ INSTALLED_APPS = [
     "accounts",
     "common",
     "common.forms",
+    "common.embeddable_text",
     "sidebar",
     "articles",
     "storage",
@@ -91,7 +92,6 @@ INSTALLED_APPS = [
     "pictures",
     "minutes",
     "user_files",
-    "embeddable_text",
 ]
 
 MIDDLEWARE = [
