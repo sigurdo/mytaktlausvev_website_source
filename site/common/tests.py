@@ -7,8 +7,8 @@ from markdown import Markdown
 
 from articles.factories import ArticleFactory
 from articles.models import Article
-from comments.factories import CommentFactory
-from comments.models import Comment
+from common.comments.factories import CommentFactory
+from common.comments.models import Comment
 from common.markdown_extensions import KWordCensorExtension
 from common.templatetags.markdown import ClassApplyFilter
 from sheetmusic.factories import PdfFactory

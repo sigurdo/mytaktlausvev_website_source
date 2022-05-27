@@ -6,7 +6,7 @@ from django.utils.timezone import make_aware, now
 
 from accounts.factories import UserFactory
 from articles.factories import ArticleFactory
-from comments.factories import CommentFactory
+from common.comments.factories import CommentFactory
 from common.mixins import TestMixin
 from events.factories import EventFactory
 from events.models import Event
