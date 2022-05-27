@@ -14,4 +14,9 @@ urlpatterns = [
         views.ImageCreate.as_view(),
         name="ImageCreate",
     ),
+    path(
+        "<slug:slug>/rediger/slett/",
+        views.GalleryDelete.as_view(),
+        name="GalleryDelete",
+    ),
 ]
