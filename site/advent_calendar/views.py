@@ -2,11 +2,13 @@ import random
 
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.shortcuts import get_object_or_404
+from django.urls import reverse_lazy
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
 
 from common.mixins import PermissionOrCreatedMixin
+from common.views import DeleteViewCustom
 
 from .forms import AdventCalendarForm, WindowCreateForm, WindowUpdateForm
 from .models import AdventCalendar, Window
@@ -83,3 +85,21 @@ class WindowUpdate(PermissionOrCreatedMixin, UpdateView):
     def form_valid(self, form):
         form.instance.modified_by = self.request.user
         return super().form_valid(form)
+
+
+class WindowDelete(PermissionOrCreatedMixin, DeleteViewCustom):
+    model = Window
+    permission_required = "advent_calendar.delete_window"
+    template_name = "advent_calendar/window_delete.html"
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(
+            Window, advent_calendar=self.kwargs["year"], index=self.kwargs["index"]
+        )
+
+    def get_success_message(self, cleaned_data):
+        """Remove success message, since this is not shown by the advent calendar views."""
+        return ""
+
+    def get_success_url(self) -> str:
+        return self.object.advent_calendar.get_absolute_url()

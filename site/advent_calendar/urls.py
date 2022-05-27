@@ -16,4 +16,9 @@ urlpatterns = [
         views.WindowUpdate.as_view(),
         name="WindowUpdate",
     ),
+    path(
+        "<int:year>/<int:index>/slett/",
+        views.WindowDelete.as_view(),
+        name="WindowDelete",
+    ),
 ]
