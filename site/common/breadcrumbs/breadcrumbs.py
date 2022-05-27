@@ -6,7 +6,7 @@ from django.views.generic import View
 @dataclass(eq=True, frozen=True)
 class Breadcrumb:
     """
-    Standardized breadcrumb designed to work with `BreadcrumbsMixin` and `common/includes/breadcrumbs.html`.
+    Standardized breadcrumb designed to work with `BreadcrumbsMixin` and `common/breadcrumbs/breadcrumbs.html`.
 
     `str` `url`: The URL the breadcrumb should redirect to
     `str` `name`: The breadcrumb's label

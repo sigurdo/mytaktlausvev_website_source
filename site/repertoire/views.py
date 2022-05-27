@@ -4,7 +4,7 @@ from django.urls import reverse, reverse_lazy
 from django.utils.text import slugify
 from django.views.generic import DetailView, FormView, ListView
 
-from common.breadcrumbs import Breadcrumb, BreadcrumbsMixin
+from common.breadcrumbs.breadcrumbs import Breadcrumb, BreadcrumbsMixin
 from common.forms.views import (
     DeleteViewCustom,
     InlineFormsetCreateView,

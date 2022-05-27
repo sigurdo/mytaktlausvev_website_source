@@ -9,7 +9,7 @@ from django.utils.text import slugify
 from django.utils.timezone import make_aware, now
 
 from accounts.factories import SuperUserFactory, UserFactory
-from common.breadcrumbs import Breadcrumb
+from common.breadcrumbs.breadcrumbs import Breadcrumb
 from common.mixins import TestMixin
 from events.models import Attendance, Event, EventAttendance
 from events.views import (

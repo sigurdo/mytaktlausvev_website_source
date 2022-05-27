@@ -72,6 +72,7 @@ INSTALLED_APPS = [
     "common.embeddable_text",
     "common.comments",
     "common.markdown",
+    "common.breadcrumbs",
     "sidebar",
     "articles",
     "storage",

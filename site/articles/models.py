@@ -3,7 +3,7 @@ from django.db import models
 from django.urls import reverse
 from tree_queries.models import TreeNode
 
-from common.breadcrumbs import Breadcrumb
+from common.breadcrumbs.breadcrumbs import Breadcrumb
 from common.models import ArticleMixin
 
 

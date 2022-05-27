@@ -10,7 +10,7 @@ from django.urls import reverse
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.generic import CreateView, DetailView, FormView, ListView, UpdateView
 
-from common.breadcrumbs import Breadcrumb, BreadcrumbsMixin
+from common.breadcrumbs.breadcrumbs import Breadcrumb, BreadcrumbsMixin
 from common.embeddable_text.models import EmbeddableText
 from common.markdown.templatetags.markdown import markdown
 

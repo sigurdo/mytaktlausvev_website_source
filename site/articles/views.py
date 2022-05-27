@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 
-from common.breadcrumbs import BreadcrumbsMixin
+from common.breadcrumbs.breadcrumbs import BreadcrumbsMixin
 from common.forms.views import DeleteViewCustom
 from common.mixins import PermissionOrCreatedMixin
 
