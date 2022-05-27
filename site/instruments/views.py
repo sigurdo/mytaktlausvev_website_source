@@ -19,7 +19,7 @@ class InstrumentsUpdate(
     FormView,
 ):
     form_class = InstrumentFormset
-    template_name = "common/form.html"
+    template_name = "common/forms/form.html"
     permission_required = (
         "instruments.add_instrument",
         "instruments.change_instrument",

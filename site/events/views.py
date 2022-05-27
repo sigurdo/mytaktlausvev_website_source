@@ -8,8 +8,8 @@ from django_ical.views import ICalFeed
 
 from accounts.models import UserCustom
 from common.breadcrumbs import Breadcrumb, BreadcrumbsMixin
+from common.forms.views import DeleteViewCustom
 from common.mixins import PermissionOrCreatedMixin
-from common.views import DeleteViewCustom
 
 from .forms import EventAttendanceForm, EventForm
 from .models import Attendance, Event, EventAttendance
@@ -127,7 +127,7 @@ class EventCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
 
     model = Event
     form_class = EventForm
-    template_name = "common/form.html"
+    template_name = "common/forms/form.html"
 
     def get_breadcrumbs(self):
         return event_breadcrumbs()
@@ -159,7 +159,7 @@ class EventUpdate(PermissionOrCreatedMixin, BreadcrumbsMixin, UpdateView):
 
     model = Event
     form_class = EventForm
-    template_name = "common/form.html"
+    template_name = "common/forms/form.html"
     permission_required = "events.change_event"
 
     def get_breadcrumbs(self):
@@ -205,7 +205,7 @@ class EventAttendanceCreate(LoginRequiredMixin, CreateView):
 
     model = EventAttendance
     form_class = EventAttendanceForm
-    template_name = "common/form.html"
+    template_name = "common/forms/form.html"
     http_method_names = ["post", "put"]
 
     def get_event(self):
@@ -232,7 +232,7 @@ class EventAttendanceUpdate(PermissionOrCreatedMixin, BreadcrumbsMixin, UpdateVi
 
     model = EventAttendance
     form_class = EventAttendanceForm
-    template_name = "common/form.html"
+    template_name = "common/forms/form.html"
 
     permission_required = "events.change_eventattendance"
     field_created_by = "person"

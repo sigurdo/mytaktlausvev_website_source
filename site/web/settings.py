@@ -68,6 +68,7 @@ INSTALLED_APPS = [
     "authentication",
     "accounts",
     "common",
+    "common.forms",
     "sidebar",
     "articles",
     "storage",

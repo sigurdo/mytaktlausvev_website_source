@@ -5,7 +5,7 @@ from django.urls import reverse
 from django.views.generic import CreateView, ListView
 
 from common.breadcrumbs import Breadcrumb, BreadcrumbsMixin
-from common.views import InlineFormsetUpdateView
+from common.forms.views import InlineFormsetUpdateView
 
 from .forms import GalleryForm, ImageCreateForm, ImageFormSet
 from .models import Gallery, Image
@@ -81,7 +81,7 @@ class GalleryCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
 
     model = Gallery
     form_class = GalleryForm
-    template_name = "common/form.html"
+    template_name = "common/forms/form.html"
 
     def get_breadcrumbs(self) -> list:
         return breadcrumbs()
@@ -98,7 +98,7 @@ class GalleryCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
 class ImageCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
     model = Image
     form_class = ImageCreateForm
-    template_name = "common/form.html"
+    template_name = "common/forms/form.html"
 
     gallery = None
 

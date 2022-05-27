@@ -31,7 +31,7 @@ class JacketList(LoginRequiredMixin, ListView):
 
 class JacketsUpdate(PermissionRequiredMixin, BreadcrumbsMixin, FormView):
     form_class = JacketsFormset
-    template_name = "common/form.html"
+    template_name = "common/forms/form.html"
     permission_required = (
         "uniforms.add_jacket",
         "uniforms.change_jacket",
@@ -85,7 +85,7 @@ class JacketUsers(PermissionRequiredMixin, BreadcrumbsMixin, ListView):
 
 class AddJacketUser(PermissionRequiredMixin, BreadcrumbsMixin, FormView):
     form_class = AddJacketUserForm
-    template_name = "common/form.html"
+    template_name = "common/forms/form.html"
     permission_required = "uniforms.add_jacketuser"
 
     def setup(self, request, *args, **kwargs):
@@ -121,7 +121,7 @@ class RemoveJacketUser(
     PermissionRequiredMixin, SuccessMessageMixin, BreadcrumbsMixin, FormView
 ):
     form_class = RemoveJacketUserForm
-    template_name = "common/form.html"
+    template_name = "common/forms/form.html"
     permission_required = "uniforms.delete_jacketuser"
 
     def setup(self, request, *args, **kwargs):

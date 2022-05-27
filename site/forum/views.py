@@ -62,7 +62,7 @@ class TopicList(LoginRequiredMixin, BreadcrumbsMixin, ListView):
 class TopicCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
     model = Topic
     form_class = TopicCreateForm
-    template_name = "common/form.html"
+    template_name = "common/forms/form.html"
 
     def setup(self, request, *args, **kwargs):
         self.forum = get_object_or_404(Forum, slug=kwargs["slug_forum"])
