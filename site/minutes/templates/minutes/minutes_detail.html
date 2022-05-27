@@ -7,9 +7,26 @@
     {{ block.super }}
     {% include "common/includes/created_modified.html" with object=minutes only %}
 
-    {% if perms.minutes.change_minutes or minutes.created_by == request.user %}
-        <a class="btn btn-primary btn-sm" href="{% url 'minutes:MinutesUpdate' minutes.slug %}">Rediger</a>
-    {% endif %}
+    <ul class="list-inline">
+        {% if perms.minutes.change_minutes or minutes.created_by == request.user %}
+        <li class="list-inline-item">
+            <a class="btn btn-primary btn-sm" href="{% url 'minutes:MinutesUpdate' minutes.slug %}">
+                Rediger
+            </a>
+        </li>
+        {% endif %}
+
+        {% if perms.pictures.delete_minutes or minutes.created_by == request.user %}
+        <li class="list-inline-item">
+            <a
+                href="{% url 'minutes:MinutesDelete' minutes.slug %}"
+                class="btn btn-danger btn-sm"
+            >
+                Slett
+            </a>
+        </li>
+        {% endif %}
+    </ul>
 {% endblock header %}
 
 {% block content %}
