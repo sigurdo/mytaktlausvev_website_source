@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.db.models.functions.datetime import TruncMonth
 from django.http import HttpResponseForbidden
@@ -14,8 +16,6 @@ from common.views import DeleteViewCustom
 
 from .forms import EventAttendanceForm, EventForm
 from .models import Attendance, Event, EventAttendance
-from django.utils.timezone import localtime, make_aware, now
-from datetime import datetime, timedelta
 
 
 def get_event_or_404(year, slug):

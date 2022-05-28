@@ -188,7 +188,7 @@ class EventBreadcrumbsTestSuite(TestMixin, TestCase):
                 )
             ],
         )
-    
+
     def test_event_create(self):
         """
         Calling for `EvenCreate` should give 2 breadcrumbs;
@@ -207,7 +207,7 @@ class EventBreadcrumbsTestSuite(TestMixin, TestCase):
                 Breadcrumb(
                     reverse("events:EventList"),
                     "Alle framtidige",
-                )
+                ),
             ],
         )
 
