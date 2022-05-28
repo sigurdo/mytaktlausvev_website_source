@@ -13,9 +13,10 @@
                 href="{% url 'pictures:GalleryUpdate' gallery.slug %}"
                 class="btn btn-primary btn-sm"
             >
-                Rediger galleri
+                Rediger
             </a>
         </li>
+
         <li class="list-inline-item">
             <a
                 href="{% url 'pictures:ImageCreate' gallery.slug %}"
@@ -24,6 +25,17 @@
                 Last opp bilete
             </a>
         </li>
+
+        {% if perms.pictures.delete_gallery and perms.pictures.delete_image or gallery.created_by == request.user %}
+        <li class="list-inline-item">
+            <a
+                href="{% url 'pictures:GalleryDelete' gallery.slug %}"
+                class="btn btn-danger btn-sm"
+            >
+                Slett
+            </a>
+        </li>
+        {% endif %}
     </ul>
 {% endblock header %}
 

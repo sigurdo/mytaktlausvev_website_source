@@ -14,7 +14,7 @@
         {% if perms.articles.change_article or article.created_by == request.user %}
         <li class="list-inline-item">
             <a href="{% url 'articles:ArticleUpdate' article.path %}" class="btn btn-primary btn-sm">
-                Rediger artikkel
+                Rediger
             </a>
         </li>
         {% endif %}
@@ -24,6 +24,14 @@
                 Lag underartikkel
             </a>
         </li>
+
+        {% if perms.articles.delete_article or article.created_by == request.user %}
+        <li class="list-inline-item">
+            <a href="{% url 'articles:ArticleDelete' article.path %}" class="btn btn-danger btn-sm">
+                Slett
+            </a>
+        </li>
+        {% endif %}
     </ul>
     {% endif %}
 {% endblock header %}

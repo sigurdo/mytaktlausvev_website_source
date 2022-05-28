@@ -13,12 +13,12 @@
         </li>
         {% if perms.polls.change_poll and perms.polls.add_choice and perms.polls.change_choice and perms.polls.delete_choice %}
         <li class="list-inline-item">
-            <a href="{% url 'polls:PollUpdate' poll.slug %}" class="btn btn-primary btn-sm">Rediger avstemming</a>
+            <a href="{% url 'polls:PollUpdate' poll.slug %}" class="btn btn-primary btn-sm">Rediger</a>
         </li>
         {% endif %}
         {% if perms.polls.delete_poll and perms.polls.delete_choice %}
         <li class="list-inline-item">
-            <a href="{% url 'polls:PollDelete' poll.slug %}" class="btn btn-primary btn-sm">Slett avstemming</a>
+            <a href="{% url 'polls:PollDelete' poll.slug %}" class="btn btn-danger btn-sm">Slett</a>
         </li>
         {% endif %}
     </ul>

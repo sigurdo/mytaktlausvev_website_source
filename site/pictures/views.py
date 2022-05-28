@@ -1,11 +1,12 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Max
 from django.shortcuts import get_object_or_404
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, ListView
 
-from common.breadcrumbs import Breadcrumb, BreadcrumbsMixin
-from common.views import InlineFormsetUpdateView
+from common.breadcrumbs.breadcrumbs import Breadcrumb, BreadcrumbsMixin
+from common.forms.views import DeleteViewCustom, InlineFormsetUpdateView
+from common.mixins import PermissionOrCreatedMixin
 
 from .forms import GalleryForm, ImageCreateForm, ImageFormSet
 from .models import Gallery, Image
@@ -81,7 +82,7 @@ class GalleryCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
 
     model = Gallery
     form_class = GalleryForm
-    template_name = "common/form.html"
+    template_name = "common/forms/form.html"
 
     def get_breadcrumbs(self) -> list:
         return breadcrumbs()
@@ -98,7 +99,7 @@ class GalleryCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
 class ImageCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
     model = Image
     form_class = ImageCreateForm
-    template_name = "common/form.html"
+    template_name = "common/forms/form.html"
 
     gallery = None
 
@@ -144,3 +145,12 @@ class GalleryUpdate(LoginRequiredMixin, BreadcrumbsMixin, InlineFormsetUpdateVie
     def form_valid(self, form):
         form.instance.modified_by = self.request.user
         return super().form_valid(form)
+
+
+class GalleryDelete(PermissionOrCreatedMixin, BreadcrumbsMixin, DeleteViewCustom):
+    model = Gallery
+    success_url = reverse_lazy("pictures:GalleryList")
+    permission_required = ("pictures.delete_gallery", "pictures.delete_image")
+
+    def get_breadcrumbs(self) -> list:
+        return breadcrumbs(self.object)

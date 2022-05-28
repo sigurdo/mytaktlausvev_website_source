@@ -4,15 +4,15 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.db.models.functions.datetime import TruncMonth
 from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404
-from django.urls import reverse
 from django.utils.timezone import localtime, now
+from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 from django_ical.views import ICalFeed
 
 from accounts.models import UserCustom
-from common.breadcrumbs import Breadcrumb, BreadcrumbsMixin
+from common.breadcrumbs.breadcrumbs import Breadcrumb, BreadcrumbsMixin
+from common.forms.views import DeleteViewCustom
 from common.mixins import PermissionOrCreatedMixin
-from common.views import DeleteViewCustom
 
 from .forms import EventAttendanceForm, EventForm
 from .models import Attendance, Event, EventAttendance
@@ -144,7 +144,7 @@ class EventCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
 
     model = Event
     form_class = EventForm
-    template_name = "common/form.html"
+    template_name = "common/forms/form.html"
 
     def get_breadcrumbs(self):
         return event_breadcrumbs(
@@ -179,7 +179,7 @@ class EventUpdate(PermissionOrCreatedMixin, BreadcrumbsMixin, UpdateView):
 
     model = Event
     form_class = EventForm
-    template_name = "common/form.html"
+    template_name = "common/forms/form.html"
     permission_required = "events.change_event"
 
     def get_breadcrumbs(self):
@@ -191,6 +191,15 @@ class EventUpdate(PermissionOrCreatedMixin, BreadcrumbsMixin, UpdateView):
     def form_valid(self, form):
         form.instance.modified_by = self.request.user
         return super().form_valid(form)
+
+
+class EventDelete(PermissionOrCreatedMixin, BreadcrumbsMixin, DeleteViewCustom):
+    model = Event
+    success_url = reverse_lazy("events:EventList")
+    permission_required = "events.delete_event"
+
+    def get_breadcrumbs(self):
+        return event_breadcrumbs(event=self.get_object())
 
 
 class EventAttendanceList(PermissionRequiredMixin, BreadcrumbsMixin, ListView):
@@ -225,7 +234,7 @@ class EventAttendanceCreate(LoginRequiredMixin, CreateView):
 
     model = EventAttendance
     form_class = EventAttendanceForm
-    template_name = "common/form.html"
+    template_name = "common/forms/form.html"
     http_method_names = ["post", "put"]
 
     def get_event(self):
@@ -252,7 +261,7 @@ class EventAttendanceUpdate(PermissionOrCreatedMixin, BreadcrumbsMixin, UpdateVi
 
     model = EventAttendance
     form_class = EventAttendanceForm
-    template_name = "common/form.html"
+    template_name = "common/forms/form.html"
 
     permission_required = "events.change_eventattendance"
     field_created_by = "person"

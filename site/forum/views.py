@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404
 from django.urls.base import reverse
 from django.views.generic import CreateView, DetailView, ListView
 
-from common.breadcrumbs import Breadcrumb, BreadcrumbsMixin
+from common.breadcrumbs.breadcrumbs import Breadcrumb, BreadcrumbsMixin
 
 from .forms import TopicCreateForm
 from .models import Forum, Topic
@@ -62,7 +62,7 @@ class TopicList(LoginRequiredMixin, BreadcrumbsMixin, ListView):
 class TopicCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
     model = Topic
     form_class = TopicCreateForm
-    template_name = "common/form.html"
+    template_name = "common/forms/form.html"
 
     def setup(self, request, *args, **kwargs):
         self.forum = get_object_or_404(Forum, slug=kwargs["slug_forum"])

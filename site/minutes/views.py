@@ -1,8 +1,9 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
-from common.breadcrumbs import Breadcrumb, BreadcrumbsMixin
+from common.breadcrumbs.breadcrumbs import Breadcrumb, BreadcrumbsMixin
+from common.forms.views import DeleteViewCustom
 from common.mixins import PermissionOrCreatedMixin
 
 from .forms import MinutesForm
@@ -33,7 +34,7 @@ class MinutesDetail(LoginRequiredMixin, BreadcrumbsMixin, DetailView):
 class MinutesCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
     model = Minutes
     form_class = MinutesForm
-    template_name = "common/form.html"
+    template_name = "common/forms/form.html"
 
     def get_breadcrumbs(self):
         return breadcrumbs()
@@ -47,7 +48,7 @@ class MinutesCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
 class MinutesUpdate(PermissionOrCreatedMixin, BreadcrumbsMixin, UpdateView):
     model = Minutes
     form_class = MinutesForm
-    template_name = "common/form.html"
+    template_name = "common/forms/form.html"
     permission_required = "minutes.change_minutes"
 
     def get_breadcrumbs(self):
@@ -56,3 +57,12 @@ class MinutesUpdate(PermissionOrCreatedMixin, BreadcrumbsMixin, UpdateView):
     def form_valid(self, form):
         form.instance.modified_by = self.request.user
         return super().form_valid(form)
+
+
+class MinutesDelete(PermissionOrCreatedMixin, BreadcrumbsMixin, DeleteViewCustom):
+    model = Minutes
+    success_url = reverse_lazy("minutes:MinutesList")
+    permission_required = "minutes.delete_minutes"
+
+    def get_breadcrumbs(self) -> list:
+        return breadcrumbs(self.object)

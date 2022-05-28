@@ -17,7 +17,7 @@
     {{ block.super }}
 
     {% if perms.uniforms.add_jacket and perms.uniforms.change_jacket and perms.uniforms.delete_jacket %}
-    <a href="{% url "uniforms:JacketsUpdate" %}" class="btn btn-primary btn-sm my-1"> Rediger jakker </a>
+    <a href="{% url "uniforms:JacketsUpdate" %}" class="btn btn-primary btn-sm my-1"> Rediger </a>
     {% endif %}
 {% endblock header %}
 

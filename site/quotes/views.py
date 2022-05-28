@@ -6,7 +6,7 @@ from django.urls import reverse
 from django.views.generic import ListView
 from django.views.generic.edit import CreateView, UpdateView
 
-from common.breadcrumbs import Breadcrumb, BreadcrumbsMixin
+from common.breadcrumbs.breadcrumbs import Breadcrumb, BreadcrumbsMixin
 from common.mixins import PermissionOrCreatedMixin
 from quotes.models import Quote
 
@@ -23,7 +23,7 @@ class QuoteNew(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
 
     model = Quote
     form_class = QuoteForm
-    template_name = "common/form.html"
+    template_name = "common/forms/form.html"
 
     def get_breadcrumbs(self) -> list:
         return breadcrumbs()
@@ -63,7 +63,7 @@ class QuoteUpdate(PermissionOrCreatedMixin, BreadcrumbsMixin, UpdateView):
 
     model = Quote
     form_class = QuoteForm
-    template_name = "common/form.html"
+    template_name = "common/forms/form.html"
     permission_required = "quotes.change_quote"
 
     def get_breadcrumbs(self) -> list:

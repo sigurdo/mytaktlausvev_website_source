@@ -10,7 +10,7 @@ from django.utils.timezone import make_aware
 from django.views.generic import RedirectView, TemplateView
 
 from accounts.models import UserCustom
-from comments.models import Comment
+from common.comments.models import Comment
 from common.utils import random_sample_queryset
 from events.models import Event
 from minutes.models import Minutes

@@ -148,3 +148,37 @@ class MinutesUpdateTestSuite(TestMixin, TestCase):
 
         self.minutes.refresh_from_db()
         self.assertEqual(self.minutes.modified_by, user)
+
+
+class MinutesDeleteTestCase(TestMixin, TestCase):
+    def setUp(self):
+        self.minutes = MinutesFactory()
+
+    def get_url(self):
+        return reverse("minutes:MinutesDelete", args=[self.minutes.slug])
+
+    def test_should_redirect_to_minutes_list_on_success(self):
+        """Should redirect to the minutes list on success."""
+        self.client.force_login(self.minutes.created_by)
+        response = self.client.post(self.get_url())
+        self.assertRedirects(response, reverse("minutes:MinutesList"))
+
+    def test_requires_login(self):
+        """Should require login."""
+        self.assertLoginRequired(self.get_url())
+
+    def test_requires_permission(self):
+        """Should require permission to delete minutes."""
+        self.assertPermissionRequired(
+            self.get_url(),
+            "minutes.delete_minutes",
+        )
+
+    def test_succeeds_if_not_permission_but_is_author(self):
+        """
+        Should succeed if the user is the author,
+        even if the user doesn't have permission to delete minutes.
+        """
+        self.client.force_login(self.minutes.created_by)
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.status_code, HTTPStatus.OK)

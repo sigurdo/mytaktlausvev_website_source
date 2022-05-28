@@ -18,7 +18,7 @@ class SplitDateTimeWidgetCustom(forms.SplitDateTimeWidget):
     Must be used with `django.forms.SplitDateTimeField`.
     """
 
-    template_name = "common/split_datetime_custom.html"
+    template_name = "common/forms/split_datetime_custom.html"
 
     def __init__(self, attrs=None):
         widgets = [DateDateInput(), forms.TimeInput(format="%H:%M")]

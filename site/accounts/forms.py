@@ -7,7 +7,7 @@ from django.core.exceptions import ValidationError
 from django.forms import BooleanField, ModelForm
 from django.urls import reverse
 
-from common.widgets import DateDateInput
+from common.forms.widgets import DateDateInput
 
 from .models import UserCustom
 

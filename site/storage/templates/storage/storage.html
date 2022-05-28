@@ -15,7 +15,7 @@
 {% block header %}
     {{ block.super }}
     {% if perms.accounts.view_storage_access and perms.accounts.edit_storage_access %}
-        <a class="btn btn-primary btn-sm my-1" href="{% url 'storage:StorageAccessUpdate' %}">Rediger lagertilgjenge</a>
+        <a class="btn btn-primary btn-sm my-1" href="{% url 'storage:StorageAccessUpdate' %}">Rediger</a>
     {% endif %}
 {% endblock header %}
 

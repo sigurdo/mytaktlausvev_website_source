@@ -2,9 +2,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, ListView, UpdateView
 
-from common.breadcrumbs import Breadcrumb, BreadcrumbsMixin
+from common.breadcrumbs.breadcrumbs import Breadcrumb, BreadcrumbsMixin
+from common.forms.views import DeleteViewCustom
 from common.mixins import PermissionOrCreatedMixin
-from common.views import DeleteViewCustom
 from serve_media_files.views import ServeMediaFiles
 
 from .forms import FileForm
@@ -39,7 +39,7 @@ class FileServe(UserPassesTestMixin, ServeMediaFiles):
 class FileCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
     model = File
     form_class = FileForm
-    template_name = "common/form.html"
+    template_name = "common/forms/form.html"
     success_url = reverse_lazy("user_files:FileList")
 
     def get_breadcrumbs(self):
@@ -54,7 +54,7 @@ class FileCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
 class FileUpdate(PermissionOrCreatedMixin, BreadcrumbsMixin, UpdateView):
     model = File
     form_class = FileForm
-    template_name = "common/form.html"
+    template_name = "common/forms/form.html"
     permission_required = "user_files.change_file"
     success_url = reverse_lazy("user_files:FileList")
 
