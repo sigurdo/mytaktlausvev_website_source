@@ -4,8 +4,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.db.models.functions.datetime import TruncMonth
 from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404
-from django.utils.timezone import localtime, now
 from django.urls import reverse, reverse_lazy
+from django.utils.timezone import localtime, now
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 from django_ical.views import ICalFeed
 
