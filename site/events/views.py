@@ -14,6 +14,8 @@ from common.views import DeleteViewCustom
 
 from .forms import EventAttendanceForm, EventForm
 from .models import Attendance, Event, EventAttendance
+from django.utils.timezone import localtime, make_aware, now
+from datetime import datetime, timedelta
 
 
 def get_event_or_404(year, slug):
@@ -31,10 +33,11 @@ def get_event_attendance_or_404(year, slug_event, slug_person):
     )
 
 
-def event_breadcrumbs(event=None, event_list_upcoming=False, event_detail=False):
+def event_breadcrumbs(event=None, include_event=True):
     """
     Generates breadcrumbs for events in the following fashion:
     - /hendingar/:                                     "Hendingar [current_year]"
+    - /hendingar/ny:                                   "Hendingar [current_year] / Alle framtidige"
     - /hendingar/[year]/:                              ""
     - /hendingar/[year]/[slug]/ for future events:     "Hendingar [year] / Alle framtidige"
     - /hendingar/[year]/[slug]/ for past events:       "Hendingar [year]"
@@ -42,31 +45,33 @@ def event_breadcrumbs(event=None, event_list_upcoming=False, event_detail=False)
     - /hendingar/[year]/[slug]/.../ for past events:   "Hendingar [year] / [event_title]"
     """
     breadcrumbs = []
-    year = localtime(now()).year
-    if event:
-        year = localtime(event.start_time).year
+    year = localtime(event.start_time).year if event else localtime(now()).year
+
     breadcrumbs.append(
         Breadcrumb(
             reverse("events:EventList", args=[year]),
             f"Hendingar {year}",
         )
     )
-    if (
-        (event is None) or (event is not None and event.is_in_future())
-    ) and not event_list_upcoming:
+    if event is None:
+        return breadcrumbs
+
+    if event.is_in_future():
         breadcrumbs.append(
             Breadcrumb(
                 reverse("events:EventList"),
                 "Alle framtidige",
             )
         )
-    if event is not None and not event_detail:
+
+    if include_event:
         breadcrumbs.append(
             Breadcrumb(
                 reverse("events:EventDetail", args=[year, event.slug]),
                 str(event),
             )
         )
+
     return breadcrumbs
 
 
@@ -77,7 +82,7 @@ class EventList(LoginRequiredMixin, BreadcrumbsMixin, ListView):
     def get_breadcrumbs(self):
         if "year" in self.kwargs:
             return []
-        return event_breadcrumbs(event_list_upcoming=True)
+        return event_breadcrumbs()
 
     def get_queryset(self):
         match self.kwargs:
@@ -112,7 +117,7 @@ class EventDetail(LoginRequiredMixin, BreadcrumbsMixin, DetailView):
     model = Event
 
     def get_breadcrumbs(self):
-        return event_breadcrumbs(event=self.get_object(), event_detail=True)
+        return event_breadcrumbs(event=self.get_object(), include_event=False)
 
     def get_object(self, queryset=None):
         return get_event_or_404(self.kwargs.get("year"), self.kwargs.get("slug"))
@@ -142,7 +147,10 @@ class EventCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
     template_name = "common/form.html"
 
     def get_breadcrumbs(self):
-        return event_breadcrumbs()
+        return event_breadcrumbs(
+            event=Event(start_time=now() + timedelta(days=1)),
+            include_event=False,
+        )
 
     def get_object(self, queryset=None):
         return get_event_or_404(self.kwargs.get("year"), self.kwargs.get("slug"))

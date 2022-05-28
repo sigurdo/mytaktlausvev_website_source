@@ -180,11 +180,33 @@ class EventBreadcrumbsTestSuite(TestMixin, TestCase):
         """
         current_year = localtime(now()).year
         self.assertEqual(
-            event_breadcrumbs(event_list_upcoming=True),
+            event_breadcrumbs(),
             [
                 Breadcrumb(
                     reverse("events:EventList", args=[current_year]),
                     f"Hendingar {current_year}",
+                )
+            ],
+        )
+    
+    def test_event_create(self):
+        """
+        Calling for `EvenCreate` should give 2 breadcrumbs;
+        - To `EventList` for the current year.
+        - To `EventList` for all upcoming events.
+        """
+        current_year = localtime(now()).year
+        event = Event(start_time=now() + timedelta(days=1))
+        self.assertEqual(
+            event_breadcrumbs(event=event, include_event=False),
+            [
+                Breadcrumb(
+                    reverse("events:EventList", args=[current_year]),
+                    f"Hendingar {current_year}",
+                ),
+                Breadcrumb(
+                    reverse("events:EventList"),
+                    "Alle framtidige",
                 )
             ],
         )
@@ -198,7 +220,7 @@ class EventBreadcrumbsTestSuite(TestMixin, TestCase):
         event = EventFactory(start_time=(now() + timedelta(days=370)))
         year = localtime(event.start_time).year
         self.assertEqual(
-            event_breadcrumbs(event=event, event_detail=True),
+            event_breadcrumbs(event=event, include_event=False),
             [
                 Breadcrumb(
                     reverse("events:EventList", args=[year]),
@@ -250,7 +272,7 @@ class EventBreadcrumbsTestSuite(TestMixin, TestCase):
         event = EventFactory(start_time=(now() - timedelta(days=370)))
         year = localtime(event.start_time).year
         self.assertEqual(
-            event_breadcrumbs(event=event, event_detail=True),
+            event_breadcrumbs(event=event, include_event=False),
             [
                 Breadcrumb(
                     reverse("events:EventList", args=[year]),

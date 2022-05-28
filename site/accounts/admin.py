@@ -33,7 +33,6 @@ class UserAdminCustom(UserAdmin):
             "Kalenderfeed",
             {
                 "fields": (
-                    "calendar_feed_token",
                     "calendar_feed_only_upcoming",
                     "calendar_feed_start_date",
                 )

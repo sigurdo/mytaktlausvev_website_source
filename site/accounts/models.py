@@ -120,6 +120,7 @@ class UserCustom(AbstractUser):
         max_length=255,
         default=token_urlsafe,
         unique=True,
+        editable=False,
     )
     calendar_feed_only_upcoming = BooleanField(
         "Få kun framtidige hendingar i kalenderfeed", default=True
