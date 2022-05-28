@@ -211,3 +211,40 @@ class WindowUpdateTestSuite(TestMixin, TestCase):
         self.client.force_login(self.author)
         response = self.client.post(self.get_url(self.window), self.window_data)
         self.assertRedirects(response, self.window.advent_calendar.get_absolute_url())
+
+
+class WindowDeleteTestCase(TestMixin, TestCase):
+    def setUp(self):
+        self.window = WindowFactory()
+
+    def get_url(self):
+        return reverse(
+            "advent_calendar:WindowDelete",
+            args=[self.window.advent_calendar.year, self.window.index],
+        )
+
+    def test_should_redirect_to_calendar_on_success(self):
+        """Should redirect to the advent calendar on success."""
+        self.client.force_login(self.window.created_by)
+        response = self.client.post(self.get_url())
+        self.assertRedirects(response, self.window.advent_calendar.get_absolute_url())
+
+    def test_requires_login(self):
+        """Should require login."""
+        self.assertLoginRequired(self.get_url())
+
+    def test_requires_permission(self):
+        """Should require permission to delete windows."""
+        self.assertPermissionRequired(
+            self.get_url(),
+            "advent_calendar.delete_window",
+        )
+
+    def test_succeeds_if_not_permission_but_is_author(self):
+        """
+        Should succeed if the user is the author,
+        even if the user doesn't have permission to delete windows.
+        """
+        self.client.force_login(self.window.created_by)
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.status_code, HTTPStatus.OK)

@@ -296,3 +296,44 @@ class ArticleUpdateTestCase(TestMixin, TestCase):
 
         self.article.refresh_from_db()
         self.assertEqual(self.article.modified_by, user)
+
+
+class ArticleDeleteTestCase(TestMixin, TestCase):
+    def setUp(self):
+        self.article = ArticleFactory()
+
+    def get_url(self, path=None):
+        return reverse("articles:ArticleDelete", args=[path or self.article.path()])
+
+    def test_should_redirect_to_parent_on_success_if_exists(self):
+        """Should redirect to the parent article on success, if it exists."""
+        self.child = ArticleFactory(parent=self.article)
+        self.client.force_login(SuperUserFactory())
+        response = self.client.post(self.get_url(self.child.path()))
+        self.assertRedirects(response, self.article.get_absolute_url())
+
+    def test_should_redirect_to_dashboard_on_success_if_no_parent(self):
+        """Should redirect to the dashboard on success, if the article doesn't have a parent."""
+        self.client.force_login(SuperUserFactory())
+        response = self.client.post(self.get_url())
+        self.assertRedirects(response, reverse("dashboard:Dashboard"))
+
+    def test_requires_login(self):
+        """Should require login."""
+        self.assertLoginRequired(self.get_url())
+
+    def test_requires_permission(self):
+        """Should require permission to delete articles."""
+        self.assertPermissionRequired(
+            self.get_url(),
+            "articles.delete_article",
+        )
+
+    def test_succeeds_if_not_permission_but_is_author(self):
+        """
+        Should succeed if the user is the author,
+        even if the user doesn't have permission to delete articles.
+        """
+        self.client.force_login(self.article.created_by)
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.status_code, HTTPStatus.OK)

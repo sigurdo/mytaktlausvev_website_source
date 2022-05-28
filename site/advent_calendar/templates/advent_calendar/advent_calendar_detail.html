@@ -25,13 +25,30 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
 
-                        {% if window.created_by == user or perms.advent_calendar.change_window %}
-                        <a
-                            href="{% url 'advent_calendar:WindowUpdate' advent_calendar.year window.index %}"
-                            class="btn btn-advent-calendar text-white mt-2"
-                        >
-                            Rediger luke
-                        </a>
+                        {% if window.created_by == user or perms.advent_calendar.change_window or perms.advent_calendar.delete_window %}
+                        <ul class="list-inline mt-2 mb-0">
+                            {% if window.created_by == user or perms.advent_calendar.change_window %}
+                            <li class="list-inline-item">
+                                <a
+                                    href="{% url 'advent_calendar:WindowUpdate' advent_calendar.year window.index %}"
+                                    class="btn btn-advent-calendar text-white"
+                                >
+                                    Rediger
+                                </a>
+                            </li>
+                            {% endif %}
+
+                            {% if window.created_by == user or perms.advent_calendar.delete_window %}
+                            <li class="list-inline-item">
+                                <a
+                                    href="{% url 'advent_calendar:WindowDelete' advent_calendar.year window.index %}"
+                                    class="btn btn-danger"
+                                >
+                                    Slett
+                                </a>
+                            </li>
+                            {% endif %}
+                        </ul>
                         {% endif %}
                     </header>
 

@@ -1,7 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.db.models.functions.datetime import TruncMonth
 from django.shortcuts import get_object_or_404
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.utils.timezone import localtime
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 from django_ical.views import ICalFeed
@@ -171,6 +171,15 @@ class EventUpdate(PermissionOrCreatedMixin, BreadcrumbsMixin, UpdateView):
     def form_valid(self, form):
         form.instance.modified_by = self.request.user
         return super().form_valid(form)
+
+
+class EventDelete(PermissionOrCreatedMixin, BreadcrumbsMixin, DeleteViewCustom):
+    model = Event
+    success_url = reverse_lazy("events:EventList")
+    permission_required = "events.delete_event"
+
+    def get_breadcrumbs(self):
+        return event_breadcrumbs(event=self.get_object())
 
 
 class EventAttendanceList(PermissionRequiredMixin, BreadcrumbsMixin, ListView):

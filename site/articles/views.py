@@ -1,9 +1,11 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.http.response import Http404
+from django.urls import reverse
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 
 from common.breadcrumbs import BreadcrumbsMixin
+from common.forms.views import DeleteViewCustom
 from common.mixins import PermissionOrCreatedMixin
 
 from .forms import ArticleForm
@@ -93,3 +95,20 @@ class ArticleUpdate(
     def form_valid(self, form):
         form.instance.modified_by = self.request.user
         return super().form_valid(form)
+
+
+class ArticleDelete(
+    PermissionOrCreatedMixin, BreadcrumbsMixin, SlugPathMixin, DeleteViewCustom
+):
+    model = Article
+    permission_required = "articles.delete_article"
+
+    def get_breadcrumbs(self) -> list:
+        return self.object.breadcrumbs(include_self=True)
+
+    def get_success_url(self) -> str:
+        return (
+            self.object.parent.get_absolute_url()
+            if self.object.parent
+            else reverse("dashboard:Dashboard")
+        )
