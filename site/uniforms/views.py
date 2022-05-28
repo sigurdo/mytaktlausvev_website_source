@@ -6,7 +6,7 @@ from django.urls import reverse
 from django.views.generic import FormView, ListView, View
 
 from accounts.models import UserCustom
-from common.breadcrumbs import Breadcrumb, BreadcrumbsMixin
+from common.breadcrumbs.breadcrumbs import Breadcrumb, BreadcrumbsMixin
 
 from .forms import AddJacketUserForm, JacketsFormset, RemoveJacketUserForm
 from .models import Jacket, JacketUser

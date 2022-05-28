@@ -4,7 +4,7 @@ from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, ListView
 
-from common.breadcrumbs import Breadcrumb, BreadcrumbsMixin
+from common.breadcrumbs.breadcrumbs import Breadcrumb, BreadcrumbsMixin
 from common.forms.views import DeleteViewCustom, InlineFormsetUpdateView
 from common.mixins import PermissionOrCreatedMixin
 

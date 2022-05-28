@@ -7,7 +7,7 @@ from ..models import Comment
 register = template.Library()
 
 
-@register.inclusion_tag("comments/comment_list.html", takes_context=True)
+@register.inclusion_tag("common/comments/comment_list.html", takes_context=True)
 def comment_list(context, model, forum_posts=False):
     content_object_data = {
         "content_type": ContentType.objects.get_for_model(model),

@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404
 from django.urls.base import reverse
 from django.views.generic import CreateView, DetailView, ListView
 
-from common.breadcrumbs import Breadcrumb, BreadcrumbsMixin
+from common.breadcrumbs.breadcrumbs import Breadcrumb, BreadcrumbsMixin
 
 from .forms import TopicCreateForm
 from .models import Forum, Topic

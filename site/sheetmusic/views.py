@@ -22,7 +22,7 @@ from django.views.generic.edit import (
     UpdateView,
 )
 
-from common.breadcrumbs import Breadcrumb, BreadcrumbsMixin
+from common.breadcrumbs.breadcrumbs import Breadcrumb, BreadcrumbsMixin
 from common.forms.views import DeleteViewCustom
 from common.mixins import PermissionOrCreatedMixin
 

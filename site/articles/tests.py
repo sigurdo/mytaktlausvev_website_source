@@ -8,7 +8,7 @@ from django.views.generic.detail import SingleObjectMixin
 
 from accounts.factories import SuperUserFactory, UserFactory
 from articles.views import SlugPathMixin
-from common.breadcrumbs import Breadcrumb
+from common.breadcrumbs.breadcrumbs import Breadcrumb
 from common.mixins import TestMixin
 
 from .factories import ArticleFactory

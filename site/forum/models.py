@@ -3,7 +3,7 @@ from django.contrib.contenttypes.fields import GenericRelation
 from django.db.models import CASCADE, CharField, ForeignKey, Model
 from django.urls import reverse
 
-from comments.models import Comment
+from common.comments.models import Comment
 from common.models import CreatedModifiedMixin
 
 

@@ -12,7 +12,7 @@ from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.generic import DetailView, FormView, ListView
 from django.views.generic.base import RedirectView
 
-from common.breadcrumbs import Breadcrumb, BreadcrumbsMixin
+from common.breadcrumbs.breadcrumbs import Breadcrumb, BreadcrumbsMixin
 from common.forms.views import (
     DeleteViewCustom,
     InlineFormsetCreateView,
