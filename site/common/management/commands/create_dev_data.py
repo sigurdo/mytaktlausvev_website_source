@@ -133,7 +133,7 @@ class Command(BaseCommand):
         )
         article_calendar_feed_help = ArticleFactory(
             title="Kalenderfeed-vegvisar",
-            content="Importer kalenderfeeden frå [denne](/hendingar/taktlaushendingar.ics) lenkja i kalender-appen din og sett han opp til å oppdatere seg automatisk.",
+            content="Gå til [hovedsida for hendingar](/hendingar/) og kopier lenkja til kalenderfeeden med knappen \"Hent link til kalenderfeed\". Legg ho deretter inn i kalender-appen din og sett han opp til å oppdatere seg automatisk.",
             public=True,
             comments_allowed=False,
             created_by=leader,
