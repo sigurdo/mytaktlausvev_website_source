@@ -1,12 +1,13 @@
 from datetime import datetime, timedelta
 from http import HTTPStatus
+from secrets import token_urlsafe
 
 from django.db import IntegrityError
 from django.http.response import Http404
 from django.test import TestCase
 from django.urls import reverse
 from django.utils.text import slugify
-from django.utils.timezone import make_aware, now
+from django.utils.timezone import localtime, make_aware, now
 
 from accounts.factories import SuperUserFactory, UserFactory
 from common.breadcrumbs.breadcrumbs import Breadcrumb
@@ -172,79 +173,134 @@ class GetterTestCase(TestCase):
 
 
 class EventBreadcrumbsTestSuite(TestMixin, TestCase):
-    def test_normal(self):
-        """Calling without arguments should give a single breadcrumb to EventList."""
+    def test_event_list_upcoming(self):
+        """
+        Calling for `EventList` for upcoming events should give 1 breadcrumb;
+        - To `EventList` for the current year.
+        """
+        current_year = localtime(now()).year
         self.assertEqual(
             event_breadcrumbs(),
-            [Breadcrumb(reverse("events:EventList"), "Alle hendingar")],
-        )
-
-    def test_year(self):
-        """
-        Calling with only a `year` argument should give 2 breadcrumbs to EventList and the
-        EventList for that year.
-        """
-        self.assertEqual(
-            event_breadcrumbs(year=2022),
             [
                 Breadcrumb(
-                    reverse("events:EventList"),
-                    "Alle hendingar",
+                    reverse("events:EventList", args=[current_year]),
+                    f"Hendingar {current_year}",
+                )
+            ],
+        )
+
+    def test_event_create(self):
+        """
+        Calling for `EventCreate` should give 2 breadcrumbs;
+        - To `EventList` for the current year.
+        - To `EventList` for all upcoming events.
+        """
+        current_year = localtime(now()).year
+        event = Event(start_time=now() + timedelta(days=1))
+        self.assertEqual(
+            event_breadcrumbs(event=event, include_event=False),
+            [
+                Breadcrumb(
+                    reverse("events:EventList", args=[current_year]),
+                    f"Hendingar {current_year}",
                 ),
                 Breadcrumb(
-                    reverse("events:EventList", args=[2022]),
-                    "2022",
+                    reverse("events:EventList"),
+                    "Alle framtidige",
                 ),
             ],
         )
 
-    def test_event(self):
+    def test_future_event_detail(self):
         """
-        Calling with an `event` argument should give 3 breadcrumbs to EventList, the
-        EventList for that year and EventDetail.
+        Calling for `EventDetail` for a future event should give 2 breadcrumbs;
+        - To `EventList` for the event's year
+        - To `EventList` for all upcoming events.
         """
-        event = EventFactory()
+        event = EventFactory(start_time=(now() + timedelta(days=370)))
+        year = localtime(event.start_time).year
+        self.assertEqual(
+            event_breadcrumbs(event=event, include_event=False),
+            [
+                Breadcrumb(
+                    reverse("events:EventList", args=[year]),
+                    f"Hendingar {year}",
+                ),
+                Breadcrumb(
+                    reverse("events:EventList"),
+                    "Alle framtidige",
+                ),
+            ],
+        )
+
+    def test_future_event_update(self):
+        """
+        Calling for `EventUpdate` or another deeper view than `EventDetail` for a future event should
+        give 3 breadcrumbs;
+        - To `EventList` for the event's year
+        - To `EventList` for all upcoming events
+        - To `EventDetail` for the event.
+        """
+        event = EventFactory(start_time=(now() + timedelta(days=370)))
+        year = localtime(event.start_time).year
         self.assertEqual(
             event_breadcrumbs(event=event),
             [
                 Breadcrumb(
-                    reverse("events:EventList"),
-                    "Alle hendingar",
+                    reverse("events:EventList", args=[year]),
+                    f"Hendingar {year}",
                 ),
                 Breadcrumb(
-                    reverse("events:EventList", args=[event.start_time.year]),
-                    str(event.start_time.year),
+                    reverse("events:EventList"),
+                    "Alle framtidige",
                 ),
                 Breadcrumb(
                     reverse(
-                        "events:EventDetail", args=[event.start_time.year, event.slug]
+                        "events:EventDetail",
+                        args=[year, event.slug],
                     ),
                     str(event),
                 ),
             ],
         )
 
-    def test_event_and_year(self):
+    def test_past_event_detail(self):
         """
-        Calling with both a `year`and an `event` argument should make `event.start_time.year`
-        override the given `year`.
+        Calling for `EventDetail` for a past event should give 1 breadcrumb;
+        - To `EventList` for the event's year.
         """
-        event = EventFactory()
+        event = EventFactory(start_time=(now() - timedelta(days=370)))
+        year = localtime(event.start_time).year
         self.assertEqual(
-            event_breadcrumbs(year=event.start_time.year + 1, event=event),
+            event_breadcrumbs(event=event, include_event=False),
             [
                 Breadcrumb(
-                    reverse("events:EventList"),
-                    "Alle hendingar",
+                    reverse("events:EventList", args=[year]),
+                    f"Hendingar {year}",
                 ),
+            ],
+        )
+
+    def test_past_event_update(self):
+        """
+        Calling for EventUpdate or another deeper view than EventDetail for a past event should
+        give 2 breadcrumbs;
+        - To EventList for the event's year
+        - To EventDetail for the event
+        """
+        event = EventFactory(start_time=(now() - timedelta(days=370)))
+        year = localtime(event.start_time).year
+        self.assertEqual(
+            event_breadcrumbs(event=event),
+            [
                 Breadcrumb(
-                    reverse("events:EventList", args=[event.start_time.year]),
-                    str(event.start_time.year),
+                    reverse("events:EventList", args=[year]),
+                    f"Hendingar {year}",
                 ),
                 Breadcrumb(
                     reverse(
                         "events:EventDetail",
-                        args=[event.start_time.year, event.slug],
+                        args=[year, event.slug],
                     ),
                     str(event),
                 ),
@@ -275,14 +331,6 @@ class EventListTestSuite(TestMixin, TestCase):
         for event in events:
             attendance_form = getattr(event, "attendance_form", None)
             self.assertIsNotNone(attendance_form)
-
-    def test_event_feed_absolute_url_in_context(self):
-        self.client.force_login(UserFactory())
-        response = self.client.get(self.get_url())
-        event_feed_absolute_url = response.context["event_feed_absolute_url"]
-        self.assertEquals(
-            event_feed_absolute_url, "http://testserver/hendingar/taktlaushendingar.ics"
-        )
 
     def test_filter_future_events(self):
         """
@@ -590,3 +638,31 @@ class EventAttendanceDeleteTestCase(TestMixin, TestCase):
                 ],
             ),
         )
+
+
+class EventFeedTestSuite(TestMixin, TestCase):
+    def get_url(self, token=None):
+        """Returns the URL for the event feed."""
+        url = reverse(
+            "events:EventFeed",
+        )
+        if token is not None:
+            url += f"?token={token}"
+        return url
+
+    def test_no_token(self):
+        """Accessing the event feed without a token should return 403."""
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+
+    def test_wrong_token(self):
+        """Accessing the event feed with a wrong token should return 403."""
+        token = token_urlsafe()
+        response = self.client.get(self.get_url(token))
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+
+    def test_correct_token(self):
+        """Accessing the event feed with a correct token should return 200."""
+        token = UserFactory().calendar_feed_token
+        response = self.client.get(self.get_url(token))
+        self.assertEqual(response.status_code, HTTPStatus.OK)

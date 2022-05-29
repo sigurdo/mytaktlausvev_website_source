@@ -30,6 +30,10 @@ class UserAdminCustom(UserAdmin):
             {"fields": ("membership_status", "membership_period", "instrument_type")},
         ),
         (
+            "Kalenderfeed",
+            {"fields": ("calendar_feed_start_date",)},
+        ),
+        (
             _("Permissions"),
             {
                 "fields": (

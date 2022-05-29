@@ -1,8 +1,11 @@
+from datetime import timedelta
+
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.db.models.functions.datetime import TruncMonth
+from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
-from django.utils.timezone import localtime
+from django.utils.timezone import localtime, now
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 from django_ical.views import ICalFeed
 
@@ -30,28 +33,45 @@ def get_event_attendance_or_404(year, slug_event, slug_person):
     )
 
 
-def event_breadcrumbs(year=None, event=None):
+def event_breadcrumbs(event=None, include_event=True):
     """
-    Generates breadcrumbs for events. If `event` is given, its `start_time.year` will override the
-    given `year`.
+    Generates breadcrumbs for events in the following fashion:
+    - /hendingar/:                                     "Hendingar [current_year]"
+    - /hendingar/ny:                                   "Hendingar [current_year] / Alle framtidige"
+    - /hendingar/[year]/:                              ""
+    - /hendingar/[year]/[slug]/ for future events:     "Hendingar [year] / Alle framtidige"
+    - /hendingar/[year]/[slug]/ for past events:       "Hendingar [year]"
+    - /hendingar/[year]/[slug]/.../ for future events: "Hendingar [year] / Alle framtidige / [event_title]"
+    - /hendingar/[year]/[slug]/.../ for past events:   "Hendingar [year] / [event_title]"
     """
-    breadcrumbs = [Breadcrumb(reverse("events:EventList"), "Alle hendingar")]
-    if event:
-        year = event.start_time.year
-    if year:
+    breadcrumbs = []
+    year = localtime(event.start_time).year if event else localtime(now()).year
+
+    breadcrumbs.append(
+        Breadcrumb(
+            reverse("events:EventList", args=[year]),
+            f"Hendingar {year}",
+        )
+    )
+    if event is None:
+        return breadcrumbs
+
+    if event.is_in_future():
         breadcrumbs.append(
             Breadcrumb(
-                reverse("events:EventList", args=[year]),
-                str(year),
+                reverse("events:EventList"),
+                "Alle framtidige",
             )
         )
-    if event:
+
+    if include_event:
         breadcrumbs.append(
             Breadcrumb(
                 reverse("events:EventDetail", args=[year, event.slug]),
                 str(event),
             )
         )
+
     return breadcrumbs
 
 
@@ -61,8 +81,8 @@ class EventList(LoginRequiredMixin, BreadcrumbsMixin, ListView):
 
     def get_breadcrumbs(self):
         if "year" in self.kwargs:
-            return event_breadcrumbs()
-        return []
+            return []
+        return event_breadcrumbs()
 
     def get_queryset(self):
         match self.kwargs:
@@ -78,9 +98,6 @@ class EventList(LoginRequiredMixin, BreadcrumbsMixin, ListView):
         for event in context_data["events"]:
             # Set attendance form on all events
             event.attendance_form = self.get_attendance_form(event)
-        context_data["event_feed_absolute_url"] = self.request.build_absolute_uri(
-            reverse("events:EventFeed")
-        )
         if self.kwargs.get("year"):
             context_data["year"] = self.kwargs.get("year")
         return context_data
@@ -100,7 +117,7 @@ class EventDetail(LoginRequiredMixin, BreadcrumbsMixin, DetailView):
     model = Event
 
     def get_breadcrumbs(self):
-        return event_breadcrumbs(year=self.kwargs.get("year"))
+        return event_breadcrumbs(event=self.get_object(), include_event=False)
 
     def get_object(self, queryset=None):
         return get_event_or_404(self.kwargs.get("year"), self.kwargs.get("slug"))
@@ -130,7 +147,10 @@ class EventCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
     template_name = "common/forms/form.html"
 
     def get_breadcrumbs(self):
-        return event_breadcrumbs()
+        return event_breadcrumbs(
+            event=Event(start_time=now() + timedelta(days=1)),
+            include_event=False,
+        )
 
     def get_object(self, queryset=None):
         return get_event_or_404(self.kwargs.get("year"), self.kwargs.get("slug"))
@@ -301,8 +321,21 @@ class EventFeed(ICalFeed):
     title = "Taktlauskalender"
     description = "Kalender for taktlause hendingar"
 
+    def __call__(self, request, *args, **kwargs):
+        token = request.GET.get("token", None)
+        if (
+            token is not None
+            and UserCustom.objects.filter(calendar_feed_token=token).exists()
+        ):
+            self.user = UserCustom.objects.only("calendar_feed_start_date").get(
+                calendar_feed_token=token
+            )
+            return super().__call__(request, *args, *kwargs)
+        return HttpResponseForbidden()
+
     def items(self):
-        return Event.objects.all()
+        start_date = self.user.calendar_feed_start_date or self.user.date_joined
+        return Event.objects.filter(start_time__gte=start_date)
 
     def item_guid(self, item):
         return f"@taktlaus.no{item.get_absolute_url()}"

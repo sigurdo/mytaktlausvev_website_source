@@ -131,9 +131,9 @@ class Command(BaseCommand):
             created_by=leader,
             modified_by=leader,
         )
-        ArticleFactory(
+        article_calendar_feed_help = ArticleFactory(
             title="Kalenderfeed-vegvisar",
-            content="Importer kalenderfeeden frå [denne](/hendingar/taktlaushendingar.ics) lenkja i kalender-appen din og sett han opp til å oppdatere seg automatisk.",
+            content='Gå til [hovedsida for hendingar](/hendingar/) og kopier lenkja til kalenderfeeden med knappen "Hent link til kalenderfeed". Legg ho deretter inn i kalender-appen din og sett han opp til å oppdatere seg automatisk.',
             public=True,
             comments_allowed=False,
             created_by=leader,
@@ -746,4 +746,8 @@ class Command(BaseCommand):
         EmbeddableTextFactory(
             name="Stemmeredigeringstips",
             content="Her kan ein redigere stemmane til denne nota.",
+        )
+        EmbeddableTextFactory(
+            name="Hjelpetekst kalenderfeedknapp",
+            content=f'Ta ein kikk [her]({reverse("articles:ArticleDetail", args=[article_calendar_feed_help.slug])}) for hjelp med å leggje inn lenkja i kalenderen din.',
         )

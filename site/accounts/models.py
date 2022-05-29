@@ -1,3 +1,5 @@
+from secrets import token_urlsafe
+
 from autoslug import AutoSlugField
 from django.contrib.auth.models import AbstractUser, UserManager
 from django.db.models import (
@@ -111,6 +113,17 @@ class UserCustom(AbstractUser):
         choices=ImageSharingConsent.choices,
         default=ImageSharingConsent.UNKNOWN,
         help_text="Om bilete du er med i kan delast på DT sine sosiale medier.",
+    )
+
+    calendar_feed_token = CharField(
+        "Kalenderfeedtoken",
+        max_length=255,
+        default=token_urlsafe,
+        unique=True,
+        editable=False,
+    )
+    calendar_feed_start_date = DateField(
+        "Startdato for kalenderfeed", null=True, blank=True
     )
 
     objects = UserManagerCustom()

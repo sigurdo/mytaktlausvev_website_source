@@ -4,12 +4,15 @@
 <div class="collapse m-3" id="ical-link-collapse">
     <p>
         {% load get_event_feed_absolute_url %}
-        <a id="ical-link" href="{% get_event_feed_absolute_url %}">
-            {% get_event_feed_absolute_url %}
+        {% get_event_feed_absolute_url as event_feed_absolute_url %}
+        <a class="text-break" id="ical-link" href="{{ event_feed_absolute_url }}">
+            {{ event_feed_absolute_url }}
         </a>
         <span id="ical-link-collapse-clipboard-feedback"></span>
     </p>
     <p>
-        Ta ein kikk <a href="{% url "articles:ArticleDetail" "kalenderfeed-vegvisar" %}">her</a> for hjelp med å leggje inn lenkja i kalenderen din.
+        {% load embeddable_text markdown %}
+        {% get_embeddable_text "Hjelpetekst kalenderfeedknapp" as text %}
+        {{ text | markdown }}
     </p>
 </div>
