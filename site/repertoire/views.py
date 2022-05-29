@@ -2,7 +2,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.http import FileResponse
 from django.urls import reverse, reverse_lazy
 from django.utils.text import slugify
-from django.views.generic import DetailView, FormView, ListView
+from django.views.generic import FormView, ListView
+from django.views.generic.detail import SingleObjectMixin
 
 from common.breadcrumbs import Breadcrumb, BreadcrumbsMixin
 from common.forms.views import (
@@ -62,7 +63,7 @@ class RepertoireDelete(
 
 
 class RepertoirePdf(
-    LoginRequiredMixin, RepertoireBreadcrumbsMixin, FormView, DetailView
+    LoginRequiredMixin, RepertoireBreadcrumbsMixin, SingleObjectMixin, FormView
 ):
     model = Repertoire
     template_name = "repertoire/repertoire_pdf.html"
@@ -74,7 +75,7 @@ class RepertoirePdf(
                 "score": entry.score,
                 "part": entry.score.find_user_part(self.request.user),
             }
-            for entry in self.get_object().entries.all()
+            for entry in self.object.entries.all()
         ]
 
     def get_form(self, **kwargs):
@@ -90,7 +91,7 @@ class RepertoirePdf(
 
     def form_valid(self, form):
         output_stream = form.save()
-        filename = slugify(f"{self.get_object()} {self.request.user}") + ".pdf"
+        filename = slugify(f"{self.object} {self.request.user}") + ".pdf"
         return FileResponse(
             output_stream,
             content_type="application/pdf",
@@ -98,5 +99,13 @@ class RepertoirePdf(
         )
 
     def get_context_data(self, **kwargs):
-        kwargs["form_title"] = f"Generer PDF for {self.get_object()}"
+        kwargs["form_title"] = f"Generer PDF for {self.object}"
         return super().get_context_data(**kwargs)
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        return super().post(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        return super().post(request, *args, **kwargs)
