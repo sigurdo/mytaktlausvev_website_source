@@ -191,7 +191,7 @@ class EventBreadcrumbsTestSuite(TestMixin, TestCase):
 
     def test_event_create(self):
         """
-        Calling for `EvenCreate` should give 2 breadcrumbs;
+        Calling for `EventCreate` should give 2 breadcrumbs;
         - To `EventList` for the current year.
         - To `EventList` for all upcoming events.
         """
