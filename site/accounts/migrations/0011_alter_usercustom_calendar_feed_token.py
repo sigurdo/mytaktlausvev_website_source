@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='usercustom',
             name='calendar_feed_token',
-            field=models.CharField(default=secrets.token_urlsafe, max_length=255, unique=True, verbose_name='Kalenderfeedtoken'),
+            field=models.CharField(default=secrets.token_urlsafe, editable=False, max_length=255, unique=True, verbose_name='Kalenderfeedtoken'),
         ),
     ]

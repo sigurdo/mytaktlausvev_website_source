@@ -122,9 +122,6 @@ class UserCustom(AbstractUser):
         unique=True,
         editable=False,
     )
-    calendar_feed_only_upcoming = BooleanField(
-        "Få kun framtidige hendingar i kalenderfeed", default=True
-    )
     calendar_feed_start_date = DateField(
         "Startdato for kalenderfeed", null=True, blank=True
     )

@@ -196,10 +196,6 @@ class UserCustomTest(TestMixin, TestCase):
         with self.assertRaises(IntegrityError):
             UserFactory(calendar_feed_token=user.calendar_feed_token)
 
-    def calendar_feed_only_upcoming_default_true(self):
-        user = UserFactory()
-        self.assertTrue(user.calendar_feed_only_upcoming)
-
     def calendar_feed_start_date_default_none(self):
         user = UserFactory()
         self.assertIsNone(user.calendar_feed_start_date)

@@ -327,20 +327,15 @@ class EventFeed(ICalFeed):
             token is not None
             and UserCustom.objects.filter(calendar_feed_token=token).exists()
         ):
-            self.user = UserCustom.objects.only(
-                "calendar_feed_only_upcoming", "calendar_feed_start_date"
-            ).get(calendar_feed_token=token)
+            self.user = UserCustom.objects.only("calendar_feed_start_date").get(
+                calendar_feed_token=token
+            )
             return super().__call__(request, *args, *kwargs)
         return HttpResponseForbidden()
 
     def items(self):
-        if self.user.calendar_feed_only_upcoming:
-            return Event.objects.upcoming()
-        if self.user.calendar_feed_start_date:
-            return Event.objects.filter(
-                start_time__gte=self.user.calendar_feed_start_date
-            )
-        return Event.objects.all()
+        start_date = self.user.calendar_feed_start_date or self.user.date_joined
+        return Event.objects.filter(start_time__gte=start_date)
 
     def item_guid(self, item):
         return f"@taktlaus.no{item.get_absolute_url()}"

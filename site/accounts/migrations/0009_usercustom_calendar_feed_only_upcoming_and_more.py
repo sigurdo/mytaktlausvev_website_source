@@ -12,11 +12,6 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddField(
             model_name='usercustom',
-            name='calendar_feed_only_upcoming',
-            field=models.BooleanField(default=True, verbose_name='Få kun framtidige hendingar i kalenderfeed'),
-        ),
-        migrations.AddField(
-            model_name='usercustom',
             name='calendar_feed_start_date',
             field=models.DateField(blank=True, null=True, verbose_name='Startdato for kalenderfeed'),
         ),
