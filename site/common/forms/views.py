@@ -26,8 +26,10 @@ class InlineFormsetCreateView(CreateView):
     with an inline formset.
 
     Extends `CreateView` and inherits all of its functionality.
-    The only difference is that the success response is
-    returned from `form_and_formset_valid()` rather than `form_valid()`.
+    There are two main differences:
+    - The success response is returned from
+        `form_and_formset_valid()` rather than `form_valid()`.
+    - `form_invalid()` has been replaced by a shared `form_or_formset_invalid()`.
 
     Formset functionality is almost identical to form functionality.
     The implementor must define `formset_class`.
@@ -67,34 +69,33 @@ class InlineFormsetCreateView(CreateView):
         formset.instance = self.object
         formset.save()
 
-    def formset_invalid(self, formset):
-        """If the formset is invalid, render the invalid formset."""
-        return self.render_to_response(self.get_context_data(formset=formset))
-
-    def form_and_formset_valid(self):
+    def form_and_formset_valid(self, form, formset):
         """
         If both the form and the formset is valid,
-        redirect to the supplied URL
+        redirect to the supplied URL.
         """
+        self.form_valid(form)
+        self.formset_valid(formset)
         return HttpResponseRedirect(self.get_success_url())
+
+    def form_or_formset_invalid(self, form, formset):
+        """
+        If either the form or the formset is invalid,
+        render the invalid form and/or formset.
+        """
+        return self.render_to_response(
+            self.get_context_data(form=form, formset=formset)
+        )
 
     def post(self, request, *args, **kwargs):
         self.object = None
         with transaction.atomic():
             form = self.get_form()
-            if form.is_valid():
-                self.form_valid(form)
-            else:
-                return self.form_invalid(form)
-
             formset = self.get_formset()
-            if formset.is_valid():
-                self.formset_valid(formset)
-            else:
-                transaction.set_rollback(True)
-                return self.formset_invalid(formset)
+            if form.is_valid() and formset.is_valid():
+                return self.form_and_formset_valid(form, formset)
 
-        return self.form_and_formset_valid()
+        return self.form_or_formset_invalid(form, formset)
 
 
 class InlineFormsetUpdateView(UpdateView):
@@ -103,8 +104,10 @@ class InlineFormsetUpdateView(UpdateView):
     with an inline formset.
 
     Extends `UpdateView` and inherits all of its functionality.
-    The only difference is that the success response is
-    returned from `form_and_formset_valid()` rather than `form_valid()`.
+    There are two main differences:
+    - The success response is returned from
+        `form_and_formset_valid()` rather than `form_valid()`.
+    - `form_invalid()` has been replaced by a shared `form_or_formset_invalid()`.
 
     Formset functionality is almost identical to form functionality.
     The implementor must define `formset_class`.
@@ -144,34 +147,33 @@ class InlineFormsetUpdateView(UpdateView):
         formset.instance = self.object
         formset.save()
 
-    def formset_invalid(self, formset):
-        """If the formset is invalid, render the invalid formset."""
-        return self.render_to_response(self.get_context_data(formset=formset))
-
-    def form_and_formset_valid(self):
+    def form_and_formset_valid(self, form, formset):
         """
         If both the form and the formset is valid,
-        redirect to the supplied URL
+        redirect to the supplied URL.
         """
+        self.form_valid(form)
+        self.formset_valid(formset)
         return HttpResponseRedirect(self.get_success_url())
+
+    def form_or_formset_invalid(self, form, formset):
+        """
+        If either the form or the formset is invalid,
+        render the invalid form and/or formset.
+        """
+        return self.render_to_response(
+            self.get_context_data(form=form, formset=formset)
+        )
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         with transaction.atomic():
             form = self.get_form()
-            if form.is_valid():
-                self.form_valid(form)
-            else:
-                return self.form_invalid(form)
-
             formset = self.get_formset()
-            if formset.is_valid():
-                self.formset_valid(formset)
-            else:
-                transaction.set_rollback(True)
-                return self.formset_invalid(formset)
+            if form.is_valid() and formset.is_valid():
+                return self.form_and_formset_valid(form, formset)
 
-        return self.form_and_formset_valid()
+        return self.form_or_formset_invalid(form, formset)
 
 
 class DeleteMixin:
