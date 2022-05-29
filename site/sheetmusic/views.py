@@ -1,26 +1,19 @@
 """ Views for sheetmusic """
 
-# Official python packages
 import json
 from typing import Any, Dict
 
 import django
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db import transaction
 from django.forms import BaseModelForm
 from django.http import HttpResponse
 from django.http.response import FileResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.views.generic import DetailView, ListView, View
-from django.views.generic.base import TemplateResponseMixin
 from django.views.generic.detail import SingleObjectMixin
-from django.views.generic.edit import (
-    CreateView,
-    FormMixin,
-    FormView,
-    ProcessFormView,
-    UpdateView,
-)
+from django.views.generic.edit import CreateView, FormView, UpdateView
 
 from common.breadcrumbs.breadcrumbs import Breadcrumb, BreadcrumbsMixin
 from common.forms.views import DeleteViewCustom
@@ -207,12 +200,7 @@ class PartsUpdateIndex(PermissionOrCreatedMixin, BreadcrumbsMixin, ListView):
 
 
 class PartsUpdate(
-    PermissionOrCreatedMixin,
-    BreadcrumbsMixin,
-    FormMixin,
-    SingleObjectMixin,
-    TemplateResponseMixin,
-    ProcessFormView,
+    PermissionOrCreatedMixin, BreadcrumbsMixin, SingleObjectMixin, FormView
 ):
     model = Pdf
     form_class = PartsUpdateFormset
@@ -223,6 +211,13 @@ class PartsUpdate(
         "sheetmusic.change_part",
         "sheetmusic.delete_part",
     )
+
+    object = None
+
+    def get_object(self, queryset=None):
+        if not self.object:
+            self.object = super().get_object(queryset)
+        return self.object
 
     def get_success_url(self) -> str:
         return reverse(
@@ -252,40 +247,21 @@ class PartsUpdate(
         )
         return kwargs
 
-    def get_queryset(self):
-        return Pdf.objects.filter(score__slug=self.kwargs["score_slug"])
-
     def form_valid(self, form):
         """
         We must explicitly save the form because it is not done automatically by any ancestors.
         """
-        for subform in form.forms:
-            subform.instance.pdf = self.get_object()
-        form.save()
-        return super().form_valid(form)
-
-    def post(self, *args, **kwargs):
-        """
-        We must set self.object here to be compatible with SingleObjectMixin.
-        """
-        self.object = self.get_object()
-        return super().post(*args, **kwargs)
-
-    def get(self, *args, **kwargs):
-        """
-        We must set self.object here to be compatible with SingleObjectMixin.
-        """
-        self.object = self.get_object()
-        return super().get(*args, **kwargs)
+        with transaction.atomic():
+            self.get_object().score.modified_by = self.request.user
+            self.get_object().score.save()
+            for subform in form.forms:
+                subform.instance.pdf = self.get_object()
+            form.save()
+            return super().form_valid(form)
 
 
 class PartsUpdateAll(
-    PermissionOrCreatedMixin,
-    BreadcrumbsMixin,
-    FormMixin,
-    SingleObjectMixin,
-    TemplateResponseMixin,
-    ProcessFormView,
+    PermissionOrCreatedMixin, BreadcrumbsMixin, SingleObjectMixin, FormView
 ):
     model = Score
     form_class = PartsUpdateAllFormset
@@ -295,6 +271,13 @@ class PartsUpdateAll(
         "sheetmusic.change_part",
         "sheetmusic.delete_part",
     )
+
+    object = None
+
+    def get_object(self, queryset=None):
+        if not self.object:
+            self.object = super().get_object(queryset)
+        return self.object
 
     def get_success_url(self) -> str:
         return reverse("sheetmusic:PartsUpdateIndex", args=[self.get_object().slug])
@@ -330,37 +313,28 @@ class PartsUpdateAll(
         """
         We must explicitly save the form because it is not done automatically by any ancestors.
         """
-        form.save()
-        return super().form_valid(form)
-
-    def post(self, *args, **kwargs):
-        """
-        We must set self.object here to be compatible with SingleObjectMixin.
-        """
-        self.object = self.get_object()
-        return super().post(*args, **kwargs)
-
-    def get(self, *args, **kwargs):
-        """
-        We must set self.object here to be compatible with SingleObjectMixin.
-        """
-        self.object = self.get_object()
-        return super().get(*args, **kwargs)
+        with transaction.atomic():
+            self.get_object().modified_by = self.request.user
+            self.get_object().save()
+            form.save()
+            return super().form_valid(form)
 
 
 class PdfsUpdate(
-    PermissionOrCreatedMixin,
-    BreadcrumbsMixin,
-    FormMixin,
-    SingleObjectMixin,
-    TemplateResponseMixin,
-    ProcessFormView,
+    PermissionOrCreatedMixin, BreadcrumbsMixin, SingleObjectMixin, FormView
 ):
     model = Score
     form_class = EditPdfFormset
     template_name = "common/forms/form.html"
     context_object_name = "score"
     permission_required = "sheetmusic.delete_pdf"
+
+    object = None
+
+    def get_object(self, queryset=None):
+        if not self.object:
+            self.object = super().get_object(queryset)
+        return self.object
 
     def get_success_url(self) -> str:
         return self.get_object().get_absolute_url()
@@ -381,19 +355,15 @@ class PdfsUpdate(
         """
         We must explicitly save the form because it is not done automatically by any ancestors.
         """
-        form.save()
-        return super().form_valid(form)
-
-    def get(self, *args, **kwargs):
-        """
-        We must set self.object here to be compatible with SingleObjectMixin.
-        """
-        self.object = self.get_object()
-        return super().get(*args, **kwargs)
+        with transaction.atomic():
+            self.get_object().modified_by = self.request.user
+            self.get_object().save()
+            form.save()
+            return super().form_valid(form)
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         kwargs["helper"] = EditPdfFormsetHelper()
-        kwargs["nav_tabs"] = nav_tabs_score_edit(self.object, self.request.user)
+        kwargs["nav_tabs"] = nav_tabs_score_edit(self.get_object(), self.request.user)
         return super().get_context_data(**kwargs)
 
 
