@@ -1,4 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db import transaction
 from django.db.models import Max
 from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
@@ -122,6 +123,12 @@ class ImageCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
         kwargs["form_title"] = f'Last opp bilete til "{self.get_gallery()}"'
         kwargs["nav_tabs"] = nav_tabs_gallery_edit(self.get_gallery())
         return super().get_context_data(**kwargs)
+
+    def form_valid(self, form):
+        with transaction.atomic():
+            self.get_gallery().modified_by = self.request.user
+            self.get_gallery().save()
+            return super().form_valid(form)
 
     def get_success_url(self) -> str:
         return reverse("pictures:GalleryUpdate", args=[self.get_gallery().slug])

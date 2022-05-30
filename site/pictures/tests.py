@@ -255,6 +255,15 @@ class ImageCreateTestSuite(TestMixin, TestCase):
         image = Image.objects.last()
         self.assertEqual(image.uploaded_by, user)
 
+    def test_modified_by_of_gallery_set_to_current_user(self):
+        """Should set `modified_by` of the gallery to the current user."""
+        user = SuperUserFactory()
+        self.client.force_login(user)
+        self.client.post(self.get_url(), self.image_data)
+
+        self.gallery.refresh_from_db()
+        self.assertEqual(self.gallery.modified_by, user)
+
     def test_error_if_uploaded_file_is_not_image(self):
         """Should show a form error if the uploaded file isn't an image."""
         self.image_data["image"] = test_pdf()
