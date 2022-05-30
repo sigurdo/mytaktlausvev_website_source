@@ -212,28 +212,22 @@ class PartsUpdate(
         "sheetmusic.delete_part",
     )
 
-    object = None
-
-    def get_object(self, queryset=None):
-        if not self.object:
-            self.object = super().get_object(queryset)
-        return self.object
+    def setup(self, request, *args, **kwargs):
+        """Set `self.object` for `SingleObjectMixin` compatibility."""
+        super().setup(request, *args, **kwargs)
+        self.object = self.get_object()
 
     def get_success_url(self) -> str:
-        return reverse(
-            "sheetmusic:PartsUpdateIndex", args=[self.get_object().score.slug]
-        )
+        return reverse("sheetmusic:PartsUpdateIndex", args=[self.object.score.slug])
 
     def get_breadcrumbs(self):
-        return sheetmusic_breadcrumbs(
-            score=self.get_object().score, parts_update_index=True
-        )
+        return sheetmusic_breadcrumbs(score=self.object.score, parts_update_index=True)
 
     def get_permission_check_object(self):
-        return self.get_object().score
+        return self.object.score
 
     def get_context_data(self, **kwargs):
-        kwargs["form_title"] = f"Rediger stemmer for {self.get_object()}"
+        kwargs["form_title"] = f"Rediger stemmer for {self.object}"
         return super().get_context_data(**kwargs)
 
     def get_form_kwargs(self) -> Dict[str, Any]:
@@ -242,7 +236,7 @@ class PartsUpdate(
         the parts that are related to the current pdf.
         """
         kwargs = super().get_form_kwargs()
-        kwargs["queryset"] = Part.objects.filter(pdf=self.get_object()).order_by(
+        kwargs["queryset"] = Part.objects.filter(pdf=self.object).order_by(
             "from_page", "to_page", "instrument_type", "part_number"
         )
         return kwargs
@@ -252,10 +246,10 @@ class PartsUpdate(
         We must explicitly save the form because it is not done automatically by any ancestors.
         """
         with transaction.atomic():
-            self.get_object().score.modified_by = self.request.user
-            self.get_object().score.save()
+            self.object.score.modified_by = self.request.user
+            self.object.score.save()
             for subform in form.forms:
-                subform.instance.pdf = self.get_object()
+                subform.instance.pdf = self.object
             form.save()
             return super().form_valid(form)
 
@@ -272,18 +266,16 @@ class PartsUpdateAll(
         "sheetmusic.delete_part",
     )
 
-    object = None
-
-    def get_object(self, queryset=None):
-        if not self.object:
-            self.object = super().get_object(queryset)
-        return self.object
+    def setup(self, request, *args, **kwargs):
+        """Set `self.object` for `SingleObjectMixin` compatibility."""
+        super().setup(request, *args, **kwargs)
+        self.object = self.get_object()
 
     def get_success_url(self) -> str:
-        return reverse("sheetmusic:PartsUpdateIndex", args=[self.get_object().slug])
+        return reverse("sheetmusic:PartsUpdateIndex", args=[self.object.slug])
 
     def get_breadcrumbs(self):
-        return sheetmusic_breadcrumbs(score=self.get_object(), parts_update_index=True)
+        return sheetmusic_breadcrumbs(score=self.object, parts_update_index=True)
 
     def get_form_kwargs(self) -> Dict[str, Any]:
         """
@@ -291,13 +283,13 @@ class PartsUpdateAll(
         the parts that are related to the current score.
         """
         kwargs = super().get_form_kwargs()
-        kwargs["queryset"] = Part.objects.filter(pdf__score=self.get_object()).order_by(
+        kwargs["queryset"] = Part.objects.filter(pdf__score=self.object).order_by(
             "pdf", "from_page", "to_page", "instrument_type", "part_number"
         )
         return kwargs
 
     def get_context_data(self, **kwargs):
-        kwargs["form_title"] = f"Rediger alle stemmer for {self.get_object()}"
+        kwargs["form_title"] = f"Rediger alle stemmer for {self.object}"
         return super().get_context_data(**kwargs)
 
     def get_form(self, **kwargs) -> BaseModelForm:
@@ -306,7 +298,7 @@ class PartsUpdateAll(
         """
         formset = super().get_form(**kwargs)
         for form in formset.forms:
-            form.fields["pdf"].queryset = self.get_object().pdfs
+            form.fields["pdf"].queryset = self.object.pdfs
         return formset
 
     def form_valid(self, form):
@@ -314,8 +306,8 @@ class PartsUpdateAll(
         We must explicitly save the form because it is not done automatically by any ancestors.
         """
         with transaction.atomic():
-            self.get_object().modified_by = self.request.user
-            self.get_object().save()
+            self.object.modified_by = self.request.user
+            self.object.save()
             form.save()
             return super().form_valid(form)
 
@@ -329,18 +321,16 @@ class PdfsUpdate(
     context_object_name = "score"
     permission_required = "sheetmusic.delete_pdf"
 
-    object = None
-
-    def get_object(self, queryset=None):
-        if not self.object:
-            self.object = super().get_object(queryset)
-        return self.object
+    def setup(self, request, *args, **kwargs):
+        """Set `self.object` for `SingleObjectMixin` compatibility."""
+        super().setup(request, *args, **kwargs)
+        self.object = self.get_object()
 
     def get_success_url(self) -> str:
-        return self.get_object().get_absolute_url()
+        return self.object.get_absolute_url()
 
     def get_breadcrumbs(self):
-        return sheetmusic_breadcrumbs(score=self.get_object())
+        return sheetmusic_breadcrumbs(score=self.object)
 
     def get_form_kwargs(self) -> Dict[str, Any]:
         """
@@ -348,7 +338,7 @@ class PdfsUpdate(
         the parts that are related to the current score.
         """
         kwargs = super().get_form_kwargs()
-        kwargs["queryset"] = self.get_object().pdfs.all()
+        kwargs["queryset"] = self.object.pdfs.all()
         return kwargs
 
     def form_valid(self, form):
@@ -356,14 +346,14 @@ class PdfsUpdate(
         We must explicitly save the form because it is not done automatically by any ancestors.
         """
         with transaction.atomic():
-            self.get_object().modified_by = self.request.user
-            self.get_object().save()
+            self.object.modified_by = self.request.user
+            self.object.save()
             form.save()
             return super().form_valid(form)
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         kwargs["helper"] = EditPdfFormsetHelper()
-        kwargs["nav_tabs"] = nav_tabs_score_edit(self.get_object(), self.request.user)
+        kwargs["nav_tabs"] = nav_tabs_score_edit(self.object, self.request.user)
         return super().get_context_data(**kwargs)
 
 
