@@ -1,9 +1,7 @@
 [tool.black]
-extend-exclude="/migrations/"
 target-version=["py310"]
 
 [tool.isort]
 profile = "black"
-extend_skip = ["migrations"]
 src_paths = ["site"]
 overwrite_in_place = true

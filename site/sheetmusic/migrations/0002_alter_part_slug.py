@@ -2,19 +2,26 @@
 
 import autoslug.fields
 from django.db import migrations
+
 import sheetmusic.models
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('sheetmusic', '0001_initial'),
+        ("sheetmusic", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='part',
-            name='slug',
-            field=autoslug.fields.AutoSlugField(always_update=True, editable=True, populate_from=sheetmusic.models.Part.__str__, unique_with=('pdf__score__slug',), verbose_name='lenkjenamn'),
+            model_name="part",
+            name="slug",
+            field=autoslug.fields.AutoSlugField(
+                always_update=True,
+                editable=True,
+                populate_from=sheetmusic.models.Part.__str__,
+                unique_with=("pdf__score__slug",),
+                verbose_name="lenkjenamn",
+            ),
         ),
     ]
