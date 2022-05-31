@@ -28,7 +28,7 @@ class FormsetLayoutObject(LayoutObject):
     below the form as well.
     """
 
-    template = "common/table_inline_formset_shade_delete.html"
+    template = "common/forms/table_inline_formset_shade_delete.html"
 
     def __init__(self, formset_name_in_context, template=None):
         self.formset_name_in_context = formset_name_in_context

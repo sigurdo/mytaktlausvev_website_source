@@ -89,7 +89,7 @@ class EventKeyinfoEntryFormsetHelper(FormHelper):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.add_input(DynamicFormsetButton("Legg til endå ein nykelinfo"))
-        self.template = "common/table_inline_formset_shade_delete.html"
+        self.template = "common/forms/table_inline_formset_shade_delete.html"
 
 
 EventKeyinfoEntryFormset.helper = EventKeyinfoEntryFormsetHelper()
