@@ -132,12 +132,13 @@ class Command(BaseCommand):
             modified_by=leader,
         )
         article_calendar_feed_help = ArticleFactory(
-            title="Kalenderfeed-vegvisar",
-            content='Gå til [hovedsida for hendingar](/hendingar/) og kopier lenkja til kalenderfeeden med knappen "Hent link til kalenderfeed". Legg ho deretter inn i kalender-appen din og sett han opp til å oppdatere seg automatisk.',
+            title="Kalenderapp-integrasjon",
+            content='Gå til [hovudsida for hendingar](/hendingar/) og kopier lenkja til kalenderapp-integrasjonen med knappen "Få hendingar i eiga kalenderapp". Legg ho deretter inn i kalender-appen din og sett han opp til å oppdatere seg automatisk.',
             public=True,
             comments_allowed=False,
             created_by=leader,
             modified_by=leader,
+            parent=article_wiki,
         )
 
         ContactCategoryFactory(name="Generelt")
@@ -748,6 +749,6 @@ class Command(BaseCommand):
             content="Her kan ein redigere stemmane til denne nota.",
         )
         EmbeddableTextFactory(
-            name="Hjelpetekst kalenderfeedknapp",
-            content=f'Ta ein kikk [her]({reverse("articles:ArticleDetail", args=[article_calendar_feed_help.slug])}) for hjelp med å leggje inn lenkja i kalenderen din.',
+            name="Hjelpetekst kalenderapp-integrasjonsknapp",
+            content=f"[Ta ein kikk her for hjelp med å leggje inn lenkja i kalenderen din.]({article_calendar_feed_help.get_absolute_url()})",
         )

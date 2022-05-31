@@ -116,14 +116,14 @@ class UserCustom(AbstractUser):
     )
 
     calendar_feed_token = CharField(
-        "Kalenderfeedtoken",
+        "kalenderapp-integrasjonstoken",
         max_length=255,
         default=token_urlsafe,
         unique=True,
         editable=False,
     )
     calendar_feed_start_date = DateField(
-        "Startdato for kalenderfeed", null=True, blank=True
+        "startdato for kalenderapp-integrasjon", null=True, blank=True
     )
 
     objects = UserManagerCustom()
