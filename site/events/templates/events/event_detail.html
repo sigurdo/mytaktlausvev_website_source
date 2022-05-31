@@ -20,10 +20,11 @@
                     href="{% url 'events:EventUpdate' event.start_time|date:"Y" event.slug %}"
                     class="btn btn-primary btn-sm"
                 >
-                    Rediger hending
+                    Rediger
                 </a>
             </li>
             {% endif %}
+
             {% if perms.events.view_eventattendance %}
             <li class="list-inline-item">
                 <a
@@ -31,6 +32,17 @@
                     class="btn btn-primary btn-sm"
                 >
                     Sjå svar
+                </a>
+            </li>
+            {% endif %}
+
+            {% if perms.events.delete_event or event.created_by == request.user %}
+            <li class="list-inline-item">
+                <a
+                    href="{% url 'events:EventDelete' event.start_time|date:"Y" event.slug %}"
+                    class="btn btn-danger btn-sm"
+                >
+                    Slett
                 </a>
             </li>
             {% endif %}

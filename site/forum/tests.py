@@ -7,7 +7,7 @@ from django.utils.text import slugify
 from django.utils.timezone import make_aware
 
 from accounts.factories import SuperUserFactory, UserFactory
-from comments.factories import CommentFactory
+from common.comments.factories import CommentFactory
 from common.mixins import TestMixin
 
 from .factories import ForumFactory, TopicFactory

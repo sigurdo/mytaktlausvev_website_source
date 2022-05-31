@@ -12,7 +12,7 @@ from .forms import BrewForm
 
 class BrewView(FormView):
     form_class = BrewForm
-    template_name = "common/form.html"
+    template_name = "common/forms/form.html"
 
     def get_context_data(self, *args, **kwargs):
         context_data = super().get_context_data(*args, **kwargs)

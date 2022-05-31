@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('user_files', '0001_initial'),
+        ("user_files", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='file',
-            name='public',
-            field=models.BooleanField(default=False, verbose_name='offentleg'),
+            model_name="file",
+            name="public",
+            field=models.BooleanField(default=False, verbose_name="offentleg"),
         ),
     ]

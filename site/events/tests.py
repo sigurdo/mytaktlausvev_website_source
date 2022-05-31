@@ -10,7 +10,7 @@ from django.utils.text import slugify
 from django.utils.timezone import localtime, make_aware, now
 
 from accounts.factories import SuperUserFactory, UserFactory
-from common.breadcrumbs import Breadcrumb
+from common.breadcrumbs.breadcrumbs import Breadcrumb
 from common.mixins import TestMixin
 from common.test_utils import create_formset_post_data
 from events.models import Attendance, Event, EventAttendance
@@ -182,12 +182,34 @@ class EventBreadcrumbsTestSuite(TestMixin, TestCase):
         """
         current_year = localtime(now()).year
         self.assertEqual(
-            event_breadcrumbs(event_list_upcoming=True),
+            event_breadcrumbs(),
             [
                 Breadcrumb(
                     reverse("events:EventList", args=[current_year]),
                     f"Hendingar {current_year}",
                 )
+            ],
+        )
+
+    def test_event_create(self):
+        """
+        Calling for `EventCreate` should give 2 breadcrumbs;
+        - To `EventList` for the current year.
+        - To `EventList` for all upcoming events.
+        """
+        current_year = localtime(now()).year
+        event = Event(start_time=now() + timedelta(days=1))
+        self.assertEqual(
+            event_breadcrumbs(event=event, include_event=False),
+            [
+                Breadcrumb(
+                    reverse("events:EventList", args=[current_year]),
+                    f"Hendingar {current_year}",
+                ),
+                Breadcrumb(
+                    reverse("events:EventList"),
+                    "Alle framtidige",
+                ),
             ],
         )
 
@@ -200,7 +222,7 @@ class EventBreadcrumbsTestSuite(TestMixin, TestCase):
         event = EventFactory(start_time=(now() + timedelta(days=370)))
         year = localtime(event.start_time).year
         self.assertEqual(
-            event_breadcrumbs(event=event, event_detail=True),
+            event_breadcrumbs(event=event, include_event=False),
             [
                 Breadcrumb(
                     reverse("events:EventList", args=[year]),
@@ -252,7 +274,7 @@ class EventBreadcrumbsTestSuite(TestMixin, TestCase):
         event = EventFactory(start_time=(now() - timedelta(days=370)))
         year = localtime(event.start_time).year
         self.assertEqual(
-            event_breadcrumbs(event=event, event_detail=True),
+            event_breadcrumbs(event=event, include_event=False),
             [
                 Breadcrumb(
                     reverse("events:EventList", args=[year]),
@@ -445,6 +467,42 @@ class EventUpdateTestCase(TestMixin, TestCase):
 
         self.event.refresh_from_db()
         self.assertEqual(self.event.modified_by, user)
+
+
+class EventDeleteTestCase(TestMixin, TestCase):
+    def setUp(self):
+        self.event = EventFactory()
+
+    def get_url(self):
+        return reverse(
+            "events:EventDelete", args=[self.event.start_time.year, self.event.slug]
+        )
+
+    def test_should_redirect_to_event_list_on_success(self):
+        """Should redirect to the event list on success."""
+        self.client.force_login(self.event.created_by)
+        response = self.client.post(self.get_url())
+        self.assertRedirects(response, reverse("events:EventList"))
+
+    def test_requires_login(self):
+        """Should require login."""
+        self.assertLoginRequired(self.get_url())
+
+    def test_requires_permission(self):
+        """Should require permission to delete events."""
+        self.assertPermissionRequired(
+            self.get_url(),
+            "events.delete_event",
+        )
+
+    def test_succeeds_if_not_permission_but_is_author(self):
+        """
+        Should succeed if the user is the author,
+        even if the user doesn't have permission to delete events.
+        """
+        self.client.force_login(self.event.created_by)
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.status_code, HTTPStatus.OK)
 
 
 class EventAttendanceListTestCase(TestMixin, TestCase):

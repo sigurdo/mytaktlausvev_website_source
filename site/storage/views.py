@@ -19,7 +19,7 @@ class StorageAccess(PermissionRequiredMixin, TemplateView):
 
 class StorageAccessUpdate(PermissionRequiredMixin, FormView):
     form_class = StorageAccessUpdateFormset
-    template_name = "common/form.html"
+    template_name = "common/forms/form.html"
     permission_required = (
         "accounts.view_storage_access",
         "accounts.edit_storage_access",

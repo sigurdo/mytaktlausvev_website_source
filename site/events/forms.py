@@ -9,8 +9,8 @@ from django.forms import (
 )
 from django.utils.timezone import now
 
-from common.forms import DynamicFormsetButton, FormsetLayoutObject
-from common.widgets import SplitDateTimeWidgetCustom
+from common.forms.layouts import DynamicFormsetButton, FormsetLayoutObject
+from common.forms.widgets import SplitDateTimeWidgetCustom
 
 from .models import Event, EventAttendance, EventKeyinfoEntry
 

@@ -1,30 +1,23 @@
 """ Views for sheetmusic """
 
-# Official python packages
 import json
 from typing import Any, Dict
 
 import django
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db import transaction
 from django.forms import BaseModelForm
 from django.http import HttpResponse
 from django.http.response import FileResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.views.generic import DetailView, ListView, View
-from django.views.generic.base import TemplateResponseMixin
 from django.views.generic.detail import SingleObjectMixin
-from django.views.generic.edit import (
-    CreateView,
-    FormMixin,
-    FormView,
-    ProcessFormView,
-    UpdateView,
-)
+from django.views.generic.edit import CreateView, FormView, UpdateView
 
-from common.breadcrumbs import Breadcrumb, BreadcrumbsMixin
+from common.breadcrumbs.breadcrumbs import Breadcrumb, BreadcrumbsMixin
+from common.forms.views import DeleteViewCustom
 from common.mixins import PermissionOrCreatedMixin
-from common.views import DeleteViewCustom
 
 from .forms import (
     EditPdfFormset,
@@ -133,7 +126,7 @@ class ScoreZip(LoginRequiredMixin, DetailView):
 class ScoreCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
     model = Score
     form_class = ScoreForm
-    template_name = "common/form.html"
+    template_name = "common/forms/form.html"
 
     def get_success_url(self):
         return reverse("sheetmusic:PdfsUpload", args=[self.object.slug])
@@ -150,7 +143,7 @@ class ScoreCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
 class ScoreUpdate(PermissionOrCreatedMixin, BreadcrumbsMixin, UpdateView):
     model = Score
     form_class = ScoreForm
-    template_name = "common/form.html"
+    template_name = "common/forms/form.html"
     permission_required = "sheetmusic.change_score"
 
     def get_breadcrumbs(self):
@@ -207,12 +200,7 @@ class PartsUpdateIndex(PermissionOrCreatedMixin, BreadcrumbsMixin, ListView):
 
 
 class PartsUpdate(
-    PermissionOrCreatedMixin,
-    BreadcrumbsMixin,
-    FormMixin,
-    SingleObjectMixin,
-    TemplateResponseMixin,
-    ProcessFormView,
+    PermissionOrCreatedMixin, BreadcrumbsMixin, SingleObjectMixin, FormView
 ):
     model = Pdf
     form_class = PartsUpdateFormset
@@ -224,21 +212,22 @@ class PartsUpdate(
         "sheetmusic.delete_part",
     )
 
+    def setup(self, request, *args, **kwargs):
+        """Set `self.object` for `SingleObjectMixin` compatibility."""
+        super().setup(request, *args, **kwargs)
+        self.object = self.get_object()
+
     def get_success_url(self) -> str:
-        return reverse(
-            "sheetmusic:PartsUpdateIndex", args=[self.get_object().score.slug]
-        )
+        return reverse("sheetmusic:PartsUpdateIndex", args=[self.object.score.slug])
 
     def get_breadcrumbs(self):
-        return sheetmusic_breadcrumbs(
-            score=self.get_object().score, parts_update_index=True
-        )
+        return sheetmusic_breadcrumbs(score=self.object.score, parts_update_index=True)
 
     def get_permission_check_object(self):
-        return self.get_object().score
+        return self.object.score
 
     def get_context_data(self, **kwargs):
-        kwargs["form_title"] = f"Rediger stemmer for {self.get_object()}"
+        kwargs["form_title"] = f"Rediger stemmer for {self.object}"
         return super().get_context_data(**kwargs)
 
     def get_form_kwargs(self) -> Dict[str, Any]:
@@ -247,45 +236,26 @@ class PartsUpdate(
         the parts that are related to the current pdf.
         """
         kwargs = super().get_form_kwargs()
-        kwargs["queryset"] = Part.objects.filter(pdf=self.get_object()).order_by(
+        kwargs["queryset"] = Part.objects.filter(pdf=self.object).order_by(
             "from_page", "to_page", "instrument_type", "part_number"
         )
         return kwargs
-
-    def get_queryset(self):
-        return Pdf.objects.filter(score__slug=self.kwargs["score_slug"])
 
     def form_valid(self, form):
         """
         We must explicitly save the form because it is not done automatically by any ancestors.
         """
-        for subform in form.forms:
-            subform.instance.pdf = self.get_object()
-        form.save()
-        return super().form_valid(form)
-
-    def post(self, *args, **kwargs):
-        """
-        We must set self.object here to be compatible with SingleObjectMixin.
-        """
-        self.object = self.get_object()
-        return super().post(*args, **kwargs)
-
-    def get(self, *args, **kwargs):
-        """
-        We must set self.object here to be compatible with SingleObjectMixin.
-        """
-        self.object = self.get_object()
-        return super().get(*args, **kwargs)
+        with transaction.atomic():
+            self.object.score.modified_by = self.request.user
+            self.object.score.save()
+            for subform in form.forms:
+                subform.instance.pdf = self.object
+            form.save()
+            return super().form_valid(form)
 
 
 class PartsUpdateAll(
-    PermissionOrCreatedMixin,
-    BreadcrumbsMixin,
-    FormMixin,
-    SingleObjectMixin,
-    TemplateResponseMixin,
-    ProcessFormView,
+    PermissionOrCreatedMixin, BreadcrumbsMixin, SingleObjectMixin, FormView
 ):
     model = Score
     form_class = PartsUpdateAllFormset
@@ -296,11 +266,16 @@ class PartsUpdateAll(
         "sheetmusic.delete_part",
     )
 
+    def setup(self, request, *args, **kwargs):
+        """Set `self.object` for `SingleObjectMixin` compatibility."""
+        super().setup(request, *args, **kwargs)
+        self.object = self.get_object()
+
     def get_success_url(self) -> str:
-        return reverse("sheetmusic:PartsUpdateIndex", args=[self.get_object().slug])
+        return reverse("sheetmusic:PartsUpdateIndex", args=[self.object.slug])
 
     def get_breadcrumbs(self):
-        return sheetmusic_breadcrumbs(score=self.get_object(), parts_update_index=True)
+        return sheetmusic_breadcrumbs(score=self.object, parts_update_index=True)
 
     def get_form_kwargs(self) -> Dict[str, Any]:
         """
@@ -308,13 +283,13 @@ class PartsUpdateAll(
         the parts that are related to the current score.
         """
         kwargs = super().get_form_kwargs()
-        kwargs["queryset"] = Part.objects.filter(pdf__score=self.get_object()).order_by(
+        kwargs["queryset"] = Part.objects.filter(pdf__score=self.object).order_by(
             "pdf", "from_page", "to_page", "instrument_type", "part_number"
         )
         return kwargs
 
     def get_context_data(self, **kwargs):
-        kwargs["form_title"] = f"Rediger alle stemmer for {self.get_object()}"
+        kwargs["form_title"] = f"Rediger alle stemmer for {self.object}"
         return super().get_context_data(**kwargs)
 
     def get_form(self, **kwargs) -> BaseModelForm:
@@ -323,50 +298,39 @@ class PartsUpdateAll(
         """
         formset = super().get_form(**kwargs)
         for form in formset.forms:
-            form.fields["pdf"].queryset = self.get_object().pdfs
+            form.fields["pdf"].queryset = self.object.pdfs
         return formset
 
     def form_valid(self, form):
         """
         We must explicitly save the form because it is not done automatically by any ancestors.
         """
-        form.save()
-        return super().form_valid(form)
-
-    def post(self, *args, **kwargs):
-        """
-        We must set self.object here to be compatible with SingleObjectMixin.
-        """
-        self.object = self.get_object()
-        return super().post(*args, **kwargs)
-
-    def get(self, *args, **kwargs):
-        """
-        We must set self.object here to be compatible with SingleObjectMixin.
-        """
-        self.object = self.get_object()
-        return super().get(*args, **kwargs)
+        with transaction.atomic():
+            self.object.modified_by = self.request.user
+            self.object.save()
+            form.save()
+            return super().form_valid(form)
 
 
 class PdfsUpdate(
-    PermissionOrCreatedMixin,
-    BreadcrumbsMixin,
-    FormMixin,
-    SingleObjectMixin,
-    TemplateResponseMixin,
-    ProcessFormView,
+    PermissionOrCreatedMixin, BreadcrumbsMixin, SingleObjectMixin, FormView
 ):
     model = Score
     form_class = EditPdfFormset
-    template_name = "common/form.html"
+    template_name = "common/forms/form.html"
     context_object_name = "score"
     permission_required = "sheetmusic.delete_pdf"
 
+    def setup(self, request, *args, **kwargs):
+        """Set `self.object` for `SingleObjectMixin` compatibility."""
+        super().setup(request, *args, **kwargs)
+        self.object = self.get_object()
+
     def get_success_url(self) -> str:
-        return self.get_object().get_absolute_url()
+        return self.object.get_absolute_url()
 
     def get_breadcrumbs(self):
-        return sheetmusic_breadcrumbs(score=self.get_object())
+        return sheetmusic_breadcrumbs(score=self.object)
 
     def get_form_kwargs(self) -> Dict[str, Any]:
         """
@@ -374,22 +338,18 @@ class PdfsUpdate(
         the parts that are related to the current score.
         """
         kwargs = super().get_form_kwargs()
-        kwargs["queryset"] = self.get_object().pdfs.all()
+        kwargs["queryset"] = self.object.pdfs.all()
         return kwargs
 
     def form_valid(self, form):
         """
         We must explicitly save the form because it is not done automatically by any ancestors.
         """
-        form.save()
-        return super().form_valid(form)
-
-    def get(self, *args, **kwargs):
-        """
-        We must set self.object here to be compatible with SingleObjectMixin.
-        """
-        self.object = self.get_object()
-        return super().get(*args, **kwargs)
+        with transaction.atomic():
+            self.object.modified_by = self.request.user
+            self.object.save()
+            form.save()
+            return super().form_valid(form)
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         kwargs["helper"] = EditPdfFormsetHelper()
@@ -399,7 +359,7 @@ class PdfsUpdate(
 
 class PdfsUpload(PermissionOrCreatedMixin, BreadcrumbsMixin, FormView):
     form_class = UploadPdfForm
-    template_name = "common/form.html"
+    template_name = "common/forms/form.html"
     context_object_name = "score"
     permission_required = ("sheetmusic.add_pdf", "sheetmusic.add_part")
 

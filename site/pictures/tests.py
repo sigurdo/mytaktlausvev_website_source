@@ -255,6 +255,15 @@ class ImageCreateTestSuite(TestMixin, TestCase):
         image = Image.objects.last()
         self.assertEqual(image.uploaded_by, user)
 
+    def test_modified_by_of_gallery_set_to_current_user(self):
+        """Should set `modified_by` of the gallery to the current user."""
+        user = SuperUserFactory()
+        self.client.force_login(user)
+        self.client.post(self.get_url(), self.image_data)
+
+        self.gallery.refresh_from_db()
+        self.assertEqual(self.gallery.modified_by, user)
+
     def test_error_if_uploaded_file_is_not_image(self):
         """Should show a form error if the uploaded file isn't an image."""
         self.image_data["image"] = test_pdf()
@@ -330,3 +339,38 @@ class GalleryUpdateTestSuite(TestMixin, TestCase):
 
         self.gallery.refresh_from_db()
         self.assertEqual(self.gallery.modified_by, user)
+
+
+class GalleryDeleteTestCase(TestMixin, TestCase):
+    def setUp(self):
+        self.gallery = GalleryFactory()
+
+    def get_url(self):
+        return reverse("pictures:GalleryDelete", args=[self.gallery.slug])
+
+    def test_should_redirect_to_gallery_list_on_success(self):
+        """Should redirect to the gallery list on success."""
+        self.client.force_login(self.gallery.created_by)
+        response = self.client.post(self.get_url())
+        self.assertRedirects(response, reverse("pictures:GalleryList"))
+
+    def test_requires_login(self):
+        """Should require login."""
+        self.assertLoginRequired(self.get_url())
+
+    def test_requires_permission(self):
+        """Should require permission to delete galleries and images."""
+        self.assertPermissionRequired(
+            self.get_url(),
+            "pictures.delete_gallery",
+            "pictures.delete_image",
+        )
+
+    def test_succeeds_if_not_permission_but_is_author(self):
+        """
+        Should succeed if the user is the author,
+        even if the user doesn't have permission to delete galleries and images.
+        """
+        self.client.force_login(self.gallery.created_by)
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.status_code, HTTPStatus.OK)

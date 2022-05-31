@@ -19,6 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
       null,
       { orderable: false },
       { orderable: false },
+      { orderable: false }
     ],
   });
 

@@ -1,20 +1,22 @@
+from datetime import timedelta
+
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.db.models.functions.datetime import TruncMonth
 from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.utils.timezone import localtime, now
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 from django_ical.views import ICalFeed
 
 from accounts.models import UserCustom
-from common.breadcrumbs import Breadcrumb, BreadcrumbsMixin
-from common.mixins import PermissionOrCreatedMixin
-from common.views import (
+from common.breadcrumbs.breadcrumbs import Breadcrumb, BreadcrumbsMixin
+from common.forms.views import (
     DeleteViewCustom,
     InlineFormsetCreateView,
     InlineFormsetUpdateView,
 )
+from common.mixins import PermissionOrCreatedMixin
 
 from .forms import EventAttendanceForm, EventForm, EventKeyinfoEntryFormset
 from .models import Attendance, Event, EventAttendance
@@ -35,10 +37,11 @@ def get_event_attendance_or_404(year, slug_event, slug_person):
     )
 
 
-def event_breadcrumbs(event=None, event_list_upcoming=False, event_detail=False):
+def event_breadcrumbs(event=None, include_event=True):
     """
     Generates breadcrumbs for events in the following fashion:
     - /hendingar/:                                     "Hendingar [current_year]"
+    - /hendingar/ny:                                   "Hendingar [current_year] / Alle framtidige"
     - /hendingar/[year]/:                              ""
     - /hendingar/[year]/[slug]/ for future events:     "Hendingar [year] / Alle framtidige"
     - /hendingar/[year]/[slug]/ for past events:       "Hendingar [year]"
@@ -46,31 +49,33 @@ def event_breadcrumbs(event=None, event_list_upcoming=False, event_detail=False)
     - /hendingar/[year]/[slug]/.../ for past events:   "Hendingar [year] / [event_title]"
     """
     breadcrumbs = []
-    year = localtime(now()).year
-    if event:
-        year = localtime(event.start_time).year
+    year = localtime(event.start_time).year if event else localtime(now()).year
+
     breadcrumbs.append(
         Breadcrumb(
             reverse("events:EventList", args=[year]),
             f"Hendingar {year}",
         )
     )
-    if (
-        (event is None) or (event is not None and event.is_in_future())
-    ) and not event_list_upcoming:
+    if event is None:
+        return breadcrumbs
+
+    if event.is_in_future():
         breadcrumbs.append(
             Breadcrumb(
                 reverse("events:EventList"),
                 "Alle framtidige",
             )
         )
-    if event is not None and not event_detail:
+
+    if include_event:
         breadcrumbs.append(
             Breadcrumb(
                 reverse("events:EventDetail", args=[year, event.slug]),
                 str(event),
             )
         )
+
     return breadcrumbs
 
 
@@ -81,7 +86,7 @@ class EventList(LoginRequiredMixin, BreadcrumbsMixin, ListView):
     def get_breadcrumbs(self):
         if "year" in self.kwargs:
             return []
-        return event_breadcrumbs(event_list_upcoming=True)
+        return event_breadcrumbs()
 
     def get_queryset(self):
         match self.kwargs:
@@ -116,7 +121,7 @@ class EventDetail(LoginRequiredMixin, BreadcrumbsMixin, DetailView):
     model = Event
 
     def get_breadcrumbs(self):
-        return event_breadcrumbs(event=self.get_object(), event_detail=True)
+        return event_breadcrumbs(event=self.get_object(), include_event=False)
 
     def get_object(self, queryset=None):
         return get_event_or_404(self.kwargs.get("year"), self.kwargs.get("slug"))
@@ -144,10 +149,13 @@ class EventCreate(LoginRequiredMixin, BreadcrumbsMixin, InlineFormsetCreateView)
     model = Event
     form_class = EventForm
     formset_class = EventKeyinfoEntryFormset
-    template_name = "common/form.html"
+    template_name = "common/forms/form.html"
 
     def get_breadcrumbs(self):
-        return event_breadcrumbs()
+        return event_breadcrumbs(
+            event=Event(start_time=now() + timedelta(days=1)),
+            include_event=False,
+        )
 
     def get_object(self, queryset=None):
         return get_event_or_404(self.kwargs.get("year"), self.kwargs.get("slug"))
@@ -182,7 +190,7 @@ class EventUpdate(PermissionOrCreatedMixin, BreadcrumbsMixin, InlineFormsetUpdat
     model = Event
     form_class = EventForm
     formset_class = EventKeyinfoEntryFormset
-    template_name = "common/form.html"
+    template_name = "common/forms/form.html"
     permission_required = "events.change_event"
 
     def get_breadcrumbs(self):
@@ -199,6 +207,15 @@ class EventUpdate(PermissionOrCreatedMixin, BreadcrumbsMixin, InlineFormsetUpdat
     def form_valid(self, form):
         form.instance.modified_by = self.request.user
         return super().form_valid(form)
+
+
+class EventDelete(PermissionOrCreatedMixin, BreadcrumbsMixin, DeleteViewCustom):
+    model = Event
+    success_url = reverse_lazy("events:EventList")
+    permission_required = "events.delete_event"
+
+    def get_breadcrumbs(self):
+        return event_breadcrumbs(event=self.get_object())
 
 
 class EventAttendanceList(PermissionRequiredMixin, BreadcrumbsMixin, ListView):
@@ -233,7 +250,7 @@ class EventAttendanceCreate(LoginRequiredMixin, CreateView):
 
     model = EventAttendance
     form_class = EventAttendanceForm
-    template_name = "common/form.html"
+    template_name = "common/forms/form.html"
     http_method_names = ["post", "put"]
 
     def get_event(self):
@@ -260,7 +277,7 @@ class EventAttendanceUpdate(PermissionOrCreatedMixin, BreadcrumbsMixin, UpdateVi
 
     model = EventAttendance
     form_class = EventAttendanceForm
-    template_name = "common/form.html"
+    template_name = "common/forms/form.html"
 
     permission_required = "events.change_eventattendance"
     field_created_by = "person"
@@ -326,20 +343,15 @@ class EventFeed(ICalFeed):
             token is not None
             and UserCustom.objects.filter(calendar_feed_token=token).exists()
         ):
-            self.user = UserCustom.objects.only(
-                "calendar_feed_only_upcoming", "calendar_feed_start_date"
-            ).get(calendar_feed_token=token)
+            self.user = UserCustom.objects.only("calendar_feed_start_date").get(
+                calendar_feed_token=token
+            )
             return super().__call__(request, *args, *kwargs)
         return HttpResponseForbidden()
 
     def items(self):
-        if self.user.calendar_feed_only_upcoming:
-            return Event.objects.upcoming()
-        if self.user.calendar_feed_start_date:
-            return Event.objects.filter(
-                start_time__gte=self.user.calendar_feed_start_date
-            )
-        return Event.objects.all()
+        start_date = self.user.calendar_feed_start_date or self.user.date_joined
+        return Event.objects.filter(start_time__gte=start_date)
 
     def item_guid(self, item):
         return f"@taktlaus.no{item.get_absolute_url()}"

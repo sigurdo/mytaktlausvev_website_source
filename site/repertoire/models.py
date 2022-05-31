@@ -94,6 +94,7 @@ class RepertoireEntry(Model):
                 fields=["repertoire", "score"], name="repertoire_unique_entry"
             )
         ]
+        ordering = ["score"]
         verbose_name = "repertoaroppføring"
         verbose_name_plural = "repertoaroppføringar"
 

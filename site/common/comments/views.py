@@ -1,8 +1,8 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, UpdateView
 
+from common.forms.views import DeleteViewCustom
 from common.mixins import PermissionOrCreatedMixin
-from common.views import DeleteViewCustom
 
 from .forms import CommentCreateForm, CommentUpdateForm
 from .models import Comment
@@ -11,7 +11,7 @@ from .models import Comment
 class CommentCreate(LoginRequiredMixin, CreateView):
     model = Comment
     form_class = CommentCreateForm
-    template_name = "common/form.html"
+    template_name = "common/forms/form.html"
     http_method_names = ["post", "put"]
 
     def form_valid(self, form):
@@ -25,7 +25,7 @@ class CommentUpdate(PermissionOrCreatedMixin, UpdateView):
 
     model = Comment
     form_class = CommentUpdateForm
-    template_name = "common/form.html"
+    template_name = "common/forms/form.html"
     permission_required = "comments.change_comment"
 
     def form_valid(self, form):

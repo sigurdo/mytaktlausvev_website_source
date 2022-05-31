@@ -14,7 +14,7 @@ from django.forms.models import inlineformset_factory
 from django.urls.base import reverse
 from django.utils.http import urlencode
 
-from common.forms import DynamicFormsetButton
+from common.forms.layouts import DynamicFormsetButton
 
 from .models import Choice, Poll, Vote
 
@@ -62,7 +62,7 @@ class ChoiceForm(ModelForm):
 class ChoiceFormsetHelper(FormHelper):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.template = "common/table_inline_formset_shade_delete.html"
+        self.template = "common/forms/table_inline_formset_shade_delete.html"
         self.form_tag = False
         self.add_input(DynamicFormsetButton("Legg til endå eit val"))
         self.add_input(Submit("submit", "Lagre avstemming"))

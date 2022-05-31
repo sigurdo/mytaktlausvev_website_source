@@ -6,23 +6,22 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounts', '0008_alter_usercustom_options_and_more'),
+        ("accounts", "0008_alter_usercustom_options_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='usercustom',
-            name='calendar_feed_only_upcoming',
-            field=models.BooleanField(default=True, verbose_name='Få kun framtidige hendingar i kalenderfeed'),
+            model_name="usercustom",
+            name="calendar_feed_start_date",
+            field=models.DateField(
+                blank=True, null=True, verbose_name="Startdato for kalenderfeed"
+            ),
         ),
         migrations.AddField(
-            model_name='usercustom',
-            name='calendar_feed_start_date',
-            field=models.DateField(blank=True, null=True, verbose_name='Startdato for kalenderfeed'),
-        ),
-        migrations.AddField(
-            model_name='usercustom',
-            name='calendar_feed_token',
-            field=models.CharField(default='', max_length=255, verbose_name='Kalenderfeedtoken'),
+            model_name="usercustom",
+            name="calendar_feed_token",
+            field=models.CharField(
+                default="", max_length=255, verbose_name="Kalenderfeedtoken"
+            ),
         ),
     ]

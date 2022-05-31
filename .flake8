@@ -5,5 +5,4 @@ extend-ignore =
     E,
     W,
 extend-exclude =
-    */migrations/,
     venv/,

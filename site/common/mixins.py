@@ -3,7 +3,6 @@ import tempfile
 from http import HTTPStatus
 
 from django.contrib.auth.mixins import PermissionRequiredMixin
-from django.forms import FileField, ValidationError
 from django.test import TestCase, override_settings
 from django.urls import reverse
 
@@ -45,26 +44,6 @@ class TestMixin(TestCase):
         self.client.force_login(UserFactory(permissions=permissions))
         response = getattr(self.client, method)(url)
         self.assertEqual(response.status_code, status_success)
-
-
-class CleanAllFilesMixin:
-    """
-    Mixin that ensures that all files uploaded
-    to a `FileField` are cleaned.
-
-    For some reason, Django only calls field.clean() on the last file, so
-    we have to call field.clean() on all others manually.
-    """
-
-    def _clean_fields(self):
-        super()._clean_fields()
-        for name, field in self.fields.items():
-            if isinstance(field, FileField):
-                for file in self.files.getlist(name)[:-1]:
-                    try:
-                        field.clean(file)
-                    except ValidationError as exception:
-                        self.add_error(name, exception)
 
 
 class PermissionOrCreatedMixin(PermissionRequiredMixin):

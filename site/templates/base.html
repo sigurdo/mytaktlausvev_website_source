@@ -26,7 +26,7 @@
 						<header class="mb-4">
 						{% block header %}
 							{% if breadcrumbs %}
-								{% include "common/includes/breadcrumbs.html" with breadcrumbs=breadcrumbs only %}
+								{% include "common/breadcrumbs/breadcrumbs.html" with breadcrumbs=breadcrumbs only %}
 							{% endif %}
 
 							<h1 class="mb-0">{% block title_content %}{% endblock title_content %}</h1>

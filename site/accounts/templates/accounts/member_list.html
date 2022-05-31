@@ -54,7 +54,7 @@
                 <th>Instrument</th>
                 <th>E-post</th>
                 <th>Telefonnummer</th>
-                {% comment %} <th>Roller</th> {% endcomment %}
+                <th>Roller</th>
             </tr>
         </thead>
         <tbody>
@@ -77,10 +77,16 @@
                         {{ member.get_name }}
                     </a></td>
                      <td>{{member.get_membership_status_display}}</td>
-                     <td>{{member.instrument_group}}</td>
+                     <td>{{member.instrument_type.group}}</td>
                      <td>{{member.email}}</td>
                      <td>{{member.phone_number}}</td>
-                     {% comment %} <td>{{member.groups}}</tr> {% endcomment %}
+                     <td>
+                        <ul class="m-0">
+                        {% for group in member.groups.all %}
+                            <li>{{ group }}</li>
+                        {% endfor %}
+                        </ul>
+                    </td>
                  </tr >
             {% endfor %}
         </tbody>

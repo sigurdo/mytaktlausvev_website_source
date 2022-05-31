@@ -27,7 +27,7 @@ urlpatterns = [
     path("hendingar/", include("events.urls")),
     path("", include("dashboard.urls")),
     path("notar/", include("sheetmusic.urls")),
-    path("kommentarar/", include("comments.urls")),
+    path("kommentarar/", include("common.comments.urls")),
     path("kontakt/", include("contact.urls")),
     path("repertoar/", include("repertoire.urls")),
     path("buttons/", include("buttons.urls")),

@@ -12,7 +12,7 @@ class ScoreFactory(DjangoModelFactory):
     class Meta:
         model = Score
 
-    title = "Score"
+    title = sequence(lambda n: f"Score #{n}")
     created_by = SubFactory(UserFactory)
     modified_by = SubFactory(UserFactory)
 

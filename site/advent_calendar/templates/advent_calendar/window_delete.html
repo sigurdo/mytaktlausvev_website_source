@@ -1,0 +1,19 @@
+{% extends "./base.html" %}
+
+{% block title_page %}Slett luke {{ window.index }}{% endblock title_page %}
+
+{% block content %}
+    <article class="card shadow">
+        <div class="card-body">
+            <h1 class="card-title fs-2">
+                Slett luke {{ window.index }}
+            </h1>
+
+            <form method="post">
+                {% csrf_token %}
+                <p>Er du sikker på at du vil slette luke {{ window.index }}?</p>
+                <input type="submit" value="Slett luke {{window.index }}" class="btn btn-danger">
+            </form>
+        </div>
+    </article>
+{% endblock %}

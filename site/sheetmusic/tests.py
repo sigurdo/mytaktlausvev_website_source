@@ -8,7 +8,7 @@ from django.utils.text import slugify
 from PyPDF2 import PdfFileReader
 
 from accounts.factories import SuperUserFactory, UserFactory
-from common.breadcrumbs import Breadcrumb
+from common.breadcrumbs.breadcrumbs import Breadcrumb
 from common.mixins import TestMixin
 from common.test_utils import (
     create_formset_post_data,
@@ -525,7 +525,7 @@ class PartsUpdateIndexTestSuite(TestMixin, TestCase):
 
 
 class PartsUpdateTestSuite(TestMixin, TestCase):
-    def create_post_data(self, data):
+    def create_post_data(self, data=[]):
         return create_formset_post_data(
             PartsUpdateFormset,
             defaults={
@@ -550,7 +550,6 @@ class PartsUpdateTestSuite(TestMixin, TestCase):
             file=test_pdf_multipage(["Vanlig stemme", "Håndskrevet andrestemme"]),
         )
         self.part = PartFactory(pdf=self.pdf)
-        self.test_data = self.create_post_data([])
 
     def test_requires_login(self):
         self.assertLoginRequired(self.get_url())
@@ -575,7 +574,7 @@ class PartsUpdateTestSuite(TestMixin, TestCase):
     def test_success_redirect(self):
         user = SuperUserFactory()
         self.client.force_login(user)
-        response = self.client.post(self.get_url(), self.test_data)
+        response = self.client.post(self.get_url(), self.create_post_data())
         self.assertRedirects(
             response, reverse("sheetmusic:PartsUpdateIndex", args=[self.score.slug])
         )
@@ -626,9 +625,18 @@ class PartsUpdateTestSuite(TestMixin, TestCase):
         count = self.pdf.parts.count()
         self.assertEqual(count, 0)
 
+    def test_modified_by_of_score_set_to_current_user(self):
+        """Should set `modified_by` of the score to the current user on update."""
+        user = SuperUserFactory()
+        self.client.force_login(user)
+        self.client.post(self.get_url(), self.create_post_data())
+
+        self.score.refresh_from_db()
+        self.assertEqual(self.score.modified_by, user)
+
 
 class PartsUpdateAllTestSuite(TestMixin, TestCase):
-    def create_post_data(self, data):
+    def create_post_data(self, data=[]):
         return create_formset_post_data(
             PartsUpdateAllFormset,
             defaults={
@@ -653,7 +661,6 @@ class PartsUpdateAllTestSuite(TestMixin, TestCase):
             score=self.score, file=test_pdf_multipage(["Instrument A", "Instrument B"])
         )
         self.part = PartFactory(pdf=self.pdf)
-        self.test_data = self.create_post_data([])
 
     def test_requires_login(self):
         self.assertLoginRequired(self.get_url())
@@ -678,7 +685,7 @@ class PartsUpdateAllTestSuite(TestMixin, TestCase):
     def test_success_redirect(self):
         user = SuperUserFactory()
         self.client.force_login(user)
-        response = self.client.post(self.get_url(), self.test_data)
+        response = self.client.post(self.get_url(), self.create_post_data())
         self.assertRedirects(
             response, reverse("sheetmusic:PartsUpdateIndex", args=[self.score.slug])
         )
@@ -726,9 +733,18 @@ class PartsUpdateAllTestSuite(TestMixin, TestCase):
         count = self.pdf.parts.count()
         self.assertEqual(count, 0)
 
+    def test_modified_by_of_score_set_to_current_user(self):
+        """Should set `modified_by` of the score to the current user on update."""
+        user = SuperUserFactory()
+        self.client.force_login(user)
+        self.client.post(self.get_url(), self.create_post_data())
+
+        self.score.refresh_from_db()
+        self.assertEqual(self.score.modified_by, user)
+
 
 class PdfsUpdateTestSuite(TestMixin, TestCase):
-    def create_post_data(self, data):
+    def create_post_data(self, data=[]):
         return create_formset_post_data(
             EditPdfFormset,
             defaults={
@@ -743,7 +759,6 @@ class PdfsUpdateTestSuite(TestMixin, TestCase):
     def setUp(self):
         self.score = ScoreFactory()
         self.pdf = PdfFactory(score=self.score)
-        self.test_data = self.create_post_data([])
 
     def test_requires_login(self):
         self.assertLoginRequired(self.get_url())
@@ -766,9 +781,7 @@ class PdfsUpdateTestSuite(TestMixin, TestCase):
     def test_success_redirect(self):
         user = SuperUserFactory()
         self.client.force_login(user)
-        response = self.client.post(
-            reverse("sheetmusic:PdfsUpdate", args=[self.score.slug]), self.test_data
-        )
+        response = self.client.post(self.get_url(), self.create_post_data())
         self.assertRedirects(
             response, reverse("sheetmusic:ScoreView", args=[self.score.slug])
         )
@@ -777,11 +790,20 @@ class PdfsUpdateTestSuite(TestMixin, TestCase):
         user = SuperUserFactory()
         self.client.force_login(user)
         self.client.post(
-            reverse("sheetmusic:PdfsUpdate", args=[self.score.slug]),
+            self.get_url(),
             self.create_post_data([{"DELETE": "on"}]),
         )
         count = self.score.pdfs.count()
         self.assertEqual(count, 0)
+
+    def test_modified_by_of_score_set_to_current_user(self):
+        """Should set `modified_by` of the score to the current user on update."""
+        user = SuperUserFactory()
+        self.client.force_login(user)
+        self.client.post(self.get_url(), self.create_post_data())
+
+        self.score.refresh_from_db()
+        self.assertEqual(self.score.modified_by, user)
 
 
 class PdfsUploadTestSuite(TestMixin, TestCase):

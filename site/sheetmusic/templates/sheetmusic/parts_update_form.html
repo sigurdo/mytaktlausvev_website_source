@@ -1,4 +1,4 @@
-{% extends "common/form.html" %}
+{% extends "common/forms/form.html" %}
 
 {% block container_class %}container-fluid{% endblock container_class %}
 
@@ -22,5 +22,5 @@
 {% block js %}
     {% load static %}
     <script src={% static 'sheetmusic/parts_update_form.js' %}></script>
-    <script src={% static 'common/js/prevent_number_input_scroll.js' %}></script>
+    <script src={% static 'common/forms/prevent_number_input_scroll.js' %}></script>
 {% endblock js %}

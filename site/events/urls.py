@@ -15,6 +15,11 @@ urlpatterns = [
         name="EventUpdate",
     ),
     path(
+        "<int:year>/<slug:slug>/slett/",
+        views.EventDelete.as_view(),
+        name="EventDelete",
+    ),
+    path(
         "<int:year>/<slug:slug>/svar/",
         views.EventAttendanceList.as_view(),
         name="EventAttendanceList",

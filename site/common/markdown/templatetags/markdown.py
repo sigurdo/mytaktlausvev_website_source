@@ -2,17 +2,17 @@ from functools import partial
 
 import markdown as md
 from bleach import Cleaner
-from bleach.html5lib_shim import Filter
 from bleach.linkifier import LinkifyFilter, build_url_re
 from django import template
 from django.utils.safestring import mark_safe
 
-from common.markdown_extensions import (
+from ..extensions import (
     KWordCensorExtension,
     StrikethroughExtension,
     UnderlineExtension,
 )
-from common.tlds import TLDS
+from ..filters import ClassApplyFilter
+from ..tlds import TLDS
 
 register = template.Library()
 
@@ -63,22 +63,6 @@ ALLOWED_TAGS = [
 ]
 
 ALLOWED_ATTRIBUTES = ["src", "alt", "width", "height", "class", "href"]
-
-
-class ClassApplyFilter(Filter):
-    """Filter that applies specified classes to specified tags."""
-
-    def __init__(self, source, class_map):
-        """`class_map` must be a dict of the form `{<class_name>: <classes_to_apply>}`."""
-        super().__init__(source)
-        self.class_map = class_map
-
-    def __iter__(self):
-        for token in Filter.__iter__(self):
-            if token["type"] in ("StartTag", "EmptyTag"):
-                if token["name"] in self.class_map:
-                    token["data"][(None, "class")] = self.class_map[token["name"]]
-            yield token
 
 
 @register.filter(is_safe=True)

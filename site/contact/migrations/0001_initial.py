@@ -7,22 +7,39 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='ContactCategory',
+            name="ContactCategory",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255, unique=True, verbose_name='namn')),
-                ('email', models.EmailField(max_length=254, verbose_name='e-post')),
-                ('order', models.FloatField(default=0, help_text='Definerer rekkjefølgja til kategoriar. Kategoriar med lik rekkjefølgje blir sortert etter namn.', verbose_name='rekkjefølgje')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(max_length=255, unique=True, verbose_name="namn"),
+                ),
+                ("email", models.EmailField(max_length=254, verbose_name="e-post")),
+                (
+                    "order",
+                    models.FloatField(
+                        default=0,
+                        help_text="Definerer rekkjefølgja til kategoriar. Kategoriar med lik rekkjefølgje blir sortert etter namn.",
+                        verbose_name="rekkjefølgje",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'kontaktkategori',
-                'verbose_name_plural': 'kontaktkategoriar',
-                'ordering': ['order', 'name'],
+                "verbose_name": "kontaktkategori",
+                "verbose_name_plural": "kontaktkategoriar",
+                "ordering": ["order", "name"],
             },
         ),
     ]
