@@ -6,12 +6,19 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounts', '0006_usercustom_has_storage_access'),
+        ("accounts", "0006_usercustom_has_storage_access"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='usercustom',
-            options={'permissions': (('view_storage_access', 'Kan sjå lagertilgjenge'), ('edit_storage_access', 'Kan redigere lagertilgjenge')), 'verbose_name': 'user', 'verbose_name_plural': 'users'},
+            name="usercustom",
+            options={
+                "permissions": (
+                    ("view_storage_access", "Kan sjå lagertilgjenge"),
+                    ("edit_storage_access", "Kan redigere lagertilgjenge"),
+                ),
+                "verbose_name": "user",
+                "verbose_name_plural": "users",
+            },
         ),
     ]

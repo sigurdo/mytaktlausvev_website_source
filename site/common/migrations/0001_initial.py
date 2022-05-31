@@ -7,19 +7,26 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='PermissionCustom',
+            name="PermissionCustom",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
             ],
             options={
-                'permissions': (('view_storage_access', 'Kan sjå lagertilgjenge'),),
-                'managed': False,
-                'default_permissions': (),
+                "permissions": (("view_storage_access", "Kan sjå lagertilgjenge"),),
+                "managed": False,
+                "default_permissions": (),
             },
         ),
     ]

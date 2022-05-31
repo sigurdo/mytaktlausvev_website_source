@@ -6,12 +6,16 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('repertoire', '0001_initial'),
+        ("repertoire", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='repertoireentry',
-            options={'ordering': ['score'], 'verbose_name': 'repertoaroppføring', 'verbose_name_plural': 'repertoaroppføringar'},
+            name="repertoireentry",
+            options={
+                "ordering": ["score"],
+                "verbose_name": "repertoaroppføring",
+                "verbose_name_plural": "repertoaroppføringar",
+            },
         ),
     ]

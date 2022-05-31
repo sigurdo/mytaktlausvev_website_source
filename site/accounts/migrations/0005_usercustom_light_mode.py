@@ -6,13 +6,17 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounts', '0004_auto_20220308_2112'),
+        ("accounts", "0004_auto_20220308_2112"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='usercustom',
-            name='light_mode',
-            field=models.BooleanField(default=False, help_text='Aktiver lys modus. Lys modus vert ikkje aktivt støtta, og er difor ikkje anbefalt.', verbose_name='lys modus'),
+            model_name="usercustom",
+            name="light_mode",
+            field=models.BooleanField(
+                default=False,
+                help_text="Aktiver lys modus. Lys modus vert ikkje aktivt støtta, og er difor ikkje anbefalt.",
+                verbose_name="lys modus",
+            ),
         ),
     ]

@@ -6,13 +6,17 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('user_files', '0002_file_public'),
+        ("user_files", "0002_file_public"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='file',
-            name='public',
-            field=models.BooleanField(default=False, help_text='Om fila er open for ålmente.', verbose_name='offentleg'),
+            model_name="file",
+            name="public",
+            field=models.BooleanField(
+                default=False,
+                help_text="Om fila er open for ålmente.",
+                verbose_name="offentleg",
+            ),
         ),
     ]

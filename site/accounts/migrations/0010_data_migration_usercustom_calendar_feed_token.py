@@ -1,5 +1,6 @@
-from django.db import migrations
 from secrets import token_urlsafe
+
+from django.db import migrations
 
 
 def generate_calendar_feed_tokens(apps, schema_editor):

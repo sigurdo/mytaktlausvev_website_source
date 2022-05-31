@@ -7,21 +7,34 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='EmbeddableText',
+            name="EmbeddableText",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255, unique=True, verbose_name='namn')),
-                ('content', models.TextField(blank=True, default='', verbose_name='innhald')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(max_length=255, unique=True, verbose_name="namn"),
+                ),
+                (
+                    "content",
+                    models.TextField(blank=True, default="", verbose_name="innhald"),
+                ),
             ],
             options={
-                'verbose_name': 'innbyggbar tekst',
-                'verbose_name_plural': 'innbyggbare tekster',
-                'ordering': ['name'],
+                "verbose_name": "innbyggbar tekst",
+                "verbose_name_plural": "innbyggbare tekster",
+                "ordering": ["name"],
             },
         ),
     ]
