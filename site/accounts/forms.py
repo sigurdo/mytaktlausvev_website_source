@@ -112,7 +112,7 @@ class UserCustomUpdateForm(ModelForm):
             "student_card_number",
         ),
         Fieldset("Taktlaus-ting", "instrument_type", "membership_period"),
-        Fieldset("Kalenderfeed", "calendar_feed_start_date"),
+        Fieldset("Kalenderapp-integrasjon", "calendar_feed_start_date"),
         Fieldset("Anna", "light_mode", "image_sharing_consent"),
         Submit("submit", "Rediger brukar"),
     )

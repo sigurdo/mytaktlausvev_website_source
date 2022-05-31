@@ -1,5 +1,7 @@
 <button class="btn btn-primary" id="ical-link-collapse-button" type="button">
-    Hent link til kalenderfeed
+    Få hendingar i eigen kalenderapp
+    <br />
+    (hent lenkje til kalenderfeed)
 </button>
 <div class="collapse m-3" id="ical-link-collapse">
     <p>
@@ -12,7 +14,7 @@
     </p>
     <p>
         {% load embeddable_text markdown %}
-        {% get_embeddable_text "Hjelpetekst kalenderfeedknapp" as text %}
+        {% get_embeddable_text "Hjelpetekst kalenderapp-integrasjonsknapp" as text %}
         {{ text | markdown }}
     </p>
 </div>
