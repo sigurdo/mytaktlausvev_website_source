@@ -410,24 +410,27 @@ class EventDetailTestSuite(TestMixin, TestCase):
 
 
 class EventCreateTestSuite(TestMixin, TestCase):
-    def create_formset_post_data(self):
+    def get_url(self):
+        return reverse("events:EventCreate")
+
+    def create_formset_post_data(self, data=[], total_forms=0, initial_forms=0):
         return create_formset_post_data(
             EventKeyinfoEntryFormset,
-            data=[],
-            total_forms=0,
-            initial_forms=0,
+            data=data,
+            total_forms=total_forms,
+            initial_forms=initial_forms,
         )
 
     def test_requires_login(self):
         """Should require login."""
-        self.assertLoginRequired(reverse("events:EventCreate"))
+        self.assertLoginRequired(self.get_url())
 
     def test_created_by_modified_by_set_to_current_user(self):
         """Should set `created_by` and `modified_by` to the current user on creation."""
         user = SuperUserFactory()
         self.client.force_login(user)
         self.client.post(
-            reverse("events:EventCreate"),
+            self.get_url(),
             {
                 "title": "A Title",
                 "start_time_0": "2021-11-25",
@@ -442,6 +445,32 @@ class EventCreateTestSuite(TestMixin, TestCase):
         self.assertEqual(event.created_by, user)
         self.assertEqual(event.modified_by, user)
 
+    def test_keyinfo(self):
+        """Should be able to create keyinfo correctly."""
+        user = SuperUserFactory()
+        self.client.force_login(user)
+        self.client.post(
+            self.get_url(),
+            {
+                "title": "A Title",
+                "start_time_0": "2021-11-25",
+                "start_time_1": "16:30",
+                "content": "Event text",
+                **self.create_formset_post_data(
+                    data=[
+                        {"key": "Price", "info": "100kr", "order": 3},
+                    ],
+                    total_forms=1,
+                    initial_forms=0,
+                ),
+            },
+        )
+        self.assertEqual(EventKeyinfoEntry.objects.count(), 1)
+        keyinfo = EventKeyinfoEntry.objects.last()
+        self.assertEqual(keyinfo.key, "Price")
+        self.assertEqual(keyinfo.info, "100kr")
+        self.assertEqual(keyinfo.order, 3)
+
 
 class EventUpdateTestSuite(TestMixin, TestCase):
     def setUp(self):
@@ -454,12 +483,12 @@ class EventUpdateTestSuite(TestMixin, TestCase):
             **self.create_formset_post_data(),
         }
 
-    def create_formset_post_data(self):
+    def create_formset_post_data(self, data=[], total_forms=0, initial_forms=0):
         return create_formset_post_data(
             EventKeyinfoEntryFormset,
-            data=[],
-            total_forms=0,
-            initial_forms=0,
+            data=data,
+            total_forms=total_forms,
+            initial_forms=initial_forms,
         )
 
     def get_url(self):
@@ -505,6 +534,32 @@ class EventUpdateTestSuite(TestMixin, TestCase):
 
         self.event.refresh_from_db()
         self.assertEqual(self.event.modified_by, user)
+
+    def test_keyinfo(self):
+        """Should be able to create keyinfo correctly."""
+        user = SuperUserFactory()
+        self.client.force_login(user)
+        self.client.post(
+            self.get_url(),
+            {
+                "title": "A Title",
+                "start_time_0": "2021-11-25",
+                "start_time_1": "16:30",
+                "content": "Event text",
+                **self.create_formset_post_data(
+                    data=[
+                        {"key": "Price", "info": "100kr", "order": 3},
+                    ],
+                    total_forms=1,
+                    initial_forms=0,
+                ),
+            },
+        )
+        self.assertEqual(EventKeyinfoEntry.objects.count(), 1)
+        keyinfo = EventKeyinfoEntry.objects.last()
+        self.assertEqual(keyinfo.key, "Price")
+        self.assertEqual(keyinfo.info, "100kr")
+        self.assertEqual(keyinfo.order, 3)
 
 
 class EventDeleteTestSuite(TestMixin, TestCase):
