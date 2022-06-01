@@ -40,7 +40,7 @@ class EventForm(ModelForm):
                 {{ text | markdown }}
                 """
             ),
-            FormsetLayoutObject("formset"),
+            FormsetLayoutObject(),
         ),
         "content",
     )

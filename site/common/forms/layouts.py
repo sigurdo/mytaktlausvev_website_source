@@ -1,5 +1,5 @@
 from crispy_forms.layout import TEMPLATE_PACK, Button, LayoutObject
-from django.template.loader import render_to_string
+from crispy_forms.utils import render_crispy_form
 
 
 class DynamicFormsetButton(Button):
@@ -28,17 +28,12 @@ class FormsetLayoutObject(LayoutObject):
     below the form as well.
     """
 
-    template = "common/forms/table_inline_formset_shade_delete.html"
-
-    def __init__(self, formset_name_in_context, template=None):
+    def __init__(self, formset_name_in_context="formset"):
         self.formset_name_in_context = formset_name_in_context
-
-        if template:
-            self.template = template
 
     def render(self, form, form_style, context, template_pack=TEMPLATE_PACK):
         formset = context[self.formset_name_in_context]
-        return render_to_string(
-            self.template,
-            {"wrapper": self, "formset": formset, "form_show_errors": True},
+        return render_crispy_form(
+            formset,
+            context={"wrapper": self, "formset": formset, "form_show_errors": True},
         )
