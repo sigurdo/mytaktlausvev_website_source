@@ -13,18 +13,18 @@ from accounts.factories import SuperUserFactory, UserFactory
 from common.breadcrumbs.breadcrumbs import Breadcrumb
 from common.mixins import TestMixin
 from common.test_utils import create_formset_post_data
-from events.models import Attendance, Event, EventAttendance
+from events.models import Attendance, Event, EventAttendance, EventKeyinfoEntry
 from events.views import (
     event_breadcrumbs,
     get_event_attendance_or_404,
     get_event_or_404,
 )
 
-from .factories import EventAttendanceFactory, EventFactory
+from .factories import EventAttendanceFactory, EventFactory, EventKeyinfoEntryFactory
 from .forms import EventKeyinfoEntryFormset
 
 
-class EventManagerTestCase(TestCase):
+class EventManagerTestSuite(TestCase):
     def test_upcoming_no_end_time_old(self):
         EventFactory(start_time=make_aware(datetime.now() - timedelta(2)))
         upcoming = list(Event.objects.upcoming())
@@ -65,7 +65,7 @@ class EventManagerTestCase(TestCase):
         self.assertEqual(len(upcoming), 1)
 
 
-class EventTestCase(TestCase):
+class EventTestSuite(TestCase):
     def setUp(self):
         self.event = EventFactory()
 
@@ -118,7 +118,7 @@ class EventTestCase(TestCase):
         self.assertAlmostEqual(self.event.start_time, now(), delta=timedelta(seconds=1))
 
 
-class EventAttendanceTestCase(TestCase):
+class EventAttendanceTestSuite(TestCase):
     def setUp(self):
         self.attendance = EventAttendanceFactory()
 
@@ -144,7 +144,45 @@ class EventAttendanceTestCase(TestCase):
         self.assertIn(self.attendance.get_status_display(), str(self.attendance))
 
 
-class GetterTestCase(TestCase):
+class EventKeyinfoEntryTestSuite(TestMixin, TestCase):
+    def test_to_str(self):
+        """str() should return "`event.title` - `key`"."""
+        keyinfo = EventKeyinfoEntryFactory(event__title="SMASH", key="Price")
+        self.assertEqual(str(keyinfo), "SMASH - Price")
+
+    def test_delete_event_deletes_keyinfo(self):
+        """Deleting event should delete related keyinfo entries."""
+        keyinfo = EventKeyinfoEntryFactory()
+        self.assertEqual(EventKeyinfoEntry.objects.count(), 1)
+        keyinfo.event.delete()
+        self.assertEqual(EventKeyinfoEntry.objects.count(), 0)
+
+    def test_key_unique_for_same_event(self):
+        """Different keyinfo entries cannot have same key for same event."""
+        keyinfo = EventKeyinfoEntryFactory()
+        with self.assertRaises(IntegrityError):
+            EventKeyinfoEntryFactory(event=keyinfo.event, key=keyinfo.key)
+
+    def test_same_key_for_other_event(self):
+        """Different keyinfo entries can have same key for different events."""
+        keyinfo = EventKeyinfoEntryFactory()
+        EventKeyinfoEntryFactory(key=keyinfo.key)
+
+    def test_ordering(self):
+        """`EventKeyinfoEntry`s should be ordered first by order and then by key."""
+        self.assertModelOrdering(
+            EventKeyinfoEntry,
+            EventKeyinfoEntryFactory,
+            [
+                {"order": 0, "key": "b"},
+                {"order": 0, "key": "c"},
+                {"order": 1, "key": "a"},
+                {"order": 4.5, "key": "4.5"},
+            ],
+        )
+
+
+class GetterTestSuite(TestCase):
     def setUp(self):
         self.event = EventFactory()
         self.attendance = EventAttendanceFactory()
@@ -362,7 +400,7 @@ class EventListTestSuite(TestMixin, TestCase):
         self.assertEquals(len(self.client.get(self.get_url(2023)).context["events"]), 3)
 
 
-class EventDetailTestCase(TestMixin, TestCase):
+class EventDetailTestSuite(TestMixin, TestCase):
     def test_requires_login(self):
         """Should require login."""
         event = EventFactory()
@@ -371,7 +409,7 @@ class EventDetailTestCase(TestMixin, TestCase):
         )
 
 
-class EventCreateTestCase(TestMixin, TestCase):
+class EventCreateTestSuite(TestMixin, TestCase):
     def create_formset_post_data(self):
         return create_formset_post_data(
             EventKeyinfoEntryFormset,
@@ -405,7 +443,7 @@ class EventCreateTestCase(TestMixin, TestCase):
         self.assertEqual(event.modified_by, user)
 
 
-class EventUpdateTestCase(TestMixin, TestCase):
+class EventUpdateTestSuite(TestMixin, TestCase):
     def setUp(self):
         self.event = EventFactory()
         self.event_data = {
@@ -469,7 +507,7 @@ class EventUpdateTestCase(TestMixin, TestCase):
         self.assertEqual(self.event.modified_by, user)
 
 
-class EventDeleteTestCase(TestMixin, TestCase):
+class EventDeleteTestSuite(TestMixin, TestCase):
     def setUp(self):
         self.event = EventFactory()
 
@@ -505,7 +543,7 @@ class EventDeleteTestCase(TestMixin, TestCase):
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
 
-class EventAttendanceListTestCase(TestMixin, TestCase):
+class EventAttendanceListTestSuite(TestMixin, TestCase):
     def get_url(self, event):
         """Returns the URL for the event attendance list view for `event`."""
         return reverse(
@@ -526,7 +564,7 @@ class EventAttendanceListTestCase(TestMixin, TestCase):
         )
 
 
-class EventAttendanceCreateTestCase(TestMixin, TestCase):
+class EventAttendanceCreateTestSuite(TestMixin, TestCase):
     def get_url(self, event):
         """Returns the URL for the event attendance create view for `event`."""
         return reverse(
@@ -573,7 +611,7 @@ class EventAttendanceCreateTestCase(TestMixin, TestCase):
         self.assertRedirects(response, self.event.get_absolute_url())
 
 
-class EventAttendanceUpdateTestCase(TestMixin, TestCase):
+class EventAttendanceUpdateTestSuite(TestMixin, TestCase):
     def get_url(self, attendance):
         """Returns the URL for the event attendance update view for `attendance`."""
         return reverse(
@@ -609,7 +647,7 @@ class EventAttendanceUpdateTestCase(TestMixin, TestCase):
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
 
-class EventAttendanceDeleteTestCase(TestMixin, TestCase):
+class EventAttendanceDeleteTestSuite(TestMixin, TestCase):
     def get_url(self, attendance):
         """Returns the URL for the event attendance delete view for `attendance`."""
         return reverse(

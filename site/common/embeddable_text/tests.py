@@ -25,8 +25,11 @@ class EmbeddableTextTestSuite(TestMixin, TestCase):
 
     def test_ordering(self):
         """`EmbeddableText`s should be ordered by name."""
-        texts = [
-            EmbeddableTextFactory(name=f"text_{letter}") for letter in ["a", "b", "c"]
-        ]
-        for i, text in enumerate(EmbeddableText.objects.all()):
-            self.assertEqual(text, texts[i])
+        self.assertModelOrdering(
+            EmbeddableText,
+            EmbeddableTextFactory,
+            [
+                {"name": "text_a"},
+                {"name": "text_b"},
+            ],
+        )

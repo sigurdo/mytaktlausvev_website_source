@@ -1,6 +1,7 @@
 import shutil
 import tempfile
 from http import HTTPStatus
+from random import shuffle
 
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.test import TestCase, override_settings
@@ -44,6 +45,44 @@ class TestMixin(TestCase):
         self.client.force_login(UserFactory(permissions=permissions))
         response = getattr(self.client, method)(url)
         self.assertEqual(response.status_code, status_success)
+
+    def assertModelOrdering(self, model, factory, factory_kwargs, number_of_tests=None):
+        """
+        Asserts that `model` instances generated with `factory` and `factory_kwargs` are ordered
+        in the same order `factory_kwargs` are provided. `factory_kwargs` is an iterable of
+        dictionaries with kwargs for `factory`. Requires that the length of `factory_kwargs` is
+        minimum 2, unless there is no way in which the test can fail.
+
+        Uses shuffling and enumerations to ensure that the ordering of the factory
+        calls is not what produces the correct ordering in the end.
+
+        If `number_of_tests` is not given it will produce the following tests based on the
+        number of specified instances:
+
+        - 2: 9
+        - 3: 5
+        - 4: 3
+        - 5: 2
+        - any higher: 1
+
+        This gives certainity that it was not correct by luck also for low numbers of instances.
+        """
+        factory_kwargs_enumerated = list(enumerate(factory_kwargs))
+        if len(factory_kwargs_enumerated) < 2:
+            raise Exception(
+                f"Must have minimum 2 instances to verify ordering, but got only {len(factory_kwargs)}"
+            )
+        if number_of_tests is None:
+            number_of_tests = 8 // 2 ** (len(factory_kwargs_enumerated) - 2) + 1
+        for i in range(number_of_tests):
+            shuffle(factory_kwargs_enumerated)
+            model.objects.all().delete()
+            entries_enumerated = [
+                (i, factory(**kwargs)) for i, kwargs in factory_kwargs_enumerated
+            ]
+            entries_enumerated.sort(key=lambda element: element[0])
+            for i, entry in enumerate(model.objects.all()):
+                self.assertEqual(entry, entries_enumerated[i][1])
 
 
 class PermissionOrCreatedMixin(PermissionRequiredMixin):
