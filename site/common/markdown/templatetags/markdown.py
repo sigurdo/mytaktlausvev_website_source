@@ -66,20 +66,7 @@ ALLOWED_ATTRIBUTES = ["src", "alt", "width", "height", "class", "href"]
 
 
 @register.filter(is_safe=True)
-def markdown(string):
-    converted = md.markdown(
-        string,
-        extensions=[
-            "nl2br",
-            "fenced_code",
-            "codehilite",
-            "tables",
-            StrikethroughExtension(),
-            UnderlineExtension(),
-            KWordCensorExtension(),
-        ],
-    )
-
+def clean(html):
     cleaner = Cleaner(
         tags=ALLOWED_TAGS,
         attributes=ALLOWED_ATTRIBUTES,
@@ -95,5 +82,22 @@ def markdown(string):
             ),
         ],
     )
-    bleached = cleaner.clean(converted)
+    bleached = cleaner.clean(html)
     return mark_safe(bleached)
+
+
+@register.filter(is_safe=True)
+def markdown(string):
+    converted = md.markdown(
+        string,
+        extensions=[
+            "nl2br",
+            "fenced_code",
+            "codehilite",
+            "tables",
+            StrikethroughExtension(),
+            UnderlineExtension(),
+            KWordCensorExtension(),
+        ],
+    )
+    return clean(converted)

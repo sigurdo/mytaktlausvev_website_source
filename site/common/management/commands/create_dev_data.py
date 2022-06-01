@@ -773,7 +773,7 @@ class Command(BaseCommand):
         EmbeddableTextFactory(
             name="Hjelpetekst nykelinfo-seksjon for hendingar",
             content="""
-Her kan du skrive nykelinformasjon om hendinga. Oppføringane du skriv vil verte vist oppramsa med kolon slik:
+Her kan du skrive nykelinformasjon om hendinga. Oppføringane du skriv vil verte vist oppramsa med kolon som vist nedanfor. Oppføringar med lik rekkjefølgje vert sortert alfabetisk.
 
 ---
 
