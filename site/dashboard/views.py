@@ -35,7 +35,11 @@ class Dashboard(LoginRequiredMixin, TemplateView):
 
     def get_random_quotes(self):
         """Returns 2 random quotes."""
-        return random_sample_queryset(Quote.objects.all(), 2)
+        quotes = Quote.objects.filter(
+            timestamp__lte=make_aware(datetime.now() - timedelta(days=1 * 365)),
+            timestamp__gte=make_aware(datetime.now() - timedelta(days=5 * 365)),
+        )
+        return random_sample_queryset(quotes, 2)
 
     def get_events(self):
         """Returns all upcoming events the next month, or up to 5 later events."""
