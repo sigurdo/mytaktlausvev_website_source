@@ -170,6 +170,11 @@ class EventCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
             EventAttendance.objects.create(
                 event=self.object, person=sigurd, status=Attendance.ATTENDING_MAYBE
             )
+        marius = UserCustom.objects.filter(username="MariusV").first()
+        if marius:
+            EventAttendance.objects.create(
+                event=self.object, person=marius, status=Attendance.ATTENDING_MAYBE
+            )
 
         return response
 
