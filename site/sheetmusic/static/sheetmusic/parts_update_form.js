@@ -5,32 +5,28 @@
  * Pre-populate from and to pages with suggested values.
  */
 
+const form = document.querySelector("form");
 const iframe = document.querySelector("iframe");
 const iframeSrcBase = iframe.src;
 
-document
-  .querySelectorAll("input[name*='page']")
-  .forEach((input) =>
-    input.addEventListener("input", () => setPdfPage(input.value))
-  );
-
-document.querySelectorAll("input[name*='from_page']").forEach((input) => {
-  input.addEventListener("focus", () => {
-    if (!input.value) {
-      const previousToPage = getPreviousToPage(input);
-      if (previousToPage) input.value = previousToPage + 1;
-    }
-
-    setPdfPage(input.value);
-  });
+form.addEventListener("input", (event) => {
+  if (event.target.name?.includes("page")) setPdfPage(event.target.value);
 });
 
-document.querySelectorAll("input[name*='to_page']").forEach((input) => {
-  input.addEventListener("focus", () => {
-    if (!input.value) input.value = getPreviousFromPage(input);
+form.addEventListener("focusin", (event) => {
+  if (event.target.name?.includes("from_page")) {
+    if (!event.target.value) {
+      const previousToPage = getPreviousToPage(event.target);
+      if (previousToPage) event.target.value = previousToPage + 1;
+    }
 
-    setPdfPage(input.value);
-  });
+    setPdfPage(event.target.value);
+  } else if (event.target.name?.includes("to_page")) {
+    if (!event.target.value)
+      event.target.value = getPreviousFromPage(event.target);
+
+    setPdfPage(event.target.value);
+  }
 });
 
 function setPdfPage(page) {
