@@ -4,18 +4,12 @@ from django.test import TestCase
 
 from articles.factories import ArticleFactory
 from articles.models import Article
-from common.comments.factories import CommentFactory
-from common.comments.models import Comment
-from common.markdown.templatetags.markdown import clean
 from sheetmusic.factories import PdfFactory
 
+from .comments.factories import CommentFactory
+from .comments.models import Comment
 from .mixins import TestMixin
-from .templatetags.utils import (
-    contained_in,
-    filename,
-    truncate_html_to_number_of_words,
-    verbose_name,
-)
+from .templatetags.utils import contained_in, filename, verbose_name
 
 
 class TemplateUtilsTestSuite(TestMixin, TestCase):
@@ -45,31 +39,3 @@ class TemplateUtilsTestSuite(TestMixin, TestCase):
         self.assertFalse(contained_in([4], [1, 2, 3]))
         self.assertFalse(contained_in([1, 2, 3, 4], [1, 2, 3]))
         self.assertFalse(contained_in(["1"], [1, 2, 3]))
-
-    def test_truncate_html_to_number_of_words(self):
-        """
-        Should truncate `html` with truncation point between the words "cut" and
-        "off" inside the link.
-        """
-        html = """
-<p> Paragraph. </p>
-Text in between.
-<ul>
-    <li>
-        <a href="/a/link/"> A link that is cut off. </a>
-    </li>
-</ul>
-Some more text here that is removed.
-"""
-        truncated = truncate_html_to_number_of_words(html, 9)
-        self.assertEqual(
-            truncated,
-            clean(
-                """
-<p> Paragraph. </p>
-Text in between.
-<ul>
-<li>
-<a href="/a/link/"> A link that is cut…</a></li></ul>"""
-            ),
-        )

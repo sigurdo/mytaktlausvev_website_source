@@ -8,7 +8,7 @@
 
         {% include "events/includes/keyinfo_section.html" with event=event only %}
 
-        {% load markdown utils %}
+        {% load markdown %}
         {% if event.keyinfo_entries.count == 0 %}
             {{ event.content|markdown|truncate_html_to_number_of_words:32 }}
         {% else %}

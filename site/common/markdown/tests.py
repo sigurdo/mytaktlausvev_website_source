@@ -6,6 +6,7 @@ from markdown import Markdown
 
 from .extensions import KWordCensorExtension
 from .filters import ClassApplyFilter
+from .templatetags.markdown import clean, truncate_html_to_number_of_words
 
 
 class KWordCensorTestSuite(TestCase):
@@ -49,3 +50,33 @@ class ClassApplyTestSuite(TestCase):
         """Should do nothing if no class has been specified for the tag."""
         cleaned = self.cleaner.clean("<span>Test!</span>")
         self.assertEqual(cleaned, "<span>Test!</span>")
+
+
+class TruncateHtmlToNumberOfWordsTestSuite(TestCase):
+    def test_truncate_html_to_number_of_words(self):
+        """
+        Should truncate `html` with truncation point between the words "cut" and
+        "off" inside the link.
+        """
+        html = """
+<p> Paragraph. </p>
+Text in between.
+<ul>
+    <li>
+        <a href="/a/link/"> A link that is cut off. </a>
+    </li>
+</ul>
+Some more text here that is removed.
+"""
+        truncated = truncate_html_to_number_of_words(html, 9)
+        self.assertEqual(
+            truncated,
+            clean(
+                """
+<p> Paragraph. </p>
+Text in between.
+<ul>
+<li>
+<a href="/a/link/"> A link that is cut…</a></li></ul>"""
+            ),
+        )
