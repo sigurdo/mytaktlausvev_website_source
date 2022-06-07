@@ -218,29 +218,35 @@ class PartTestSuite(TestMixin, TestCase):
         3. Klarinett 2
         4. Klarinett 2 (i Eb)
         """
-        part_none = PartFactory(
-            instrument_type=self.instrument_type, part_number=None, pdf=self.pdf
+        self.part.delete()
+        self.assertModelOrdering(
+            Part,
+            PartFactory,
+            [
+                {
+                    "instrument_type": self.instrument_type,
+                    "part_number": None,
+                    "pdf": self.pdf,
+                },
+                {
+                    "instrument_type": self.instrument_type,
+                    "part_number": 1,
+                    "note": "i Eb",
+                    "pdf": self.pdf,
+                },
+                {
+                    "instrument_type": self.instrument_type,
+                    "part_number": 2,
+                    "pdf": self.pdf,
+                },
+                {
+                    "instrument_type": self.instrument_type,
+                    "part_number": 2,
+                    "note": "i Eb",
+                    "pdf": self.pdf,
+                },
+            ],
         )
-        part_1 = self.part
-        part_2 = PartFactory(
-            instrument_type=self.instrument_type, part_number=2, pdf=self.pdf
-        )
-        part_2_with_note = PartFactory(
-            instrument_type=self.instrument_type,
-            part_number=2,
-            note="i Eb",
-            pdf=self.pdf,
-        )
-        self.pdf.refresh_from_db()
-        iterator = iter(self.pdf.parts.all())
-        part = next(iterator)
-        self.assertEqual(part, part_none)
-        part = next(iterator)
-        self.assertEqual(part, part_1)
-        part = next(iterator)
-        self.assertEqual(part, part_2)
-        part = next(iterator)
-        self.assertEqual(part, part_2_with_note)
 
     def test_get_absolute_url(self):
         self.assertEqual(

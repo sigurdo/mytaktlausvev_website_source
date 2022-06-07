@@ -36,7 +36,7 @@ class EventForm(ModelForm):
             HTML(
                 """
                 {% load embeddable_text markdown %}
-                {% get_embeddable_text "Hjelpetekst nykelinfo-seksjon for hendingar" as text %}
+                {% get_embeddable_text "Nykelinfo-hjelpetekst for hendingar" as text %}
                 {{ text | markdown }}
                 """
             ),

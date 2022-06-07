@@ -28,11 +28,11 @@ function renumberForm(form, newIndex) {
   });
 }
 
-window.onload = () => {
+window.addEventListener("load", () => {
   resetTotalForms();
   
   const formsetAddButton = document.querySelector("[data-formset-add-form]");
   if (formsetAddButton) {
     formsetAddButton.addEventListener("click", addForm);
   }
-};
+});

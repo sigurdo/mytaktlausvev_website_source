@@ -771,7 +771,7 @@ class Command(BaseCommand):
             content=f'Ta ein kikk [her]({reverse("articles:ArticleDetail", args=[article_calendar_feed_help.slug])}) for hjelp med å leggje inn lenkja i kalenderen din.',
         )
         EmbeddableTextFactory(
-            name="Hjelpetekst nykelinfo-seksjon for hendingar",
+            name="Nykelinfo-hjelpetekst for hendingar",
             content="""
 Her kan du skrive nykelinformasjon om hendinga. Oppføringane du skriv vil verte vist oppramsa med kolon som vist nedanfor. Oppføringar med lik rekkjefølgje vert sortert alfabetisk.
 

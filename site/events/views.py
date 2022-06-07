@@ -161,7 +161,7 @@ class EventCreate(LoginRequiredMixin, BreadcrumbsMixin, InlineFormsetCreateView)
         return get_event_or_404(self.kwargs.get("year"), self.kwargs.get("slug"))
 
     def get_context_data(self, **kwargs):
-        # Tell `common/form.html` not to render the formset, since this is done by the form
+        # Formset is rendered inside the form
         kwargs["render_formset"] = False
         return super().get_context_data(**kwargs)
 

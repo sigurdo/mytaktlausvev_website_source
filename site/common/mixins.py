@@ -1,7 +1,6 @@
 import shutil
 import tempfile
 from http import HTTPStatus
-from random import shuffle
 
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.test import TestCase, override_settings
@@ -51,38 +50,31 @@ class TestMixin(TestCase):
         Asserts that `model` instances generated with `factory` and `factory_kwargs` are ordered
         in the same order `factory_kwargs` are provided. `factory_kwargs` is an iterable of
         dictionaries with kwargs for `factory`. Requires that the length of `factory_kwargs` is
-        minimum 2, unless there is no way in which the test can fail.
+        minimum 2, if not, it's impossible for the test to fail.
 
-        Uses shuffling and enumerations to ensure that the ordering of the factory
-        calls is not what produces the correct ordering in the end.
-
-        If `number_of_tests` is not given it will produce the following tests based on the
-        number of specified instances:
-
-        - 2: 9
-        - 3: 5
-        - 4: 3
-        - 5: 2
-        - any higher: 1
-
-        This gives certainity that it was not correct by luck also for low numbers of instances.
+        Ensures that the ordering is always be as specified, it does the process of generating
+        instances and checking order twice, once with instances created in the provided order,
+        and once with instances created in the opposite order.
         """
+        factory_kwargs = list(factory_kwargs)
         factory_kwargs_enumerated = list(enumerate(factory_kwargs))
         if len(factory_kwargs_enumerated) < 2:
             raise Exception(
                 f"Must have minimum 2 instances to verify ordering, but got only {len(factory_kwargs)}"
             )
-        if number_of_tests is None:
-            number_of_tests = 8 // 2 ** (len(factory_kwargs_enumerated) - 2) + 1
-        for i in range(number_of_tests):
-            shuffle(factory_kwargs_enumerated)
-            model.objects.all().delete()
-            entries_enumerated = [
-                (i, factory(**kwargs)) for i, kwargs in factory_kwargs_enumerated
-            ]
-            entries_enumerated.sort(key=lambda element: element[0])
-            for i, entry in enumerate(model.objects.all()):
-                self.assertEqual(entry, entries_enumerated[i][1])
+
+        # Create and verify entries in provided order
+        entries = [factory(**kwargs) for kwargs in factory_kwargs]
+        for i, entry in enumerate(model.objects.all()):
+            self.assertEqual(entry, entries[i])
+
+        model.objects.all().delete()
+
+        # Create and verify entries in opposite order
+        entries = [factory(**kwargs) for kwargs in reversed(factory_kwargs)]
+        entries = list(reversed(entries))
+        for i, entry in enumerate(model.objects.all()):
+            self.assertEqual(entry, entries[i])
 
 
 class PermissionOrCreatedMixin(PermissionRequiredMixin):
