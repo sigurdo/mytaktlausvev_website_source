@@ -24,7 +24,7 @@ class FormsetLayoutObject(LayoutObject):
     it works, and it enables you to define and manage the formset in a completely separate class, which is
     a lot more natively supported in django.
 
-    Tip: If you use `common/form.html` you can set `render_formset=False` in the context to not render the formset
+    Tip: If you use `common/forms/form.html` you can set `render_formset=False` in the context to not render the formset
     below the form as well.
     """
 
