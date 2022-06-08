@@ -28,12 +28,23 @@ class FormsetLayoutObject(LayoutObject):
     below the form as well.
     """
 
-    def __init__(self, formset_name_in_context="formset"):
+    def __init__(self, formset_name_in_context="formset", helper=None):
         self.formset_name_in_context = formset_name_in_context
+        self.helper = helper
 
     def render(self, form, form_style, context, template_pack=TEMPLATE_PACK):
         formset = context[self.formset_name_in_context]
+
+        # `self.helper` should have priority over `formset.helper`
+        helper = self.helper
+        if helper is None and hasattr(formset, "helper"):
+            helper = formset.helper
+
+        # A rendered `LayoutObject` should not contain form tags
+        helper.form_tag = False
+
         return render_crispy_form(
             formset,
+            helper=helper,
             context={"wrapper": self, "formset": formset, "form_show_errors": True},
         )
