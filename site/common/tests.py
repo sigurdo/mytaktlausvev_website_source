@@ -4,10 +4,10 @@ from django.test import TestCase
 
 from articles.factories import ArticleFactory
 from articles.models import Article
-from common.comments.factories import CommentFactory
-from common.comments.models import Comment
 from sheetmusic.factories import PdfFactory
 
+from .comments.factories import CommentFactory
+from .comments.models import Comment
 from .mixins import TestMixin
 from .templatetags.utils import contained_in, filename, verbose_name
 

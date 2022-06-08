@@ -5,21 +5,15 @@
                 {{ event }}
             </a>
         </h3>
-        <p>
-            <time datetime="{{ event.start_time | date:"c" }}">
-                {{ event.start_time | date:"d.m.Y - H:i" }}
-            </time>
-            {% if event.end_time %}
-                til
-                <time datetime="{{ event.end_time | date:"c" }}">
-                    {{ event.end_time | date:"d.m.Y - H:i" }}
-                </time>
-            {% endif %}
-        </p>
-        <p>
-            {% load markdown %}
-            {{ event.content|truncatechars:400|markdown }}
-        </p>
+
+        {% include "events/includes/keyinfo_section.html" with event=event only %}
+
+        {% load markdown %}
+        {% if event.keyinfo_entries.count == 0 %}
+            {{ event.content|markdown|truncate_html_to_number_of_words:32 }}
+        {% else %}
+            {{ event.content|markdown|truncate_html_to_number_of_words:12 }}
+        {% endif %}
 
         {% load get_event_attendance %}
         {% get_event_attendance user event as attendance %}

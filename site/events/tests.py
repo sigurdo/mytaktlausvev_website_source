@@ -12,17 +12,19 @@ from django.utils.timezone import localtime, make_aware, now
 from accounts.factories import SuperUserFactory, UserFactory
 from common.breadcrumbs.breadcrumbs import Breadcrumb
 from common.mixins import TestMixin
-from events.models import Attendance, Event, EventAttendance
+from common.test_utils import create_formset_post_data
+from events.models import Attendance, Event, EventAttendance, EventKeyinfoEntry
 from events.views import (
     event_breadcrumbs,
     get_event_attendance_or_404,
     get_event_or_404,
 )
 
-from .factories import EventAttendanceFactory, EventFactory
+from .factories import EventAttendanceFactory, EventFactory, EventKeyinfoEntryFactory
+from .forms import EventKeyinfoEntryFormset
 
 
-class EventManagerTestCase(TestCase):
+class EventManagerTestSuite(TestCase):
     def test_upcoming_no_end_time_old(self):
         EventFactory(start_time=make_aware(datetime.now() - timedelta(2)))
         upcoming = list(Event.objects.upcoming())
@@ -63,7 +65,7 @@ class EventManagerTestCase(TestCase):
         self.assertEqual(len(upcoming), 1)
 
 
-class EventTestCase(TestCase):
+class EventTestSuite(TestCase):
     def setUp(self):
         self.event = EventFactory()
 
@@ -116,7 +118,7 @@ class EventTestCase(TestCase):
         self.assertAlmostEqual(self.event.start_time, now(), delta=timedelta(seconds=1))
 
 
-class EventAttendanceTestCase(TestCase):
+class EventAttendanceTestSuite(TestCase):
     def setUp(self):
         self.attendance = EventAttendanceFactory()
 
@@ -142,7 +144,45 @@ class EventAttendanceTestCase(TestCase):
         self.assertIn(self.attendance.get_status_display(), str(self.attendance))
 
 
-class GetterTestCase(TestCase):
+class EventKeyinfoEntryTestSuite(TestMixin, TestCase):
+    def test_to_str(self):
+        """str() should return "`event.title` - `key`"."""
+        keyinfo = EventKeyinfoEntryFactory(event__title="SMASH", key="Price")
+        self.assertEqual(str(keyinfo), "SMASH - Price")
+
+    def test_delete_event_deletes_keyinfo(self):
+        """Deleting event should delete related keyinfo entries."""
+        keyinfo = EventKeyinfoEntryFactory()
+        self.assertEqual(EventKeyinfoEntry.objects.count(), 1)
+        keyinfo.event.delete()
+        self.assertEqual(EventKeyinfoEntry.objects.count(), 0)
+
+    def test_key_unique_for_same_event(self):
+        """Different keyinfo entries cannot have same key for same event."""
+        keyinfo = EventKeyinfoEntryFactory()
+        with self.assertRaises(IntegrityError):
+            EventKeyinfoEntryFactory(event=keyinfo.event, key=keyinfo.key)
+
+    def test_same_key_for_other_event(self):
+        """Different keyinfo entries can have same key for different events."""
+        keyinfo = EventKeyinfoEntryFactory()
+        EventKeyinfoEntryFactory(key=keyinfo.key)
+
+    def test_ordering(self):
+        """`EventKeyinfoEntry`s should be ordered first by order and then by key."""
+        self.assertModelOrdering(
+            EventKeyinfoEntry,
+            EventKeyinfoEntryFactory,
+            [
+                {"order": 0, "key": "b"},
+                {"order": 0, "key": "c"},
+                {"order": 1, "key": "a"},
+                {"order": 4.5, "key": "4.5"},
+            ],
+        )
+
+
+class GetterTestSuite(TestCase):
     def setUp(self):
         self.event = EventFactory()
         self.attendance = EventAttendanceFactory()
@@ -360,7 +400,7 @@ class EventListTestSuite(TestMixin, TestCase):
         self.assertEquals(len(self.client.get(self.get_url(2023)).context["events"]), 3)
 
 
-class EventDetailTestCase(TestMixin, TestCase):
+class EventDetailTestSuite(TestMixin, TestCase):
     def test_requires_login(self):
         """Should require login."""
         event = EventFactory()
@@ -369,22 +409,34 @@ class EventDetailTestCase(TestMixin, TestCase):
         )
 
 
-class EventCreateTestCase(TestMixin, TestCase):
+class EventCreateTestSuite(TestMixin, TestCase):
+    def get_url(self):
+        return reverse("events:EventCreate")
+
+    def create_formset_post_data(self, data=[], total_forms=0, initial_forms=0):
+        return create_formset_post_data(
+            EventKeyinfoEntryFormset,
+            data=data,
+            total_forms=total_forms,
+            initial_forms=initial_forms,
+        )
+
     def test_requires_login(self):
         """Should require login."""
-        self.assertLoginRequired(reverse("events:EventCreate"))
+        self.assertLoginRequired(self.get_url())
 
     def test_created_by_modified_by_set_to_current_user(self):
         """Should set `created_by` and `modified_by` to the current user on creation."""
         user = SuperUserFactory()
         self.client.force_login(user)
         self.client.post(
-            reverse("events:EventCreate"),
+            self.get_url(),
             {
                 "title": "A Title",
                 "start_time_0": "2021-11-25",
                 "start_time_1": "16:30",
                 "content": "Event text",
+                **self.create_formset_post_data(),
             },
         )
 
@@ -393,8 +445,34 @@ class EventCreateTestCase(TestMixin, TestCase):
         self.assertEqual(event.created_by, user)
         self.assertEqual(event.modified_by, user)
 
+    def test_keyinfo(self):
+        """Should be able to create keyinfo correctly."""
+        user = SuperUserFactory()
+        self.client.force_login(user)
+        self.client.post(
+            self.get_url(),
+            {
+                "title": "A Title",
+                "start_time_0": "2021-11-25",
+                "start_time_1": "16:30",
+                "content": "Event text",
+                **self.create_formset_post_data(
+                    data=[
+                        {"key": "Price", "info": "100kr", "order": 3},
+                    ],
+                    total_forms=1,
+                    initial_forms=0,
+                ),
+            },
+        )
+        self.assertEqual(EventKeyinfoEntry.objects.count(), 1)
+        keyinfo = EventKeyinfoEntry.objects.last()
+        self.assertEqual(keyinfo.key, "Price")
+        self.assertEqual(keyinfo.info, "100kr")
+        self.assertEqual(keyinfo.order, 3)
 
-class EventUpdateTestCase(TestMixin, TestCase):
+
+class EventUpdateTestSuite(TestMixin, TestCase):
     def setUp(self):
         self.event = EventFactory()
         self.event_data = {
@@ -402,7 +480,16 @@ class EventUpdateTestCase(TestMixin, TestCase):
             "start_time_0": "2021-11-25",
             "start_time_1": "16:30",
             "content": "Event text",
+            **self.create_formset_post_data(),
         }
+
+    def create_formset_post_data(self, data=[], total_forms=0, initial_forms=0):
+        return create_formset_post_data(
+            EventKeyinfoEntryFormset,
+            data=data,
+            total_forms=total_forms,
+            initial_forms=initial_forms,
+        )
 
     def get_url(self):
         """Returns the URL for the event update view for `event`."""
@@ -448,8 +535,34 @@ class EventUpdateTestCase(TestMixin, TestCase):
         self.event.refresh_from_db()
         self.assertEqual(self.event.modified_by, user)
 
+    def test_keyinfo(self):
+        """Should be able to create keyinfo correctly."""
+        user = SuperUserFactory()
+        self.client.force_login(user)
+        self.client.post(
+            self.get_url(),
+            {
+                "title": "A Title",
+                "start_time_0": "2021-11-25",
+                "start_time_1": "16:30",
+                "content": "Event text",
+                **self.create_formset_post_data(
+                    data=[
+                        {"key": "Price", "info": "100kr", "order": 3},
+                    ],
+                    total_forms=1,
+                    initial_forms=0,
+                ),
+            },
+        )
+        self.assertEqual(EventKeyinfoEntry.objects.count(), 1)
+        keyinfo = EventKeyinfoEntry.objects.last()
+        self.assertEqual(keyinfo.key, "Price")
+        self.assertEqual(keyinfo.info, "100kr")
+        self.assertEqual(keyinfo.order, 3)
 
-class EventDeleteTestCase(TestMixin, TestCase):
+
+class EventDeleteTestSuite(TestMixin, TestCase):
     def setUp(self):
         self.event = EventFactory()
 
@@ -485,7 +598,7 @@ class EventDeleteTestCase(TestMixin, TestCase):
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
 
-class EventAttendanceListTestCase(TestMixin, TestCase):
+class EventAttendanceListTestSuite(TestMixin, TestCase):
     def get_url(self, event):
         """Returns the URL for the event attendance list view for `event`."""
         return reverse(
@@ -506,7 +619,7 @@ class EventAttendanceListTestCase(TestMixin, TestCase):
         )
 
 
-class EventAttendanceCreateTestCase(TestMixin, TestCase):
+class EventAttendanceCreateTestSuite(TestMixin, TestCase):
     def get_url(self, event):
         """Returns the URL for the event attendance create view for `event`."""
         return reverse(
@@ -553,7 +666,7 @@ class EventAttendanceCreateTestCase(TestMixin, TestCase):
         self.assertRedirects(response, self.event.get_absolute_url())
 
 
-class EventAttendanceUpdateTestCase(TestMixin, TestCase):
+class EventAttendanceUpdateTestSuite(TestMixin, TestCase):
     def get_url(self, attendance):
         """Returns the URL for the event attendance update view for `attendance`."""
         return reverse(
@@ -589,7 +702,7 @@ class EventAttendanceUpdateTestCase(TestMixin, TestCase):
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
 
-class EventAttendanceDeleteTestCase(TestMixin, TestCase):
+class EventAttendanceDeleteTestSuite(TestMixin, TestCase):
     def get_url(self, attendance):
         """Returns the URL for the event attendance delete view for `attendance`."""
         return reverse(

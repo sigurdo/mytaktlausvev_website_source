@@ -6,6 +6,7 @@ from django.db.models import (
     CASCADE,
     CharField,
     DateTimeField,
+    FloatField,
     ForeignKey,
     Manager,
     Model,
@@ -107,4 +108,33 @@ class EventAttendance(Model):
         ordering = ["person__date_joined"]
         constraints = [
             UniqueConstraint(fields=["event", "person"], name="unique_event_attendance")
+        ]
+
+
+class EventKeyinfoEntry(Model):
+    """Model representing a keyinfo entry for an event."""
+
+    key = CharField("nykel", max_length=255)
+    info = CharField("info", max_length=1023, blank=True)
+    order = FloatField(
+        "rekkjefølgje",
+        default=0,
+        help_text="Definerer rekkjefølgja til oppføringar. Oppføringar med lik rekkjefølgje vert sortert etter nykel.",
+    )
+    event = ForeignKey(
+        Event,
+        on_delete=CASCADE,
+        verbose_name="hending",
+        related_name="keyinfo_entries",
+    )
+
+    def __str__(self):
+        return f"{self.event} - {self.key}"
+
+    class Meta:
+        verbose_name = "Nykelinfo-oppføring for hending"
+        verbose_name_plural = "Nykelinfo-oppføringar for hending"
+        ordering = ["order", "key"]
+        constraints = [
+            UniqueConstraint(fields=["key", "event"], name="unique_EventKeyinfoEntry"),
         ]

@@ -14,7 +14,11 @@ from common.comments.factories import CommentFactory
 from common.embeddable_text.factories import EmbeddableTextFactory
 from common.test_utils import test_pdf_multipage
 from contact.factories import ContactCategoryFactory
-from events.factories import EventAttendanceFactory, EventFactory
+from events.factories import (
+    EventAttendanceFactory,
+    EventFactory,
+    EventKeyinfoEntryFactory,
+)
 from events.models import Attendance
 from forum.factories import ForumFactory, TopicFactory
 from instruments.factories import (
@@ -174,12 +178,27 @@ class Command(BaseCommand):
             modified_by=leader,
             start_time=make_aware(first_wednesday),
         )
-        EventFactory(
+        board_game_night = EventFactory(
             title="Brettspelkveld",
             content="Brettspelkveld i KJL4.",
             created_by=leader,
             modified_by=leader,
             start_time=make_aware(first_wednesday + timedelta(days=1)),
+        )
+        EventKeyinfoEntryFactory(
+            event=board_game_night,
+            key="Mat",
+            info="Pizza",
+        )
+        EventKeyinfoEntryFactory(
+            event=board_game_night,
+            key="FFETT",
+            info="Nei",
+        )
+        EventKeyinfoEntryFactory(
+            event=board_game_night,
+            key="Ta med",
+            info="Brettspel",
         )
         month = datetime.now().month
         year = datetime.now().year
@@ -751,4 +770,17 @@ class Command(BaseCommand):
         EmbeddableTextFactory(
             name="Hjelpetekst kalenderapp-integrasjonsknapp",
             content=f"[Ta ein kikk her for hjelp med å leggje inn lenkja i kalenderen din.]({article_calendar_feed_help.get_absolute_url()})",
+        )
+        EmbeddableTextFactory(
+            name="Nykelinfo-hjelpetekst for hendingar",
+            content="""
+Her kan du skrive nykelinformasjon om hendinga. Oppføringane du skriv vil verte vist oppramsa med kolon som vist nedanfor. Oppføringar med lik rekkjefølgje vert sortert alfabetisk.
+
+---
+
+**Nykel:** Info
+**Anna nykel:** Anna info
+
+---
+""",
         )
