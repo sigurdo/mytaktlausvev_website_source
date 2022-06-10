@@ -11,7 +11,7 @@ from minutes.factories import MinutesFactory
 from minutes.models import Minutes
 
 
-class MinutesTestSuite(TestCase):
+class MinutesTestSuite(TestMixin, TestCase):
     def setUp(self):
         self.minutes = MinutesFactory()
 
@@ -49,6 +49,18 @@ class MinutesTestSuite(TestCase):
     def test_date_defaults_to_today(self):
         """`date` should default to the current date."""
         self.assertEqual(self.minutes.date, date.today())
+
+    def test_ordering(self):
+        """Should be ordered by `date`, descending."""
+        self.assertModelOrdering(
+            Minutes,
+            MinutesFactory,
+            [
+                {"date": date(2022, 5, 3), "title": "Newest"},
+                {"date": date(2022, 5, 2), "title": "Middle"},
+                {"date": date(2019, 6, 22), "title": "Oldest"},
+            ],
+        )
 
 
 class MinutesListTestSuite(TestMixin, TestCase):
