@@ -43,13 +43,7 @@ class GalleryList(LoginRequiredMixin, ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        return (
-            super()
-            .get_queryset()
-            .exclude(images__isnull=True)
-            .alias(latest_upload=Max("images__uploaded"))
-            .order_by("-latest_upload")
-        )
+        return super().get_queryset().exclude(images__isnull=True).order_by("-date")
 
 
 class GalleryDetail(LoginRequiredMixin, BreadcrumbsMixin, ListView):
