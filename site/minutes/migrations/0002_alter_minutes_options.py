@@ -6,12 +6,16 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('minutes', '0001_initial'),
+        ("minutes", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='minutes',
-            options={'ordering': ['-date'], 'verbose_name': 'referat', 'verbose_name_plural': 'referat'},
+            name="minutes",
+            options={
+                "ordering": ["-date"],
+                "verbose_name": "referat",
+                "verbose_name_plural": "referat",
+            },
         ),
     ]
