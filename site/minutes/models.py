@@ -18,6 +18,6 @@ class Minutes(ArticleMixin):
         return reverse("minutes:MinutesDetail", args=[self.slug])
 
     class Meta:
-        ordering = ["-created"]
+        ordering = ["-date"]
         verbose_name = "referat"
         verbose_name_plural = "referat"

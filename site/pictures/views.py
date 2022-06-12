@@ -1,6 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
-from django.db.models import Max
 from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, ListView
@@ -43,13 +42,7 @@ class GalleryList(LoginRequiredMixin, ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        return (
-            super()
-            .get_queryset()
-            .exclude(images__isnull=True)
-            .alias(latest_upload=Max("images__uploaded"))
-            .order_by("-latest_upload")
-        )
+        return super().get_queryset().exclude(images__isnull=True).order_by("-date")
 
 
 class GalleryDetail(LoginRequiredMixin, BreadcrumbsMixin, ListView):

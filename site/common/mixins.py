@@ -63,6 +63,8 @@ class TestMixin(TestCase):
                 f"Must have minimum 2 instances to verify ordering, but got only {len(factory_kwargs)}"
             )
 
+        model.objects.all().delete()
+
         # Create and verify entries in provided order
         entries = [factory(**kwargs) for kwargs in factory_kwargs]
         for i, entry in enumerate(model.objects.all()):
