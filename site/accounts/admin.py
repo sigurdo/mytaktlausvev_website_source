@@ -30,7 +30,7 @@ class UserAdminCustom(UserAdmin):
             {"fields": ("membership_status", "membership_period", "instrument_type")},
         ),
         (
-            "Kalenderapp-integrasjon",
+            "Kalenderintegrasjon",
             {"fields": ("calendar_feed_start_date",)},
         ),
         (
