@@ -250,7 +250,9 @@ class EventAttendanceList(PermissionRequiredMixin, BreadcrumbsMixin, ListView):
         return context
 
 
-class EventAttendanceCreate(LoginRequiredMixin, CreateView):
+class EventAttendanceCreate(
+    LoginRequiredMixin, SuccessMessageMixin, BreadcrumbsMixin, CreateView
+):
     """View for registering event attendance."""
 
     model = EventAttendance
@@ -261,10 +263,16 @@ class EventAttendanceCreate(LoginRequiredMixin, CreateView):
     def get_event(self):
         return get_event_or_404(self.kwargs.get("year"), self.kwargs.get("slug"))
 
+    def get_breadcrumbs(self):
+        return event_breadcrumbs(event=self.get_event())
+
     def form_valid(self, form):
         form.instance.person = self.request.user
         form.instance.event = self.get_event()
         return super().form_valid(form)
+
+    def get_success_message(self, _) -> str:
+        return f'"{self.object.get_status_display()}" registrert som svar på {self.object.event}.'
 
     def get_success_url(self):
         return self.object.event.get_absolute_url()
@@ -277,7 +285,9 @@ class EventAttendanceCreateFromList(EventAttendanceCreate):
         return reverse("events:EventList")
 
 
-class EventAttendanceUpdate(PermissionOrCreatedMixin, BreadcrumbsMixin, UpdateView):
+class EventAttendanceUpdate(
+    PermissionOrCreatedMixin, SuccessMessageMixin, BreadcrumbsMixin, UpdateView
+):
     """View for updating event attendance."""
 
     model = EventAttendance
@@ -301,6 +311,9 @@ class EventAttendanceUpdate(PermissionOrCreatedMixin, BreadcrumbsMixin, UpdateVi
             self.kwargs.get("slug_person"),
         )
         return self.object
+
+    def get_success_message(self, _) -> str:
+        return f'"{self.object.get_status_display()}" registrert som svar på {self.object.event}.'
 
     def get_success_url(self):
         return self.get_object().event.get_absolute_url()
