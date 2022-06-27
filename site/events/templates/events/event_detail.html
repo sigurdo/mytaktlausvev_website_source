@@ -55,10 +55,10 @@
     {% load markdown %}
     {{ event.content | markdown }}
 
-    {% if not is_registered %}
-        {% load crispy_forms_tags %}
-        {% crispy form_attendance %}
-    {% endif %}
+    <hr />
+
+    {% load crispy_forms_tags %}
+    {% crispy form_attendance %}
 
     {% include "events/includes/attendances.html" with title="Deltek" attendances=event.attending %}
     {% include "events/includes/attendances.html" with title="Deltek kanskje" attendances=event.attending_maybe %}

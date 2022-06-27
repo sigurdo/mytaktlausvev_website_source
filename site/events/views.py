@@ -1,6 +1,7 @@
 from datetime import timedelta
 
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models.functions.datetime import TruncMonth
 from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404
@@ -127,19 +128,30 @@ class EventDetail(LoginRequiredMixin, BreadcrumbsMixin, DetailView):
         return get_event_or_404(self.kwargs.get("year"), self.kwargs.get("slug"))
 
     def get_form_attendance(self):
-        form = EventAttendanceForm(initial={"status": Attendance.ATTENDING})
-        form.helper.form_action = reverse(
-            "events:EventAttendanceCreate",
-            args=[localtime(self.object.start_time).year, self.object.slug],
+        attendance = self.object.get_attendance(self.request.user)
+        form = EventAttendanceForm(
+            instance=attendance,
+            initial={"status": Attendance.ATTENDING} if not attendance else None,
         )
+        if not attendance:
+            form.helper.form_action = reverse(
+                "events:EventAttendanceCreate",
+                args=[localtime(self.object.start_time).year, self.object.slug],
+            )
+        else:
+            form.helper.form_action = reverse(
+                "events:EventAttendanceUpdate",
+                args=[
+                    localtime(self.object.start_time).year,
+                    self.object.slug,
+                    self.request.user.slug,
+                ],
+            )
         return form
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["form_attendance"] = self.get_form_attendance()
-        context["is_registered"] = EventAttendance.objects.filter(
-            event=self.object, person=self.request.user
-        ).exists()
         return context
 
 
