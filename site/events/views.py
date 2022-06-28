@@ -1,6 +1,7 @@
 from datetime import timedelta
 
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models.functions.datetime import TruncMonth
 from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404
@@ -127,19 +128,30 @@ class EventDetail(LoginRequiredMixin, BreadcrumbsMixin, DetailView):
         return get_event_or_404(self.kwargs.get("year"), self.kwargs.get("slug"))
 
     def get_form_attendance(self):
-        form = EventAttendanceForm(initial={"status": Attendance.ATTENDING})
-        form.helper.form_action = reverse(
-            "events:EventAttendanceCreate",
-            args=[localtime(self.object.start_time).year, self.object.slug],
+        attendance = self.object.get_attendance(self.request.user)
+        form = EventAttendanceForm(
+            instance=attendance,
+            initial={"status": Attendance.ATTENDING} if not attendance else None,
         )
+        if not attendance:
+            form.helper.form_action = reverse(
+                "events:EventAttendanceCreate",
+                args=[localtime(self.object.start_time).year, self.object.slug],
+            )
+        else:
+            form.helper.form_action = reverse(
+                "events:EventAttendanceUpdate",
+                args=[
+                    localtime(self.object.start_time).year,
+                    self.object.slug,
+                    self.request.user.slug,
+                ],
+            )
         return form
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["form_attendance"] = self.get_form_attendance()
-        context["is_registered"] = EventAttendance.objects.filter(
-            event=self.object, person=self.request.user
-        ).exists()
         return context
 
 
@@ -250,7 +262,7 @@ class EventAttendanceList(PermissionRequiredMixin, BreadcrumbsMixin, ListView):
         return context
 
 
-class EventAttendanceCreate(LoginRequiredMixin, CreateView):
+class EventAttendanceCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     """View for registering event attendance."""
 
     model = EventAttendance
@@ -266,6 +278,9 @@ class EventAttendanceCreate(LoginRequiredMixin, CreateView):
         form.instance.event = self.get_event()
         return super().form_valid(form)
 
+    def get_success_message(self, _) -> str:
+        return f'"{self.object.get_status_display()}" registrert som svar på {self.object.event}.'
+
     def get_success_url(self):
         return self.object.event.get_absolute_url()
 
@@ -277,7 +292,9 @@ class EventAttendanceCreateFromList(EventAttendanceCreate):
         return reverse("events:EventList")
 
 
-class EventAttendanceUpdate(PermissionOrCreatedMixin, BreadcrumbsMixin, UpdateView):
+class EventAttendanceUpdate(
+    PermissionOrCreatedMixin, SuccessMessageMixin, BreadcrumbsMixin, UpdateView
+):
     """View for updating event attendance."""
 
     model = EventAttendance
@@ -301,6 +318,9 @@ class EventAttendanceUpdate(PermissionOrCreatedMixin, BreadcrumbsMixin, UpdateVi
             self.kwargs.get("slug_person"),
         )
         return self.object
+
+    def get_success_message(self, _) -> str:
+        return f'"{self.object.get_status_display()}" registrert som svar på {self.object.event}.'
 
     def get_success_url(self):
         return self.get_object().event.get_absolute_url()
