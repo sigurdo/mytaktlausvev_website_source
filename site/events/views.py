@@ -262,9 +262,7 @@ class EventAttendanceList(PermissionRequiredMixin, BreadcrumbsMixin, ListView):
         return context
 
 
-class EventAttendanceCreate(
-    LoginRequiredMixin, SuccessMessageMixin, BreadcrumbsMixin, CreateView
-):
+class EventAttendanceCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     """View for registering event attendance."""
 
     model = EventAttendance
@@ -274,9 +272,6 @@ class EventAttendanceCreate(
 
     def get_event(self):
         return get_event_or_404(self.kwargs.get("year"), self.kwargs.get("slug"))
-
-    def get_breadcrumbs(self):
-        return event_breadcrumbs(event=self.get_event())
 
     def form_valid(self, form):
         form.instance.person = self.request.user
