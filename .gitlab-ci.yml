@@ -30,6 +30,7 @@ verify-merge-request:
     - git checkout $CI_COMMIT_REF_NAME
     - sh scripts/reset.sh
     - docker-compose run django site/manage.py test site/
+    - docker-compose run django site/manage.py makemigrations --check --dry-run
     - docker-compose run django autoflake --in-place --remove-all-unused-imports -r site/
     - docker-compose run django isort .
     - docker-compose run django black .
@@ -46,6 +47,7 @@ verify-deploy:
   script:
     - sh scripts/reset.sh
     - docker-compose run django site/manage.py test site/
+    - docker-compose run django site/manage.py makemigrations --check --dry-run
     - docker-compose run django isort . -c
     - docker-compose run django black . --check
     - docker-compose run django flake8
