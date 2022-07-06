@@ -45,6 +45,18 @@ class GalleryList(LoginRequiredMixin, ListView):
         return super().get_queryset().exclude(images__isnull=True).order_by("-date")
 
 
+class NewestImagesList(LoginRequiredMixin, BreadcrumbsMixin, ListView):
+    model = Image
+    context_object_name = "images"
+    paginate_by = 50
+
+    def get_queryset(self):
+        return super().get_queryset().order_by("-uploaded")
+
+    def get_breadcrumbs(self) -> list:
+        return breadcrumbs()
+
+
 class GalleryDetail(LoginRequiredMixin, BreadcrumbsMixin, ListView):
     """View for viewing a single gallery."""
 
