@@ -463,11 +463,31 @@ class Command(BaseCommand):
             requires_login=True,
             parent=sheetmusic_dropdown,
         )
-        NavbarItemFactory(
+        photo_dropdown = NavbarItemFactory(
             text="Foto",
-            link=reverse("pictures:GalleryList"),
             order=2.5,
+            type=NavbarItem.Type.DROPDOWN,
+        )
+        NavbarItemFactory(
+            text="Fotoarkiv",
+            link=reverse("pictures:GalleryList"),
+            order=1,
             requires_login=True,
+            parent=photo_dropdown,
+        )
+        NavbarItemFactory(
+            text="Nyaste bilete",
+            link=reverse("pictures:NewestImagesList"),
+            order=2,
+            requires_login=True,
+            parent=photo_dropdown,
+        )
+        NavbarItemFactory(
+            text="Nytt galleri",
+            link=reverse("pictures:GalleryCreate"),
+            order=3,
+            requires_login=True,
+            parent=photo_dropdown,
         )
         admin_dropdown = NavbarItemFactory(
             text="Administrasjon",

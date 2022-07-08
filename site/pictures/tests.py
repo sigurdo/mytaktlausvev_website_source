@@ -149,6 +149,15 @@ class GalleryListTestSuite(TestMixin, TestCase):
         self.assertEqual(response.context["galleries"].first(), image.gallery)
 
 
+class NewestImagesListTestSuite(TestMixin, TestCase):
+    def get_url(self) -> str:
+        return reverse("pictures:NewestImagesList")
+
+    def test_requires_login(self):
+        """Should require login."""
+        self.assertLoginRequired(self.get_url())
+
+
 class GalleryDetailTestSuite(TestMixin, TestCase):
     def setUp(self):
         self.gallery = GalleryFactory()

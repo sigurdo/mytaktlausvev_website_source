@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title_page %}Nyaste bilete{% endblock title_page %}
+{% block title_content %}Nyaste bilete{% endblock title_content %}
+
+{% block content %}
+    {% regroup images by gallery as images_by_gallery %}
+
+    <ul class="list-unstyled">
+        {% for gallery, images in images_by_gallery %}
+        <li class="my-4">
+            {% include "pictures/includes/gallery_list_item.html" with gallery=gallery images=images identifier=forloop.counter only  %}
+        </li>
+        {% endfor %}
+    </ul>
+
+    <footer>
+        {% include "common/includes/pagination.html" with pagination_label="Biletesider" %}
+    </footer>
+{% endblock content %}
+
+{% block js %}
+    <script src="https://cdn.jsdelivr.net/npm/bigpicture@2.6.1/dist/BigPicture.min.js" integrity="sha256-OsbS8Cw/fMpgT6GBFfqhvmX9yJLwzE6+me56KzpSbAs=" crossorigin="anonymous"></script>
+    {% load static %}
+    <script src="{% static "common/js/lightbox.js" %}"></script>
+{% endblock js %}
