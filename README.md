@@ -71,7 +71,7 @@ POSTGRES_USER=taktlaus
 POSTGRES_PASSWORD=taktlaus
 ```
 
-2. `sh scripts/init_production.sh`
+2. `sh scripts/reset_production.sh`
 
 That was all for the first-time setup. You can hereby start and build the production server with `docker-compose -f docker-compose.prod.yaml up --build --force-recreate`. If you add migrations or change other dependencies of the commands in [`scripts/reset_production.sh`](scripts/reset_production.sh), you have to rerun the script.
 
