@@ -1,5 +1,6 @@
 from json import dumps
 
+from django.contrib.sites.models import Site
 from django.core.management.base import BaseCommand
 
 from sheetmusic.models import InstrumentType, Part, Pdf, Score
@@ -12,7 +13,7 @@ class Command(BaseCommand):
                 "title": score.title,
                 "pdfs": [
                     {
-                        "url": f"https://taktlaus.no/{pdf.file.url}",
+                        "url": f"https://{Site.objects.get_current().domain}{pdf.file.url}",
                         "parts": [
                             {
                                 "instrument_type_pk": part.instrument_type.pk,
