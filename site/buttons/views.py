@@ -11,6 +11,7 @@ from .forms import ButtonsForm
 class ButtonsView(FormView):
     form_class = ButtonsForm
     template_name = "buttons/buttons_view.html"
+    EXTRA_CUTTING_DIAMETER = 10
 
     def form_valid(self, form):
         images = self.request.FILES.getlist("images")
@@ -20,7 +21,9 @@ class ButtonsView(FormView):
             )
         images = [PIL.Image.open(image) for image in images]
         num_of_each = form.cleaned_data["num_of_each"]
-        button_diameter_mm = form.cleaned_data["button_diameter_mm"]
+        button_diameter_mm = (
+            form.cleaned_data["button_diameter_mm"] + self.EXTRA_CUTTING_DIAMETER
+        )
 
         # Perform PDF generation in a multiprocessing pool to retain responsiveness for other
         # requests in the meantime.
