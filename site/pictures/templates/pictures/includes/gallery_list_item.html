@@ -1,6 +1,14 @@
-<h2>
-    <a href="{{ gallery.get_absolute_url }}">{{ gallery.title }}</a>
-</h2>
+<header>
+    <h2>
+        <a href="{{ gallery.get_absolute_url }}">{{ gallery.title }}</a>
+    </h2>
+
+    <strong>Dato:</strong>
+    <time datetime="{{ gallery.date | date:"c" }}">{{ gallery.date }}</time>
+    {% if gallery.date_to %}
+    - <time datetime="{{ gallery.date_to | date:"c" }}">{{ gallery.date_to }}</time>
+    {% endif %}
+</header>
 
 {% firstof identifier gallery.slug as identifier %}
 <ul class="list-unstyled d-flex flex-wrap">
