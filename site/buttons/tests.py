@@ -132,3 +132,84 @@ class ButtonDesignCreateTestSuite(TestMixin, TestCase):
             {"name": "Nidaros-SMASH 2023", "image": test_image()},
         )
         self.assertRedirects(response, reverse("buttons:ButtonsView"))
+
+
+class ButtonDesignUpdateTestSuite(TestMixin, TestCase):
+    def setUp(self):
+        self.button_design = ButtonDesignFactory()
+        self.button_design_data = {"name": "Nidaros-SMASH 2023", "image": test_image()}
+
+    def get_url(self):
+        return reverse("buttons:ButtonDesignUpdate", args=[self.button_design.slug])
+
+    def test_requires_login(self):
+        """Should require login."""
+        self.assertLoginRequired(self.get_url())
+
+    def test_requires_permission(self):
+        """Should require permission to change button designs."""
+        self.assertPermissionRequired(
+            self.get_url(),
+            "buttons.change_buttondesign",
+        )
+
+    def test_succeeds_if_not_permission_but_is_author(self):
+        """
+        Should succeed if the user is the author,
+        even if the user doesn't have permission to change button designs.
+        """
+        self.client.force_login(self.button_design.created_by)
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+    def test_created_by_not_changed(self):
+        """Should not change `created_by` when updating button designs."""
+        self.client.force_login(SuperUserFactory())
+        self.client.post(self.get_url(), self.button_design_data)
+
+        created_by_previous = self.button_design.created_by
+        self.button_design.refresh_from_db()
+        self.assertEqual(self.button_design.created_by, created_by_previous)
+
+    def test_modified_by_set_to_current_user(self):
+        """Should set `modified_by` to the current user on update."""
+        user = SuperUserFactory()
+        self.client.force_login(user)
+        self.client.post(self.get_url(), self.button_design_data)
+
+        self.button_design.refresh_from_db()
+        self.assertEqual(self.button_design.modified_by, user)
+
+
+class ButtonDesignDeleteTestCase(TestMixin, TestCase):
+    def setUp(self):
+        self.button_design = ButtonDesignFactory()
+
+    def get_url(self):
+        return reverse("buttons:ButtonDesignDelete", args=[self.button_design.slug])
+
+    def test_should_redirect_to_buttons_view_on_success(self):
+        """Should redirect to the buttons view on success."""
+        self.client.force_login(self.button_design.created_by)
+        response = self.client.post(self.get_url())
+        self.assertRedirects(response, reverse("buttons:ButtonsView"))
+
+    def test_requires_login(self):
+        """Should require login."""
+        self.assertLoginRequired(self.get_url())
+
+    def test_requires_permission(self):
+        """Should require permission to delete button designs."""
+        self.assertPermissionRequired(
+            self.get_url(),
+            "buttons.delete_buttondesign",
+        )
+
+    def test_succeeds_if_not_permission_but_is_author(self):
+        """
+        Should succeed if the user is the author,
+        even if the user doesn't have permission to delete button designs.
+        """
+        self.client.force_login(self.button_design.created_by)
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.status_code, HTTPStatus.OK)

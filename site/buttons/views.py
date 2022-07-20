@@ -2,18 +2,21 @@ import multiprocessing
 
 import PIL
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.messages.views import SuccessMessageMixin
 from django.http import FileResponse, HttpResponseBadRequest
 from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, DetailView, FormView, ListView, UpdateView
 
 from buttons.models import ButtonDesign
 from common.breadcrumbs.breadcrumbs import Breadcrumb, BreadcrumbsMixin
+from common.forms.views import DeleteViewCustom
+from common.mixins import PermissionOrCreatedMixin
 
 from .button_pdf_generator import button_pdf_generator
 from .forms import ButtonDesignForm, ButtonsForm
 
 
-def breadcrumbs(minutes=None):
+def breadcrumbs():
     """Returns breadcrumbs for the button views."""
     breadcrumbs = [Breadcrumb(reverse("buttons:ButtonsView"), "Buttons")]
     return breadcrumbs
@@ -51,10 +54,13 @@ class ButtonsView(FormView):
         return FileResponse(pdf, content_type="application/pdf", filename="buttons.pdf")
 
 
-class ButtonDesignCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
+class ButtonDesignCreate(
+    LoginRequiredMixin, SuccessMessageMixin, BreadcrumbsMixin, CreateView
+):
     model = ButtonDesign
     form_class = ButtonDesignForm
     template_name = "common/forms/form.html"
+    success_message = 'Buttonmotivet "%(name)s" vart laga.'
     success_url = reverse_lazy("buttons:ButtonsView")
 
     def get_breadcrumbs(self):
@@ -64,3 +70,30 @@ class ButtonDesignCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
         form.instance.created_by = self.request.user
         form.instance.modified_by = self.request.user
         return super().form_valid(form)
+
+
+class ButtonDesignUpdate(
+    PermissionOrCreatedMixin, SuccessMessageMixin, BreadcrumbsMixin, UpdateView
+):
+    model = ButtonDesign
+    form_class = ButtonDesignForm
+    template_name = "common/forms/form.html"
+    success_message = 'Buttonmotivet "%(name)s" vart oppdatert.'
+    success_url = reverse_lazy("buttons:ButtonsView")
+    permission_required = "buttons.change_buttondesign"
+
+    def get_breadcrumbs(self):
+        return breadcrumbs()
+
+    def form_valid(self, form):
+        form.instance.modified_by = self.request.user
+        return super().form_valid(form)
+
+
+class ButtonDesignDelete(PermissionOrCreatedMixin, BreadcrumbsMixin, DeleteViewCustom):
+    model = ButtonDesign
+    success_url = reverse_lazy("buttons:ButtonsView")
+    permission_required = "buttons.delete_buttondesign"
+
+    def get_breadcrumbs(self):
+        return breadcrumbs()

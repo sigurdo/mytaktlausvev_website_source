@@ -17,7 +17,7 @@ class DeleteViewCustom(SuccessMessageMixin, DeleteView):
     template_name = "common/forms/confirm_delete.html"
 
     def get_success_message(self, cleaned_data):
-        return self.success_message or f"{self.object} vart fjerna."
+        return self.success_message or f'"{self.object}" vart fjerna.'
 
 
 class InlineFormsetCreateView(CreateView):
