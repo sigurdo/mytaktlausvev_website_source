@@ -32,6 +32,7 @@ from minutes.factories import MinutesFactory
 from navbar.factories import NavbarItemFactory
 from navbar.models import NavbarItem
 from pictures.factories import GalleryFactory, ImageFactory
+from pictures.models import Image
 from polls.factories import ChoiceFactory, PollFactory, VoteFactory
 from repertoire.factories import RepertoireEntryFactory, RepertoireFactory
 from sheetmusic.factories import (
@@ -385,6 +386,7 @@ class Command(BaseCommand):
         )
         for _ in range(3):
             ImageFactory(gallery=gallery)
+        Image.objects.update(uploaded=make_aware(datetime.now() - timedelta(365 * 2)))
 
         MinutesFactory(
             title="Elronds rådlag",

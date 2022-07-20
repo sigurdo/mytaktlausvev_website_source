@@ -6,7 +6,7 @@
         <li class="position-relative form-image">
             <div class="card shadow my-4">
                 <div class="card-body d-flex justify-content-center align-items-center m-0 p-0 h-96">
-                    {% include "pictures/includes/image.html" with image=form.instance bp_gallery=form.instance.gallery.slug only %}
+                    {% include "common/includes/image.html" with url=form.instance.image.url description=form.instance.description bp_gallery=form.instance.gallery.slug only %}
                 </div>
 
                 <div class="card-footer p-0">
