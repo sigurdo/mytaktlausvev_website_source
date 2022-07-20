@@ -8,7 +8,7 @@ from django.utils.text import slugify
 from buttons.factories import ButtonDesignFactory
 from buttons.models import ButtonDesign
 from common.mixins import TestMixin
-from common.test_utils import test_image_gif_2x2 as test_image
+from common.test_utils import test_image
 
 
 class ButtonDesignTestSuite(TestMixin, TestCase):

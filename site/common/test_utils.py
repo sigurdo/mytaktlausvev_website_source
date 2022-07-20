@@ -14,16 +14,6 @@ def test_txt_file(name="test.txt", content="test", content_type="text/plain"):
 
 def test_image(name="test_image.gif", content_type="image/gif"):
     """Returns a temporary image file that can be used in tests."""
-    gif = b"GIF89a\x01\x00\x01\x00\x00\xff\x00,\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02\x00;"
-    return SimpleUploadedFile(
-        name=name,
-        content=gif,
-        content_type=content_type,
-    )
-
-
-def test_image_gif_2x2(name="test_image.gif", content_type="image/gif"):
-    """Returns a temporary image file (2x2 black pixels) that can be used in tests."""
     gif = b"GIF89a\x02\x00\x02\x00p\x00\x00,\x00\x00\x00\x00\x02\x00\x02\x00\x81\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x02\x84Q\x00;"
     return SimpleUploadedFile(
         name=name,
