@@ -1,10 +1,59 @@
 from http import HTTPStatus
 
+from django.db import IntegrityError
 from django.test import TestCase
 from django.urls import reverse
+from django.utils.text import slugify
 
+from buttons.factories import ButtonDesignFactory
+from buttons.models import ButtonDesign
 from common.mixins import TestMixin
 from common.test_utils import test_image_gif_2x2 as test_image
+
+
+class ButtonDesignTestSuite(TestMixin, TestCase):
+    def setUp(self):
+        self.button_design = ButtonDesignFactory()
+
+    def test_name_unique(self):
+        """`name` should be unique."""
+        with self.assertRaises(IntegrityError):
+            ButtonDesignFactory(name=self.button_design.name)
+
+    def test_to_str_is_name(self):
+        """`__str__` should equal `name`."""
+        self.assertEqual(str(self.button_design), self.button_design.name)
+
+    def test_creates_slug_from_name_automatically(self):
+        """Should create a slug from the name automatically during creation."""
+        self.assertEqual(self.button_design.slug, slugify(self.button_design.name))
+
+    def test_does_not_update_slug_when_name_is_changed(self):
+        """Should not change the slug when the name is changed."""
+        slug_before = self.button_design.slug
+        self.button_design.name = "Different name"
+        self.button_design.save()
+        self.assertEqual(self.button_design.slug, slug_before)
+
+    def test_does_not_override_provided_slug(self):
+        """Should not override the slug if provided during creation."""
+        slug = "this-is-a-slug"
+        button_design = ButtonDesignFactory(
+            name="name that is very different from the slug", slug=slug
+        )
+        self.assertEqual(button_design.slug, slug)
+
+    def test_ordering(self):
+        """Should be ordered by `date`, descending."""
+        self.assertModelOrdering(
+            ButtonDesign,
+            ButtonDesignFactory,
+            [
+                {"name": "AAA"},
+                {"name": "BBB"},
+                {"name": "ZZZ"},
+            ],
+        )
 
 
 class ButtonsViewTestSuite(TestMixin, TestCase):
