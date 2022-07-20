@@ -36,6 +36,9 @@ class ScoreForm(ModelForm):
             "sound_file",
             "sound_link",
         ]
+        widgets = {
+            "sound_file": ClearableFileInput(attrs={"accept": "audio/*"}),
+        }
 
 
 class PartsUpdateForm(ModelForm):
