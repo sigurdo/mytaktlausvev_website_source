@@ -22,35 +22,7 @@
         {% get_embeddable_text "Buttonmotivbibliotek" as text %}
         {{ text | markdown }}
 
-        <ul class="row row-cols-2 row-cols-md-3 row-cols-xl-4 g-4 list-unstyled">
-            {% for button_design in button_designs %}
-            <li class="col">
-                <div class="card h-100">
-                    <div class="h-40 d-flex align-items-center justify-content-center">
-                        {% include "pictures/includes/image.html" with image=button_design bp_gallery="button_designs" only %}
-                    </div>
-                    <div class="card-body d-flex flex-column justify-content-center align-items-center">
-                        <h3 class="card-title fs-5 mb-0">{{ button_design.name }}</h3>
-
-                        {% if perms.buttons.change_buttondesign or perms.buttons.delete_buttondesign or button_design.created_by == request.user %}
-                        <ul class="list-inline d-flex justify-content-center mt-2">
-                            {% if perms.buttons.change_buttondesign or button_design.created_by == request.user %}
-                            <li class="list-inline-item">
-                                <a href="{% url 'buttons:ButtonDesignUpdate' button_design.slug %}" class="btn btn-primary btn-sm">Rediger</a>
-                            </li>
-                            {% endif %}
-                            {% if perms.buttons.delete_buttondesign or button_design.created_by == request.user %}
-                            <li class="list-inline-item">
-                                <a href="{% url 'buttons:ButtonDesignDelete' button_design.slug %}" class="btn btn-primary btn-sm">Slett</a>
-                            </li>
-                            {% endif %}
-                        </ul>
-                        {% endif %}
-                    </div>
-                </div>
-            </li>
-            {% endfor %}
-        </ul>
+        {% include "buttons/includes/button_design_list.html" with button_designs=button_designs %}
     </section>
 {% endblock content %}
 
