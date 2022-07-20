@@ -4,6 +4,8 @@ import PIL
 from django.http import FileResponse, HttpResponseBadRequest
 from django.views.generic import FormView
 
+from buttons.models import ButtonDesign
+
 from .button_pdf_generator import button_pdf_generator
 from .forms import ButtonsForm
 
@@ -11,6 +13,10 @@ from .forms import ButtonsForm
 class ButtonsView(FormView):
     form_class = ButtonsForm
     template_name = "buttons/buttons_view.html"
+
+    def get_context_data(self, **kwargs):
+        kwargs["button_designs"] = ButtonDesign.objects.all()
+        return super().get_context_data(**kwargs)
 
     def form_valid(self, form):
         images = self.request.FILES.getlist("images")

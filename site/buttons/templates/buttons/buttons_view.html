@@ -12,4 +12,35 @@
 
     {% load crispy_forms_tags %}
     {% crispy form %}
+
+    <section>
+        <h2>Motivbibliotek</h2>
+        {% get_embeddable_text "Buttonmotivbibliotek" as text %}
+        {{ text | markdown }}
+
+        <ul class="row row-cols-2 row-cols-md-3 row-cols-xl-4 g-4 list-unstyled">
+            {% for button_design in button_designs %}
+            <li class="col">
+                <div class="card">
+                    <div class="h-40 d-flex align-items-center justify-content-center">
+                        {% include "pictures/includes/image.html" with image=button_design bp_gallery="button_designs" only %}
+                    </div>
+                    <div class="card-body">
+                        <h3 class="card-title text-center fs-5">{{ button_design.name }}</h3>
+                    </div>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+    </section>
 {% endblock content %}
+
+{% block js %}
+    <script
+        src="https://cdn.jsdelivr.net/npm/bigpicture@2.6.1/dist/BigPicture.min.js"
+        integrity="sha256-OsbS8Cw/fMpgT6GBFfqhvmX9yJLwzE6+me56KzpSbAs="
+        crossorigin="anonymous"
+    ></script>
+    {% load static %}
+    <script src="{% static "common/js/lightbox.js" %}"></script>
+{% endblock js %}

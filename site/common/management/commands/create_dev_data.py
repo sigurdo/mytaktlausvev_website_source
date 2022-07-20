@@ -804,3 +804,6 @@ Her kan du skrive nykelinformasjon om hendinga. Oppføringane du skriv vil verte
 ---
 """,
         )
+        EmbeddableTextFactory(
+            name="Buttonmotivbibliotek", content="Her finn du ferdiglaga buttonmotiv!"
+        )
