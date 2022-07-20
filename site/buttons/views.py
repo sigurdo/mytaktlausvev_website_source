@@ -5,7 +5,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import FileResponse, HttpResponseBadRequest
 from django.urls import reverse, reverse_lazy
-from django.views.generic import CreateView, DetailView, FormView, ListView, UpdateView
+from django.views.generic import CreateView, FormView, UpdateView
 
 from buttons.models import ButtonDesign
 from common.breadcrumbs.breadcrumbs import Breadcrumb, BreadcrumbsMixin

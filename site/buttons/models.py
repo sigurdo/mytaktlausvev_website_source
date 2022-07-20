@@ -1,8 +1,5 @@
-from datetime import date
-
 from autoslug import AutoSlugField
 from django.db.models import CharField, ImageField
-from django.urls import reverse
 
 from common.models import CreatedModifiedMixin
 
