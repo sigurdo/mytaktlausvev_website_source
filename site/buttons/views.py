@@ -1,13 +1,22 @@
 import multiprocessing
 
 import PIL
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import FileResponse, HttpResponseBadRequest
-from django.views.generic import FormView
+from django.urls import reverse, reverse_lazy
+from django.views.generic import CreateView, DetailView, FormView, ListView, UpdateView
 
 from buttons.models import ButtonDesign
+from common.breadcrumbs.breadcrumbs import Breadcrumb, BreadcrumbsMixin
 
 from .button_pdf_generator import button_pdf_generator
-from .forms import ButtonsForm
+from .forms import ButtonDesignForm, ButtonsForm
+
+
+def breadcrumbs(minutes=None):
+    """Returns breadcrumbs for the button views."""
+    breadcrumbs = [Breadcrumb(reverse("buttons:ButtonsView"), "Buttons")]
+    return breadcrumbs
 
 
 class ButtonsView(FormView):
@@ -40,3 +49,18 @@ class ButtonsView(FormView):
             },
         )
         return FileResponse(pdf, content_type="application/pdf", filename="buttons.pdf")
+
+
+class ButtonDesignCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
+    model = ButtonDesign
+    form_class = ButtonDesignForm
+    template_name = "common/forms/form.html"
+    success_url = reverse_lazy("buttons:ButtonsView")
+
+    def get_breadcrumbs(self):
+        return breadcrumbs()
+
+    def form_valid(self, form):
+        form.instance.created_by = self.request.user
+        form.instance.modified_by = self.request.user
+        return super().form_valid(form)

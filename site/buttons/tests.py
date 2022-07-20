@@ -5,6 +5,7 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils.text import slugify
 
+from accounts.factories import SuperUserFactory
 from buttons.factories import ButtonDesignFactory
 from buttons.models import ButtonDesign
 from common.mixins import TestMixin
@@ -100,3 +101,34 @@ class ButtonsViewTestSuite(TestMixin, TestCase):
         )
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
         self.assertNotEqual(response["content-type"], "application/pdf")
+
+
+class ButtonDesignCreateTestSuite(TestMixin, TestCase):
+    def get_url(self):
+        return reverse("buttons:ButtonDesignCreate")
+
+    def test_requires_login(self):
+        """Should require login."""
+        self.assertLoginRequired(self.get_url())
+
+    def test_created_by_modified_by_set_to_current_user(self):
+        """Should set `created_by` and `modified_by` to the current user on creation."""
+        user = SuperUserFactory()
+        self.client.force_login(user)
+        self.client.post(
+            self.get_url(),
+            {"name": "Nidaros-SMASH 2023", "image": test_image()},
+        )
+
+        self.assertEqual(ButtonDesign.objects.count(), 1)
+        button_design = ButtonDesign.objects.last()
+        self.assertEqual(button_design.created_by, user)
+        self.assertEqual(button_design.modified_by, user)
+
+    def test_success_url_is_buttons_view(self):
+        self.client.force_login(SuperUserFactory())
+        response = self.client.post(
+            self.get_url(),
+            {"name": "Nidaros-SMASH 2023", "image": test_image()},
+        )
+        self.assertRedirects(response, reverse("buttons:ButtonsView"))

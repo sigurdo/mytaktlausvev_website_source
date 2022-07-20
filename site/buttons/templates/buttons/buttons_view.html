@@ -13,8 +13,12 @@
     {% load crispy_forms_tags %}
     {% crispy form %}
 
-    <section>
-        <h2>Motivbibliotek</h2>
+    <section class="mt-5">
+        <header class="mb-2">
+            <h2 class="mb-0">Motivbibliotek</h2>
+
+            <a href="{% url 'buttons:ButtonDesignCreate' %}" class="btn btn-primary btn-sm my-1">Nytt motiv</a>
+        </header>
         {% get_embeddable_text "Buttonmotivbibliotek" as text %}
         {{ text | markdown }}
 

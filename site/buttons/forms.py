@@ -1,16 +1,18 @@
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
-from django import forms
+from django.forms import ClearableFileInput, Form, ImageField, IntegerField, ModelForm
+
+from .models import ButtonDesign
 
 
-class ButtonsForm(forms.Form):
-    images = forms.ImageField(
-        widget=forms.ClearableFileInput(attrs={"multiple": True}), label="Motiv"
+class ButtonsForm(Form):
+    images = ImageField(
+        widget=ClearableFileInput(attrs={"multiple": True}), label="Motiv"
     )
-    num_of_each = forms.IntegerField(
+    num_of_each = IntegerField(
         min_value=1, max_value=64, initial=1, label="Antal buttons av kvart motiv"
     )
-    button_visible_diameter_mm = forms.IntegerField(
+    button_visible_diameter_mm = IntegerField(
         min_value=10,
         max_value=100,
         initial=57,
@@ -19,3 +21,12 @@ class ButtonsForm(forms.Form):
 
     helper = FormHelper()
     helper.add_input(Submit("submit", "Generer PDF"))
+
+
+class ButtonDesignForm(ModelForm):
+    helper = FormHelper()
+    helper.add_input(Submit("submit", "Lagre buttonmotiv"))
+
+    class Meta:
+        model = ButtonDesign
+        fields = ["name", "image"]
