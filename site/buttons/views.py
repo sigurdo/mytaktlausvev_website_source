@@ -20,7 +20,7 @@ class ButtonsView(FormView):
             )
         images = [PIL.Image.open(image) for image in images]
         num_of_each = form.cleaned_data["num_of_each"]
-        button_diameter_mm = form.cleaned_data["button_diameter_mm"]
+        button_visible_diameter_mm = form.cleaned_data["button_visible_diameter_mm"]
 
         # Perform PDF generation in a multiprocessing pool to retain responsiveness for other
         # requests in the meantime.
@@ -29,8 +29,8 @@ class ButtonsView(FormView):
             [images],
             {
                 "num_of_each": num_of_each,
-                "button_width_mm": button_diameter_mm,
-                "button_height_mm": button_diameter_mm,
+                "button_visible_width_mm": button_visible_diameter_mm,
+                "button_visible_height_mm": button_visible_diameter_mm,
             },
         )
         return FileResponse(pdf, content_type="application/pdf", filename="buttons.pdf")
