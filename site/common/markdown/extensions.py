@@ -4,26 +4,24 @@ from markdown.inlinepatterns import InlineProcessor, SimpleTagPattern
 
 class StrikethroughExtension(Extension):
     """
-    Adds the possibility to use "~~something~~" to create a span that looks like <del>something</del>
+    Enables using "~~something~~" to strikethrough text with the `del` tag.
     """
 
     RE = r"(~~)(.*?)~~"
 
     def extendMarkdown(self, md):
-        del_tag = SimpleTagPattern(self.RE, "del")
-        md.inlinePatterns.add("del", del_tag, "_begin")
+        md.inlinePatterns.register(SimpleTagPattern(self.RE, "del"), "del-pattern", 200)
 
 
 class UnderlineExtension(Extension):
     """
-    Adds the possibility to use "__something__" to create a span that looks like <ins>something</ins>
+    Enables using "__something__" to underline text with the `ins` tag.
     """
 
     RE = r"(__)(.*?)__"
 
     def extendMarkdown(self, md):
-        ins_tag = SimpleTagPattern(self.RE, "ins")
-        md.inlinePatterns.add("ins", ins_tag, ">del")
+        md.inlinePatterns.register(SimpleTagPattern(self.RE, "ins"), "ins-pattern", 200)
 
 
 class CensorshipProcessor(InlineProcessor):
