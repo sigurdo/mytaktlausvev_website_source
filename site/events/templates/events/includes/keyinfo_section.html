@@ -1,6 +1,6 @@
 <dl class="dl-inline">
     <dt>Tidspunkt</dt>
-    <dd> 
+    <dd>
         <time datetime="{{ event.start_time | date:"c" }}">{{event.start_time | date:"l, j. F, Y - H:i"}}</time>
         {% if event.end_time %}
         til
@@ -9,6 +9,7 @@
     </dd>
     {% for entry in event.keyinfo_entries.all %}
         <dt>{{ entry.key }}</dt>
-        <dd>{{ entry.info }}</dd>
+        {% load markdown %}
+        <dd>{{ entry.info | clean }}</dd>
     {% endfor %}
 </dl>
