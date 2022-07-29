@@ -189,6 +189,7 @@ class PartsUpdateIndex(PermissionOrCreatedMixin, BreadcrumbsMixin, ListView):
 
     def get_context_data(self, **kwargs):
         kwargs["score"] = self.score
+        kwargs["total_parts_count"] = Part.objects.filter(pdf__score=self.score).count()
         return super().get_context_data(**kwargs)
 
     def setup(self, request, *args, **kwargs):
