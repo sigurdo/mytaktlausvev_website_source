@@ -3,7 +3,6 @@ from crispy_forms.layout import Submit
 from django.forms import ModelForm, TextInput, modelformset_factory
 
 from common.forms.layouts import DynamicFormsetButton
-
 from common.forms.widgets import AutocompleteSelect
 
 from .models import Instrument
@@ -11,7 +10,6 @@ from .models import Instrument
 
 class InstrumentForm(ModelForm):
     """Form for creating and/or updating instruments."""
-    
 
     class Meta:
         model = Instrument
@@ -24,8 +22,7 @@ class InstrumentForm(ModelForm):
             "comment",
             "state",
         ]
-        widgets = {"comment": TextInput,
-        "user": AutocompleteSelect}
+        widgets = {"comment": TextInput, "user": AutocompleteSelect}
 
 
 class InstrumentFormsetHelper(FormHelper):
