@@ -4,3 +4,6 @@
 [submodule "site/static/scss/bootswatch"]
 	path = site/static/scss/bootswatch
 	url = https://github.com/thomaspark/bootswatch
+[submodule "site/static/scss/tom-select"]
+	path = site/static/scss/tom-select
+	url = https://github.com/orchidjs/tom-select
