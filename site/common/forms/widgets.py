@@ -1,6 +1,5 @@
 from django import forms
 
-
 class DateDateInput(forms.DateInput):
     """
     DateInput with `type` set to `date`.
@@ -23,3 +22,10 @@ class SplitDateTimeWidgetCustom(forms.SplitDateTimeWidget):
     def __init__(self, attrs=None):
         widgets = [DateDateInput(), forms.TimeInput(format="%H:%M")]
         forms.MultiWidget.__init__(self, widgets, attrs)
+
+
+
+class AutocompleteSelect(forms.Select):
+    class Media:
+        js = ('/static/common/forms/autocomplete_select.js',)
+
