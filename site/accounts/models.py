@@ -13,8 +13,9 @@ from django.db.models import (
     TextField,
     UniqueConstraint,
     URLField,
+    Value,
 )
-from django.db.models.functions import Lower
+from django.db.models.functions import Lower, NullIf
 from django.templatetags.static import static
 from django.urls import reverse
 
@@ -168,6 +169,7 @@ class UserCustom(AbstractUser):
         return reverse("accounts:UserCustomUpdate", args=[self.slug])
 
     class Meta(AbstractUser.Meta):
+        ordering = [Lower(NullIf("name", Value("")), nulls_last=True)]
         constraints = [
             UniqueConstraint(Lower("username"), name="username_case_insensitive")
         ]
