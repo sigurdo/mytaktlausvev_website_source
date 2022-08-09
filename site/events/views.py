@@ -231,6 +231,9 @@ class EventDelete(PermissionOrCreatedMixin, BreadcrumbsMixin, DeleteViewCustom):
     success_url = reverse_lazy("events:EventList")
     permission_required = "events.delete_event"
 
+    def get_object(self, queryset=None):
+        return get_event_or_404(self.kwargs.get("year"), self.kwargs.get("slug"))
+
     def get_breadcrumbs(self):
         return event_breadcrumbs(event=self.get_object())
 

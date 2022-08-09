@@ -597,6 +597,19 @@ class EventDeleteTestSuite(TestMixin, TestCase):
         response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
+    def test_should_succeed_when_two_events_have_equal_slugs(self):
+        """
+        Should succeed even if two events have equal slugs,
+        by utilizing the event's year.
+        """
+        self.event_same_slug = EventFactory(
+            slug=self.event.slug, start_time=self.event.start_time + timedelta(days=400)
+        )
+        self.assertEqual(self.event.slug, self.event_same_slug.slug)
+
+        self.client.post(self.get_url())
+        Event.objects.get(pk=self.event.pk)
+
 
 class EventAttendanceListTestSuite(TestMixin, TestCase):
     def get_url(self, event):
