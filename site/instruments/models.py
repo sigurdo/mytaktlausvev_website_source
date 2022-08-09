@@ -110,4 +110,6 @@ class Instrument(Model):
         verbose_name = "instrument"
         verbose_name_plural = "instrument"
         ordering = ["type", "identifier"]
-        constraints = [UniqueConstraint("type", "identifier", name="unique_instrument")]
+        constraints = [
+            UniqueConstraint(fields=["type", "identifier"], name="unique_instrument")
+        ]

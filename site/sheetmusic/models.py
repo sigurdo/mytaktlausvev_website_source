@@ -352,7 +352,8 @@ class Part(Model):
     class Meta:
         constraints = [
             UniqueConstraint(
-                "pdf", "instrument_type", "part_number", "note", name="unique_part"
+                fields=["pdf", "instrument_type", "part_number", "note"],
+                name="unique_part",
             )
         ]
         ordering = ["instrument_type", F("part_number").asc(nulls_first=True), "note"]
