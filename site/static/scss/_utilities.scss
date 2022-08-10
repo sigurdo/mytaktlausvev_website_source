@@ -18,6 +18,22 @@
 $utilities: map-merge(
   $utilities,
   (
+    "white-space": (
+      property: white-space,
+      values: (
+        normal,
+        nowrap,
+        pre,
+        pre-wrap,
+        pre-line,
+        break-spaces,
+        inherit,
+        initial,
+        revert,
+        revert-layer,
+        unset
+      )
+    ),
     "cursor": (
       property: cursor,
       values: auto pointer grab,
