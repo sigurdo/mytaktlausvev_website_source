@@ -1,0 +1,13 @@
+<span>
+    <time datetime="{{ event.start_time | date:"c" }}">
+        {{ event.start_time | date:date_format | capfirst }}
+    </time>
+    {% if event.end_time %}
+        {% if event.start_time.date == event.end_time.date %}
+        - <time datetime="{{ event.end_time | date:"c" }}">{{ event.end_time | date:"H:i" }}</time>
+        {% else %}
+        til
+        <time datetime="{{ event.end_time | date:"c" }}">{{ event.end_time | date:date_format }}</time>
+        {% endif %}
+    {% endif %}
+</span>

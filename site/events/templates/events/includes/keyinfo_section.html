@@ -1,11 +1,7 @@
 <dl class="dl-inline">
     <dt>Tidspunkt</dt>
     <dd>
-        <time datetime="{{ event.start_time | date:"c" }}">{{event.start_time | date:"l, j. F, Y - H:i"}}</time>
-        {% if event.end_time %}
-        til
-        <time datetime="{{ event.end_time | date:"c" }}">{{event.end_time | date:"l, j. F, Y - H:i"}}</time>
-        {% endif %}
+        {% include "events/includes/event_time.html" with event=event date_format="l j. F, Y – H:i" %}
     </dd>
     {% for entry in event.keyinfo_entries.all %}
         <dt>{{ entry.key }}</dt>
