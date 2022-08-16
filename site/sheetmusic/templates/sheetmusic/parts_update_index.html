@@ -17,17 +17,20 @@
             <thead>
                 <tr>
                     <th> PDF </th>
+                    <th> Antal stemmer </th>
                     <th> Rediger stemmer </th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
                     <td> Alle </td>
+                    <td> {{ total_parts_count }} </td>
                     <td> <a class="btn btn-primary" href="{% url "sheetmusic:PartsUpdateAll" score.slug %}">Rediger stemmer</a> </td>
                 </tr>
             {% for pdf in pdfs %}
                 <tr>
                     <td> <a href="{{pdf.file.url}}">{{pdf}}</a> </td>
+                    <td> {{ pdf.parts.count }} </td>
                     <td> <a class="btn btn-primary" href="{% url "sheetmusic:PartsUpdate" score.slug pdf.slug %}">Rediger stemmer</a> </td>
                 </tr>
             {% endfor %}
