@@ -19,7 +19,9 @@
             {% for vote in votes %}
                 <tr>
                     <td>
-                        {{ vote.user }}
+                        <a href="{{ vote.user.get_absolute_url }}">
+                            {{ vote.user }}
+                        </a>
                     </td>
                     <td>
                         {{ vote.choice }}
@@ -40,7 +42,9 @@
             {% for user, votes in votes_by_user %}
                 <tr>
                     <td>
-                        {{ user }}
+                        <a href="{{ user.get_absolute_url }}">
+                            {{ user }}
+                        </a>
                     </td>
                     <td>
                         <ul class="m-0">
