@@ -7,6 +7,7 @@ app_name = "buttons"
 urlpatterns = [
     path("", views.ButtonsView.as_view(), name="ButtonsView"),
     path("nytt-design/", views.ButtonDesignCreate.as_view(), name="ButtonDesignCreate"),
+    path("<slug:slug>/", views.ButtonDesignServe.as_view(), name="ButtonDesignServe"),
     path(
         "<slug:slug>/rediger/",
         views.ButtonDesignUpdate.as_view(),

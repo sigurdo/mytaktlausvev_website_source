@@ -1,7 +1,7 @@
 import multiprocessing
 
 import PIL
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import FileResponse, HttpResponseBadRequest
 from django.urls import reverse, reverse_lazy
@@ -11,6 +11,7 @@ from buttons.models import ButtonDesign
 from common.breadcrumbs.breadcrumbs import Breadcrumb, BreadcrumbsMixin
 from common.forms.views import DeleteViewCustom
 from common.mixins import PermissionOrCreatedMixin
+from serve_media_files.views import ServeMediaFiles
 
 from .button_pdf_generator import button_pdf_generator
 from .forms import ButtonDesignForm, ButtonsForm
@@ -27,7 +28,12 @@ class ButtonsView(FormView):
     template_name = "buttons/buttons_view.html"
 
     def get_context_data(self, **kwargs):
-        kwargs["button_designs"] = ButtonDesign.objects.all()
+        button_designs = (
+            ButtonDesign.objects.all()
+            if self.request.user.is_authenticated
+            else ButtonDesign.objects.filter(public=True)
+        )
+        kwargs["button_designs"] = button_designs
         return super().get_context_data(**kwargs)
 
     def form_valid(self, form):
@@ -52,6 +58,20 @@ class ButtonsView(FormView):
             },
         )
         return FileResponse(pdf, content_type="application/pdf", filename="buttons.pdf")
+
+
+class ButtonDesignServe(UserPassesTestMixin, ServeMediaFiles):
+    def setup(self, request, *args, **kwargs):
+        self.button_design = ButtonDesign.objects.get(slug=kwargs["slug"])
+        super().setup(request, *args, **kwargs)
+
+    def get_file_path(self):
+        return self.button_design.image.name
+
+    def test_func(self):
+        if self.button_design.public:
+            return True
+        return self.request.user.is_authenticated
 
 
 class ButtonDesignCreate(

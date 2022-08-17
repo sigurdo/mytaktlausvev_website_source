@@ -1,8 +1,10 @@
 from http import HTTPStatus
 
+from django.conf import settings
 from django.db import IntegrityError
 from django.test import TestCase
 from django.urls import reverse
+from django.utils.encoding import escape_uri_path
 from django.utils.text import slugify
 
 from accounts.factories import SuperUserFactory
@@ -25,6 +27,13 @@ class ButtonDesignTestSuite(TestMixin, TestCase):
         """`__str__` should equal `name`."""
         self.assertEqual(str(self.button_design), self.button_design.name)
 
+    def test_get_absolute_url(self):
+        """Should link to the serve view."""
+        self.assertEqual(
+            self.button_design.get_absolute_url(),
+            reverse("buttons:ButtonDesignServe", args=[self.button_design.slug]),
+        )
+
     def test_creates_slug_from_name_automatically(self):
         """Should create a slug from the name automatically during creation."""
         self.assertEqual(self.button_design.slug, slugify(self.button_design.name))
@@ -43,6 +52,10 @@ class ButtonDesignTestSuite(TestMixin, TestCase):
             name="name that is very different from the slug", slug=slug
         )
         self.assertEqual(button_design.slug, slug)
+
+    def test_default_not_public(self):
+        """`public` should default to `False`"""
+        self.assertFalse(self.button_design.public)
 
     def test_ordering(self):
         """Should be ordered by `date`, descending."""
@@ -101,6 +114,35 @@ class ButtonsViewTestSuite(TestMixin, TestCase):
         )
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
         self.assertNotEqual(response["content-type"], "application/pdf")
+
+
+class ButtonDesignServeTestSuite(TestMixin, TestCase):
+    def setUp(self):
+        self.button_design = ButtonDesignFactory()
+        self.public_button_design = ButtonDesignFactory(public=True)
+
+    def get_url(self, button_design):
+        return reverse("buttons:ButtonDesignServe", args=[button_design.slug])
+
+    def test_requires_login(self):
+        """Should require login."""
+        self.assertLoginRequired(self.get_url(self.button_design))
+
+    def test_public_not_requires_login(self):
+        """Public button designs should not require login."""
+        self.client.logout()
+        response = self.client.get(self.get_url(self.public_button_design))
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+    def test_serve(self):
+        """Should serve the correct image."""
+        response = self.client.get(self.get_url(self.public_button_design))
+        self.assertEqual(
+            response["X-Accel-Redirect"],
+            escape_uri_path(
+                f"{settings.MEDIA_URL_NGINX}{self.public_button_design.image.name}"
+            ),
+        )
 
 
 class ButtonDesignCreateTestSuite(TestMixin, TestCase):

@@ -397,7 +397,8 @@ class Command(BaseCommand):
             modified_by=leader,
         )
 
-        ButtonDesignFactory()
+        ButtonDesignFactory(name="Taktlausbutton - Raud", public=True)
+        ButtonDesignFactory(name="Taktlausbutton - Blå", image__color="blue")
 
         group = Group.objects.create(name="Vevkom")
         leader.groups.add(group)

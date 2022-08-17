@@ -17,7 +17,9 @@
         <header class="mb-2">
             <h2 class="mb-0">Motivbibliotek</h2>
 
-            <a href="{% url 'buttons:ButtonDesignCreate' %}" class="btn btn-primary btn-sm my-1">Nytt motiv</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'buttons:ButtonDesignCreate' %}" class="btn btn-primary btn-sm my-1">Nytt motiv</a>
+            {% endif %}
         </header>
         {% get_embeddable_text "Buttonmotivbibliotek" as text %}
         {{ text | markdown }}
