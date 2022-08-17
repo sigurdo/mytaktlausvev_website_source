@@ -27,4 +27,4 @@ class SplitDateTimeWidgetCustom(forms.SplitDateTimeWidget):
 
 class AutocompleteSelect(forms.Select):
     class Media:
-        js = ("/static/common/forms/autocomplete_select.js",)
+        js = ("common/forms/autocomplete_select.js",)

@@ -1,6 +1,7 @@
 {% extends "common/forms/form.html" %}
 
 {% block js %}
+{{ block.super }}
     {% load static %}
     <script src={% static 'common/forms/prevent_number_input_scroll.js' %}></script>
 {% endblock js %}

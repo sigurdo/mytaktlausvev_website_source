@@ -12,6 +12,7 @@ from django.forms import (
 
 from accounts.models import UserCustom
 from common.forms.layouts import DynamicFormsetButton
+from common.forms.widgets import AutocompleteSelect
 
 from .models import Jacket
 
@@ -79,6 +80,7 @@ class AddJacketUserForm(Form):
         label="Brukar",
         choices=user_choices,
         validators=[validator_user_does_not_have_jacket],
+        widget=AutocompleteSelect
     )
     set_owner = BooleanField(label="Sett som eigar", required=False, initial=True)
 

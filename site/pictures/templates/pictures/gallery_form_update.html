@@ -24,6 +24,7 @@
 {% endblock css %}
 
 {% block js %}
+{{ block.super }}
     {% load static %}
     <script src="{% static 'pictures/image_formset.js' %}"></script>
 
