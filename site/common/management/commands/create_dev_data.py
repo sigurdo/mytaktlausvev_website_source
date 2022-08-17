@@ -10,6 +10,7 @@ from django.utils.timezone import make_aware
 from accounts.models import UserCustom
 from advent_calendar.factories import AdventCalendarFactory, WindowFactory
 from articles.factories import ArticleFactory
+from buttons.factories import ButtonDesignFactory
 from common.comments.factories import CommentFactory
 from common.embeddable_text.factories import EmbeddableTextFactory
 from common.test_utils import test_pdf_multipage
@@ -395,6 +396,8 @@ class Command(BaseCommand):
             created_by=leader,
             modified_by=leader,
         )
+
+        ButtonDesignFactory()
 
         group = Group.objects.create(name="Vevkom")
         leader.groups.add(group)

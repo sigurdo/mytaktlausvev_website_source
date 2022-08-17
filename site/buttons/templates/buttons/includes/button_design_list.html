@@ -8,20 +8,23 @@
             <div class="card-body d-flex flex-column justify-content-center align-items-center">
                 <h3 class="card-title fs-5 mb-0">{{ button_design.name }}</h3>
 
-                {% if perms.buttons.change_buttondesign or perms.buttons.delete_buttondesign or button_design.created_by == request.user %}
-                <ul class="list-inline d-flex justify-content-center mt-3">
+                <ul class="list-inline d-flex justify-content-center flex-wrap mt-3">
+                    <li class="list-inline-item my-1">
+                        <a download href="{{ button_design.image.url }}" target="_blank" class="btn btn-primary btn-sm">Last ned</a>
+                    </li>
+
                     {% if perms.buttons.change_buttondesign or button_design.created_by == request.user %}
-                    <li class="list-inline-item">
-                        <a href="{% url 'buttons:ButtonDesignUpdate' button_design.slug %}" class="btn btn-primary btn-sm">Rediger</a>
+                    <li class="list-inline-item my-1">
+                        <a href="{% url 'buttons:ButtonDesignUpdate' button_design.slug %}" class="btn btn-secondary btn-sm">Rediger</a>
                     </li>
                     {% endif %}
+
                     {% if perms.buttons.delete_buttondesign or button_design.created_by == request.user %}
-                    <li class="list-inline-item">
+                    <li class="list-inline-item my-1">
                         <a href="{% url 'buttons:ButtonDesignDelete' button_design.slug %}" class="btn btn-danger btn-sm">Slett</a>
                     </li>
                     {% endif %}
                 </ul>
-                {% endif %}
             </div>
         </div>
     </li>
