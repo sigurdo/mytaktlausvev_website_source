@@ -80,7 +80,7 @@ class AddJacketUserForm(Form):
         label="Brukar",
         choices=user_choices,
         validators=[validator_user_does_not_have_jacket],
-        widget=AutocompleteSelect
+        widget=AutocompleteSelect,
     )
     set_owner = BooleanField(label="Sett som eigar", required=False, initial=True)
 
