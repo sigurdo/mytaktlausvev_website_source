@@ -7,7 +7,7 @@ from django.core.exceptions import ValidationError
 from django.forms import BooleanField, ModelForm
 from django.urls import reverse
 
-from common.forms.widgets import DateDateInput
+from common.forms.widgets import AutocompleteSelect, DateDateInput
 
 from .models import UserCustom
 
@@ -95,7 +95,7 @@ class UserCustomCreateForm(UserCreationForm):
             "instrument_type",
             "membership_period",
         )
-        widgets = {"birthdate": DateDateInput}
+        widgets = {"birthdate": DateDateInput, "instrument_type": AutocompleteSelect}
 
 
 class UserCustomUpdateForm(ModelForm):
@@ -136,6 +136,7 @@ class UserCustomUpdateForm(ModelForm):
         ]
         widgets = {
             "birthdate": DateDateInput,
+            "instrument_type": AutocompleteSelect,
             "calendar_feed_start_date": DateDateInput,
         }
 
