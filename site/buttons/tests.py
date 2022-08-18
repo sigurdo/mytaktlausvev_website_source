@@ -1,10 +1,73 @@
 from http import HTTPStatus
 
+from django.conf import settings
+from django.db import IntegrityError
 from django.test import TestCase
 from django.urls import reverse
+from django.utils.encoding import escape_uri_path
+from django.utils.text import slugify
 
+from accounts.factories import SuperUserFactory
+from buttons.factories import ButtonDesignFactory
+from buttons.models import ButtonDesign
 from common.mixins import TestMixin
-from common.test_utils import test_image_gif_2x2 as test_image
+from common.test_utils import test_image
+
+
+class ButtonDesignTestSuite(TestMixin, TestCase):
+    def setUp(self):
+        self.button_design = ButtonDesignFactory()
+
+    def test_name_unique(self):
+        """`name` should be unique."""
+        with self.assertRaises(IntegrityError):
+            ButtonDesignFactory(name=self.button_design.name)
+
+    def test_to_str_is_name(self):
+        """`__str__` should equal `name`."""
+        self.assertEqual(str(self.button_design), self.button_design.name)
+
+    def test_get_absolute_url(self):
+        """Should link to the serve view."""
+        self.assertEqual(
+            self.button_design.get_absolute_url(),
+            reverse("buttons:ButtonDesignServe", args=[self.button_design.slug]),
+        )
+
+    def test_creates_slug_from_name_automatically(self):
+        """Should create a slug from the name automatically during creation."""
+        self.assertEqual(self.button_design.slug, slugify(self.button_design.name))
+
+    def test_does_not_update_slug_when_name_is_changed(self):
+        """Should not change the slug when the name is changed."""
+        slug_before = self.button_design.slug
+        self.button_design.name = "Different name"
+        self.button_design.save()
+        self.assertEqual(self.button_design.slug, slug_before)
+
+    def test_does_not_override_provided_slug(self):
+        """Should not override the slug if provided during creation."""
+        slug = "this-is-a-slug"
+        button_design = ButtonDesignFactory(
+            name="name that is very different from the slug", slug=slug
+        )
+        self.assertEqual(button_design.slug, slug)
+
+    def test_default_not_public(self):
+        """`public` should default to `False`"""
+        self.assertFalse(self.button_design.public)
+
+    def test_ordering(self):
+        """Should be ordered by `date`, descending."""
+        self.assertModelOrdering(
+            ButtonDesign,
+            ButtonDesignFactory,
+            [
+                {"name": "AAA"},
+                {"name": "BBB"},
+                {"name": "ZZZ"},
+            ],
+        )
 
 
 class ButtonsViewTestSuite(TestMixin, TestCase):
@@ -51,3 +114,144 @@ class ButtonsViewTestSuite(TestMixin, TestCase):
         )
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
         self.assertNotEqual(response["content-type"], "application/pdf")
+
+
+class ButtonDesignServeTestSuite(TestMixin, TestCase):
+    def setUp(self):
+        self.button_design = ButtonDesignFactory()
+        self.public_button_design = ButtonDesignFactory(public=True)
+
+    def get_url(self, button_design):
+        return reverse("buttons:ButtonDesignServe", args=[button_design.slug])
+
+    def test_requires_login(self):
+        """Should require login."""
+        self.assertLoginRequired(self.get_url(self.button_design))
+
+    def test_public_not_requires_login(self):
+        """Public button designs should not require login."""
+        self.client.logout()
+        response = self.client.get(self.get_url(self.public_button_design))
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+    def test_serve(self):
+        """Should serve the correct image."""
+        response = self.client.get(self.get_url(self.public_button_design))
+        self.assertEqual(
+            response["X-Accel-Redirect"],
+            escape_uri_path(
+                f"{settings.MEDIA_URL_NGINX}{self.public_button_design.image.name}"
+            ),
+        )
+
+
+class ButtonDesignCreateTestSuite(TestMixin, TestCase):
+    def get_url(self):
+        return reverse("buttons:ButtonDesignCreate")
+
+    def test_requires_login(self):
+        """Should require login."""
+        self.assertLoginRequired(self.get_url())
+
+    def test_created_by_modified_by_set_to_current_user(self):
+        """Should set `created_by` and `modified_by` to the current user on creation."""
+        user = SuperUserFactory()
+        self.client.force_login(user)
+        self.client.post(
+            self.get_url(),
+            {"name": "Nidaros-SMASH 2023", "image": test_image()},
+        )
+
+        self.assertEqual(ButtonDesign.objects.count(), 1)
+        button_design = ButtonDesign.objects.last()
+        self.assertEqual(button_design.created_by, user)
+        self.assertEqual(button_design.modified_by, user)
+
+    def test_success_url_is_buttons_view(self):
+        self.client.force_login(SuperUserFactory())
+        response = self.client.post(
+            self.get_url(),
+            {"name": "Nidaros-SMASH 2023", "image": test_image()},
+        )
+        self.assertRedirects(response, reverse("buttons:ButtonsView"))
+
+
+class ButtonDesignUpdateTestSuite(TestMixin, TestCase):
+    def setUp(self):
+        self.button_design = ButtonDesignFactory()
+        self.button_design_data = {"name": "Nidaros-SMASH 2023", "image": test_image()}
+
+    def get_url(self):
+        return reverse("buttons:ButtonDesignUpdate", args=[self.button_design.slug])
+
+    def test_requires_login(self):
+        """Should require login."""
+        self.assertLoginRequired(self.get_url())
+
+    def test_requires_permission(self):
+        """Should require permission to change button designs."""
+        self.assertPermissionRequired(
+            self.get_url(),
+            "buttons.change_buttondesign",
+        )
+
+    def test_succeeds_if_not_permission_but_is_author(self):
+        """
+        Should succeed if the user is the author,
+        even if the user doesn't have permission to change button designs.
+        """
+        self.client.force_login(self.button_design.created_by)
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+    def test_created_by_not_changed(self):
+        """Should not change `created_by` when updating button designs."""
+        self.client.force_login(SuperUserFactory())
+        self.client.post(self.get_url(), self.button_design_data)
+
+        created_by_previous = self.button_design.created_by
+        self.button_design.refresh_from_db()
+        self.assertEqual(self.button_design.created_by, created_by_previous)
+
+    def test_modified_by_set_to_current_user(self):
+        """Should set `modified_by` to the current user on update."""
+        user = SuperUserFactory()
+        self.client.force_login(user)
+        self.client.post(self.get_url(), self.button_design_data)
+
+        self.button_design.refresh_from_db()
+        self.assertEqual(self.button_design.modified_by, user)
+
+
+class ButtonDesignDeleteTestCase(TestMixin, TestCase):
+    def setUp(self):
+        self.button_design = ButtonDesignFactory()
+
+    def get_url(self):
+        return reverse("buttons:ButtonDesignDelete", args=[self.button_design.slug])
+
+    def test_should_redirect_to_buttons_view_on_success(self):
+        """Should redirect to the buttons view on success."""
+        self.client.force_login(self.button_design.created_by)
+        response = self.client.post(self.get_url())
+        self.assertRedirects(response, reverse("buttons:ButtonsView"))
+
+    def test_requires_login(self):
+        """Should require login."""
+        self.assertLoginRequired(self.get_url())
+
+    def test_requires_permission(self):
+        """Should require permission to delete button designs."""
+        self.assertPermissionRequired(
+            self.get_url(),
+            "buttons.delete_buttondesign",
+        )
+
+    def test_succeeds_if_not_permission_but_is_author(self):
+        """
+        Should succeed if the user is the author,
+        even if the user doesn't have permission to delete button designs.
+        """
+        self.client.force_login(self.button_design.created_by)
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.status_code, HTTPStatus.OK)

@@ -12,7 +12,7 @@ from common.breadcrumbs.breadcrumbs import Breadcrumb
 from common.mixins import TestMixin
 from common.test_utils import (
     create_formset_post_data,
-    test_image_gif_2x2,
+    test_image,
     test_pdf,
     test_pdf_multipage,
 )
@@ -922,7 +922,7 @@ class PdfsUploadTestSuite(TestMixin, TestCase):
     def test_error_if_one_or_more_files_not_pdf(self):
         """Should display a form error if one more files aren't PDFs."""
         self.client.force_login(SuperUserFactory())
-        image = test_image_gif_2x2()
+        image = test_image()
         self.test_data["files"] = [test_pdf() for _ in range(3)] + [image]
         response = self.upload_pdf()
         self.assertFormError(

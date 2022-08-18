@@ -1,16 +1,40 @@
 import multiprocessing
 
 import PIL
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.messages.views import SuccessMessageMixin
 from django.http import FileResponse, HttpResponseBadRequest
-from django.views.generic import FormView
+from django.urls import reverse, reverse_lazy
+from django.views.generic import CreateView, FormView, UpdateView
+
+from buttons.models import ButtonDesign
+from common.breadcrumbs.breadcrumbs import Breadcrumb, BreadcrumbsMixin
+from common.forms.views import DeleteViewCustom
+from common.mixins import PermissionOrCreatedMixin
+from serve_media_files.views import ServeMediaFiles
 
 from .button_pdf_generator import button_pdf_generator
-from .forms import ButtonsForm
+from .forms import ButtonDesignForm, ButtonsForm
+
+
+def breadcrumbs():
+    """Returns breadcrumbs for the button views."""
+    breadcrumbs = [Breadcrumb(reverse("buttons:ButtonsView"), "Buttons")]
+    return breadcrumbs
 
 
 class ButtonsView(FormView):
     form_class = ButtonsForm
     template_name = "buttons/buttons_view.html"
+
+    def get_context_data(self, **kwargs):
+        button_designs = (
+            ButtonDesign.objects.all()
+            if self.request.user.is_authenticated
+            else ButtonDesign.objects.filter(public=True)
+        )
+        kwargs["button_designs"] = button_designs
+        return super().get_context_data(**kwargs)
 
     def form_valid(self, form):
         images = self.request.FILES.getlist("images")
@@ -34,3 +58,62 @@ class ButtonsView(FormView):
             },
         )
         return FileResponse(pdf, content_type="application/pdf", filename="buttons.pdf")
+
+
+class ButtonDesignServe(UserPassesTestMixin, ServeMediaFiles):
+    def setup(self, request, *args, **kwargs):
+        self.button_design = ButtonDesign.objects.get(slug=kwargs["slug"])
+        super().setup(request, *args, **kwargs)
+
+    def get_file_path(self):
+        return self.button_design.image.name
+
+    def test_func(self):
+        if self.button_design.public:
+            return True
+        return self.request.user.is_authenticated
+
+
+class ButtonDesignCreate(
+    LoginRequiredMixin, SuccessMessageMixin, BreadcrumbsMixin, CreateView
+):
+    model = ButtonDesign
+    form_class = ButtonDesignForm
+    template_name = "common/forms/form.html"
+    success_message = 'Buttonmotivet "%(name)s" vart laga.'
+    success_url = reverse_lazy("buttons:ButtonsView")
+
+    def get_breadcrumbs(self):
+        return breadcrumbs()
+
+    def form_valid(self, form):
+        form.instance.created_by = self.request.user
+        form.instance.modified_by = self.request.user
+        return super().form_valid(form)
+
+
+class ButtonDesignUpdate(
+    PermissionOrCreatedMixin, SuccessMessageMixin, BreadcrumbsMixin, UpdateView
+):
+    model = ButtonDesign
+    form_class = ButtonDesignForm
+    template_name = "common/forms/form.html"
+    success_message = 'Buttonmotivet "%(name)s" vart oppdatert.'
+    success_url = reverse_lazy("buttons:ButtonsView")
+    permission_required = "buttons.change_buttondesign"
+
+    def get_breadcrumbs(self):
+        return breadcrumbs()
+
+    def form_valid(self, form):
+        form.instance.modified_by = self.request.user
+        return super().form_valid(form)
+
+
+class ButtonDesignDelete(PermissionOrCreatedMixin, BreadcrumbsMixin, DeleteViewCustom):
+    model = ButtonDesign
+    success_url = reverse_lazy("buttons:ButtonsView")
+    permission_required = "buttons.delete_buttondesign"
+
+    def get_breadcrumbs(self):
+        return breadcrumbs()

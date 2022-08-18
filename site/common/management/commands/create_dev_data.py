@@ -10,6 +10,7 @@ from django.utils.timezone import make_aware
 from accounts.models import UserCustom
 from advent_calendar.factories import AdventCalendarFactory, WindowFactory
 from articles.factories import ArticleFactory
+from buttons.factories import ButtonDesignFactory
 from common.comments.factories import CommentFactory
 from common.embeddable_text.factories import EmbeddableTextFactory
 from common.test_utils import test_pdf_multipage
@@ -32,6 +33,7 @@ from minutes.factories import MinutesFactory
 from navbar.factories import NavbarItemFactory
 from navbar.models import NavbarItem
 from pictures.factories import GalleryFactory, ImageFactory
+from pictures.models import Image
 from polls.factories import ChoiceFactory, PollFactory, VoteFactory
 from repertoire.factories import RepertoireEntryFactory, RepertoireFactory
 from sheetmusic.factories import (
@@ -385,6 +387,7 @@ class Command(BaseCommand):
         )
         for _ in range(3):
             ImageFactory(gallery=gallery)
+        Image.objects.update(uploaded=make_aware(datetime.now() - timedelta(365 * 2)))
 
         MinutesFactory(
             title="Elronds rådlag",
@@ -393,6 +396,9 @@ class Command(BaseCommand):
             created_by=leader,
             modified_by=leader,
         )
+
+        ButtonDesignFactory(name="Taktlausbutton - Raud", public=True)
+        ButtonDesignFactory(name="Taktlausbutton - Blå", image__color="blue")
 
         group = Group.objects.create(name="Vevkom")
         leader.groups.add(group)
@@ -803,4 +809,7 @@ Her kan du skrive nykelinformasjon om hendinga. Oppføringane du skriv vil verte
 
 ---
 """,
+        )
+        EmbeddableTextFactory(
+            name="Buttonmotivbibliotek", content="Her finn du ferdiglaga buttonmotiv!"
         )

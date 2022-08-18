@@ -5,8 +5,17 @@ from . import views
 app_name = "buttons"
 
 urlpatterns = [
-    # There are 2 instances of this view so that the pdf is stored in the users
-    # filesystem with the name buttons.pdf instead of anything else the browser
-    # might decide
     path("", views.ButtonsView.as_view(), name="ButtonsView"),
+    path("nytt-design/", views.ButtonDesignCreate.as_view(), name="ButtonDesignCreate"),
+    path("<slug:slug>/", views.ButtonDesignServe.as_view(), name="ButtonDesignServe"),
+    path(
+        "<slug:slug>/rediger/",
+        views.ButtonDesignUpdate.as_view(),
+        name="ButtonDesignUpdate",
+    ),
+    path(
+        "<slug:slug>/slett/",
+        views.ButtonDesignDelete.as_view(),
+        name="ButtonDesignDelete",
+    ),
 ]
