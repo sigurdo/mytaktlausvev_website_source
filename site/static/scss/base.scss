@@ -1,3 +1,22 @@
+// These variables have bad default values
+$select-color-text: $body-color !default;
+$dropdown-link-hover-bg: $primary;
+@import "tom-select/src/scss/tom-select.bootstrap5.scss";
+
+// Implement https://github.com/orchidjs/tom-select/pull/400
+// Can be removed when the PR is merged
+.#{$select-ns}-wrapper {
+  &.single {
+    &.has-items {
+        .#{$select-ns}-control {
+            .item {
+                padding-right: $select-padding-item-x * 8;
+            }
+        }
+    }
+  }
+}
+
 body {
   // Overlapping navbar
   padding-top: $navbar-padding;

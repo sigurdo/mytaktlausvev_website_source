@@ -20,6 +20,7 @@
 {% endblock css %}
 
 {% block js %}
+{{ block.super }}
 {% load static %}
 <script src={% static 'repertoire/repertoire_pdf.js' %}></script>
 {% endblock js %}

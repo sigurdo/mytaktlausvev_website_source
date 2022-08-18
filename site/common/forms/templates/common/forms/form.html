@@ -32,7 +32,14 @@
     {% endif %}
 
     {% block form %}
-        {% if form and formset %}
+    {% if form %}
+    {{ form.media }}
+    {% endif %}
+    {% if formset %}
+    {{ formset.media }}
+    {% endif %}
+    {% if form and formset %}
+        
         <form method="post">
         {% endif %}
             {% if form %}
@@ -48,3 +55,7 @@
         {% endif %}
     {% endblock form %}
 {% endblock %}
+
+{% block js %}
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.1.0/dist/js/tom-select.complete.min.js"></script>
+{% endblock js %}
