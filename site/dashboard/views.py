@@ -36,8 +36,8 @@ class Dashboard(LoginRequiredMixin, TemplateView):
     def get_random_quotes(self):
         """Returns 2 random quotes."""
         quotes = Quote.objects.filter(
-            timestamp__lte=make_aware(datetime.now() - timedelta(days=1 * 365)),
-            timestamp__gte=make_aware(datetime.now() - timedelta(days=5 * 365)),
+            created__lte=make_aware(datetime.now() - timedelta(days=1 * 365)),
+            created__gte=make_aware(datetime.now() - timedelta(days=5 * 365)),
         )
         return random_sample_queryset(quotes, 2)
 

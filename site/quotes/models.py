@@ -8,9 +8,8 @@ from common.models import CreatedModifiedMixin
 class Quote(CreatedModifiedMixin):
     """Model representing a single quote"""
 
-    text = models.CharField(max_length=2000)
-    owner = models.CharField(max_length=255)
-    timestamp = models.DateTimeField(auto_now_add=True)
+    quote = models.TextField("sitat")
+    context = models.CharField("kontekst", max_length=255)
 
     class Meta:
         ordering = ["-created"]
@@ -18,4 +17,4 @@ class Quote(CreatedModifiedMixin):
         verbose_name_plural = "sitat"
 
     def __str__(self):
-        return self.text
+        return self.quote

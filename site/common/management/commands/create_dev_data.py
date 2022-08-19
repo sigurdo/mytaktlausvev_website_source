@@ -566,7 +566,7 @@ class Command(BaseCommand):
         )
         NavbarItemFactory(
             text="Sitat",
-            link=reverse("quotes:quotes"),
+            link=reverse("quotes:QuoteList"),
             order=2,
             requires_login=True,
             parent=other_dropdown,

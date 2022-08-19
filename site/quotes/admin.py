@@ -4,4 +4,10 @@ from django.contrib import admin
 
 from .models import Quote
 
-admin.site.register(Quote)
+
+class QuoteAdmin(admin.ModelAdmin):
+    list_display = ("quote", "context", "created")
+    search_fields = ("quote", "context")
+
+
+admin.site.register(Quote, QuoteAdmin)
