@@ -7,6 +7,6 @@ app_name = "quotes"
 
 urlpatterns = [
     path("", views.QuoteList.as_view(), name="QuoteList"),
-    path("nytt/", views.QuoteNew.as_view(), name="QuoteNew"),
+    path("nytt/", views.QuoteCreate.as_view(), name="QuoteCreate"),
     path("<int:pk>/rediger/", views.QuoteUpdate.as_view(), name="QuoteUpdate"),
 ]

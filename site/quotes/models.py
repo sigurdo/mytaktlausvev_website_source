@@ -17,4 +17,7 @@ class Quote(CreatedModifiedMixin):
         verbose_name_plural = "sitat"
 
     def __str__(self):
-        return self.quote
+        stripped = self.quote.rstrip()
+        if len(stripped) <= 25:
+            return stripped
+        return stripped[0:24] + "…"

@@ -34,7 +34,7 @@ class QuoteList(LoginRequiredMixin, ListView):
         return super().get_context_data(**kwargs)
 
 
-class QuoteNew(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
+class QuoteCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
     model = Quote
     form_class = QuoteForm
     template_name = "common/forms/form.html"

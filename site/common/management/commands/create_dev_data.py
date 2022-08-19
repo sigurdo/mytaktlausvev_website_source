@@ -35,6 +35,7 @@ from navbar.models import NavbarItem
 from pictures.factories import GalleryFactory, ImageFactory
 from pictures.models import Image
 from polls.factories import ChoiceFactory, PollFactory, VoteFactory
+from quotes.factories import QuoteFactory
 from repertoire.factories import RepertoireEntryFactory, RepertoireFactory
 from sheetmusic.factories import (
     FavoritePartFactory,
@@ -396,6 +397,8 @@ class Command(BaseCommand):
             created_by=leader,
             modified_by=leader,
         )
+
+        QuoteFactory(quote="Tusen takk Mario! Men prinsessa vår er i eit anna slott!", context="Padde")
 
         ButtonDesignFactory(name="Taktlausbutton - Raud", public=True)
         ButtonDesignFactory(name="Taktlausbutton - Blå", image__color="blue")
