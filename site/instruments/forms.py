@@ -22,7 +22,11 @@ class InstrumentForm(ModelForm):
             "comment",
             "state",
         ]
-        widgets = {"comment": TextInput, "user": AutocompleteSelect}
+        widgets = {
+            "type": AutocompleteSelect,
+            "user": AutocompleteSelect,
+            "comment": TextInput,
+        }
 
 
 class InstrumentFormsetHelper(FormHelper):
