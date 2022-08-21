@@ -1,4 +1,4 @@
-<ul class="row row-cols-2 row-cols-md-3 row-cols-xl-4 g-4 list-unstyled">
+<ul class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4 g-4 list-unstyled">
     {% for button_design in button_designs %}
     <li class="col">
         <div class="card h-100">
@@ -6,10 +6,10 @@
                 {% include "common/includes/image.html" with url=button_design.get_absolute_url description=button_design.name bp_gallery="button_designs" only %}
             </div>
             <div class="card-body d-flex flex-column justify-content-center align-items-center">
-                <h3 class="card-title fs-5 mb-0">{{ button_design.name }}</h3>
+                <h3 class="card-title fs-5 mb-0 text-center">{{ button_design.name }}</h3>
 
                 <ul class="list-inline d-flex justify-content-center flex-wrap mt-3">
-                    <li class="list-inline-item my-1">
+                    <li class="list-inline-item m-1">
                         <a
                             download
                             href="{{ button_design.get_absolute_url }}"
@@ -21,13 +21,13 @@
                     </li>
 
                     {% if perms.buttons.change_buttondesign or button_design.created_by == request.user %}
-                    <li class="list-inline-item my-1">
+                    <li class="list-inline-item m-1">
                         <a href="{% url 'buttons:ButtonDesignUpdate' button_design.slug %}" class="btn btn-secondary btn-sm">Rediger</a>
                     </li>
                     {% endif %}
 
                     {% if perms.buttons.delete_buttondesign or button_design.created_by == request.user %}
-                    <li class="list-inline-item my-1">
+                    <li class="list-inline-item m-1">
                         <a href="{% url 'buttons:ButtonDesignDelete' button_design.slug %}" class="btn btn-danger btn-sm">Slett</a>
                     </li>
                     {% endif %}
