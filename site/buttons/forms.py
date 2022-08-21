@@ -29,4 +29,4 @@ class ButtonDesignForm(ModelForm):
 
     class Meta:
         model = ButtonDesign
-        fields = ["name", "image"]
+        fields = ["name", "image", "public"]
