@@ -1,16 +1,55 @@
+from datetime import datetime, timedelta
 from io import BytesIO
 
 from django.test import TestCase
 from django.urls import reverse
+from django.utils.timezone import make_aware
 from PyPDF2 import PdfFileReader
 
 from accounts.factories import SuperUserFactory, UserFactory
+from common.breadcrumbs.breadcrumbs import Breadcrumb
 from common.mixins import TestMixin
 from common.test_utils import create_formset_post_data
 from sheetmusic.factories import FavoritePartFactory
 
 from .factories import RepertoireEntryFactory, RepertoireFactory
 from .forms import RepertoireEntryFormset, RepertoirePdfFormset
+from .models import Repertoire
+from .views import repertoire_breadcrumbs
+
+
+class RepertoireManagerTestSuite(TestMixin, TestCase):
+    def test_active_includes_active(self):
+        repertoire = RepertoireFactory(
+            always_active=True,
+        )
+        result = Repertoire.objects.active()
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0], repertoire)
+
+    def test_active_includes_future_inactive(self):
+        repertoire = RepertoireFactory(
+            always_active=False,
+            active_until=make_aware(datetime.now() + timedelta(days=14)).date(),
+        )
+        result = Repertoire.objects.active()
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0], repertoire)
+
+    def test_active_does_not_include_inactive(self):
+        RepertoireFactory(
+            always_active=False,
+        )
+        result = Repertoire.objects.active()
+        self.assertEqual(len(result), 0)
+
+    def test_active_does_not_include_old_inactive(self):
+        RepertoireFactory(
+            always_active=False,
+            active_until=make_aware(datetime.now() - timedelta(days=14)).date(),
+        )
+        result = Repertoire.objects.active()
+        self.assertEqual(len(result), 0)
 
 
 class RepertoireTestSuite(TestMixin, TestCase):
@@ -37,6 +76,38 @@ class RepertoireTestSuite(TestMixin, TestCase):
         self.favorite.delete()
         self.assertRaises(Exception, self.repertoire.favorite_parts_pdf_file, self.user)
 
+    def test_is_active_includes_active(self):
+        repertoire = RepertoireFactory(
+            always_active=True,
+        )
+        self.assertTrue(repertoire.is_active())
+
+    def test_is_active_includes_future_inactive(self):
+        repertoire = RepertoireFactory(
+            always_active=False,
+            active_until=make_aware(datetime.now() + timedelta(days=14)).date(),
+        )
+        self.assertTrue(repertoire.is_active())
+
+    def test_is_active_does_not_include_inactive(self):
+        repertoire = RepertoireFactory(
+            always_active=False,
+        )
+        self.assertFalse(repertoire.is_active())
+
+    def test_is_active_does_not_include_old_inactive(self):
+        repertoire = RepertoireFactory(
+            always_active=False,
+            active_until=make_aware(datetime.now() - timedelta(days=14)).date(),
+        )
+        self.assertFalse(repertoire.is_active())
+
+    def test_get_absolute_url(self):
+        self.assertEqual(
+            self.repertoire.get_absolute_url(),
+            reverse("repertoire:RepertoireDetail", args=[self.repertoire.slug]),
+        )
+
 
 class RepertoireEntryTestSuite(TestMixin, TestCase):
     def setUp(self):
@@ -46,6 +117,71 @@ class RepertoireEntryTestSuite(TestMixin, TestCase):
 
     def test_to_str(self):
         self.assertEqual(str(self.entry), "Vårkonsert - Ice Cream")
+
+
+class RepertoireBreadcrumbsTestSuite(TestMixin, TestCase):
+    def test_base(self):
+        breadcrumbs = repertoire_breadcrumbs()
+        self.assertEqual(
+            breadcrumbs,
+            [
+                Breadcrumb(
+                    reverse("repertoire:RepertoireList"),
+                    "Alle repertoar",
+                )
+            ],
+        )
+
+    def test_current(self):
+        breadcrumbs = repertoire_breadcrumbs(current=True)
+        self.assertEqual(
+            breadcrumbs[1],
+            Breadcrumb(
+                reverse("repertoire:ActiveRepertoires"),
+                "Aktive",
+            ),
+        )
+
+    def test_repertoire(self):
+        repertoire = RepertoireFactory()
+        breadcrumbs = repertoire_breadcrumbs(repertoire=repertoire)
+        self.assertEqual(
+            breadcrumbs[1],
+            Breadcrumb(
+                reverse("repertoire:RepertoireDetail", args=[repertoire.slug]),
+                str(repertoire),
+            ),
+        )
+
+
+class ActiveRepertoiresTestSuite(TestMixin, TestCase):
+    def test_requires_login(self):
+        self.assertLoginRequired(reverse("repertoire:ActiveRepertoires"))
+
+    def test_get_queryset(self):
+        RepertoireFactory(always_active=True)
+        self.client.force_login(UserFactory())
+        response = self.client.get(reverse("repertoire:ActiveRepertoires"))
+        self.assertEqual(
+            list(response.context["repertoires"]), list(Repertoire.objects.active())
+        )
+
+
+class RepertoireDetailTestSuite(TestMixin, TestCase):
+    def setUp(self):
+        self.repertoire = RepertoireFactory(always_active=True)
+
+    def test_requires_login(self):
+        self.assertLoginRequired(
+            reverse("repertoire:RepertoireDetail", args=[self.repertoire.slug])
+        )
+
+    def test_context_object_name(self):
+        self.client.force_login(UserFactory())
+        response = self.client.get(
+            reverse("repertoire:RepertoireDetail", args=[self.repertoire.slug])
+        )
+        self.assertEqual(response.context["repertoire"], self.repertoire)
 
 
 class RepertoireListTestSuite(TestMixin, TestCase):
@@ -80,7 +216,7 @@ class RepertoireCreateTestSuite(TestMixin, TestCase):
         response = self.client.post(
             reverse("repertoire:RepertoireCreate"), self.test_data
         )
-        self.assertRedirects(response, reverse("repertoire:RepertoireList"))
+        self.assertRedirects(response, reverse("repertoire:ActiveRepertoires"))
 
 
 class RepertoireUpdateTestSuite(TestMixin, TestCase):
@@ -115,7 +251,7 @@ class RepertoireUpdateTestSuite(TestMixin, TestCase):
         user = SuperUserFactory()
         self.client.force_login(user)
         response = self.client.post(self.get_url(), self.test_data)
-        self.assertRedirects(response, reverse("repertoire:RepertoireList"))
+        self.assertRedirects(response, reverse("repertoire:ActiveRepertoires"))
 
 
 class RepertoireDeleteTestSuite(TestMixin, TestCase):

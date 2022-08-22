@@ -1,0 +1,45 @@
+<table class="table table-striped table-sm">
+    <thead>
+        <tr>
+            <th> Notenamn </th>
+            <th> Favorittstemme </th>
+            <th> Stemmeoversikt </th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for entry in repertoire.entries.all %}
+        <tr>
+            <td>
+                {{ entry.score }}
+            </td>
+            <td>
+                {% load has_favorite_part %}
+                {% has_favorite_part user entry.score as has_favorite_part %}
+                {% if has_favorite_part %}
+                    <a href="{% url "sheetmusic:FavoritePartPdf" entry.score.slug %}"> Favorittstemme </a>
+                {% endif %}
+            </td>
+            <td>
+                <a href="{% url "sheetmusic:ScoreView" entry.score.slug %}"> Stemmeoversikt </a>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<ul class="list-inline my-1">
+    <li class="list-inline-item">
+        <a href="{% url 'repertoire:RepertoirePdf' repertoire.slug %}" class="btn btn-primary"> Generer PDF fra favorittstemmer </a>
+    </li>
+    {% if perms.repertoire.change_repertoire %}
+        <li class="list-inline-item">
+            <a href="{% url 'repertoire:RepertoireUpdate' repertoire.slug %}" class="btn btn-secondary"> Rediger </a>
+        </li>
+    {% endif %}
+    {% if perms.repertoire.delete_repertoire %}
+        <li class="list-inline-item">
+            <a href="{% url 'repertoire:RepertoireDelete' repertoire.slug %}" class="btn btn-danger"> Slett </a>
+        </li>
+    {% endif %}
+    </li>
+</ul>

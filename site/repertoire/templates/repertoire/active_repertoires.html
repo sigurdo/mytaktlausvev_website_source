@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title_page %}
+    Repertoar
+{% endblock title_page %}
+
+{% block title_content %}
+    Repertoar
+{% endblock title_content %}
+
+{% block header %}
+    {{ block.super }}
+
+    <ul class="list-inline my-1">
+        {% if perms.repertoire.add_repertoire %}
+        <li class="list-inline-item">
+            <a href="{% url 'repertoire:RepertoireCreate' %}" class="btn btn-primary btn-sm my-1"> Nytt repertoar </a>
+        </li>
+        {% endif %}
+    </ul>
+{% endblock header %}
+
+{% block content %}
+    {% for repertoire in repertoires %}
+        <section class="my-3 table-responsive">
+            <h2> {{ repertoire }} </h2>
+            {% include "repertoire/includes/repertoire.html" with repertoire=repertoire %}
+        </section>
+    {% endfor %}
+{% endblock content %}
