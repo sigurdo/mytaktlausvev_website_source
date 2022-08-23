@@ -751,7 +751,6 @@ class Command(BaseCommand):
         )
         old_concert_repertoire = RepertoireFactory(
             name="Bursdagskonsert fra og med, men egentlig uten vals",
-            always_active=False,
             active_until=make_aware(datetime.now() - timedelta(days=14)),
         )
         RepertoireEntryFactory(repertoire=old_concert_repertoire, score=birthday_song)
@@ -760,7 +759,6 @@ class Command(BaseCommand):
         RepertoireEntryFactory(repertoire=march_repertoire, score=birthday_song)
         concert_repertoire = RepertoireFactory(
             name="Konsert",
-            always_active=False,
             active_until=make_aware(datetime.now() + timedelta(days=14)),
         )
         RepertoireEntryFactory(repertoire=concert_repertoire, score=pause_waltz)

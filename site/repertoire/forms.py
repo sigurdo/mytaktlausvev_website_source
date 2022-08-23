@@ -29,7 +29,7 @@ class RepertoireForm(ModelForm):
 
     class Meta:
         model = Repertoire
-        fields = ["name", "order", "always_active", "active_until"]
+        fields = ["name", "order", "active_until"]
         widgets = {
             "active_until": DateInput(attrs={"type": "date"}),
         }

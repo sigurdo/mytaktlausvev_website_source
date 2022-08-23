@@ -1,7 +1,6 @@
 from datetime import timedelta
 from io import BytesIO
 
-from django.db import IntegrityError
 from django.test import TestCase
 from django.urls import reverse
 from django.utils.timezone import now
@@ -20,35 +19,20 @@ from .views import repertoire_breadcrumbs
 
 
 class RepertoireManagerTestSuite(TestMixin, TestCase):
-    def test_active_includes_active(self):
-        repertoire = RepertoireFactory(
-            always_active=True,
-        )
+    def test_active_includes_active_until_none(self):
+        repertoire = RepertoireFactory(active_until=None)
         result = Repertoire.objects.active()
         self.assertEqual(len(result), 1)
         self.assertEqual(result[0], repertoire)
 
-    def test_active_includes_future_inactive(self):
-        repertoire = RepertoireFactory(
-            always_active=False,
-            active_until=(now() + timedelta(days=14)).date(),
-        )
+    def test_active_includes_active_until_future(self):
+        repertoire = RepertoireFactory(active_until=(now() + timedelta(days=14)).date())
         result = Repertoire.objects.active()
         self.assertEqual(len(result), 1)
         self.assertEqual(result[0], repertoire)
 
-    def test_active_does_not_include_inactive(self):
-        RepertoireFactory(
-            always_active=False,
-        )
-        result = Repertoire.objects.active()
-        self.assertEqual(len(result), 0)
-
-    def test_active_does_not_include_old_inactive(self):
-        RepertoireFactory(
-            always_active=False,
-            active_until=(now() - timedelta(days=14)).date(),
-        )
+    def test_active_does_not_include_active_until_past(self):
+        RepertoireFactory(active_until=(now() - timedelta(days=14)).date())
         result = Repertoire.objects.active()
         self.assertEqual(len(result), 0)
 
@@ -77,28 +61,20 @@ class RepertoireTestSuite(TestMixin, TestCase):
         self.favorite.delete()
         self.assertRaises(Exception, self.repertoire.favorite_parts_pdf_file, self.user)
 
-    def test_is_active_includes_active(self):
+    def test_is_active_includes_active_until_none(self):
         repertoire = RepertoireFactory(
-            always_active=True,
+            active_until=None,
         )
         self.assertTrue(repertoire.is_active())
 
-    def test_is_active_includes_future_inactive(self):
+    def test_is_active_includes_active_until_future(self):
         repertoire = RepertoireFactory(
-            always_active=False,
             active_until=(now() + timedelta(days=14)).date(),
         )
         self.assertTrue(repertoire.is_active())
 
-    def test_is_active_does_not_include_inactive(self):
+    def test_is_active_does_not_include_active_until_past(self):
         repertoire = RepertoireFactory(
-            always_active=False,
-        )
-        self.assertFalse(repertoire.is_active())
-
-    def test_is_active_does_not_include_old_inactive(self):
-        repertoire = RepertoireFactory(
-            always_active=False,
             active_until=(now() - timedelta(days=14)).date(),
         )
         self.assertFalse(repertoire.is_active())
@@ -112,10 +88,6 @@ class RepertoireTestSuite(TestMixin, TestCase):
     def test_slug_unique(self):
         other = RepertoireFactory(slug=self.repertoire.slug)
         self.assertNotEqual(self.repertoire.slug, other.slug)
-
-    def test_cannot_be_always_active_and_active_until(self):
-        with self.assertRaises(IntegrityError):
-            RepertoireFactory(always_active=True, active_until=now())
 
 
 class RepertoireEntryTestSuite(TestMixin, TestCase):
@@ -144,7 +116,9 @@ class RepertoireBreadcrumbsTestSuite(TestMixin, TestCase):
 
     def test_old(self):
         breadcrumbs = repertoire_breadcrumbs(
-            repertoire=RepertoireFactory(always_active=False)
+            repertoire=RepertoireFactory(
+                active_until=(now() - timedelta(days=14)).date()
+            )
         )
         self.assertEqual(len(breadcrumbs), 2)
         self.assertEqual(
@@ -156,7 +130,7 @@ class RepertoireBreadcrumbsTestSuite(TestMixin, TestCase):
         )
 
     def test_repertoire(self):
-        repertoire = RepertoireFactory(always_active=True)
+        repertoire = RepertoireFactory()
         breadcrumbs = repertoire_breadcrumbs(
             repertoire=repertoire, show_repertoire=True
         )
@@ -170,7 +144,7 @@ class RepertoireBreadcrumbsTestSuite(TestMixin, TestCase):
         )
 
     def test_old_repertoire(self):
-        repertoire = RepertoireFactory(always_active=False)
+        repertoire = RepertoireFactory(active_until=(now() - timedelta(days=14)).date())
         breadcrumbs = repertoire_breadcrumbs(
             repertoire=repertoire, show_repertoire=True
         )
@@ -189,7 +163,7 @@ class ActiveRepertoiresTestSuite(TestMixin, TestCase):
         self.assertLoginRequired(reverse("repertoire:ActiveRepertoires"))
 
     def test_get_queryset(self):
-        RepertoireFactory(always_active=True)
+        RepertoireFactory()
         self.client.force_login(UserFactory())
         response = self.client.get(reverse("repertoire:ActiveRepertoires"))
         self.assertEqual(
@@ -199,7 +173,7 @@ class ActiveRepertoiresTestSuite(TestMixin, TestCase):
 
 class RepertoireDetailTestSuite(TestMixin, TestCase):
     def setUp(self):
-        self.repertoire = RepertoireFactory(always_active=True)
+        self.repertoire = RepertoireFactory()
 
     def test_requires_login(self):
         self.assertLoginRequired(

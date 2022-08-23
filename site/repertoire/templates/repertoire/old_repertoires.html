@@ -14,7 +14,7 @@
         <thead>
             <tr>
                 <th> Repertoar </th>
-                <th> Oppretta </th>
+                <th> Aktivt til </th>
                 <th><span class="visually-hidden">Aktivt</span></th>
                 <th><span class="visually-hidden">Rediger</span></th>
                 <th><span class="visually-hidden">Slett</span></th>
@@ -28,7 +28,11 @@
                     </td>
 
                     <td>
-                        <time datetime="{{ repertoire.timestamp|date:"c" }}">{{ repertoire.timestamp|date:"j. F, Y" }}</time>
+                        {% if repertoire.active_until %}
+                            <time datetime="{{ repertoire.active_until|date:"c" }}">{{ repertoire.timestamp|date:"j. F, Y" }}</time>
+                        {% else %}
+                            For alltid
+                        {% endif %}
                     </td>
 
                     <td class="text-center">

@@ -1,4 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.db.models import F
 from django.http import FileResponse
 from django.urls import reverse, reverse_lazy
 from django.utils.text import slugify
@@ -46,7 +47,7 @@ class OldRepertoires(LoginRequiredMixin, BreadcrumbsMixin, ListView):
     model = Repertoire
     context_object_name = "repertoires"
     template_name = "repertoire/old_repertoires.html"
-    ordering = ["-timestamp"]
+    ordering = [F("active_until").desc(nulls_first=True)]
 
     def get_breadcrumbs(self):
         return repertoire_breadcrumbs()

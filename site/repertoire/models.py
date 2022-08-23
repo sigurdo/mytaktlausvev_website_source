@@ -3,9 +3,7 @@ from io import BytesIO
 from autoslug import AutoSlugField
 from django.db.models import (
     CASCADE,
-    BooleanField,
     CharField,
-    CheckConstraint,
     DateField,
     DateTimeField,
     FloatField,
@@ -25,7 +23,9 @@ from sheetmusic.models import Part, Score
 
 class RepertoireManager(Manager):
     def active(self):
-        return super().filter(Q(always_active=True) | Q(active_until__gte=now().date()))
+        return super().filter(
+            Q(active_until__isnull=True) | Q(active_until__gte=now().date())
+        )
 
 
 class Repertoire(Model):
@@ -48,23 +48,15 @@ class Repertoire(Model):
             "Repertoar med lik rekkjefølgje vert sortert etter namn."
         ),
     )
-    always_active = BooleanField(verbose_name="alltid aktivt", default=True)
     active_until = DateField(
         verbose_name="aktivt til",
         default=None,
         blank=True,
         null=True,
-        help_text='Gjer repertoaret aktivt til og med ein bestemt dato. Kan ikkje nyttast saman med "Alltid aktivt".',
+        help_text="Valfritt. Gjer repertoaret aktivt til og med ein bestemt dato. Om inga dato er satt vert det aktivt for alltid.",
     )
 
     class Meta:
-        constraints = [
-            CheckConstraint(
-                check=(Q(always_active=False) | Q(active_until__isnull=True)),
-                name="repertoire_not_always_active_and_active_until",
-                violation_error_message='Eit repertoar kan ikkje vere både "Alltid aktivt" og "Aktivt til"',
-            ),
-        ]
         ordering = ["order", "name"]
         verbose_name = "repertoar"
         verbose_name_plural = "repertoar"
@@ -73,9 +65,7 @@ class Repertoire(Model):
         return self.name
 
     def is_active(self):
-        return self.always_active or (
-            self.active_until is not None and self.active_until >= now().date()
-        )
+        return self.active_until is None or self.active_until >= now().date()
 
     def favorite_parts_pdf_file(self, user):
         """Returns a PDF contaning the user's favorite parts for the scores in this repertoire."""
