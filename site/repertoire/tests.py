@@ -157,7 +157,9 @@ class RepertoireBreadcrumbsTestSuite(TestMixin, TestCase):
 
     def test_repertoire(self):
         repertoire = RepertoireFactory(always_active=True)
-        breadcrumbs = repertoire_breadcrumbs(repertoire=repertoire, show_repertoire=True)
+        breadcrumbs = repertoire_breadcrumbs(
+            repertoire=repertoire, show_repertoire=True
+        )
         self.assertEqual(len(breadcrumbs), 2)
         self.assertEqual(
             breadcrumbs[1],
@@ -169,7 +171,9 @@ class RepertoireBreadcrumbsTestSuite(TestMixin, TestCase):
 
     def test_old_repertoire(self):
         repertoire = RepertoireFactory(always_active=False)
-        breadcrumbs = repertoire_breadcrumbs(repertoire=repertoire, show_repertoire=True)
+        breadcrumbs = repertoire_breadcrumbs(
+            repertoire=repertoire, show_repertoire=True
+        )
         self.assertEqual(len(breadcrumbs), 3)
         self.assertEqual(
             breadcrumbs[2],
