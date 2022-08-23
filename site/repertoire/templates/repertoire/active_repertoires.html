@@ -12,6 +12,10 @@
     {{ block.super }}
 
     <ul class="list-inline my-1">
+        <li class="list-inline-item">
+            <a href="{% url 'repertoire:OldRepertoires' %}" class="btn btn-secondary btn-sm my-1"> Gamle repertoar </a>
+        </li>
+
         {% if perms.repertoire.add_repertoire %}
         <li class="list-inline-item">
             <a href="{% url 'repertoire:RepertoireCreate' %}" class="btn btn-primary btn-sm my-1"> Nytt repertoar </a>

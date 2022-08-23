@@ -29,16 +29,16 @@
 
 <ul class="list-inline my-1">
     <li class="list-inline-item">
-        <a href="{% url 'repertoire:RepertoirePdf' repertoire.slug %}" class="btn btn-primary"> Generer PDF fra favorittstemmer </a>
+        <a href="{% url 'repertoire:RepertoirePdf' repertoire.slug %}" class="btn btn-primary btn-sm"> Generer PDF fra favorittstemmer </a>
     </li>
     {% if perms.repertoire.change_repertoire %}
         <li class="list-inline-item">
-            <a href="{% url 'repertoire:RepertoireUpdate' repertoire.slug %}" class="btn btn-secondary"> Rediger </a>
+            <a href="{% url 'repertoire:RepertoireUpdate' repertoire.slug %}" class="btn btn-secondary btn-sm"> Rediger </a>
         </li>
     {% endif %}
     {% if perms.repertoire.delete_repertoire %}
         <li class="list-inline-item">
-            <a href="{% url 'repertoire:RepertoireDelete' repertoire.slug %}" class="btn btn-danger"> Slett </a>
+            <a href="{% url 'repertoire:RepertoireDelete' repertoire.slug %}" class="btn btn-danger btn-sm"> Slett </a>
         </li>
     {% endif %}
     </li>

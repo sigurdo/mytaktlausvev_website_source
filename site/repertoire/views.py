@@ -17,18 +17,18 @@ from .forms import RepertoireEntryFormset, RepertoireForm, RepertoirePdfFormset
 from .models import Repertoire
 
 
-def repertoire_breadcrumbs(current=False, repertoire=None):
+def repertoire_breadcrumbs(old=False, repertoire=None):
     breadcrumbs = [
         Breadcrumb(
-            reverse("repertoire:RepertoireList"),
-            "Alle repertoar",
+            reverse("repertoire:ActiveRepertoires"),
+            "Repertoar",
         )
     ]
-    if current:
+    if old:
         breadcrumbs.append(
             Breadcrumb(
-                reverse("repertoire:ActiveRepertoires"),
-                "Aktive",
+                reverse("repertoire:OldRepertoires"),
+                "Gamle",
             )
         )
     if repertoire is not None:
@@ -41,13 +41,17 @@ def repertoire_breadcrumbs(current=False, repertoire=None):
     return breadcrumbs
 
 
-class RepertoireList(LoginRequiredMixin, ListView):
+class OldRepertoires(LoginRequiredMixin, BreadcrumbsMixin, ListView):
     model = Repertoire
     context_object_name = "repertoires"
+    template_name = "repertoire/old_repertoires.html"
     ordering = ["-timestamp"]
 
+    def get_breadcrumbs(self):
+        return repertoire_breadcrumbs()
 
-class ActiveRepertoires(LoginRequiredMixin, BreadcrumbsMixin, ListView):
+
+class ActiveRepertoires(LoginRequiredMixin, ListView):
     model = Repertoire
     context_object_name = "repertoires"
     template_name = "repertoire/active_repertoires.html"
@@ -55,16 +59,13 @@ class ActiveRepertoires(LoginRequiredMixin, BreadcrumbsMixin, ListView):
     def get_queryset(self):
         return Repertoire.objects.active()
 
-    def get_breadcrumbs(self):
-        return repertoire_breadcrumbs()
-
 
 class RepertoireDetail(LoginRequiredMixin, BreadcrumbsMixin, DetailView):
     model = Repertoire
     context_object_name = "repertoire"
 
     def get_breadcrumbs(self):
-        return repertoire_breadcrumbs(current=self.object.is_active())
+        return repertoire_breadcrumbs(old=not self.object.is_active())
 
 
 class RepertoireCreate(
@@ -78,7 +79,7 @@ class RepertoireCreate(
     permission_required = "repertoire.add_repertoire"
 
     def get_breadcrumbs(self):
-        return repertoire_breadcrumbs(current=True)
+        return repertoire_breadcrumbs()
 
 
 class RepertoireUpdate(
@@ -93,7 +94,7 @@ class RepertoireUpdate(
 
     def get_breadcrumbs(self):
         return repertoire_breadcrumbs(
-            current=self.object.is_active(), repertoire=self.object
+            old=not self.object.is_active(), repertoire=self.object
         )
 
 
@@ -104,7 +105,7 @@ class RepertoireDelete(PermissionRequiredMixin, BreadcrumbsMixin, DeleteViewCust
 
     def get_breadcrumbs(self):
         return repertoire_breadcrumbs(
-            current=self.object.is_active(), repertoire=self.object
+            old=not self.object.is_active(), repertoire=self.object
         )
 
 
@@ -115,7 +116,7 @@ class RepertoirePdf(LoginRequiredMixin, BreadcrumbsMixin, SingleObjectMixin, For
 
     def get_breadcrumbs(self):
         return repertoire_breadcrumbs(
-            current=self.object.is_active(), repertoire=self.object
+            old=not self.object.is_active(), repertoire=self.object
         )
 
     def get_initial(self):

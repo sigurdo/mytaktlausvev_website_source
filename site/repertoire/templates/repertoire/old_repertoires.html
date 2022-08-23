@@ -1,22 +1,12 @@
 {% extends "base.html" %}
 
 {% block title_page %}
-    Alle repertoar
+    Gamle repertoar
 {% endblock title_page %}
 
 {% block title_content %}
-    Alle repertoar
+    Gamle repertoar
 {% endblock title_content %}
-
-{% block header %}
-    {{ block.super }}
-
-    <ul class="list-inline my-1">
-        <li class="list-inline-item">
-            <a href="{% url 'repertoire:ActiveRepertoires' %}" class="btn btn-secondary btn-sm my-1"> Aktive repertoar </a>
-        </li>
-    </ul>
-{% endblock header %}
 
 {% block content %}
 <section class="my-3 table-responsive">
@@ -42,7 +32,7 @@
                     </td>
 
                     <td class="text-center">
-                        {% if repertoire.is_active == True %}
+                        {% if repertoire.is_active %}
                             Aktivt
                         {% endif %}
                     </td>

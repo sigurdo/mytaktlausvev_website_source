@@ -5,6 +5,7 @@ from django.db.models import (
     CASCADE,
     BooleanField,
     CharField,
+    CheckConstraint,
     DateField,
     DateTimeField,
     FloatField,
@@ -47,17 +48,24 @@ class Repertoire(Model):
             "Repertoar med lik rekkjefølgje vert sortert etter namn."
         ),
     )
-    always_active = BooleanField(verbose_name="Alltid aktivt", default=True)
+    always_active = BooleanField(verbose_name="alltid aktivt", default=True)
     active_until = DateField(
-        verbose_name="Aktivt til",
+        verbose_name="aktivt til",
         default=None,
         blank=True,
         null=True,
-        help_text='Gjer repertoaret aktivt til og med ein bestemt dato. Hugs å ikkje sette "Alltid aktivt"-feltet om repertoaret ikkje skal vere aktivt etter denne datoen.',
+        help_text='Gjer repertoaret aktivt til og med ein bestemt dato. Kan ikkje nyttast saman med "Alltid aktivt".',
     )
 
     class Meta:
-        constraints = [UniqueConstraint(fields=["slug"], name="repertoire_unique_slug")]
+        constraints = [
+            UniqueConstraint(fields=["slug"], name="repertoire_unique_slug"),
+            CheckConstraint(
+                check=(Q(always_active=False) | Q(active_until__isnull=True)),
+                name="repertoire_not_always_active_and_active_until",
+                violation_error_message='Eit repertoar kan ikkje vere både "Alltid aktivt" og "Aktivt til"',
+            ),
+        ]
         ordering = ["order", "name"]
         verbose_name = "repertoar"
         verbose_name_plural = "repertoar"
