@@ -109,6 +109,10 @@ class RepertoireTestSuite(TestMixin, TestCase):
             reverse("repertoire:RepertoireDetail", args=[self.repertoire.slug]),
         )
 
+    def test_slug_unique(self):
+        other = RepertoireFactory(slug=self.repertoire.slug)
+        self.assertNotEqual(self.repertoire.slug, other.slug)
+
     def test_cannot_be_always_active_and_active_until(self):
         with self.assertRaises(IntegrityError):
             RepertoireFactory(always_active=True, active_until=now())
@@ -127,6 +131,7 @@ class RepertoireEntryTestSuite(TestMixin, TestCase):
 class RepertoireBreadcrumbsTestSuite(TestMixin, TestCase):
     def test_base(self):
         breadcrumbs = repertoire_breadcrumbs()
+        self.assertEqual(len(breadcrumbs), 1)
         self.assertEqual(
             breadcrumbs,
             [
@@ -137,8 +142,11 @@ class RepertoireBreadcrumbsTestSuite(TestMixin, TestCase):
             ],
         )
 
-    def test_current(self):
-        breadcrumbs = repertoire_breadcrumbs(old=True)
+    def test_old(self):
+        breadcrumbs = repertoire_breadcrumbs(
+            repertoire=RepertoireFactory(always_active=False)
+        )
+        self.assertEqual(len(breadcrumbs), 2)
         self.assertEqual(
             breadcrumbs[1],
             Breadcrumb(
@@ -148,10 +156,23 @@ class RepertoireBreadcrumbsTestSuite(TestMixin, TestCase):
         )
 
     def test_repertoire(self):
-        repertoire = RepertoireFactory()
-        breadcrumbs = repertoire_breadcrumbs(repertoire=repertoire)
+        repertoire = RepertoireFactory(always_active=True)
+        breadcrumbs = repertoire_breadcrumbs(repertoire=repertoire, show_repertoire=True)
+        self.assertEqual(len(breadcrumbs), 2)
         self.assertEqual(
             breadcrumbs[1],
+            Breadcrumb(
+                reverse("repertoire:RepertoireDetail", args=[repertoire.slug]),
+                str(repertoire),
+            ),
+        )
+
+    def test_old_repertoire(self):
+        repertoire = RepertoireFactory(always_active=False)
+        breadcrumbs = repertoire_breadcrumbs(repertoire=repertoire, show_repertoire=True)
+        self.assertEqual(len(breadcrumbs), 3)
+        self.assertEqual(
+            breadcrumbs[2],
             Breadcrumb(
                 reverse("repertoire:RepertoireDetail", args=[repertoire.slug]),
                 str(repertoire),

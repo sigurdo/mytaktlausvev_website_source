@@ -59,7 +59,6 @@ class Repertoire(Model):
 
     class Meta:
         constraints = [
-            UniqueConstraint(fields=["slug"], name="repertoire_unique_slug"),
             CheckConstraint(
                 check=(Q(always_active=False) | Q(active_until__isnull=True)),
                 name="repertoire_not_always_active_and_active_until",
