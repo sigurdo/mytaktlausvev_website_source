@@ -94,7 +94,9 @@ class RepertoireUpdate(
     permission_required = "repertoire.change_repertoire"
 
     def get_breadcrumbs(self):
-        return repertoire_breadcrumbs(repertoire=self.object, show_repertoire=True)
+        return repertoire_breadcrumbs(
+            repertoire=self.object, show_repertoire=not self.object.is_active()
+        )
 
 
 class RepertoireDelete(PermissionRequiredMixin, BreadcrumbsMixin, DeleteViewCustom):
@@ -103,7 +105,9 @@ class RepertoireDelete(PermissionRequiredMixin, BreadcrumbsMixin, DeleteViewCust
     permission_required = "repertoire.delete_repertoire"
 
     def get_breadcrumbs(self):
-        return repertoire_breadcrumbs(repertoire=self.object, show_repertoire=True)
+        return repertoire_breadcrumbs(
+            repertoire=self.object, show_repertoire=not self.object.is_active()
+        )
 
 
 class RepertoirePdf(LoginRequiredMixin, BreadcrumbsMixin, SingleObjectMixin, FormView):
@@ -112,7 +116,9 @@ class RepertoirePdf(LoginRequiredMixin, BreadcrumbsMixin, SingleObjectMixin, For
     form_class = RepertoirePdfFormset
 
     def get_breadcrumbs(self):
-        return repertoire_breadcrumbs(repertoire=self.object, show_repertoire=True)
+        return repertoire_breadcrumbs(
+            repertoire=self.object, show_repertoire=not self.object.is_active()
+        )
 
     def get_initial(self):
         return [
