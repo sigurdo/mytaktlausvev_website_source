@@ -51,7 +51,8 @@ The project uses [Django's test framework](https://docs.djangoproject.com/en/4.0
 - `sh scripts/test.sh`: Run all tests.
 - `sh scripts/test.sh <app_name>`: Run tests for a single app.
 - `sh scripts/verify.sh`: Run formatter, linter and tests.
-- `sh scripts/startapp.sh <app_name>`: Initializes a new django app with the name "app_name".
+- `sh scripts/startapp.sh <app_name>`: Initialize a new django app with the name "app_name".
+- `sh scripts/migrate.sh`: Make migrations and migrate.
 
 ## Running locally in production mode
 
