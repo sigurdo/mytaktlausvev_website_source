@@ -66,6 +66,9 @@ codestyle-monokai.scss
 # Ignore shell scripts in root directory to easify custom automizations
 /*.sh
 
+# Ignore local todo lists
+/todo.*
+
 # Prod env vars
 deployment/.prod.env
 
