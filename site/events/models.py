@@ -4,6 +4,7 @@ from autoslug.fields import AutoSlugField
 from django.conf import settings
 from django.db.models import (
     CASCADE,
+    PROTECT,
     CharField,
     DateTimeField,
     FloatField,
@@ -20,6 +21,15 @@ from django.utils.timezone import localtime, make_aware, now
 from common.models import ArticleMixin
 
 
+class EventCategory(Model):
+    """Model representing an event category"""
+
+    name = CharField(verbose_name="Namn", max_length=255, unique=True)
+
+    def __str__(self):
+        return self.name
+
+
 class EventManager(Manager):
     def upcoming(self):
         return super().filter(
@@ -34,12 +44,20 @@ class Event(ArticleMixin):
     objects = EventManager()
     start_time = DateTimeField("starttid", default=now)
     end_time = DateTimeField("sluttid", default=None, blank=True, null=True)
-
     slug = AutoSlugField(
         verbose_name="lenkjenamn",
         populate_from="title",
         unique_with="start_time__year",
         editable=True,
+    )
+    category = ForeignKey(
+        EventCategory,
+        on_delete=PROTECT,
+        default=None,
+        blank=True,
+        null=True,
+        verbose_name="Kategori",
+        related_name="events",
     )
 
     def attending(self):

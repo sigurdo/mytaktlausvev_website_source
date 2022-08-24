@@ -10,7 +10,7 @@ from django.forms import (
 from django.utils.timezone import now
 
 from common.forms.layouts import DynamicFormsetButton, FormsetLayoutObject
-from common.forms.widgets import SplitDateTimeWidgetCustom
+from common.forms.widgets import AutocompleteSelect, SplitDateTimeWidgetCustom
 
 from .models import Event, EventAttendance, EventKeyinfoEntry
 
@@ -29,6 +29,7 @@ class EventForm(ModelForm):
     helper.add_input(Submit("submit", "Lagre hending"))
     helper.layout = Layout(
         "title",
+        "category",
         "start_time",
         "end_time",
         Fieldset(
@@ -47,7 +48,8 @@ class EventForm(ModelForm):
 
     class Meta:
         model = Event
-        fields = ["title", "start_time", "end_time", "content"]
+        fields = ["title", "category", "start_time", "end_time", "content"]
+        widgets = {"category": AutocompleteSelect}
 
 
 class EventAttendanceForm(ModelForm):

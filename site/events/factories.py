@@ -3,7 +3,14 @@ from factory.django import DjangoModelFactory
 
 from accounts.factories import UserFactory
 
-from .models import Attendance, Event, EventAttendance, EventKeyinfoEntry
+from .models import Attendance, Event, EventAttendance, EventCategory, EventKeyinfoEntry
+
+
+class EventCategoryFactory(DjangoModelFactory):
+    class Meta:
+        model = EventCategory
+
+    name = "Category"
 
 
 class EventFactory(DjangoModelFactory):
@@ -14,6 +21,7 @@ class EventFactory(DjangoModelFactory):
     content = "SMASH in Trondheim."
     created_by = SubFactory(UserFactory)
     modified_by = SubFactory(UserFactory)
+    category = SubFactory(EventCategoryFactory)
 
 
 class EventAttendanceFactory(DjangoModelFactory):
