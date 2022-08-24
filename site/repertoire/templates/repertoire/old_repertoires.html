@@ -29,7 +29,7 @@
 
                     <td>
                         {% if repertoire.active_until %}
-                            <time datetime="{{ repertoire.active_until|date:"c" }}">{{ repertoire.timestamp|date:"j. F, Y" }}</time>
+                            <time datetime="{{ repertoire.active_until|date:"c" }}">{{ repertoire.active_until|date:"j. F, Y" }}</time>
                         {% else %}
                             For alltid
                         {% endif %}
@@ -42,7 +42,7 @@
                     </td>
 
                     <td class="text-center">
-                        {% if user == user_file.created_by or perms.user_files.change_file %}
+                        {% if user == repertoire.created_by or perms.repertoire.change_repertoire %}
                         <a
                             href="{% url 'repertoire:RepertoireUpdate' repertoire.slug %}"
                             class="btn btn-primary btn-sm"
@@ -53,7 +53,7 @@
                     </td>
 
                     <td class="text-center">
-                        {% if user == user_file.created_by or perms.user_files.delete_file %}
+                        {% if user == repertoire.created_by or perms.repertoire.delete_repertoire %}
                         <a
                             href="{% url 'repertoire:RepertoireDelete' repertoire.slug %}"
                             class="btn btn-danger btn-sm"
