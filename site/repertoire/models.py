@@ -19,6 +19,7 @@ from django.utils.timezone import now
 from PyPDF2 import PdfFileReader, PdfFileWriter
 
 from sheetmusic.models import Part, Score
+from common.models import CreatedModifiedMixin
 
 
 class RepertoireManager(Manager):
@@ -28,12 +29,11 @@ class RepertoireManager(Manager):
         )
 
 
-class Repertoire(Model):
+class Repertoire(CreatedModifiedMixin, Model):
     """Model representing a repertoire"""
 
     objects = RepertoireManager()
     name = CharField(max_length=255, verbose_name="namn")
-    timestamp = DateTimeField(auto_now_add=True, verbose_name="tidsmerke")
     slug = AutoSlugField(
         verbose_name="lenkjenamn",
         populate_from="name",
