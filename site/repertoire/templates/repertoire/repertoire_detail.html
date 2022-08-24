@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title_page %}
+    {{ repertoire }}
+{% endblock title_page %}
+
+{% block title_content %}
+    {{ repertoire }}
+{% endblock title_content %}
+
+{% block header %}
+    {{ block.super }}
+    {% include "common/includes/created_modified.html" with object=repertoire only %}
+{% endblock header %}
+
+{% block content %}
+    <section class="my-3 table-responsive">
+        {% include "repertoire/includes/repertoire.html" with repertoire=repertoire %}
+    </section>
+{% endblock content %}

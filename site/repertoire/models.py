@@ -4,23 +4,35 @@ from autoslug import AutoSlugField
 from django.db.models import (
     CASCADE,
     CharField,
-    DateTimeField,
+    DateField,
     FloatField,
     ForeignKey,
+    Manager,
     Model,
     UniqueConstraint,
 )
+from django.db.models.query_utils import Q
+from django.urls import reverse
 from django.utils.text import slugify
+from django.utils.timezone import now
 from PyPDF2 import PdfFileReader, PdfFileWriter
 
+from common.models import CreatedModifiedMixin
 from sheetmusic.models import Part, Score
 
 
-class Repertoire(Model):
+class RepertoireManager(Manager):
+    def active(self):
+        return super().filter(
+            Q(active_until__isnull=True) | Q(active_until__gte=now().date())
+        )
+
+
+class Repertoire(CreatedModifiedMixin, Model):
     """Model representing a repertoire"""
 
+    objects = RepertoireManager()
     name = CharField(max_length=255, verbose_name="namn")
-    timestamp = DateTimeField(auto_now_add=True, verbose_name="tidsmerke")
     slug = AutoSlugField(
         verbose_name="lenkjenamn",
         populate_from="name",
@@ -35,15 +47,24 @@ class Repertoire(Model):
             "Repertoar med lik rekkjefølgje vert sortert etter namn."
         ),
     )
+    active_until = DateField(
+        verbose_name="aktivt til",
+        default=None,
+        blank=True,
+        null=True,
+        help_text="Valfritt. Gjer repertoaret aktivt til og med ein bestemt dato. Om inga dato er satt vert det aktivt for alltid.",
+    )
 
     class Meta:
-        constraints = [UniqueConstraint(fields=["slug"], name="repertoire_unique_slug")]
         ordering = ["order", "name"]
         verbose_name = "repertoar"
         verbose_name_plural = "repertoar"
 
     def __str__(self):
         return self.name
+
+    def is_active(self):
+        return self.active_until is None or self.active_until >= now().date()
 
     def favorite_parts_pdf_file(self, user):
         """Returns a PDF contaning the user's favorite parts for the scores in this repertoire."""
@@ -70,6 +91,9 @@ class Repertoire(Model):
     def favorite_parts_pdf_filename(self, user):
         """Returns a nice filename for the PDF that contains the users favorite parts for this repertoire."""
         return slugify(f"{self.name} {user}") + ".pdf"
+
+    def get_absolute_url(self):
+        return reverse("repertoire:RepertoireDetail", args=[self.slug])
 
 
 class RepertoireEntry(Model):

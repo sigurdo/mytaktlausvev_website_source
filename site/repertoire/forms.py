@@ -3,6 +3,7 @@ from io import BytesIO
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 from django.forms import (
+    DateInput,
     Form,
     IntegerField,
     ModelChoiceField,
@@ -28,7 +29,10 @@ class RepertoireForm(ModelForm):
 
     class Meta:
         model = Repertoire
-        fields = ["name", "order"]
+        fields = ["name", "order", "active_until"]
+        widgets = {
+            "active_until": DateInput(attrs={"type": "date"}),
+        }
 
 
 class RepertoireEntryForm(ModelForm):

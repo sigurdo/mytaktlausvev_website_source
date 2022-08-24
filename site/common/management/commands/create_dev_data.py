@@ -464,7 +464,7 @@ class Command(BaseCommand):
         )
         NavbarItemFactory(
             text="Repertoar",
-            link=reverse("repertoire:RepertoireList"),
+            link=reverse("repertoire:ActiveRepertoires"),
             order=2,
             requires_login=True,
             parent=sheetmusic_dropdown,
@@ -749,7 +749,18 @@ class Command(BaseCommand):
             user=leader,
             part=birthday_song_part,
         )
-        concert_repertoire = RepertoireFactory(name="Konsert")
+        old_concert_repertoire = RepertoireFactory(
+            name="Bursdagskonsert fra og med, men egentlig uten vals",
+            active_until=make_aware(datetime.now() - timedelta(days=14)),
+        )
+        RepertoireEntryFactory(repertoire=old_concert_repertoire, score=birthday_song)
+        RepertoireEntryFactory(repertoire=old_concert_repertoire, score=pause_waltz)
+        march_repertoire = RepertoireFactory(name=f"Marsjhefte {datetime.now().year}")
+        RepertoireEntryFactory(repertoire=march_repertoire, score=birthday_song)
+        concert_repertoire = RepertoireFactory(
+            name="Konsert",
+            active_until=make_aware(datetime.now() + timedelta(days=14)),
+        )
         RepertoireEntryFactory(repertoire=concert_repertoire, score=pause_waltz)
         EmbeddableTextFactory(
             name="Framgangsmåte for buttonpdfgenerator",
