@@ -10,7 +10,7 @@ class EventCategoryFactory(DjangoModelFactory):
     class Meta:
         model = EventCategory
 
-    name = "Category"
+    name = sequence(lambda n: f"Category #{n}")
 
 
 class EventFactory(DjangoModelFactory):
