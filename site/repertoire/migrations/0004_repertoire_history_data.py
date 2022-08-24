@@ -6,16 +6,18 @@ from django.db import migrations
 
 def find_test_user(user_model):
     if settings.DEBUG:
-        return user_model.objects.get_or_create(username="test", name="Trine Taktlaus")[0]
+        return user_model.objects.get_or_create(username="test", name="Trine Taktlaus")[
+            0
+        ]
     else:
         return user_model.objects.get(username="test")
-    
+
 
 def set_repertoire_created_by_modified_by(apps, schema_editor):
     UserCustom = apps.get_model("accounts", "UserCustom")
     Repertoire = apps.get_model("repertoire", "Repertoire")
-    test_user = find_test_user(UserCustom)
     for repertoire in Repertoire.objects.all():
+        test_user = find_test_user(UserCustom)
         repertoire.created_by = test_user
         repertoire.modified_by = test_user
         repertoire.created = repertoire.timestamp

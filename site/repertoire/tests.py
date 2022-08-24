@@ -205,6 +205,9 @@ class RepertoireCreateTestSuite(TestMixin, TestCase):
             ),
         }
 
+    def get_url(self):
+        return reverse("repertoire:RepertoireCreate")
+
     def test_requires_login(self):
         self.assertLoginRequired(reverse("repertoire:RepertoireCreate"))
 
@@ -215,12 +218,17 @@ class RepertoireCreateTestSuite(TestMixin, TestCase):
         )
 
     def test_success_redirect(self):
+        self.client.force_login(SuperUserFactory())
+        response = self.client.post(self.get_url(), self.test_data)
+        self.assertRedirects(response, reverse("repertoire:ActiveRepertoires"))
+
+    def test_sets_created_by_modified_by(self):
         user = SuperUserFactory()
         self.client.force_login(user)
-        response = self.client.post(
-            reverse("repertoire:RepertoireCreate"), self.test_data
-        )
-        self.assertRedirects(response, reverse("repertoire:ActiveRepertoires"))
+        self.client.post(self.get_url(), self.test_data)
+        repertoire = Repertoire.objects.last()
+        self.assertEqual(repertoire.created_by, user)
+        self.assertEqual(repertoire.modified_by, user)
 
 
 class RepertoireUpdateTestSuite(TestMixin, TestCase):
@@ -256,6 +264,14 @@ class RepertoireUpdateTestSuite(TestMixin, TestCase):
         self.client.force_login(user)
         response = self.client.post(self.get_url(), self.test_data)
         self.assertRedirects(response, reverse("repertoire:ActiveRepertoires"))
+
+    def test_sets_modified_by_and_not_created_by(self):
+        user = SuperUserFactory()
+        self.client.force_login(user)
+        self.client.post(self.get_url(), self.test_data)
+        repertoire = Repertoire.objects.last()
+        self.assertEqual(repertoire.modified_by, user)
+        self.assertNotEqual(repertoire.created_by, user)
 
 
 class RepertoireDeleteTestSuite(TestMixin, TestCase):

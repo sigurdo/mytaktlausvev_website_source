@@ -5,7 +5,6 @@ from django.db.models import (
     CASCADE,
     CharField,
     DateField,
-    DateTimeField,
     FloatField,
     ForeignKey,
     Manager,
@@ -18,8 +17,8 @@ from django.utils.text import slugify
 from django.utils.timezone import now
 from PyPDF2 import PdfFileReader, PdfFileWriter
 
-from sheetmusic.models import Part, Score
 from common.models import CreatedModifiedMixin
+from sheetmusic.models import Part, Score
 
 
 class RepertoireManager(Manager):
