@@ -43,6 +43,7 @@ The project uses [Django's test framework](https://docs.djangoproject.com/en/4.0
 ### Overview of handy shell scripts
 
 - `sh scripts/up.sh`: Run dev server.
+- `sh scripts/down.sh`: Stop and remove all running containers.
 - `sh scripts/reset.sh`: Remove database volume, delete media files and initialize new dev data.
 - `sh scripts/run.sh`: Enter docker container as bash shell.
 - `sh scripts/run.sh <command>`: Run `<command>` in docker docker container bash shell.
@@ -50,6 +51,7 @@ The project uses [Django's test framework](https://docs.djangoproject.com/en/4.0
 - `sh scripts/test.sh`: Run all tests.
 - `sh scripts/test.sh <app_name>`: Run tests for a single app.
 - `sh scripts/verify.sh`: Run formatter, linter and tests.
+- `sh scripts/startapp.sh <app_name>`: Initializes a new django app with the name "app_name".
 
 ## Running locally in production mode
 

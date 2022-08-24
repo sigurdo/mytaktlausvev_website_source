@@ -1,8 +1,6 @@
-#!/usr/bin/env bash
-set -e
-
-# Set workdir to project root
-cd "$(dirname "$0")/../"
+#!/bin/sh
+set -e               # Exit on error
+cd $(dirname $0)/../ # Set working directory to project root
 
 echo Stopping Docker container and dropping database
 docker-compose -f docker-compose.prod.yaml down -v --remove-orphans
