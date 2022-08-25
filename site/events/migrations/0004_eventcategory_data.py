@@ -12,6 +12,7 @@ def categorize_old_events(apps, schema_editor):
     with open(join(dirname(realpath(__file__)), "hendingskategoriar.json")) as file:
         event_categories = json.load(file)
     for event in Event.objects.all():
+
         def categorize_event():
             for category_name in event_categories:
                 for keyword in event_categories[category_name]:
@@ -22,6 +23,7 @@ def categorize_old_events(apps, schema_editor):
                         event.category = category
                         event.save()
                         return
+
         categorize_event()
 
 

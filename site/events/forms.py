@@ -51,6 +51,10 @@ class EventForm(ModelForm):
         fields = ["title", "category", "start_time", "end_time", "content"]
         widgets = {"category": AutocompleteSelect}
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["category"].required = True
+
 
 class EventAttendanceForm(ModelForm):
     """Form for registering event attendance."""
