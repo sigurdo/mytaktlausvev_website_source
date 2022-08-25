@@ -10,7 +10,10 @@
     "phaest",
     "galla",
     "party",
-    "rocky horror"
+    "rocky horror",
+    "bursdag",
+    "feir",
+    "helaften"
   ],
   "Møte": [
     "møte",
@@ -40,14 +43,16 @@
     "17. mai",
     "17.mai",
     "immatrikulering",
-    "utmatrikulering"
+    "utmatrikulering",
+    "julegrantenning"
   ],
   "Studentorchestersamling": [
     "smash",
     "torsk"
   ],
   "Seminar": [
-    "seminar"
+    "seminar",
+    "notemaraton"
   ],
   "Konsert": [
     "konsert"

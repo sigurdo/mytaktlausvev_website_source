@@ -12,14 +12,17 @@ def categorize_old_events(apps, schema_editor):
     with open(join(dirname(realpath(__file__)), "hendingskategoriar.json")) as file:
         event_categories = json.load(file)
     for event in Event.objects.all():
-        for category_name in event_categories:
-            for keyword in event_categories[category_name]:
-                if event.title.lower().find(keyword.lower()) != -1:
-                    category, _ = EventCategory.objects.get_or_create(
-                        name=category_name
-                    )
-                    event.category = category
-                    event.save()
+        def categorize_event():
+            for category_name in event_categories:
+                for keyword in event_categories[category_name]:
+                    if event.title.lower().find(keyword.lower()) != -1:
+                        category, _ = EventCategory.objects.get_or_create(
+                            name=category_name
+                        )
+                        event.category = category
+                        event.save()
+                        return
+        categorize_event()
 
 
 class Migration(migrations.Migration):
