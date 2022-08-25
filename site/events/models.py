@@ -45,8 +45,6 @@ class EventManager(Manager):
 class Event(ArticleMixin):
     """Model representing an event."""
 
-    created = DateTimeField("lagt ut")
-    modified = DateTimeField("redigert")
     objects = EventManager()
     start_time = DateTimeField("starttid", default=now)
     end_time = DateTimeField("sluttid", default=None, blank=True, null=True)
@@ -59,9 +57,6 @@ class Event(ArticleMixin):
     category = ForeignKey(
         EventCategory,
         on_delete=PROTECT,
-        default=None,
-        blank=False,
-        null=True,
         verbose_name="Kategori",
         related_name="events",
     )

@@ -21,9 +21,7 @@ class EventFactory(DjangoModelFactory):
     title = "SMASH"
     content = "SMASH in Trondheim."
     created_by = SubFactory(UserFactory)
-    created = now()
     modified_by = SubFactory(UserFactory)
-    modified = now()
     category = SubFactory(EventCategoryFactory)
 
 
