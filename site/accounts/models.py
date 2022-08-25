@@ -41,7 +41,7 @@ class UserCustom(AbstractUser):
 
     first_name = None
     last_name = None
-    name = CharField("navn", max_length=255, blank=True)
+    name = CharField("fullt namn", max_length=255, blank=True)
     birthdate = DateField("fødselsdato", null=True, blank=True)
     phone_number = CharField("telefonnummer", max_length=255, blank=True)
     address = TextField("adresse", blank=True)
