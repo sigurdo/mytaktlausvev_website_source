@@ -1,4 +1,3 @@
-from django.utils.timezone import now
 from factory import SubFactory, sequence
 from factory.django import DjangoModelFactory
 
