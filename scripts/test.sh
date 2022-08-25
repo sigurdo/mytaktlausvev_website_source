@@ -1,4 +1,5 @@
-# Set workdir to scripts/
-cd "$(dirname "$0")/"
+#!/bin/sh
+set -e               # Exit on error
+cd $(dirname $0)/../ # Set working directory to project root
 
-sh run.sh python site/manage.py test site/$@
+sh scripts/run.sh python site/manage.py test site/$@
