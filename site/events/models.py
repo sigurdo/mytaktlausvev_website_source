@@ -24,7 +24,7 @@ from common.models import ArticleMixin
 class EventCategory(Model):
     """Model representing an event category"""
 
-    name = CharField(verbose_name="Namn", max_length=255, unique=True)
+    name = CharField(verbose_name="namn", max_length=255, unique=True)
 
     def __str__(self):
         return self.name
@@ -45,6 +45,8 @@ class EventManager(Manager):
 class Event(ArticleMixin):
     """Model representing an event."""
 
+    created = DateTimeField("lagt ut")
+    modified = DateTimeField("redigert")
     objects = EventManager()
     start_time = DateTimeField("starttid", default=now)
     end_time = DateTimeField("sluttid", default=None, blank=True, null=True)

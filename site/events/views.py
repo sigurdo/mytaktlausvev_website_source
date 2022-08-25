@@ -179,7 +179,9 @@ class EventCreate(LoginRequiredMixin, BreadcrumbsMixin, InlineFormsetCreateView)
 
     def form_valid(self, form):
         form.instance.created_by = self.request.user
+        form.instance.created = now()
         form.instance.modified_by = self.request.user
+        form.instance.modified = now()
         response = super().form_valid(form)
 
         sivert = UserCustom.objects.filter(username="Sivert").first()
@@ -228,6 +230,7 @@ class EventUpdate(PermissionOrCreatedMixin, BreadcrumbsMixin, InlineFormsetUpdat
 
     def form_valid(self, form):
         form.instance.modified_by = self.request.user
+        form.instance.modified = now()
         return super().form_valid(form)
 
 

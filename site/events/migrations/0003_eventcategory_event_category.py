@@ -25,7 +25,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "name",
-                    models.CharField(max_length=255, unique=True, verbose_name="Namn"),
+                    models.CharField(max_length=255, unique=True, verbose_name="namn"),
                 ),
             ],
             options={
@@ -44,5 +44,15 @@ class Migration(migrations.Migration):
                 to="events.eventcategory",
                 verbose_name="Kategori",
             ),
+        ),
+        migrations.AlterField(
+            model_name="event",
+            name="created",
+            field=models.DateTimeField(verbose_name="lagt ut"),
+        ),
+        migrations.AlterField(
+            model_name="event",
+            name="modified",
+            field=models.DateTimeField(verbose_name="redigert"),
         ),
     ]
