@@ -54,7 +54,7 @@ class Event(ArticleMixin):
         EventCategory,
         on_delete=PROTECT,
         default=None,
-        blank=True,
+        blank=False,
         null=True,
         verbose_name="Kategori",
         related_name="events",

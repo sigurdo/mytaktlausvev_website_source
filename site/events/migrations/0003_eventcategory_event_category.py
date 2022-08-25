@@ -33,7 +33,6 @@ class Migration(migrations.Migration):
             model_name="event",
             name="category",
             field=models.ForeignKey(
-                blank=True,
                 default=None,
                 null=True,
                 on_delete=django.db.models.deletion.PROTECT,
