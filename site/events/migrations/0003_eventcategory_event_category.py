@@ -28,6 +28,10 @@ class Migration(migrations.Migration):
                     models.CharField(max_length=255, unique=True, verbose_name="Namn"),
                 ),
             ],
+            options={
+                "verbose_name": "hendingskategori",
+                "verbose_name_plural": "hendingskategoriar",
+            },
         ),
         migrations.AddField(
             model_name="event",
