@@ -498,6 +498,29 @@ class EventCreateTestSuite(TestMixin, TestCase):
         self.assertEqual(keyinfo.info, "100kr")
         self.assertEqual(keyinfo.order, 3)
 
+    def test_require_category(self):
+        self.client.force_login(SuperUserFactory())
+        data = {
+            "title": "A Title",
+            "start_time_0": "2021-11-25",
+            "start_time_1": "16:30",
+            "content": "Event text",
+            **self.create_formset_post_data(
+                data=[
+                    {"key": "Price", "info": "100kr", "order": 3},
+                ],
+                total_forms=1,
+                initial_forms=0,
+            ),
+        }
+        response = self.client.post(self.get_url(), data)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertEqual(Event.objects.count(), 0)
+        data["category"] = self.category.pk
+        response = self.client.post(self.get_url(), data)
+        self.assertEqual(response.status_code, HTTPStatus.FOUND)
+        self.assertEqual(Event.objects.count(), 1)
+
 
 class EventUpdateTestSuite(TestMixin, TestCase):
     def setUp(self):
