@@ -9,13 +9,15 @@
     "fest",
     "phaest",
     "galla",
-    "party"
+    "party",
+    "rocky horror"
   ],
   "Møte": [
-    "møte"
+    "møte",
+    "workshop"
   ],
   "Sosialt": [
-    "minecraft",
+    "lan",
     "brettspill",
     "brettspel",
     "konsoll",
@@ -25,7 +27,9 @@
     "spelekveld",
     "grilling",
     "avslutning",
-    "sosialt"
+    "sosialt",
+    "nasj",
+    "verksted"
   ],
   "Speleoppdrag": [
     "speleoppdrag",
@@ -40,8 +44,7 @@
   ],
   "Studentorchestersamling": [
     "smash",
-    "torsk",
-    "pub til pub"
+    "torsk"
   ],
   "Seminar": [
     "seminar"
@@ -49,22 +52,14 @@
   "Konsert": [
     "konsert"
   ],
-  "Hyttetur": [
-    "hyttetur",
-    "koietur"
-  ],
   "Turne": [
     "turne",
     "turné",
-    "turnè",
-    "austlandsturnéêèëẽə€£3{eℇ"
+    "turnè"
   ],
-  "Anna": [
-    "rocky horror",
-    "dt erobrer samf",
-    "sykkeltur",
-    "proggenasj",
-    "hengegøyetur",
-    "statuttworkshop"
+  "Tur": [
+    "hyttetur",
+    "koietur",
+    "tur"
   ]
 }
