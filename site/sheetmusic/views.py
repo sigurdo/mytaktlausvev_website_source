@@ -134,11 +134,6 @@ class ScoreCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
     def get_breadcrumbs(self):
         return sheetmusic_breadcrumbs()
 
-    def form_valid(self, form):
-        form.instance.created_by = self.request.user
-        form.instance.modified_by = self.request.user
-        return super().form_valid(form)
-
 
 class ScoreUpdate(PermissionOrCreatedMixin, BreadcrumbsMixin, UpdateView):
     model = Score
@@ -152,10 +147,6 @@ class ScoreUpdate(PermissionOrCreatedMixin, BreadcrumbsMixin, UpdateView):
     def get_context_data(self, **kwargs):
         kwargs["nav_tabs"] = nav_tabs_score_edit(self.object, self.request.user)
         return super().get_context_data(**kwargs)
-
-    def form_valid(self, form):
-        form.instance.modified_by = self.request.user
-        return super().form_valid(form)
 
 
 class ScoreDelete(PermissionOrCreatedMixin, BreadcrumbsMixin, DeleteViewCustom):
@@ -247,8 +238,9 @@ class PartsUpdate(
         We must explicitly save the form because it is not done automatically by any ancestors.
         """
         with transaction.atomic():
-            self.object.score.modified_by = self.request.user
+            # Update `modified` and `modified_by`
             self.object.score.save()
+
             for subform in form.forms:
                 subform.instance.pdf = self.object
             form.save()
@@ -307,8 +299,9 @@ class PartsUpdateAll(
         We must explicitly save the form because it is not done automatically by any ancestors.
         """
         with transaction.atomic():
-            self.object.modified_by = self.request.user
+            # Update `modified` and `modified_by`
             self.object.save()
+
             form.save()
             return super().form_valid(form)
 
@@ -347,8 +340,9 @@ class PdfsUpdate(
         We must explicitly save the form because it is not done automatically by any ancestors.
         """
         with transaction.atomic():
-            self.object.modified_by = self.request.user
+            # Update `modified` and `modified_by`
             self.object.save()
+
             form.save()
             return super().form_valid(form)
 

@@ -86,11 +86,6 @@ class ButtonDesignCreate(
     def get_breadcrumbs(self):
         return breadcrumbs()
 
-    def form_valid(self, form):
-        form.instance.created_by = self.request.user
-        form.instance.modified_by = self.request.user
-        return super().form_valid(form)
-
 
 class ButtonDesignUpdate(
     PermissionOrCreatedMixin, SuccessMessageMixin, BreadcrumbsMixin, UpdateView
@@ -104,10 +99,6 @@ class ButtonDesignUpdate(
 
     def get_breadcrumbs(self):
         return breadcrumbs()
-
-    def form_valid(self, form):
-        form.instance.modified_by = self.request.user
-        return super().form_valid(form)
 
 
 class ButtonDesignDelete(PermissionOrCreatedMixin, BreadcrumbsMixin, DeleteViewCustom):
