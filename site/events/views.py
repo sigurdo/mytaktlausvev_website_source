@@ -178,8 +178,6 @@ class EventCreate(LoginRequiredMixin, BreadcrumbsMixin, InlineFormsetCreateView)
         return super().get_context_data(**kwargs)
 
     def form_valid(self, form):
-        form.instance.created_by = self.request.user
-        form.instance.modified_by = self.request.user
         response = super().form_valid(form)
 
         sivert = UserCustom.objects.filter(username="Sivert").first()
@@ -225,10 +223,6 @@ class EventUpdate(PermissionOrCreatedMixin, BreadcrumbsMixin, InlineFormsetUpdat
         # Tell `common/form.html` not to render the formset, since this is done by the form
         kwargs["render_formset"] = False
         return super().get_context_data(**kwargs)
-
-    def form_valid(self, form):
-        form.instance.modified_by = self.request.user
-        return super().form_valid(form)
 
 
 class EventDelete(PermissionOrCreatedMixin, BreadcrumbsMixin, DeleteViewCustom):

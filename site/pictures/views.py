@@ -93,11 +93,6 @@ class GalleryCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
     def get_breadcrumbs(self) -> list:
         return breadcrumbs()
 
-    def form_valid(self, form):
-        form.instance.created_by = self.request.user
-        form.instance.modified_by = self.request.user
-        return super().form_valid(form)
-
     def get_success_url(self) -> str:
         return reverse("pictures:ImageCreate", args=[self.object.slug])
 
@@ -131,7 +126,7 @@ class ImageCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
 
     def form_valid(self, form):
         with transaction.atomic():
-            self.get_gallery().modified_by = self.request.user
+            # Update `modified` and `modified_by`
             self.get_gallery().save()
             return super().form_valid(form)
 
@@ -153,10 +148,6 @@ class GalleryUpdate(LoginRequiredMixin, BreadcrumbsMixin, InlineFormsetUpdateVie
     def get_context_data(self, **kwargs):
         kwargs["nav_tabs"] = nav_tabs_gallery_edit(self.object)
         return super().get_context_data(**kwargs)
-
-    def form_valid(self, form):
-        form.instance.modified_by = self.request.user
-        return super().form_valid(form)
 
 
 class GalleryDelete(PermissionOrCreatedMixin, BreadcrumbsMixin, DeleteViewCustom):

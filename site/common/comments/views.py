@@ -14,11 +14,6 @@ class CommentCreate(LoginRequiredMixin, CreateView):
     template_name = "common/forms/form.html"
     http_method_names = ["post", "put"]
 
-    def form_valid(self, form):
-        form.instance.created_by = self.request.user
-        form.instance.modified_by = self.request.user
-        return super().form_valid(form)
-
 
 class CommentUpdate(PermissionOrCreatedMixin, UpdateView):
     """View for updating a comment."""
@@ -27,10 +22,6 @@ class CommentUpdate(PermissionOrCreatedMixin, UpdateView):
     form_class = CommentUpdateForm
     template_name = "common/forms/form.html"
     permission_required = "comments.change_comment"
-
-    def form_valid(self, form):
-        form.instance.modified_by = self.request.user
-        return super().form_valid(form)
 
 
 class CommentDelete(PermissionOrCreatedMixin, DeleteViewCustom):
