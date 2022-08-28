@@ -6,8 +6,8 @@ from .models import Quote
 
 
 class QuoteAdmin(admin.ModelAdmin):
-    list_display = ("quote", "context", "created")
-    search_fields = ("quote", "context")
+    list_display = ("quote", "quoted_as", "created")
+    search_fields = ("quote", "quoted_as")
 
 
 admin.site.register(Quote, QuoteAdmin)

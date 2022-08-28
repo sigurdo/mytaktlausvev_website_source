@@ -5,7 +5,7 @@
         {{ quote.quote | markdown }}
     </blockquote>
     <figcaption class="blockquote-footer">
-        {{ quote.context }}
+        {{ quote.quoted_as }}
         -
         <time
             datetime="{{ quote.created | date:"c" }}"

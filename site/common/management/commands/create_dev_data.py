@@ -398,7 +398,10 @@ class Command(BaseCommand):
             modified_by=leader,
         )
 
-        QuoteFactory(quote="Tusen takk Mario! Men prinsessa vår er i eit anna slott!", context="Padde")
+        QuoteFactory(
+            quote="Tusen takk Mario! Men prinsessa vår er i eit anna slott!",
+            quoted_as="Padde",
+        )
 
         ButtonDesignFactory(name="Taktlausbutton - Raud", public=True)
         ButtonDesignFactory(name="Taktlausbutton - Blå", image__color="blue")

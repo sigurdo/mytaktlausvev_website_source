@@ -12,4 +12,4 @@ class QuoteForm(forms.ModelForm):
 
     class Meta:
         model = Quote
-        fields = ["quote", "context"]
+        fields = ["quote", "quoted_as"]

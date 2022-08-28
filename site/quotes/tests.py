@@ -52,7 +52,7 @@ class QuoteCreateTestSuite(TestMixin, TestCase):
         self.client.force_login(user)
         self.client.post(
             self.get_url(),
-            {"quote": "Du daua", "context": "Mørke Sjeler"},
+            {"quote": "Du daua", "quoted_as": "Mørke Sjeler"},
         )
 
         self.assertEqual(Quote.objects.count(), 1)
@@ -65,7 +65,7 @@ class QuoteCreateTestSuite(TestMixin, TestCase):
         self.client.force_login(SuperUserFactory())
         response = self.client.post(
             self.get_url(),
-            {"quote": "Du daua", "context": "Mørke Sjeler"},
+            {"quote": "Du daua", "quoted_as": "Mørke Sjeler"},
         )
         self.assertRedirects(response, reverse("quotes:QuoteList"))
 
@@ -75,7 +75,7 @@ class QuoteUpdateTestSuite(TestMixin, TestCase):
         self.quote = QuoteFactory()
         self.quote_data = {
             "quote": "Du daua",
-            "context": "Mørke sjeler",
+            "quoted_as": "Mørke sjeler",
         }
 
     def get_url(self):

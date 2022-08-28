@@ -11,6 +11,6 @@ class QuoteFactory(DjangoModelFactory):
         model = Quote
 
     quote = "Det er farleg å gå åleine! Ta dette."
-    context = "Gamal mann"
+    quoted_as = "Gamal mann"
     created_by = SubFactory(UserFactory)
     modified_by = SubFactory(UserFactory)

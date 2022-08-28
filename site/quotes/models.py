@@ -9,7 +9,7 @@ class Quote(CreatedModifiedMixin):
     """Model representing a single quote"""
 
     quote = models.TextField("sitat")
-    context = models.CharField("kontekst", max_length=255)
+    quoted_as = models.CharField("sitert som", max_length=255)
 
     class Meta:
         ordering = ["-created"]

@@ -12,8 +12,8 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AlterField(
             model_name="quote",
-            name="context",
-            field=models.CharField(max_length=255, verbose_name="kontekst"),
+            name="quoted_as",
+            field=models.CharField(max_length=255, verbose_name="sitert som"),
         ),
         migrations.AlterField(
             model_name="quote",

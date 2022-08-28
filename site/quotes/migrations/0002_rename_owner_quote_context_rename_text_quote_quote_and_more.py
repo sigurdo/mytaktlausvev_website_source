@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
         migrations.RenameField(
             model_name="quote",
             old_name="owner",
-            new_name="context",
+            new_name="quoted_as",
         ),
         migrations.RenameField(
             model_name="quote",
