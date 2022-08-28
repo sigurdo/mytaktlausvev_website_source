@@ -11,7 +11,7 @@ from django.views.generic import RedirectView, TemplateView
 
 from accounts.models import UserCustom
 from common.comments.models import Comment
-from common.utils import random_sample_queryset
+from common.utils import comma_seperate_list, random_sample_queryset
 from events.models import Event
 from minutes.models import Minutes
 from pictures.models import Gallery, Image
@@ -105,17 +105,7 @@ class Dashboard(LoginRequiredMixin, TemplateView):
             birthdate__month=timezone.localdate().month,
             birthdate__day=timezone.localdate().day,
         )
-        result = ""
-        for i, birthday_user in enumerate(current_birthdays):
-            first = i == 0
-            last = i == len(current_birthdays) - 1
-            if not first:
-                if last:
-                    result += " og "
-                else:
-                    result += ", "
-            result += str(birthday_user)
-        return result
+        return comma_seperate_list([user.get_name() for user in current_birthdays])
 
     def get_birthday_song(self):
         """Returns birthday song score if it exists."""

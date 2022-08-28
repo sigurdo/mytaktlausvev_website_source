@@ -89,6 +89,7 @@ class Command(BaseCommand):
             "musikalsk",
             "muikalsk@taktlaus.no",
             "password",
+            name="Musikalsk leiar",
             membership_status=UserCustom.MembershipStatus.PAYING,
         )
 
@@ -401,6 +402,11 @@ class Command(BaseCommand):
         QuoteFactory(
             quote="Tusen takk Mario! Men prinsessa vår er i eit anna slott!",
             quoted_as="Padde",
+        )
+        QuoteFactory(
+            quote="Flygelet kostar [REDACTED]",
+            quoted_as="",
+            users=[musical_leader],
         )
 
         ButtonDesignFactory(name="Taktlausbutton - Raud", public=True)

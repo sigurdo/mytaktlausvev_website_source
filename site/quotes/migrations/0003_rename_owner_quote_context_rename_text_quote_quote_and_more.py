@@ -6,7 +6,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("quotes", "0001_initial"),
+        ("quotes", "0002_alter_quote_created_by_alter_quote_modified_by"),
     ]
 
     operations = [

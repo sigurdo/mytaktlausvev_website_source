@@ -4,6 +4,7 @@ from django.conf import settings
 from django.db.models import CharField, ManyToManyField, TextField
 
 from common.models import CreatedModifiedMixin
+from common.utils import comma_seperate_list
 
 
 class Quote(CreatedModifiedMixin):
@@ -18,6 +19,12 @@ class Quote(CreatedModifiedMixin):
         blank=True,
     )
 
+    def quoted_as_or_users(self):
+        return (
+            self.quoted_as
+            if self.quoted_as
+            else comma_seperate_list([user.get_name() for user in self.users.all()])
+        )
 
     class Meta:
         ordering = ["-created"]

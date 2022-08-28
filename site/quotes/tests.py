@@ -3,8 +3,9 @@ from http import HTTPStatus
 from django.test import TestCase
 from django.urls import reverse
 
-from accounts.factories import SuperUserFactory
+from accounts.factories import SuperUserFactory, UserFactory
 from common.mixins import TestMixin
+from common.utils import comma_seperate_list
 from quotes.factories import QuoteFactory
 from quotes.forms import QuoteForm
 from quotes.models import Quote
@@ -28,6 +29,29 @@ class QuoteTestSuite(TestMixin, TestCase):
             quote="Extremely long quote, spanning multiple lines, challenging the idea of what a quote really is."
         )
         self.assertEqual(str(quote), quote.quote[0:24] + "…")
+
+    def test_quoted_as_or_users_is_quoted_as_if_it_exists(self):
+        """`quoted_as_or_users` should equal `quoted_as` when it exists."""
+        quote = QuoteFactory(quoted_as="Mørke Sjeler")
+        self.assertEqual(quote.quoted_as_or_users(), quote.quoted_as)
+
+        quote_with_user = QuoteFactory(quoted_as="Mørke Sjeler", users=[UserFactory()])
+        self.assertEqual(
+            quote_with_user.quoted_as_or_users(), quote_with_user.quoted_as
+        )
+
+    def test_quoted_as_or_users_is_users_if_no_quoted_as(self):
+        """
+        If the quote has no `quoted_as`,
+        `quoted_as_or_users` should be `users` comma-separated.
+        """
+        user_1 = UserFactory()
+        user_2 = UserFactory()
+        quote = QuoteFactory(quoted_as="", users=[user_1, user_2])
+        self.assertEqual(
+            quote.quoted_as_or_users(),
+            comma_seperate_list([user_1.get_name(), user_2.get_name()]),
+        )
 
 
 class QuoteFormTestSuite(TestMixin, TestCase):

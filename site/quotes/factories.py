@@ -1,4 +1,4 @@
-from factory import SubFactory
+from factory import SubFactory, post_generation
 from factory.django import DjangoModelFactory
 
 from accounts.factories import UserFactory
@@ -14,3 +14,11 @@ class QuoteFactory(DjangoModelFactory):
     quoted_as = "Gamal mann"
     created_by = SubFactory(UserFactory)
     modified_by = SubFactory(UserFactory)
+
+    @post_generation
+    def users(self, create, user_list):
+        if not create or not user_list:
+            return
+
+        for user in user_list:
+            self.users.add(user)
