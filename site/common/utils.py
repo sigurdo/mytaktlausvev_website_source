@@ -1,5 +1,4 @@
 import random
-from re import L
 
 from django.db.models import QuerySet
 
