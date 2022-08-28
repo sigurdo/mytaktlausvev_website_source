@@ -1,9 +1,13 @@
 window.addEventListener("load", () => {
-  document.querySelectorAll(".autocompleteselect").forEach((el) => {
-    let settings = {
-      allowEmptyOption: true,
-      plugins: ["dropdown_input"],
-    };
-    new TomSelect(el, settings);
-  });
+  document
+    .querySelectorAll("[class^=autocompleteselect]")
+    .forEach((element) => {
+      if (element.tomselect) return;
+
+      const settings = {
+        allowEmptyOption: true,
+        plugins: ["dropdown_input"],
+      };
+      new TomSelect(element, settings);
+    });
 });
