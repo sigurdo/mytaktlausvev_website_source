@@ -6,6 +6,7 @@ from django.urls import reverse
 from accounts.factories import SuperUserFactory
 from common.mixins import TestMixin
 from quotes.factories import QuoteFactory
+from quotes.forms import QuoteForm
 from quotes.models import Quote
 
 
@@ -27,6 +28,22 @@ class QuoteTestSuite(TestMixin, TestCase):
             quote="Extremely long quote, spanning multiple lines, challenging the idea of what a quote really is."
         )
         self.assertEqual(str(quote), quote.quote[0:24] + "…")
+
+
+class QuoteFormTestSuite(TestMixin, TestCase):
+    def test_validation_error_if_both_quoted_as_and_users_missing(self):
+        """
+        The form should not validate if both
+        `quoted_as` and `users` are missing.
+        """
+        data = {"quote": "Du daua", "quoted_as": "Mørke Sjeler"}
+
+        form_valid = QuoteForm(data)
+        self.assertTrue(form_valid.is_valid())
+
+        data.pop("quoted_as")
+        form_invalid = QuoteForm(data)
+        self.assertFalse(form_invalid.is_valid())
 
 
 class QuoteListTestSuite(TestMixin, TestCase):
