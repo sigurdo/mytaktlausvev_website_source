@@ -172,6 +172,18 @@
                                     {{ profile.get_image_sharing_consent_display }}
                                 </dd>
                                 {% endif %}
+
+                                {% if profile.orchestras.exists %}
+                                <dt>Medlem i anna studentorchester</dt>
+                                <dd>
+                                    <ul class="mb-0">
+                                        {% for orchestra in profile.orchestras.all %}
+                                        <li>{{ orchestra }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </dd>
+                                {% endif %}
+
                             </dl>
                         </div>
                     </section>

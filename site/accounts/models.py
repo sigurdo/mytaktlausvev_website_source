@@ -9,6 +9,7 @@ from django.db.models import (
     DateField,
     ForeignKey,
     ImageField,
+    ManyToManyField,
     TextChoices,
     TextField,
     UniqueConstraint,
@@ -18,6 +19,8 @@ from django.db.models import (
 from django.db.models.functions import Lower, NullIf
 from django.templatetags.static import static
 from django.urls import reverse
+
+from external_orchestras.models import Orchestra
 
 
 class UserManagerCustom(UserManager):
@@ -125,6 +128,13 @@ class UserCustom(AbstractUser):
     )
     calendar_feed_start_date = DateField(
         "startdato for kalenderintegrasjon", null=True, blank=True
+    )
+
+    orchestras = ManyToManyField(
+        verbose_name="andre orkestermedlemskap",
+        to=Orchestra,
+        blank=True,
+        help_text="Andre studentorchestere som du er medlem i"
     )
 
     objects = UserManagerCustom()

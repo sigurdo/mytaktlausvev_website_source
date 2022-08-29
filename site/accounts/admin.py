@@ -22,7 +22,8 @@ class UserAdminCustom(UserAdmin):
                     "has_storage_access",
                     "avatar",
                     "light_mode",
-                )
+                    "orchestras"
+                    )
             },
         ),
         (
@@ -46,6 +47,7 @@ class UserAdminCustom(UserAdmin):
             },
         ),
         (_("Important dates"), {"fields": ("last_login", "date_joined")}),
+        
     )
     list_display = ("username", "email", "name", "is_staff")
     search_fields = ("username", "name", "email")
