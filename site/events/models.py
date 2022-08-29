@@ -17,6 +17,7 @@ from django.db.models import (
 from django.db.models.query_utils import Q
 from django.urls import reverse
 from django.utils.timezone import localtime, make_aware, now
+from django_userforeignkey.models.fields import UserForeignKey
 
 from common.models import ArticleMixin
 
@@ -47,6 +48,18 @@ class Event(ArticleMixin):
 
     created = DateTimeField("lagt ut")
     modified = DateTimeField("redigert")
+    created_by = UserForeignKey(
+        on_delete=CASCADE,
+        null=False,
+        related_name="%(class)s_created",
+        verbose_name="laga av",
+    )
+    modified_by = UserForeignKey(
+        on_delete=CASCADE,
+        null=False,
+        related_name="%(class)s_modified",
+        verbose_name="redigert av",
+    )
     objects = EventManager()
     start_time = DateTimeField("starttid", default=now)
     end_time = DateTimeField("sluttid", default=None, blank=True, null=True)

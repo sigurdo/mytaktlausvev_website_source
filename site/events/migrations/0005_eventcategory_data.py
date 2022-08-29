@@ -30,7 +30,7 @@ def categorize_old_events(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("events", "0003_eventcategory_event_category"),
+        ("events", "0004_eventcategory_event_category"),
     ]
 
     operations = [migrations.RunPython(categorize_old_events)]
