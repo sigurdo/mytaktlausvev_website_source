@@ -3,6 +3,7 @@ from http import HTTPStatus
 from secrets import token_urlsafe
 
 from django.db import IntegrityError
+from django.db.models import ProtectedError
 from django.http.response import Http404
 from django.test import TestCase
 from django.urls import reverse
@@ -20,8 +21,25 @@ from events.views import (
     get_event_or_404,
 )
 
-from .factories import EventAttendanceFactory, EventFactory, EventKeyinfoEntryFactory
+from .factories import (
+    EventAttendanceFactory,
+    EventCategoryFactory,
+    EventFactory,
+    EventKeyinfoEntryFactory,
+)
 from .forms import EventKeyinfoEntryFormset
+
+
+class EventCategoryTestSuite(TestMixin, TestCase):
+    def setUp(self):
+        self.category = EventCategoryFactory()
+
+    def test_to_str(self):
+        self.assertEqual(str(self.category), self.category.name)
+
+    def test_name_unique(self):
+        with self.assertRaises(IntegrityError):
+            EventCategoryFactory(name=self.category.name)
 
 
 class EventManagerTestSuite(TestCase):
@@ -116,6 +134,10 @@ class EventTestSuite(TestCase):
     def test_start_time_defaults_to_now(self):
         """`start_time` should default to the current date and time."""
         self.assertAlmostEqual(self.event.start_time, now(), delta=timedelta(seconds=1))
+
+    def test_cannot_delete_category_with_event(self):
+        with self.assertRaises(ProtectedError):
+            self.event.category.delete()
 
 
 class EventAttendanceTestSuite(TestCase):
@@ -410,6 +432,9 @@ class EventDetailTestSuite(TestMixin, TestCase):
 
 
 class EventCreateTestSuite(TestMixin, TestCase):
+    def setUp(self):
+        self.category = EventCategoryFactory()
+
     def get_url(self):
         return reverse("events:EventCreate")
 
@@ -433,6 +458,7 @@ class EventCreateTestSuite(TestMixin, TestCase):
             self.get_url(),
             {
                 "title": "A Title",
+                "category": self.category.pk,
                 "start_time_0": "2021-11-25",
                 "start_time_1": "16:30",
                 "content": "Event text",
@@ -453,6 +479,7 @@ class EventCreateTestSuite(TestMixin, TestCase):
             self.get_url(),
             {
                 "title": "A Title",
+                "category": self.category.pk,
                 "start_time_0": "2021-11-25",
                 "start_time_1": "16:30",
                 "content": "Event text",
@@ -471,12 +498,37 @@ class EventCreateTestSuite(TestMixin, TestCase):
         self.assertEqual(keyinfo.info, "100kr")
         self.assertEqual(keyinfo.order, 3)
 
+    def test_require_category(self):
+        self.client.force_login(SuperUserFactory())
+        data = {
+            "title": "A Title",
+            "start_time_0": "2021-11-25",
+            "start_time_1": "16:30",
+            "content": "Event text",
+            **self.create_formset_post_data(
+                data=[
+                    {"key": "Price", "info": "100kr", "order": 3},
+                ],
+                total_forms=1,
+                initial_forms=0,
+            ),
+        }
+        response = self.client.post(self.get_url(), data)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertEqual(Event.objects.count(), 0)
+        data["category"] = self.category.pk
+        response = self.client.post(self.get_url(), data)
+        self.assertEqual(response.status_code, HTTPStatus.FOUND)
+        self.assertEqual(Event.objects.count(), 1)
+
 
 class EventUpdateTestSuite(TestMixin, TestCase):
     def setUp(self):
-        self.event = EventFactory()
+        self.category = EventCategoryFactory()
+        self.event = EventFactory(category=self.category)
         self.event_data = {
             "title": "A Title",
+            "category": self.category.pk,
             "start_time_0": "2021-11-25",
             "start_time_1": "16:30",
             "content": "Event text",
@@ -543,6 +595,7 @@ class EventUpdateTestSuite(TestMixin, TestCase):
             self.get_url(),
             {
                 "title": "A Title",
+                "category": self.category.pk,
                 "start_time_0": "2021-11-25",
                 "start_time_1": "16:30",
                 "content": "Event text",

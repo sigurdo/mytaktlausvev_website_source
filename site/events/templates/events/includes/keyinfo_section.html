@@ -1,4 +1,10 @@
 <dl class="dl-inline">
+    {% if event.category %}
+        <dt>Kategori</dt>
+        <dd>
+            {{ event.category }}
+        </dd>
+    {% endif %}
     <dt>Tidspunkt</dt>
     <dd>
         {% include "events/includes/event_time.html" with event=event date_format="l j. F, Y – H:i" %}

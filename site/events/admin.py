@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Event, EventAttendance
+from .models import Event, EventAttendance, EventCategory
 
 
 class EventAttendanceInline(admin.TabularInline):
@@ -8,7 +8,9 @@ class EventAttendanceInline(admin.TabularInline):
 
 
 class EventAdmin(admin.ModelAdmin):
-    list_display = ("title", "start_time")
+    list_display = ("title", "category", "start_time")
+    list_filter = ("category",)
+    list_editable = ("category",)
     search_fields = ("title",)
 
     prepopulated_fields = {"slug": ("title",)}
@@ -22,3 +24,4 @@ class EventAttendanceAdmin(admin.ModelAdmin):
 
 admin.site.register(Event, EventAdmin)
 admin.site.register(EventAttendance, EventAttendanceAdmin)
+admin.site.register(EventCategory)

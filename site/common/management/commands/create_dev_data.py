@@ -17,6 +17,7 @@ from common.test_utils import test_pdf_multipage
 from contact.factories import ContactCategoryFactory
 from events.factories import (
     EventAttendanceFactory,
+    EventCategoryFactory,
     EventFactory,
     EventKeyinfoEntryFactory,
 )
@@ -158,6 +159,7 @@ class Command(BaseCommand):
             created_by=leader,
             modified_by=leader,
             start_time=make_aware(datetime.now() + timedelta(365)),
+            category__name="Studentorchestersamling",
         )
         EventAttendanceFactory(event=event, person=leader, status=Attendance.ATTENDING)
         EventAttendanceFactory(event=event, person=member, status=Attendance.ATTENDING)
@@ -167,10 +169,12 @@ class Command(BaseCommand):
         EventAttendanceFactory(
             event=event, person=retiree, status=Attendance.ATTENDING_NOT
         )
+        event_category_party = EventCategoryFactory(name="Fest")
         EventFactory(
             start_time=make_aware(datetime(datetime.now().year + 1, 1, 1)),
             title="Nyttårsfest",
             content="Nyttig for å studere kanttilfelle for starttider.",
+            category=event_category_party,
         )
         first_wednesday = datetime.combine(date.today(), time(hour=18))
         while first_wednesday.weekday() != 2:
@@ -181,6 +185,7 @@ class Command(BaseCommand):
             created_by=leader,
             modified_by=leader,
             start_time=make_aware(first_wednesday),
+            category__name="Øving",
         )
         board_game_night = EventFactory(
             title="Brettspelkveld",
@@ -188,6 +193,7 @@ class Command(BaseCommand):
             created_by=leader,
             modified_by=leader,
             start_time=make_aware(first_wednesday + timedelta(days=1)),
+            category__name="Sosialt",
         )
         EventKeyinfoEntryFactory(
             event=board_game_night,
@@ -216,6 +222,7 @@ class Command(BaseCommand):
             created_by=leader,
             modified_by=leader,
             start_time=make_aware(datetime_theme_party),
+            category=event_category_party,
         )
         medal_galla_datetime = datetime(year - 1 if month < 8 else year, 11, 1, 18)
         while medal_galla_datetime.weekday() != 5:
@@ -226,6 +233,7 @@ class Command(BaseCommand):
             created_by=leader,
             modified_by=leader,
             start_time=make_aware(medal_galla_datetime),
+            category=event_category_party,
         )
         flute = InstrumentGroupFactory(name="Fløyte")
         clarinet = InstrumentGroupFactory(name="Klarinett")

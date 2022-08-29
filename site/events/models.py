@@ -4,6 +4,7 @@ from autoslug.fields import AutoSlugField
 from django.conf import settings
 from django.db.models import (
     CASCADE,
+    PROTECT,
     CharField,
     DateTimeField,
     FloatField,
@@ -16,8 +17,22 @@ from django.db.models import (
 from django.db.models.query_utils import Q
 from django.urls import reverse
 from django.utils.timezone import localtime, make_aware, now
+from django_userforeignkey.models.fields import UserForeignKey
 
 from common.models import ArticleMixin
+
+
+class EventCategory(Model):
+    """Model representing an event category"""
+
+    name = CharField(verbose_name="namn", max_length=255, unique=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = "hendingskategori"
+        verbose_name_plural = "hendingskategoriar"
 
 
 class EventManager(Manager):
@@ -31,15 +46,37 @@ class EventManager(Manager):
 class Event(ArticleMixin):
     """Model representing an event."""
 
+    created = DateTimeField("lagt ut")
+    modified = DateTimeField("redigert")
+    created_by = UserForeignKey(
+        on_delete=CASCADE,
+        null=False,
+        related_name="%(class)s_created",
+        verbose_name="laga av",
+    )
+    modified_by = UserForeignKey(
+        on_delete=CASCADE,
+        null=False,
+        related_name="%(class)s_modified",
+        verbose_name="redigert av",
+    )
     objects = EventManager()
     start_time = DateTimeField("starttid", default=now)
     end_time = DateTimeField("sluttid", default=None, blank=True, null=True)
-
     slug = AutoSlugField(
         verbose_name="lenkjenamn",
         populate_from="title",
         unique_with="start_time__year",
         editable=True,
+    )
+    category = ForeignKey(
+        EventCategory,
+        on_delete=PROTECT,
+        default=None,
+        blank=False,
+        null=True,
+        verbose_name="Kategori",
+        related_name="events",
     )
 
     def attending(self):
