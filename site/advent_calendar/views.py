@@ -64,8 +64,6 @@ class WindowCreate(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.advent_calendar_id = self.kwargs.get("year")
-        form.instance.created_by = self.request.user
-        form.instance.modified_by = self.request.user
         return super().form_valid(form)
 
 
@@ -80,10 +78,6 @@ class WindowUpdate(PermissionOrCreatedMixin, UpdateView):
         return get_object_or_404(
             Window, advent_calendar=self.kwargs["year"], index=self.kwargs["index"]
         )
-
-    def form_valid(self, form):
-        form.instance.modified_by = self.request.user
-        return super().form_valid(form)
 
 
 class WindowDelete(PermissionOrCreatedMixin, DeleteViewCustom):

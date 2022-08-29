@@ -1,26 +1,21 @@
-from django.conf import settings
-from django.db.models import (
-    CASCADE,
-    CharField,
-    DateTimeField,
-    ForeignKey,
-    Model,
-    TextField,
-)
+from django.db.models import CASCADE, CharField, DateTimeField, Model, TextField
+from django_userforeignkey.models.fields import UserForeignKey
 
 
 class CreatedModifiedMixin(Model):
     created = DateTimeField("lagt ut", auto_now_add=True)
     modified = DateTimeField("redigert", auto_now=True)
-    created_by = ForeignKey(
-        settings.AUTH_USER_MODEL,
+    created_by = UserForeignKey(
+        auto_user_add=True,
         on_delete=CASCADE,
+        null=False,
         related_name="%(class)s_created",
         verbose_name="laga av",
     )
-    modified_by = ForeignKey(
-        settings.AUTH_USER_MODEL,
+    modified_by = UserForeignKey(
+        auto_user=True,
         on_delete=CASCADE,
+        null=False,
         related_name="%(class)s_modified",
         verbose_name="redigert av",
     )

@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     "sass_processor",
     "pgtrigger",
     "watson",
+    "django_userforeignkey",
     "search",
     "authentication",
     "accounts",
@@ -105,6 +106,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "watson.middleware.SearchContextMiddleware",
+    "django_userforeignkey.middleware.UserForeignKeyMiddleware",
     "common.middleware.RedirectFallbackMiddleware",
 ]
 

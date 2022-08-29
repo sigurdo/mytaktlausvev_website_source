@@ -197,7 +197,7 @@ class EventCreate(LoginRequiredMixin, BreadcrumbsMixin, InlineFormsetCreateView)
         marius = UserCustom.objects.filter(username="MariusV").first()
         if marius:
             EventAttendance.objects.create(
-                event=self.object, person=marius, status=Attendance.ATTENDING_MAYBE
+                event=self.object, person=marius, status=Attendance.ATTENDING
             )
         sigrid = UserCustom.objects.filter(username="Sigride").first()
         if sigrid:

@@ -125,7 +125,7 @@ class UploadPdfForm(CleanAllFilesMixin, Form):
             ),
             (
                 "filename",
-                "Filnavn",
+                "Filnamn",
             ),
             (
                 "none",
