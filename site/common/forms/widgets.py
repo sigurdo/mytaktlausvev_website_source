@@ -1,7 +1,14 @@
-from django import forms
+from django.forms import (
+    DateInput,
+    MultiWidget,
+    Select,
+    SelectMultiple,
+    SplitDateTimeWidget,
+    TimeInput,
+)
 
 
-class DateDateInput(forms.DateInput):
+class DateDateInput(DateInput):
     """
     DateInput with `type` set to `date`.
     Displays a date-picker in supporting browsers.
@@ -12,7 +19,7 @@ class DateDateInput(forms.DateInput):
         super().__init__(attrs=attrs, format=format)
 
 
-class SplitDateTimeWidgetCustom(forms.SplitDateTimeWidget):
+class SplitDateTimeWidgetCustom(SplitDateTimeWidget):
     """
     Date/time widget with custom styling and date-picker.
     Must be used with `django.forms.SplitDateTimeField`.
@@ -21,10 +28,15 @@ class SplitDateTimeWidgetCustom(forms.SplitDateTimeWidget):
     template_name = "common/forms/split_datetime_custom.html"
 
     def __init__(self, attrs=None):
-        widgets = [DateDateInput(), forms.TimeInput(format="%H:%M")]
-        forms.MultiWidget.__init__(self, widgets, attrs)
+        widgets = [DateDateInput(), TimeInput(format="%H:%M")]
+        MultiWidget.__init__(self, widgets, attrs)
 
 
-class AutocompleteSelect(forms.Select):
+class AutocompleteSelect(Select):
+    class Media:
+        js = ("common/forms/autocomplete_select.js",)
+
+
+class AutocompleteSelectMultiple(SelectMultiple):
     class Media:
         js = ("common/forms/autocomplete_select.js",)

@@ -13,14 +13,28 @@ from quotes.models import Quote
 from .forms import QuoteForm
 
 
-def breadcrumbs(poll=None):
+def breadcrumbs():
     """Returns breadcrumbs for the quotes views."""
-    return [Breadcrumb(reverse("quotes:quotes"), "Sitat")]
+    return [Breadcrumb(reverse("quotes:QuoteList"), "Sitat")]
 
 
-class QuoteNew(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
-    """View-function for new-quote-form"""
+class QuoteList(LoginRequiredMixin, ListView):
+    model = Quote
+    context_object_name = "quotes"
+    paginate_by = 50
 
+    def get_context_data(self, **kwargs):
+        random_number = random.randint(50, 150)
+        random_number2 = random.randint(1, random_number)
+        random_number3 = random.randint(1, random_number)
+        if random_number2 == random_number3:
+            kwargs["title"] = "Skammens hjørne"
+        else:
+            kwargs["title"] = "Sitat"
+        return super().get_context_data(**kwargs)
+
+
+class QuoteCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
     model = Quote
     form_class = QuoteForm
     template_name = "common/forms/form.html"
@@ -29,33 +43,10 @@ class QuoteNew(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
         return breadcrumbs()
 
     def get_success_url(self) -> str:
-        return reverse("quotes:quotes")
-
-
-class QuoteList(LoginRequiredMixin, ListView):
-    """View-function for displaying all quotes"""
-
-    model = Quote
-    context_object_name = "quotes"
-    paginate_by = 50
-
-    def get_template_names(self):
-        random_number = random.randint(50, 150)
-        random_number2 = random.randint(1, random_number)
-        random_number3 = random.randint(1, random_number)
-        if random_number2 == random_number3:
-            return "quotes/quote_list_shame.html"
-        return super().get_template_names()
-
-    def get_queryset(self):
-        if self.request.user.is_authenticated:
-            return super().get_queryset()
-        return super().get_queryset().filter(public=True)
+        return reverse("quotes:QuoteList")
 
 
 class QuoteUpdate(PermissionOrCreatedMixin, BreadcrumbsMixin, UpdateView):
-    """View-function for editing quotes"""
-
     model = Quote
     form_class = QuoteForm
     template_name = "common/forms/form.html"
@@ -65,4 +56,4 @@ class QuoteUpdate(PermissionOrCreatedMixin, BreadcrumbsMixin, UpdateView):
         return breadcrumbs()
 
     def get_success_url(self) -> str:
-        return reverse("quotes:quotes")
+        return reverse("quotes:QuoteList")
