@@ -35,6 +35,7 @@ from navbar.models import NavbarItem
 from pictures.factories import GalleryFactory, ImageFactory
 from pictures.models import Image
 from polls.factories import ChoiceFactory, PollFactory, VoteFactory
+from quotes.factories import QuoteFactory
 from repertoire.factories import RepertoireEntryFactory, RepertoireFactory
 from sheetmusic.factories import (
     FavoritePartFactory,
@@ -88,6 +89,7 @@ class Command(BaseCommand):
             "musikalsk",
             "muikalsk@taktlaus.no",
             "password",
+            name="Musikalsk leiar",
             membership_status=UserCustom.MembershipStatus.PAYING,
         )
 
@@ -397,6 +399,16 @@ class Command(BaseCommand):
             modified_by=leader,
         )
 
+        QuoteFactory(
+            quote="Tusen takk Mario! Men prinsessa vår er i eit anna slott!",
+            quoted_as="Padde",
+        )
+        QuoteFactory(
+            quote="Flygelet kostar [REDACTED]",
+            quoted_as="",
+            users=[musical_leader],
+        )
+
         ButtonDesignFactory(name="Taktlausbutton - Raud", public=True)
         ButtonDesignFactory(name="Taktlausbutton - Blå", image__color="blue")
 
@@ -566,7 +578,7 @@ class Command(BaseCommand):
         )
         NavbarItemFactory(
             text="Sitat",
-            link=reverse("quotes:quotes"),
+            link=reverse("quotes:QuoteList"),
             order=2,
             requires_login=True,
             parent=other_dropdown,

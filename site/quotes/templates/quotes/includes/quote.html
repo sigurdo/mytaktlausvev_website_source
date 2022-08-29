@@ -1,0 +1,24 @@
+<div class="my-3">
+    <figure>
+        <blockquote class="blockquote">
+            {% load markdown %}
+            {{ quote.quote | markdown }}
+        </blockquote>
+        <figcaption class="blockquote-footer">
+            {{ quote.quoted_as_or_users }}
+            -
+            <time
+                datetime="{{ quote.created | date:"c" }}"
+                title="{{ quote.created | date }}"
+            >
+                {{ quote.created | date }}
+            </time>
+        </figcaption>
+    </figure>
+
+    {% if perms.quotes.change_quote or quote.created_by == request.user %}
+        <a href="{% url 'quotes:QuoteUpdate' quote.pk %}" class="btn btn-primary btn-sm">
+            Rediger sitat
+        </a>
+    {% endif %}
+</div>

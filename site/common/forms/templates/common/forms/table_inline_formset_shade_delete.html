@@ -1,5 +1,7 @@
 {% include "bootstrap5/table_inline_formset.html" %}
 
+{{ formset.media }}
+
 {% block js %}
     {% load static %}
     <script src="{% static 'common/forms/shade_delete.js' %}"></script>

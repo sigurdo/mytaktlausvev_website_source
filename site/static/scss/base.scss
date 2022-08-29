@@ -1,5 +1,6 @@
 // These variables have bad default values
-$select-color-text: $body-color !default;
+$select-color-text: $body-color;
+$select-color-item: $primary;
 $dropdown-link-hover-bg: $primary;
 @import "tom-select/src/scss/tom-select.bootstrap5.scss";
 

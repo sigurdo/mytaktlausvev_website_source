@@ -2,23 +2,28 @@
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 from django import forms
+from django.core.exceptions import ValidationError
 
+from common.forms.widgets import AutocompleteSelectMultiple
 from quotes.models import Quote
 
 
 class QuoteForm(forms.ModelForm):
-    """Form for registering a new quote"""
-
     helper = FormHelper()
-    helper.form_id = "quote_form"
-    helper.form_method = "post"
-    helper.form_class = "form-horizontal"
-    helper.label_class = "col-lg-12 form-label"
-    helper.field_class = "col-lg-6 form-field"
     helper.add_input(Submit("submit", "Legg inn"))
+
+    def clean(self):
+        cleaned_data = super().clean()
+        users = cleaned_data.get("users")
+        quoted_as = cleaned_data.get("quoted_as")
+
+        if not users and not quoted_as:
+            raise ValidationError(
+                'Du må fylle inn anten "Medlem som vert sitert" eller "Sitert som".',
+                code="invalid",
+            )
 
     class Meta:
         model = Quote
-        fields = ["text", "owner"]
-        widgets = {"text": forms.Textarea(attrs={"cols": 40, "rows": 5})}
-        labels = {"owner": "Eier", "text": "Tekst"}
+        fields = ["quote", "users", "quoted_as"]
+        widgets = {"users": AutocompleteSelectMultiple}

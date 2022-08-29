@@ -15,3 +15,14 @@ def random_sample_queryset(queryset: QuerySet, samples: int):
     for i in range(to_show):
         sample.append(queryset[sample_indexes[i]])
     return sample
+
+
+def comma_seperate_list(list):
+    if not list:
+        return ""
+    elif len(list) == 1:
+        return list[0]
+    elif len(list) == 2:
+        return " og ".join(list)
+    else:
+        return f"{', '.join(list[:-1])}, og {list[-1]}"

@@ -1,25 +1,26 @@
 {% extends "base.html" %}
 
-{% block title_page %}Sitat{% endblock title_page %}
-{% block title_content %}Sitat{% endblock title_content %}
+{% block title_page %}{{ title }}{% endblock title_page %}
+{% block title_content %}{{ title }}{% endblock title_content %}
 
 {% block header %}
     {{ block.super }}
 
-    <a class="btn btn-primary btn-sm my-1" href="{% url 'quotes:new_quote' %}">Legg til sitat</a>
+    <a class="btn btn-primary btn-sm my-1" href="{% url 'quotes:QuoteCreate' %}">Legg til sitat</a>
 {% endblock header %}
 
 {% block content %}
     {% if quotes %}
-        {% for q in quotes %}
-            {% include "quotes/quote.html" with quote=q %}
-        {% endfor %}
+        <ul class="list-unstyled">
+            <li>
+            {% for quote in quotes %}
+                {% include "quotes/includes/quote.html" with quote=quote %}
+            {% endfor %}
+            </li>
+        </ul>
 
         {% include "common/includes/pagination.html" with pagination_label="Sitatsida" %}
-
     {% else %}
         <p>Ingen sitat registert.</p>
     {% endif %}
-
-
 {% endblock %}
