@@ -10,9 +10,14 @@ class Orchestra(Model):
         BERGEN = "BERGEN", "Bergen"
         TROMSO = "TROMSØ", "Tromsø"
 
-    name = CharField("Namn", max_length=255)
-    city = CharField("By", choices=OrchestraCities.choices, blank=True, max_length=255)
-    avatar = ImageField("logo", upload_to="orchestras/", blank=True)
+    name = CharField("namn", max_length=255)
+    city = CharField("by", choices=OrchestraCities.choices, blank=True, max_length=255)
+    logo = ImageField("logo", upload_to="orchestras/", blank=True)
 
     def __str__(self):
         return f"{self.name}"
+
+    class Meta:
+        ordering = ["name"]
+        verbose_name = "orchester"
+        verbose_name_plural = "orchester"

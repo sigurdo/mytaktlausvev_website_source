@@ -131,10 +131,10 @@ class UserCustom(AbstractUser):
     )
 
     orchestras = ManyToManyField(
-        verbose_name="andre orkestermedlemskap",
+        verbose_name="andre orchestermedlemskap",
         to=Orchestra,
         blank=True,
-        help_text="Andre studentorchestere som du er medlem i",
+        help_text="Andre studentorchester som du er medlem av",
     )
 
     objects = UserManagerCustom()
