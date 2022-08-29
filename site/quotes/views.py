@@ -28,11 +28,6 @@ class QuoteNew(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
     def get_breadcrumbs(self) -> list:
         return breadcrumbs()
 
-    def form_valid(self, form):
-        form.instance.created_by = self.request.user
-        form.instance.modified_by = self.request.user
-        return super().form_valid(form)
-
     def get_success_url(self) -> str:
         return reverse("quotes:quotes")
 
@@ -68,10 +63,6 @@ class QuoteUpdate(PermissionOrCreatedMixin, BreadcrumbsMixin, UpdateView):
 
     def get_breadcrumbs(self) -> list:
         return breadcrumbs()
-
-    def form_valid(self, form):
-        form.instance.modified_by = self.request.user
-        return super().form_valid(form)
 
     def get_success_url(self) -> str:
         return reverse("quotes:quotes")

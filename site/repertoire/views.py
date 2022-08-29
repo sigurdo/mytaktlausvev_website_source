@@ -83,11 +83,6 @@ class RepertoireCreate(
     def get_breadcrumbs(self):
         return repertoire_breadcrumbs()
 
-    def form_valid(self, form):
-        form.instance.created_by = self.request.user
-        form.instance.modified_by = self.request.user
-        return super().form_valid(form)
-
 
 class RepertoireUpdate(
     PermissionRequiredMixin, BreadcrumbsMixin, InlineFormsetUpdateView
@@ -101,10 +96,6 @@ class RepertoireUpdate(
 
     def get_breadcrumbs(self):
         return repertoire_breadcrumbs(repertoire=self.object, show_repertoire=True)
-
-    def form_valid(self, form):
-        form.instance.modified_by = self.request.user
-        return super().form_valid(form)
 
 
 class RepertoireDelete(PermissionRequiredMixin, BreadcrumbsMixin, DeleteViewCustom):

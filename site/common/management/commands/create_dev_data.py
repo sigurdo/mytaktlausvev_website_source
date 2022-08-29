@@ -806,7 +806,7 @@ class Command(BaseCommand):
         )
         EmbeddableTextFactory(
             name="Velkomenepost",
-            content='Hei og velkomen til Studentorchesteret Dei Taktlause! Brukarnavnet ditt er "{{ username }}".',
+            content='Hei og velkomen til Studentorchesteret Dei Taktlause! Brukarnamnet ditt er "{{ username }}".',
         )
         EmbeddableTextFactory(
             name="Stemmeredigeringstips",

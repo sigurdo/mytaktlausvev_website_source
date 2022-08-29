@@ -72,12 +72,7 @@ class TopicCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
         return breadcrumbs(self.forum)
 
     def form_valid(self, form):
-        self.object = Topic(
-            title=form.cleaned_data["title"],
-            forum=self.forum,
-            created_by=self.request.user,
-            modified_by=self.request.user,
-        )
+        self.object = Topic(title=form.cleaned_data["title"], forum=self.forum)
         self.object.save()
         # Here we can not call super().form_valid(), since it will call form.save() which
         # will fail since the form does not know how to set forum

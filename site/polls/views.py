@@ -131,11 +131,6 @@ class PollCreate(PermissionRequiredMixin, BreadcrumbsMixin, InlineFormsetCreateV
     def get_breadcrumbs(self) -> list:
         return breadcrumbs()
 
-    def form_valid(self, form):
-        form.instance.created_by = self.request.user
-        form.instance.modified_by = self.request.user
-        super().form_valid(form)
-
 
 class PollUpdate(PermissionRequiredMixin, BreadcrumbsMixin, InlineFormsetUpdateView):
     model = Poll
@@ -152,10 +147,6 @@ class PollUpdate(PermissionRequiredMixin, BreadcrumbsMixin, InlineFormsetUpdateV
 
     def get_breadcrumbs(self) -> list:
         return breadcrumbs(self.object)
-
-    def form_valid(self, form):
-        form.instance.modified_by = self.request.user
-        super().form_valid(form)
 
 
 class PollDelete(PermissionRequiredMixin, BreadcrumbsMixin, DeleteViewCustom):

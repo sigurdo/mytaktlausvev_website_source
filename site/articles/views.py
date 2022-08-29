@@ -58,11 +58,6 @@ class ArticleCreate(LoginRequiredMixin, CreateView):
     form_class = ArticleForm
     template_name = "common/forms/form.html"
 
-    def form_valid(self, form):
-        form.instance.created_by = self.request.user
-        form.instance.modified_by = self.request.user
-        return super().form_valid(form)
-
 
 class SubarticleCreate(SlugPathMixin, BreadcrumbsMixin, ArticleCreate):
     """View for creating a subarticle."""
@@ -91,10 +86,6 @@ class ArticleUpdate(
 
     def get_breadcrumbs(self) -> list:
         return self.object.breadcrumbs(include_self=True)
-
-    def form_valid(self, form):
-        form.instance.modified_by = self.request.user
-        return super().form_valid(form)
 
 
 class ArticleDelete(

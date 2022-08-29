@@ -17,6 +17,7 @@ from django.db.models import (
 from django.db.models.query_utils import Q
 from django.urls import reverse
 from django.utils.timezone import localtime, make_aware, now
+from django_userforeignkey.models.fields import UserForeignKey
 
 from common.models import ArticleMixin
 

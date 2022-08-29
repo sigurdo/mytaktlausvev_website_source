@@ -45,11 +45,6 @@ class FileCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
     def get_breadcrumbs(self):
         return breadcrumbs()
 
-    def form_valid(self, form):
-        form.instance.created_by = self.request.user
-        form.instance.modified_by = self.request.user
-        return super().form_valid(form)
-
 
 class FileUpdate(PermissionOrCreatedMixin, BreadcrumbsMixin, UpdateView):
     model = File
@@ -60,10 +55,6 @@ class FileUpdate(PermissionOrCreatedMixin, BreadcrumbsMixin, UpdateView):
 
     def get_breadcrumbs(self):
         return breadcrumbs()
-
-    def form_valid(self, form):
-        form.instance.modified_by = self.request.user
-        return super().form_valid(form)
 
 
 class FileDelete(PermissionOrCreatedMixin, BreadcrumbsMixin, DeleteViewCustom):
