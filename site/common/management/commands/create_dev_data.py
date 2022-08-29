@@ -21,6 +21,7 @@ from events.factories import (
     EventKeyinfoEntryFactory,
 )
 from events.models import Attendance
+from external_orchestras.factories import OrchestraFactory
 from forum.factories import ForumFactory, TopicFactory
 from instruments.factories import (
     InstrumentFactory,
@@ -43,7 +44,6 @@ from sheetmusic.factories import (
     PdfFactory,
     ScoreFactory,
 )
-from external_orchestras.factories import OrchestraFactory
 from uniforms.factories import JacketFactory, JacketLocationFactory, JacketUserFactory
 from uniforms.models import Jacket
 
@@ -837,9 +837,5 @@ Her kan du skrive nykelinformasjon om hendinga. Oppføringane du skriv vil verte
         EmbeddableTextFactory(
             name="Buttonmotivbibliotek", content="Her finn du ferdiglaga buttonmotiv!"
         )
-        OrchestraFactory(
-            name="Dragern"
-        )
-        OrchestraFactory(
-            name="Motstanden"
-        )
+        OrchestraFactory(name="Dragern")
+        OrchestraFactory(name="Motstanden")
