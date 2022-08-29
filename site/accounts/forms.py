@@ -7,7 +7,11 @@ from django.core.exceptions import ValidationError
 from django.forms import BooleanField, ModelForm
 from django.urls import reverse
 
-from common.forms.widgets import AutocompleteSelect, AutocompleteSelectMultiple, DateDateInput
+from common.forms.widgets import (
+    AutocompleteSelect,
+    AutocompleteSelectMultiple,
+    DateDateInput,
+)
 
 from .models import UserCustom
 

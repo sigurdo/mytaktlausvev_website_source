@@ -134,7 +134,7 @@ class UserCustom(AbstractUser):
         verbose_name="andre orkestermedlemskap",
         to=Orchestra,
         blank=True,
-        help_text="Andre studentorchestere som du er medlem i"
+        help_text="Andre studentorchestere som du er medlem i",
     )
 
     objects = UserManagerCustom()
