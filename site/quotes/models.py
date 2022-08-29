@@ -11,7 +11,9 @@ class Quote(CreatedModifiedMixin):
     """Model representing a single quote"""
 
     quote = TextField("sitat")
-    quoted_as = CharField("sitert som", max_length=255, blank=True)
+    quoted_as = CharField(
+        "sitert som (med eventuell kontekst)", max_length=255, blank=True
+    )
     users = ManyToManyField(
         settings.AUTH_USER_MODEL,
         related_name="quotes",
