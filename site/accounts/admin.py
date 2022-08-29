@@ -22,6 +22,7 @@ class UserAdminCustom(UserAdmin):
                     "has_storage_access",
                     "avatar",
                     "light_mode",
+                    "orchestras",
                 )
             },
         ),

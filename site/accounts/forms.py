@@ -7,7 +7,11 @@ from django.core.exceptions import ValidationError
 from django.forms import BooleanField, ModelForm
 from django.urls import reverse
 
-from common.forms.widgets import AutocompleteSelect, DateDateInput
+from common.forms.widgets import (
+    AutocompleteSelect,
+    AutocompleteSelectMultiple,
+    DateDateInput,
+)
 
 from .models import UserCustom
 
@@ -113,7 +117,7 @@ class UserCustomUpdateForm(ModelForm):
         ),
         Fieldset("Taktlaus-ting", "instrument_type", "membership_period"),
         Fieldset("Kalenderintegrasjon", "calendar_feed_start_date"),
-        Fieldset("Anna", "light_mode", "image_sharing_consent"),
+        Fieldset("Anna", "light_mode", "image_sharing_consent", "orchestras"),
         Submit("submit", "Rediger brukar"),
     )
 
@@ -133,11 +137,13 @@ class UserCustomUpdateForm(ModelForm):
             "light_mode",
             "image_sharing_consent",
             "calendar_feed_start_date",
+            "orchestras",
         ]
         widgets = {
             "birthdate": DateDateInput,
             "instrument_type": AutocompleteSelect,
             "calendar_feed_start_date": DateDateInput,
+            "orchestras": AutocompleteSelectMultiple,
         }
 
 

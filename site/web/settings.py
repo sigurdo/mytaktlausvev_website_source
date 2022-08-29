@@ -95,6 +95,7 @@ INSTALLED_APPS = [
     "pictures",
     "minutes",
     "user_files",
+    "external_orchestras",
 ]
 
 MIDDLEWARE = [
