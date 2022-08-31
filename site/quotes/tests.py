@@ -4,6 +4,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 from accounts.factories import SuperUserFactory, UserFactory
+from accounts.models import UserCustom
 from common.mixins import TestMixin
 from common.utils import comma_seperate_list
 from quotes.factories import QuoteFactory
@@ -55,6 +56,12 @@ class QuoteTestSuite(TestMixin, TestCase):
 
 
 class QuoteFormTestSuite(TestMixin, TestCase):
+    def test_inactive_users_not_in_users_queryset(self):
+        """Inactive users should not be in the `users` queryset."""
+        paying_user = UserFactory(membership_status=UserCustom.MembershipStatus.PAYING)
+        UserFactory(membership_status=UserCustom.MembershipStatus.INACTIVE)
+        self.assertQuerysetEqual(QuoteForm().fields["users"].queryset, [paying_user])
+
     def test_validation_error_if_both_quoted_as_and_users_missing(self):
         """
         The form should not validate if both
