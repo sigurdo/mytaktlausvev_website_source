@@ -19,21 +19,23 @@ document.addEventListener("DOMContentLoaded", () => {
       null,
       { orderable: false },
       { orderable: false },
-      { orderable: false }
+      { orderable: false },
     ],
   });
 
-  // Filter on membership status when that select gets an input
-  document
-    .querySelector("#select-membership-status")
-    .addEventListener("input", (event) => {
-      data_table
-        .column(2)
-        .search(
-          event.target.value ? "^" + event.target.value + "$" : "",
-          true,
-          false
-        )
-        .draw();
-    });
+  const filterMembershipStatus = (membershipStatus) => {
+    data_table
+      .column(2)
+      .search(membershipStatus ? "^" + membershipStatus + "$" : "", true, false)
+      .draw();
+  };
+
+  const selectMembershipStatus = document.querySelector(
+    "#select-membership-status"
+  );
+
+  filterMembershipStatus(selectMembershipStatus.value);
+  selectMembershipStatus.addEventListener("input", (event) =>
+    filterMembershipStatus(event.target.value)
+  );
 });
