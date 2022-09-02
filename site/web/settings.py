@@ -221,6 +221,9 @@ EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "mail@example.com")
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "SoSecureSecure")
 EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS")
 
+DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "mail@example.com")
+SERVER_EMAIL = os.environ.get("SERVER_EMAIL", "mail@example.com")
+
 # Logging
 # https://docs.djangoproject.com/en/4.0/topics/logging/
 
