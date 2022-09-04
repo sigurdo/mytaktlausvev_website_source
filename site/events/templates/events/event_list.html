@@ -4,6 +4,17 @@
 {% block title_page %}Hendingar{% if year %} {{year}}{% endif %}{% endblock title_page %}
 {% block title_content %}Hendingar{% if year %} {{year}}{% endif %}{% endblock title_content %}
 
+{% block header %}
+    {{ block.super }}
+
+    <a
+        href="{% url 'events:EventCreate' %}"
+        class="btn btn-primary btn-sm my-1"
+    >
+        Ny hending
+    </a>
+{% endblock header %}
+
 {% block content %}
     <section class="mb-3">
         <nav class="mb-3">
