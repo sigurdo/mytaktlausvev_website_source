@@ -59,6 +59,15 @@
     </section>
     {% endif %}
 
+    {% if not score.is_processing %}
+    <section>
+        <h2 class="fs-3">Automatisk stemmefinning</h2>
+        <p>
+            Automatisk stemmefinning gjeng for seg. Last sida på nytt for å få opp fleire stemmer. Når denne teksta vert borte er den automatiske stemmefinninga ferdig.
+        </p>
+    </section>
+    {% endif %}
+
     {% if parts_favorite %}
     <section>
         <h2 class="fs-3"> Favorittstemmer </h2>

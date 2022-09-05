@@ -106,6 +106,21 @@ class ScoreTestSuite(TestMixin, TestCase):
         result = self.score.favorite_parts_pdf_filename(user)
         self.assertEquals(result, "chirp-kultype.pdf")
 
+    def test_is_processing(self):
+        """
+        Checks that `is_processing` returns True if any of it's pdfs are beeing processed.
+        """
+        score = PdfFactory(processing=False).score
+        PdfFactory(score=score, processing=True)
+        self.assertTrue(score.is_processing())
+
+    def test_is_not_processing(self):
+        """
+        Checks that `is_processing` returns False if none of it's pdfs are beeing processed..
+        """
+        score = PdfFactory(processing=False).score
+        self.assertFalse(score.is_processing())
+
 
 class PdfTestSuite(TestMixin, TestCase):
     def setUp(self):
