@@ -185,7 +185,7 @@
                                 {% endif %}
 
                                 {% if profile.calendar_feed_start_date %}
-                                {% if user == profile or perms.accounts.view_calendar_feed_start_date %}
+                                {% if user == profile or perms.accounts.view_calendar_feed_settings %}
                                 <dt>Startdato for kalenderintegrasjon</dt>
                                 <dd>
                                     <time datetime="{{ profile.calendar_feed_start_date | date:"c" }}">

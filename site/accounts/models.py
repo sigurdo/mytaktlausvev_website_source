@@ -189,7 +189,7 @@ class UserCustom(AbstractUser):
             ("edit_storage_access", "Kan redigere lagertilgjenge"),
             ("view_image_sharing_consent", "Kan sjå samtykkje til deling av bilete"),
             (
-                "view_calendar_feed_start_date",
-                "Kan sjå startdato for kalenderintegrasjon",
+                "view_calendar_feed_settings",
+                "Kan sjå innstillinger for kalenderintegrasjon",
             ),
         )
