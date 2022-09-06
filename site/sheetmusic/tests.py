@@ -108,7 +108,7 @@ class ScoreTestSuite(TestMixin, TestCase):
 
     def test_is_processing(self):
         """
-        Checks that `is_processing` returns True if any of it's pdfs are beeing processed.
+        Checks that `is_processing` returns True if any of its pdfs are being processed.
         """
         score = PdfFactory(processing=False).score
         PdfFactory(score=score, processing=True)
@@ -116,7 +116,7 @@ class ScoreTestSuite(TestMixin, TestCase):
 
     def test_is_not_processing(self):
         """
-        Checks that `is_processing` returns False if none of it's pdfs are beeing processed..
+        Checks that `is_processing` returns False if none of its pdfs are being processed.
         """
         score = PdfFactory(processing=False).score
         self.assertFalse(score.is_processing())
