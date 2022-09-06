@@ -79,12 +79,7 @@ ALLOWED_ATTRIBUTES = ALLOWED_ATTRIBUTES_INLINE_NO_LINKS + [
 ]
 
 
-def clean_function(html, allowed_tags, allowed_attributes):
-    filters = []
-    if "a" in allowed_tags:
-        filters.append(
-            partial(LinkifyFilter, url_re=build_url_re(tlds=TLDS), parse_email=True)
-        )
+def get_class_apply_filter(allowed_tags):
     full_class_map = {
         "table": "table table-striped",
         "img": "img-fluid d-block m-auto",
@@ -101,43 +96,48 @@ def clean_function(html, allowed_tags, allowed_attributes):
             lambda item: item[0] in allowed_tags, full_class_map.items()
         )
     }
-    print("class map:", class_map)
-    if len(class_map) > 0:
-        filters.append(partial(ClassApplyFilter, class_map=class_map))
+    return partial(ClassApplyFilter, class_map=class_map)
+
+
+@register.filter(is_safe=True)
+def clean(html):
     cleaner = Cleaner(
-        tags=allowed_tags,
-        attributes=allowed_attributes,
-        filters=filters,
+        tags=ALLOWED_TAGS,
+        attributes=ALLOWED_ATTRIBUTES,
+        filters=[
+            partial(LinkifyFilter, url_re=build_url_re(tlds=TLDS), parse_email=True),
+            get_class_apply_filter(ALLOWED_TAGS),
+        ],
     )
     bleached = cleaner.clean(html)
     return mark_safe(bleached)
 
 
 @register.filter(is_safe=True)
-def clean(html):
-    return clean_function(
-        html,
-        allowed_tags=ALLOWED_TAGS,
-        allowed_attributes=ALLOWED_ATTRIBUTES,
-    )
-
-
-@register.filter(is_safe=True)
 def clean_inline(html):
-    return clean_function(
-        html,
-        allowed_tags=ALLOWED_TAGS_INLINE,
-        allowed_attributes=ALLOWED_ATTRIBUTES_INLINE,
+    cleaner = Cleaner(
+        tags=ALLOWED_TAGS_INLINE,
+        attributes=ALLOWED_ATTRIBUTES_INLINE,
+        filters=[
+            partial(LinkifyFilter, url_re=build_url_re(tlds=TLDS), parse_email=True),
+            get_class_apply_filter(ALLOWED_TAGS_INLINE),
+        ],
     )
+    bleached = cleaner.clean(html)
+    return mark_safe(bleached)
 
 
 @register.filter(is_safe=True)
 def clean_inline_no_links(html):
-    return clean_function(
-        html,
-        allowed_tags=ALLOWED_TAGS_INLINE_NO_LINKS,
-        allowed_attributes=ALLOWED_ATTRIBUTES_INLINE_NO_LINKS,
+    cleaner = Cleaner(
+        tags=ALLOWED_TAGS_INLINE_NO_LINKS,
+        attributes=ALLOWED_ATTRIBUTES_INLINE_NO_LINKS,
+        filters=[
+            get_class_apply_filter(ALLOWED_TAGS_INLINE_NO_LINKS),
+        ],
     )
+    bleached = cleaner.clean(html)
+    return mark_safe(bleached)
 
 
 @register.filter(is_safe=True)
