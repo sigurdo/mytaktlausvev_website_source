@@ -16,21 +16,23 @@
         </figcaption>
     </figure>
 
+    {% if quote.created_by == request.user or perms.quotes.change_quote or perms.quotes.delete_quote %}
     <ul class="list-inline my-1">
+        {% if perms.quotes.change_quote or quote.created_by == request.user %}
         <li class="list-inline-item">
-            {% if perms.quotes.change_quote or quote.created_by == request.user %}
-                <a href="{% url 'quotes:QuoteUpdate' quote.pk %}" class="btn btn-primary btn-sm">
-                    Rediger sitat
-                </a>
-            {% endif %}
+            <a href="{% url 'quotes:QuoteUpdate' quote.pk %}" class="btn btn-primary btn-sm">
+                Rediger sitat
+            </a>
         </li>
+        {% endif %}
 
+        {% if perms.quotes.delete_quote or quote.created_by == request.user %}
         <li class="list-inline-item">
-            {% if perms.quotes.delete_quote or quote.created_by == request.user %}
-                <a href="{% url 'quotes:QuoteDelete' quote.pk %}" class="btn btn-danger btn-sm">
-                    Slett sitat
-                </a>
-            {% endif %}
+            <a href="{% url 'quotes:QuoteDelete' quote.pk %}" class="btn btn-danger btn-sm">
+                Slett sitat
+            </a>
         </li>
+        {% endif %}
     </ul>
+    {% endif %}
 </div>
