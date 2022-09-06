@@ -31,14 +31,15 @@
     {% if score.arrangement or score.originally_from or score.sound_file or score.sound_link %}
     <section>
         <dl>
+            {% load markdown %}
             {% if score.arrangement %}
                 <dt> Arrangement </dt>
-                <dd> {{ score.arrangement }} </dd>
+                <dd> {{ score.arrangement | markdown_inline }} </dd>
             {% endif %}
 
             {% if score.originally_from %}
                 <dt> Opphaveleg ifrå </dt>
-                <dd> {{ score.originally_from }} </dd>
+                <dd> {{ score.originally_from | markdown_inline }} </dd>
             {% endif %}
 
             {% if score.sound_file %}
