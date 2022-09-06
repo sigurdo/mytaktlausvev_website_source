@@ -70,13 +70,21 @@ ALLOWED_TAGS = ALLOWED_TAGS_INLINE + [
     "abbr",
     "acronym",
 ]
-ALLOWED_ATTRIBUTES = ALLOWED_ATTRIBUTES_INLINE_NO_LINKS + ["src", "alt", "width", "height", "class"]
+ALLOWED_ATTRIBUTES = ALLOWED_ATTRIBUTES_INLINE_NO_LINKS + [
+    "src",
+    "alt",
+    "width",
+    "height",
+    "class",
+]
 
 
 def clean_function(html, allowed_tags, allowed_attributes):
     filters = []
     if "a" in allowed_tags:
-        filters.append(partial(LinkifyFilter, url_re=build_url_re(tlds=TLDS), parse_email=True))
+        filters.append(
+            partial(LinkifyFilter, url_re=build_url_re(tlds=TLDS), parse_email=True)
+        )
     full_class_map = {
         "table": "table table-striped",
         "img": "img-fluid d-block m-auto",
@@ -89,7 +97,9 @@ def clean_function(html, allowed_tags, allowed_attributes):
     }
     class_map = {
         tag: classes
-        for tag, classes in filter(lambda item : item[0] in allowed_tags, full_class_map.items())
+        for tag, classes in filter(
+            lambda item: item[0] in allowed_tags, full_class_map.items()
+        )
     }
     print("class map:", class_map)
     if len(class_map) > 0:
@@ -105,17 +115,29 @@ def clean_function(html, allowed_tags, allowed_attributes):
 
 @register.filter(is_safe=True)
 def clean(html):
-    return clean_function(html, allowed_tags=ALLOWED_TAGS, allowed_attributes=ALLOWED_ATTRIBUTES,)
+    return clean_function(
+        html,
+        allowed_tags=ALLOWED_TAGS,
+        allowed_attributes=ALLOWED_ATTRIBUTES,
+    )
 
 
 @register.filter(is_safe=True)
 def clean_inline(html):
-    return clean_function(html, allowed_tags=ALLOWED_TAGS_INLINE, allowed_attributes=ALLOWED_ATTRIBUTES_INLINE,)
+    return clean_function(
+        html,
+        allowed_tags=ALLOWED_TAGS_INLINE,
+        allowed_attributes=ALLOWED_ATTRIBUTES_INLINE,
+    )
 
 
 @register.filter(is_safe=True)
 def clean_inline_no_links(html):
-    return clean_function(html, allowed_tags=ALLOWED_TAGS_INLINE_NO_LINKS, allowed_attributes=ALLOWED_ATTRIBUTES_INLINE_NO_LINKS,)
+    return clean_function(
+        html,
+        allowed_tags=ALLOWED_TAGS_INLINE_NO_LINKS,
+        allowed_attributes=ALLOWED_ATTRIBUTES_INLINE_NO_LINKS,
+    )
 
 
 @register.filter(is_safe=True)
