@@ -16,9 +16,21 @@
         </figcaption>
     </figure>
 
-    {% if perms.quotes.change_quote or quote.created_by == request.user %}
-        <a href="{% url 'quotes:QuoteUpdate' quote.pk %}" class="btn btn-primary btn-sm">
-            Rediger sitat
-        </a>
-    {% endif %}
+    <ul class="list-inline my-1">
+        <li class="list-inline-item">
+            {% if perms.quotes.change_quote or quote.created_by == request.user %}
+                <a href="{% url 'quotes:QuoteUpdate' quote.pk %}" class="btn btn-primary btn-sm">
+                    Rediger sitat
+                </a>
+            {% endif %}
+        </li>
+
+        <li class="list-inline-item">
+            {% if perms.quotes.delete_quote or quote.created_by == request.user %}
+                <a href="{% url 'quotes:QuoteDelete' quote.pk %}" class="btn btn-danger btn-sm">
+                    Slett sitat
+                </a>
+            {% endif %}
+        </li>
+    </ul>
 </div>

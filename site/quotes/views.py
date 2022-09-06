@@ -7,6 +7,7 @@ from django.views.generic import ListView
 from django.views.generic.edit import CreateView, UpdateView
 
 from common.breadcrumbs.breadcrumbs import Breadcrumb, BreadcrumbsMixin
+from common.forms.views import DeleteViewCustom
 from common.mixins import PermissionOrCreatedMixin
 from quotes.models import Quote
 
@@ -51,6 +52,17 @@ class QuoteUpdate(PermissionOrCreatedMixin, BreadcrumbsMixin, UpdateView):
     form_class = QuoteForm
     template_name = "common/forms/form.html"
     permission_required = "quotes.change_quote"
+
+    def get_breadcrumbs(self) -> list:
+        return breadcrumbs()
+
+    def get_success_url(self) -> str:
+        return reverse("quotes:QuoteList")
+
+
+class QuoteDelete(PermissionOrCreatedMixin, BreadcrumbsMixin, DeleteViewCustom):
+    model = Quote
+    permission_required = "quotes.delete_quote"
 
     def get_breadcrumbs(self) -> list:
         return breadcrumbs()
