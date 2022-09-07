@@ -96,7 +96,9 @@ def clean(html, allow_links=True, allow_blocks=True):
     if allow_links:
         allowed_tags += ALLOWED_LINK_TAGS
         allowed_attributes += ALLOWED_LINK_ATTRIBUTES
-        filters.append(partial(LinkifyFilter, url_re=build_url_re(tlds=TLDS), parse_email=True))
+        filters.append(
+            partial(LinkifyFilter, url_re=build_url_re(tlds=TLDS), parse_email=True)
+        )
     if allow_blocks:
         allowed_tags += ALLOWED_BLOCK_TAGS
         allowed_attributes += ALLOWED_BLOCK_ATTRIBUTES
