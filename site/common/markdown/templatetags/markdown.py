@@ -18,7 +18,7 @@ from ..tlds import TLDS
 register = template.Library()
 
 
-ALLOWED_TAGS_INLINE_NO_LINKS = [
+ALLOWED_BASE_TAGS = [
     "b",
     "strong",
     "i",
@@ -30,16 +30,12 @@ ALLOWED_TAGS_INLINE_NO_LINKS = [
     "small",
     "span",
 ]
-ALLOWED_ATTRIBUTES_INLINE_NO_LINKS = []
+ALLOWED_BASE_ATTRIBUTES = []
 
+ALLOWED_LINK_TAGS = ["a"]
+ALLOWED_LINK_ATTRIBUTES = ["href"]
 
-ALLOWED_TAGS_INLINE = ALLOWED_TAGS_INLINE_NO_LINKS + [
-    "a",
-]
-ALLOWED_ATTRIBUTES_INLINE = ALLOWED_ATTRIBUTES_INLINE_NO_LINKS + ["href"]
-
-
-ALLOWED_TAGS = ALLOWED_TAGS_INLINE + [
+ALLOWED_BLOCK_TAGS = [
     "h1",
     "h2",
     "h3",
@@ -70,13 +66,7 @@ ALLOWED_TAGS = ALLOWED_TAGS_INLINE + [
     "abbr",
     "acronym",
 ]
-ALLOWED_ATTRIBUTES = ALLOWED_ATTRIBUTES_INLINE_NO_LINKS + [
-    "src",
-    "alt",
-    "width",
-    "height",
-    "class",
-]
+ALLOWED_BLOCK_ATTRIBUTES = ["src", "alt", "width", "height", "class"]
 
 
 def get_class_apply_filter(allowed_tags):
@@ -99,42 +89,22 @@ def get_class_apply_filter(allowed_tags):
     return partial(ClassApplyFilter, class_map=class_map)
 
 
-@register.filter(is_safe=True)
-def clean(html):
+def clean(html, allow_links=True, allow_blocks=True):
+    allowed_tags = ALLOWED_BASE_TAGS
+    allowed_attributes = ALLOWED_BASE_ATTRIBUTES
+    filters = []
+    if allow_links:
+        allowed_tags += ALLOWED_LINK_TAGS
+        allowed_attributes += ALLOWED_LINK_ATTRIBUTES
+        filters.append(partial(LinkifyFilter, url_re=build_url_re(tlds=TLDS), parse_email=True))
+    if allow_blocks:
+        allowed_tags += ALLOWED_BLOCK_TAGS
+        allowed_attributes += ALLOWED_BLOCK_ATTRIBUTES
+    filters.append(get_class_apply_filter(allowed_tags))
     cleaner = Cleaner(
-        tags=ALLOWED_TAGS,
-        attributes=ALLOWED_ATTRIBUTES,
-        filters=[
-            partial(LinkifyFilter, url_re=build_url_re(tlds=TLDS), parse_email=True),
-            get_class_apply_filter(ALLOWED_TAGS),
-        ],
-    )
-    bleached = cleaner.clean(html)
-    return mark_safe(bleached)
-
-
-@register.filter(is_safe=True)
-def clean_inline(html):
-    cleaner = Cleaner(
-        tags=ALLOWED_TAGS_INLINE,
-        attributes=ALLOWED_ATTRIBUTES_INLINE,
-        filters=[
-            partial(LinkifyFilter, url_re=build_url_re(tlds=TLDS), parse_email=True),
-            get_class_apply_filter(ALLOWED_TAGS_INLINE),
-        ],
-    )
-    bleached = cleaner.clean(html)
-    return mark_safe(bleached)
-
-
-@register.filter(is_safe=True)
-def clean_inline_no_links(html):
-    cleaner = Cleaner(
-        tags=ALLOWED_TAGS_INLINE_NO_LINKS,
-        attributes=ALLOWED_ATTRIBUTES_INLINE_NO_LINKS,
-        filters=[
-            get_class_apply_filter(ALLOWED_TAGS_INLINE_NO_LINKS),
-        ],
+        tags=allowed_tags,
+        attributes=allowed_attributes,
+        filters=filters,
     )
     bleached = cleaner.clean(html)
     return mark_safe(bleached)
@@ -259,9 +229,9 @@ def markdown_inline_filter(string, allow_links=True):
     converted = sub(r"^<p>(.*)</p>$", r"\1", converted)
 
     if allow_links:
-        bleached = clean_inline(converted)
+        bleached = clean(converted, allow_blocks=False)
     else:
-        bleached = clean_inline_no_links(converted)
+        bleached = clean(converted, allow_links=False, allow_blocks=False)
 
     return bleached
 

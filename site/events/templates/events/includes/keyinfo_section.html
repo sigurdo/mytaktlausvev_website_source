@@ -10,6 +10,6 @@
     {% for entry in event.keyinfo_entries.all %}
         <dt>{{ entry.key }}</dt>
         {% load markdown %}
-        <dd>{{ entry.info | clean }}</dd>
+        <dd>{{ entry.info | markdown_inline }}</dd>
     {% endfor %}
 </dl>
