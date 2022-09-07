@@ -218,6 +218,17 @@ def escape_non_inline_markdown(string):
 
 
 def markdown_inline_filter(string, allow_links=True):
+    """
+    Equivalent to the markdown filter, but renders only inline markdown elements.
+    The approach is simply to first escape non-inline markdown syntax, then process
+    it through the regular markdown compiler, disabling extensions that are specific
+    for non-inline elements, and at the end, use bleach to clean HTML-tags that are
+    non-inline. This is by no means a beautiful approach, since we have to care a
+    lot about so many cases of syntax we need to escape and not escape, but the
+    markdown library has no support for running only the inline processor, so as per
+    now, it's the best we can do.
+    """
+
     # Replace eventual newlines and carriage returns with spaces.
     string = " ".join(string.split("\n"))
     string = " ".join(string.split("\r"))
