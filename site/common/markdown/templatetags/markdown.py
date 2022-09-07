@@ -217,6 +217,14 @@ def escape_non_inline_markdown(string):
     return string
 
 
+def escape_markdown_links(string):
+    """
+    Escapes markdown links, leaving only the link text.
+    Kudos to https://stackoverflow.com/questions/53980097/removing-markup-links-in-text
+    """
+    return sub(r"\[(.+?)\]\(.+?\)", r"\1", string)
+
+
 def markdown_inline_filter(string, allow_links=True):
     """
     Equivalent to the markdown filter, but renders only inline markdown elements.
@@ -236,9 +244,7 @@ def markdown_inline_filter(string, allow_links=True):
     string = escape_non_inline_markdown(string)
 
     if not allow_links:
-        # Remove link URLs
-        # Kudos to https://stackoverflow.com/questions/53980097/removing-markup-links-in-text
-        string = sub(r"\[(.+?)\]\(.+?\)", r"\1", string)
+        string = escape_markdown_links(string)
 
     converted = md.markdown(
         string,

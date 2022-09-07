@@ -6,7 +6,11 @@ from markdown import Markdown
 
 from .extensions import KWordCensorExtension
 from .filters import ClassApplyFilter
-from .templatetags.markdown import escape_non_inline_markdown
+from .templatetags.markdown import (
+    escape_markdown_links,
+    escape_non_inline_markdown,
+    markdown_inline_filter,
+)
 
 
 class KWordCensorTestSuite(TestCase):
@@ -114,5 +118,35 @@ class EscapeNonInlineMarkdownTestSuite(TestCase):
         self.assertEqual(result, "\\> Jeg sender mail på snapchat når jeg kommer hjem")
 
 
+class EscapeMarkdownLinksTestSuite(TestCase):
+    def test_escapes_links(self):
+        """Links should be escaped, leaving only the link text."""
+        result = escape_markdown_links("En [link](til/noe) og [en link](til/noe/annet)")
+        self.assertEqual(result, "En link og en link")
+
+
 class MarkdownInlineFilterTestSuite(TestCase):
-    pass
+    def test_removes_newlines(self):
+        """Eventual newlines in the input string should be replaced by spaces."""
+        result = markdown_inline_filter("En\ndelt\ntekst")
+        self.assertEqual(result, "En delt tekst")
+
+    def test_removes_carriage_returns(self):
+        """Eventual carriage returns in the input string should be replaced by spaces."""
+        result = markdown_inline_filter("En\rdelt\rtekst")
+        self.assertEqual(result, "En delt tekst")
+
+    def test_supports_strikethrough(self):
+        """Strikethrough should be supported."""
+        result = markdown_inline_filter("Noe ~~gjennomstreket~~")
+        self.assertEqual(result, "Noe <del>gjennomstreket</del>")
+
+    def test_supports_underline(self):
+        """Underline should be supported."""
+        result = markdown_inline_filter("Noe __understreket__")
+        self.assertEqual(result, "Noe <ins>understreket</ins>")
+
+    def test_censors_k_word(self):
+        """The K-word should be censored."""
+        result = markdown_inline_filter("Korps er kult!")
+        self.assertEqual(result, "K**** er kult!")
