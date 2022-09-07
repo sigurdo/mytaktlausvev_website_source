@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from http import HTTPStatus
 from secrets import token_urlsafe
 
@@ -16,6 +16,7 @@ from common.mixins import TestMixin
 from common.test_utils import create_formset_post_data
 from events.models import Attendance, Event, EventAttendance, EventKeyinfoEntry
 from events.views import (
+    EventFeed,
     event_breadcrumbs,
     get_event_attendance_or_404,
     get_event_or_404,
@@ -822,3 +823,20 @@ class EventFeedTestSuite(TestMixin, TestCase):
         token = UserFactory().calendar_feed_token
         response = self.client.get(self.get_url(token))
         self.assertEqual(response.status_code, HTTPStatus.OK)
+
+    def test_end_time_is_23_59_if_not_specified(self):
+        """If event has no end time, 23:59 should be used."""
+        event = EventFactory(
+            start_time=now().replace(
+                hour=18, minute=00, second=0, microsecond=0, tzinfo=localtime().tzinfo
+            )
+        )
+        end_time = EventFeed().item_end_datetime(event)
+        self.assertEqual(
+            end_time,
+            now()
+            .replace(
+                hour=23, minute=59, second=0, microsecond=0, tzinfo=localtime().tzinfo
+            )
+            .astimezone(timezone.utc),
+        )

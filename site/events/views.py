@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import timedelta, timezone
 
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
@@ -396,7 +396,13 @@ class EventFeed(ICalFeed):
         return item.start_time
 
     def item_end_datetime(self, item):
-        return item.end_time
+        if item.end_time:
+            end_time = item.end_time
+        else:
+            end_time = item.start_time.replace(
+                hour=23, minute=59, second=0, microsecond=0, tzinfo=localtime().tzinfo
+            ).astimezone(timezone.utc)
+        return end_time
 
     def item_location(self, item):
         return "kommer snart"
