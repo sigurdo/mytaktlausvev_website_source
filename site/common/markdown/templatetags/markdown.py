@@ -90,8 +90,8 @@ def get_class_apply_filter(allowed_tags):
 
 
 def clean(html, allow_links=True, allow_blocks=True):
-    allowed_tags = ALLOWED_BASE_TAGS
-    allowed_attributes = ALLOWED_BASE_ATTRIBUTES
+    allowed_tags = ALLOWED_BASE_TAGS.copy()
+    allowed_attributes = ALLOWED_BASE_ATTRIBUTES.copy()
     filters = []
     if allow_links:
         allowed_tags += ALLOWED_LINK_TAGS

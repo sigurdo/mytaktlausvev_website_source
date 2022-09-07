@@ -7,6 +7,7 @@ from markdown import Markdown
 from .extensions import KWordCensorExtension
 from .filters import ClassApplyFilter
 from .templatetags.markdown import (
+    clean,
     escape_markdown_links,
     escape_non_inline_markdown,
     markdown_inline_filter,
@@ -54,6 +55,37 @@ class ClassApplyTestSuite(TestCase):
         """Should do nothing if no class has been specified for the tag."""
         cleaned = self.cleaner.clean("<span>Test!</span>")
         self.assertEqual(cleaned, "<span>Test!</span>")
+
+
+class CleanTestSuite(TestCase):
+    def test_allows_links_by_default(self):
+        """Should allow links by default."""
+        html = 'Link til <a class="text-break" href="site.com" rel="nofollow">site</a>'
+        cleaned = clean(html)
+        self.assertEqual(cleaned, html)
+
+    def test_allows_blocks_by_default(self):
+        """Should allow blocks by default."""
+        html = "<p>Et avsnitt</p>"
+        cleaned = clean(html)
+        self.assertEqual(cleaned, html)
+
+    def test_disallow_links_escapes_link(self):
+        """Setting `allow_links=False` should escape links."""
+        cleaned = clean("<a>site</a>", allow_links=False)
+        self.assertEqual(cleaned, "&lt;a&gt;site&lt;/a&gt;")
+
+    def test_disallow_blocks_escapes_block(self):
+        """Setting `allow_blocks=False` should escape blocks."""
+        cleaned = clean("<p>Avsnitt</p>", allow_blocks=False)
+        self.assertEqual(cleaned, "&lt;p&gt;Avsnitt&lt;/p&gt;")
+
+    def test_linkifies_url(self):
+        cleaned = clean("Link: http://taktlaus.bet")
+        self.assertEqual(
+            cleaned,
+            'Link: <a href="http://taktlaus.bet" rel="nofollow" class="text-break">http://taktlaus.bet</a>',
+        )
 
 
 class EscapeNonInlineMarkdownTestSuite(TestCase):
