@@ -157,7 +157,78 @@ def markdown(string):
     return clean(converted)
 
 
-def compile_markdown_inline(string):
+def escape_non_inline_markdown(string):
+    """
+    Escape non-inline markdown operators that are likely to occur unintentionally
+    in inline text. Escaping is done by adding a \ before the operator, so that
+    e.g. "# Unintentional header" becomes "\# Unintentional header". Input string
+    is assumed to not contain any newlines.
+
+    Explanation of regex patterns used:
+
+    All the patterns used are quite similar, since all matches have to start at the
+    beginning of the string, with any number of directly subsequent whitespace
+    characters. This part of the pattern is marked as a capture group, so that we
+    can backreference it in the replacement string to preserve the whitespaces.
+    Therefore, the first part of most of the regexes is (^\s*)
+
+    To escape enumerated lists we have to insert the \ between the number and the .
+    So e.g "1. Text" should be escaped with "1\. Text". Therefore, we also have to add
+    \d+, meaning any number of decimal characters, but minimum 1, into the first
+    capture group. 1) Can also be used to define an enumerated lists in many markdown
+    implementation, but this is not the case in our library, so we don't have to
+    worry about that.
+
+    Then, after the first capture group we add the markdown operator we are escaping
+    in it's own capture group. Operators that are also regex operators need another \
+    to be escaped from their regex-meaning, and this \ will not be in the output
+    markdown.
+
+    Since header and list operators need to be followed by a space in order to be
+    recognized as headers and lists, we add a space after the operator in the capture
+    groups for these operators. Headers are apparently also recognized when followed by
+    end of string, so we have to use the ( |$) subgroup.
+
+    The `sub(pattern, replacement, string)` function replaces all occurences of the
+    regex `pattern` in `string` with the regex `replacement` and returns the result.
+    `replacement` can contain backreferences to capture groups in `pattern` to preserve
+    them in the output.
+
+    Our replacement string preserves both capture groups from the patterns and inserts
+    a \ between them. Since \ also escapes regex, and not just markdown, we need 2 of
+    them to ensure 1 is left in the markdown output.
+    """
+
+    patterns = [
+        # Headers
+        r"(^\s*)(#( |$))",
+        # Lists
+        r"(^\s*)(- )",
+        r"(^\s*)(\* )",
+        # Enumerated lists
+        r"(^\s*\d+)(\. )",
+        # Block quotes
+        r"(^\s*)(>)",
+    ]
+
+    for pattern in patterns:
+        string = sub(pattern, r"\1\\\2", string)
+    
+    return string
+
+
+def markdown_inline_filter(string, allow_links=True):
+    # Replace eventual newlines and carriage returns with spaces.
+    string = " ".join(string.split("\n"))
+    string = " ".join(string.split("\r"))
+
+    string = escape_non_inline_markdown(string)
+
+    if not allow_links:
+        # Remove link URLs
+        # Kudos to https://stackoverflow.com/questions/53980097/removing-markup-links-in-text
+        string = sub(r"\[(.+?)\]\(.+?\)", r"\1", string)
+
     converted = md.markdown(
         string,
         extensions=[
@@ -166,21 +237,23 @@ def compile_markdown_inline(string):
             KWordCensorExtension(),
         ],
     )
+
     # Strip away <p> and </p>
-    converted = converted[3:-4]
-    return converted
+    converted = sub(r"^<p>(.*)</p>$", r"\1", converted)
+
+    if allow_links:
+        bleached = clean_inline(converted)
+    else:
+        bleached = clean_inline_no_links(converted)
+
+    return bleached
 
 
 @register.filter(is_safe=True)
 def markdown_inline(string):
-    converted = compile_markdown_inline(string)
-    return clean_inline(converted)
+    return markdown_inline_filter(string)
 
 
 @register.filter(is_safe=True)
 def markdown_inline_no_links(string):
-    # Remove link URLs
-    # Kudos to https://stackoverflow.com/questions/53980097/removing-markup-links-in-text
-    string = sub(r"\[(.+?)\]\(.+?\)", r"\1", string)
-    converted = compile_markdown_inline(string)
-    return clean_inline_no_links(converted)
+    return markdown_inline_filter(string, allow_links=False)
