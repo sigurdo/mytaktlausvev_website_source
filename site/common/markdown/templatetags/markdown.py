@@ -213,7 +213,7 @@ def escape_non_inline_markdown(string):
 
     for pattern in patterns:
         string = sub(pattern, r"\1\\\2", string)
-    
+
     return string
 
 
