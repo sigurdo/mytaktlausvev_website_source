@@ -1,15 +1,15 @@
 <dl class="dl-inline">
-    <dt>Kategori</dt>
-    <dd>
-        {{ event.category }}
-    </dd>
     <dt>Tidspunkt</dt>
     <dd>
         {% include "events/includes/event_time.html" with event=event date_format="l j. F, Y – H:i" %}
     </dd>
+    <dt>Kategori</dt>
+    <dd>
+        {{ event.category }}
+    </dd>
     {% for entry in event.keyinfo_entries.all %}
         <dt>{{ entry.key }}</dt>
         {% load markdown %}
-        <dd>{{ entry.info | clean }}</dd>
+        <dd>{{ entry.info | markdown_inline }}</dd>
     {% endfor %}
 </dl>
