@@ -148,6 +148,9 @@ class Score(ArticleMixin):
         zip_name = self.zip_filename()
         return zip_stream, zip_name
 
+    def is_processing(self):
+        return self.pdfs.filter(processing=True).exists()
+
 
 @receiver(pre_save, sender=Score, dispatch_uid="score_pre_save_receiver")
 def score_pre_save_receiver(sender, instance: Score, using, **kwargs):

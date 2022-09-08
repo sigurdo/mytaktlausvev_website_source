@@ -172,3 +172,33 @@ class QuoteUpdateTestSuite(TestMixin, TestCase):
         self.client.force_login(SuperUserFactory())
         response = self.client.post(self.get_url(), self.quote_data)
         self.assertRedirects(response, reverse("quotes:QuoteList"))
+
+
+class QuoteDeleteTestSuite(TestMixin, TestCase):
+    def setUp(self):
+        self.quote = QuoteFactory()
+
+    def get_url(self):
+        return reverse("quotes:QuoteDelete", args=[self.quote.pk])
+
+    def test_requires_permission(self):
+        """Should require permission to delete quotes."""
+        self.assertPermissionRequired(
+            self.get_url(),
+            "quotes.delete_quote",
+        )
+
+    def test_succeeds_if_not_permission_but_is_author(self):
+        """
+        Should succeed if the user is the author,
+        even if the user doesn't have permission to delete quotes.
+        """
+        self.client.force_login(self.quote.created_by)
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+    def test_success_url(self):
+        """Should redirect to quote list on success."""
+        self.client.force_login(SuperUserFactory())
+        response = self.client.post(self.get_url())
+        self.assertRedirects(response, reverse("quotes:QuoteList"))
