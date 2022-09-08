@@ -136,39 +136,8 @@ def escape_non_inline_markdown(string):
     e.g. "# Unintentional header" becomes "\# Unintentional header". Input string
     is assumed to not contain any newlines.
 
-    Explanation of regex patterns used:
-
-    All the patterns used are quite similar, since all matches have to start at the
-    beginning of the string, with any number of directly subsequent whitespace
-    characters. This part of the pattern is marked as a capture group, so that we
-    can backreference it in the replacement string to preserve the whitespaces.
-    Therefore, the first part of most of the regexes is (^\s*)
-
-    To escape enumerated lists we have to insert the \ between the number and the .
-    So e.g "1. Text" should be escaped with "1\. Text". Therefore, we also have to add
-    \d+, meaning any number of decimal characters, but minimum 1, into the first
-    capture group. 1) Can also be used to define an enumerated lists in many markdown
-    implementation, but this is not the case in our library, so we don't have to
-    worry about that.
-
-    Then, after the first capture group we add the markdown operator we are escaping
-    in it's own capture group. Operators that are also regex operators need another \
-    to be escaped from their regex-meaning, and this \ will not be in the output
-    markdown.
-
-    Since header and list operators need to be followed by a space in order to be
-    recognized as headers and lists, we add a space after the operator in the capture
-    groups for these operators. Headers are apparently also recognized when followed by
-    end of string, so we have to use the ( |$) subgroup.
-
-    The `sub(pattern, replacement, string)` function replaces all occurences of the
-    regex `pattern` in `string` with the regex `replacement` and returns the result.
-    `replacement` can contain backreferences to capture groups in `pattern` to preserve
-    them in the output.
-
-    Our replacement string preserves both capture groups from the patterns and inserts
-    a \ between them. Since \ also escapes regex, and not just markdown, we need 2 of
-    them to ensure 1 is left in the markdown output.
+    Logic behind regex patterns is described on the wiki,
+    https://gitlab.com/taktlause/taktlausveven/-/wikis/Markdown
     """
 
     patterns = [
@@ -199,14 +168,10 @@ def escape_markdown_links(string):
 
 def markdown_inline_filter(string, allow_links=True):
     """
-    Equivalent to the markdown filter, but renders only inline markdown elements.
-    The approach is simply to first escape non-inline markdown syntax, then process
-    it through the regular markdown compiler, disabling extensions that are specific
-    for non-inline elements, and at the end, use bleach to clean HTML-tags that are
-    non-inline. This is by no means a beautiful approach, since we have to care a
-    lot about so many cases of syntax we need to escape and not escape, but the
-    markdown library has no support for running only the inline processor, so as per
-    now, it's the best we can do.
+    Equivalent to the `markdown` filter, but renders only inline markdown elements.
+
+    A more detailed description can be found on the wiki,
+    https://gitlab.com/taktlause/taktlausveven/-/wikis/Markdown
     """
 
     # Replace eventual newlines and carriage returns with spaces.
