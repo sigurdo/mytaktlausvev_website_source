@@ -16,6 +16,7 @@ from common.mixins import TestMixin
 from common.test_utils import create_formset_post_data
 from events.models import Attendance, Event, EventAttendance, EventKeyinfoEntry
 from events.views import (
+    EventFeed,
     event_breadcrumbs,
     get_event_attendance_or_404,
     get_event_or_404,
@@ -822,3 +823,9 @@ class EventFeedTestSuite(TestMixin, TestCase):
         token = UserFactory().calendar_feed_token
         response = self.client.get(self.get_url(token))
         self.assertEqual(response.status_code, HTTPStatus.OK)
+
+    def test_end_time_is_start_time_if_not_specified(self):
+        """If event has no end time, the start time should be used."""
+        event = EventFactory(end_time=None)
+        end_time = EventFeed().item_end_datetime(event)
+        self.assertEqual(end_time, event.start_time)
