@@ -824,19 +824,8 @@ class EventFeedTestSuite(TestMixin, TestCase):
         response = self.client.get(self.get_url(token))
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
-    def test_end_time_is_23_59_if_not_specified(self):
-        """If event has no end time, 23:59 should be used."""
-        event = EventFactory(
-            start_time=now().replace(
-                hour=18, minute=00, second=0, microsecond=0, tzinfo=localtime().tzinfo
-            )
-        )
+    def test_end_time_is_start_time_if_not_specified(self):
+        """If event has no end time, the start time should be used."""
+        event = EventFactory(end_time=None)
         end_time = EventFeed().item_end_datetime(event)
-        self.assertEqual(
-            end_time,
-            now()
-            .replace(
-                hour=23, minute=59, second=0, microsecond=0, tzinfo=localtime().tzinfo
-            )
-            .astimezone(timezone.utc),
-        )
+        self.assertEqual(end_time, event.start_time)

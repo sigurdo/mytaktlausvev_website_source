@@ -396,13 +396,7 @@ class EventFeed(ICalFeed):
         return item.start_time
 
     def item_end_datetime(self, item):
-        if item.end_time:
-            end_time = item.end_time
-        else:
-            end_time = item.start_time.replace(
-                hour=23, minute=59, second=0, microsecond=0, tzinfo=localtime().tzinfo
-            ).astimezone(timezone.utc)
-        return end_time
+        return item.end_time if item.end_time else item.start_time
 
     def item_location(self, item):
         return "kommer snart"
