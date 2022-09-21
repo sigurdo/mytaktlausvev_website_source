@@ -45,9 +45,6 @@
 
                                 <dt>Fødselsdato</dt>
                                 <dd>{% firstof profile.birthdate "Ukjent" %}</dd>
-
-                                <dt>Studentkortnummer</dt>
-                                <dd>{% firstof profile.student_card_number "Ukjent" %}</dd>
                             </dl>
                         </div>
                     </section>
@@ -156,6 +153,25 @@
                     </section>
                 </div>
 
+                {% if request.user == profile or perms.accounts.view_storage_access %}
+                <div class="col-md-6">
+                    <section class="card h-100">
+                        <div class="card-body">
+                            <h2 class="fs-3">Lagertilgjenge</h2>
+                            <dl>
+                                <dt>Studentkortnummer</dt>
+                                <dd>{% firstof profile.student_card_number "Ukjent" %}</dd>
+                            </dl>
+
+                            <dl>
+                                <dt>Har lagertilgjenge</dt>
+                                <dd>{{ profile.has_storage_access | yesno | capfirst }}</dd>
+                            </dl>
+                        </div>
+                    </section>
+                </div>
+                {% endif %}
+
                 <div class="col-md-6">
                     <section class="card h-100">
                         <div class="card-body">
@@ -163,7 +179,7 @@
                             <dl>
                                 <dt>Lys modus</dt>
                                 <dd>
-                                    {% if profile.light_mode %}Ja{% else %}Nei{% endif %}
+                                    {{ profile.light_mode | yesno | capfirst }}
                                 </dd>
 
                                 {% if user == profile or perms.accounts.view_image_sharing_consent %}

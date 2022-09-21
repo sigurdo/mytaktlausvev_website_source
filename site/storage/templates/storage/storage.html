@@ -35,11 +35,7 @@
                             <td> <a href="{{ user.get_absolute_url }}"> {{ user.get_name }} </a> </td>
                             <td> {{ user.student_card_number }} </td>
                             <td>
-                                {% if user.has_storage_access %}
-                                    Ja
-                                {% else %}
-                                    Nei
-                                {% endif %}
+                                {{ user.has_storage_access | yesno | capfirst }}
                             </td>
                         </tr>
                 {% endfor %}
