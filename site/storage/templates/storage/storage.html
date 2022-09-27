@@ -27,6 +27,7 @@
                     <th> Namn </th>
                     <th> Studentkortnummer </th>
                     <th> Har fått lagertilgjenge </th>
+                    <th> Vert medlem </th>
                 </tr>
             </thead>
             <tbody>
@@ -36,6 +37,11 @@
                             <td> {{ user.student_card_number }} </td>
                             <td>
                                 {{ user.has_storage_access | yesno | capfirst }}
+                            </td>
+                            <td class="white-space-nowrap" data-order="{{ user.date_joined | date:"c" }}">
+                                <time datetime="{{ user.date_joined | date:"c" }}">
+                                    {{ user.date_joined | date }}
+                                </time>
                             </td>
                         </tr>
                 {% endfor %}
