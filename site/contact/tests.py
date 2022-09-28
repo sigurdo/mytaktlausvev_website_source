@@ -54,18 +54,13 @@ class ContactViewTestCase(TestCase):
         email = self.send_test_mail()
         self.assertEqual(email.from_email, settings.EMAIL_HOST_USER)
 
-    def test_from_header(self):
-        """Should include sender's name and email."""
+    def test_reply_to_header(self):
+        """The `Reply-To` header should include the sender's name and email."""
         email = self.send_test_mail()
         self.assertEqual(
-            email.extra_headers["From"],
+            email.extra_headers["Reply-To"],
             f'"{self.mail_data["name"]}" <{self.mail_data["email"]}>',
         )
-
-    def test_sender_header(self):
-        """Should be the address the server sends the mail from."""
-        email = self.send_test_mail()
-        self.assertEqual(email.extra_headers["Sender"], settings.EMAIL_HOST_USER)
 
     def test_to_mail_is_category_mail(self):
         """To mail should be the category mail."""
