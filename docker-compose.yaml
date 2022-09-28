@@ -9,6 +9,8 @@ services:
       - POSTGRES_DB=taktlaus_db
       - POSTGRES_USER=taktlaus
       - POSTGRES_PASSWORD=taktlaus
+    env_file:
+      - .env
 
   django:
     build: .
@@ -17,6 +19,8 @@ services:
       - ./.flake8:/app/.flake8:Z
       - ./pyproject.toml:/app/pyproject.toml:Z
       - ./scripts/wait-for-it.sh:/app/wait-for-it.sh:Z
+    env_file:
+      - .env
     command: sh -c './wait-for-it.sh db:5432 -- ./site/manage.py runserver --insecure 0.0.0.0:8000'
       # '--insecure' in order to serve static files locally when DEBUG=0
     ports:
