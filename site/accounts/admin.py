@@ -48,7 +48,9 @@ class UserAdminCustom(UserAdmin):
         ),
         (_("Important dates"), {"fields": ("last_login", "date_joined")}),
     )
-    list_display = ("username", "email", "name", "is_staff")
+    list_display = ("username", "email", "name", "membership_status", "date_joined")
+    list_filter = UserAdmin.list_filter + ("membership_status",)
+    list_editable = ("membership_status",)
     search_fields = ("username", "name", "email")
 
 
