@@ -560,8 +560,13 @@ class PartsUpdateTestSuite(TestMixin, TestCase):
             data=data,
         )
 
-    def get_url(self):
-        return reverse("sheetmusic:PartsUpdate", args=[self.score.slug, self.pdf.slug])
+    def get_url(self, pdf=None):
+        return reverse(
+            "sheetmusic:PartsUpdate",
+            args=[self.pdf.score.slug, self.pdf.slug]
+            if not pdf
+            else [pdf.score.slug, pdf.slug],
+        )
 
     def setUp(self):
         self.score = ScoreFactory()
@@ -591,6 +596,16 @@ class PartsUpdateTestSuite(TestMixin, TestCase):
         self.client.force_login(self.score.created_by)
         response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, HTTPStatus.OK)
+
+    def test_accounts_for_both_score_slug_and_pdf_slug(self):
+        """Should find the correct PDF for the given score."""
+        different_score = ScoreFactory()
+        different_pdf_same_slug = PdfFactory(score=different_score, slug=self.pdf.slug)
+
+        self.client.force_login(SuperUserFactory())
+        response = self.client.get(self.get_url(different_pdf_same_slug))
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertEqual(response.context["object"], different_pdf_same_slug)
 
     def test_success_redirect(self):
         user = SuperUserFactory()
