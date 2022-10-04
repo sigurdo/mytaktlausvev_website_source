@@ -204,6 +204,11 @@ class PartsUpdate(
         "sheetmusic.delete_part",
     )
 
+    def get_object(self, queryset=None):
+        return get_object_or_404(
+            Pdf, score__slug=self.kwargs["score_slug"], slug=self.kwargs["slug"]
+        )
+
     def setup(self, request, *args, **kwargs):
         """Set `self.object` for `SingleObjectMixin` compatibility."""
         super().setup(request, *args, **kwargs)
