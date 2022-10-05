@@ -30,6 +30,7 @@ class EventCategory(Model):
         return self.name
 
     class Meta:
+        ordering = ["name"]
         verbose_name = "hendingskategori"
         verbose_name_plural = "hendingskategoriar"
 

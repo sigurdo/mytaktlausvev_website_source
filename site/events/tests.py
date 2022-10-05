@@ -14,7 +14,13 @@ from accounts.factories import SuperUserFactory, UserFactory
 from common.breadcrumbs.breadcrumbs import Breadcrumb
 from common.mixins import TestMixin
 from common.test_utils import create_formset_post_data
-from events.models import Attendance, Event, EventAttendance, EventKeyinfoEntry
+from events.models import (
+    Attendance,
+    Event,
+    EventAttendance,
+    EventCategory,
+    EventKeyinfoEntry,
+)
 from events.views import (
     EventFeed,
     event_breadcrumbs,
@@ -41,6 +47,18 @@ class EventCategoryTestSuite(TestMixin, TestCase):
     def test_name_unique(self):
         with self.assertRaises(IntegrityError):
             EventCategoryFactory(name=self.category.name)
+
+    def test_ordering(self):
+        """Should be ordered by `name`."""
+        self.assertModelOrdering(
+            EventCategory,
+            EventCategoryFactory,
+            [
+                {"name": "AAA"},
+                {"name": "BBB"},
+                {"name": "ZZZ"},
+            ],
+        )
 
 
 class EventManagerTestSuite(TestCase):
