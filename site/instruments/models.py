@@ -4,12 +4,12 @@ from django.db.models import (
     RESTRICT,
     SET_NULL,
     CharField,
+    DateTimeField,
     ForeignKey,
     Model,
     TextChoices,
     TextField,
     UniqueConstraint,
-    DateTimeField
 )
 
 
