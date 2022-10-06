@@ -9,6 +9,7 @@ from django.db.models import (
     TextChoices,
     TextField,
     UniqueConstraint,
+    DateTimeField
 )
 
 
@@ -98,6 +99,8 @@ class Instrument(Model):
         choices=State.choices,
         default=State.OK,
     )
+
+    last_modified = DateTimeField(auto_now=True, verbose_name="Sist endra")
 
     def get_state_order(self):
         ordering = ["GOOD", "OK", "BAD", "UNPLAYABLE"]
