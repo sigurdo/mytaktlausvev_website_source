@@ -52,16 +52,18 @@ class Dashboard(LoginRequiredMixin, TemplateView):
         return Event.objects.upcoming()[:5]
 
     def get_number_events_answered(self):
-        """Returns the amount of upcoming events a user has answered"""
-        upcoming_events = Event.objects.upcoming()
+        """Returns the amount of upcoming events (within a year) a user has answered"""
+        upcoming_events = Event.objects.upcoming().filter(
+            start_time__lte=timezone.now() + timedelta(days=366),
+        )
         upcoming_events_count = upcoming_events.count()
-        events_answered = 0
-        for event in upcoming_events:
-            if event.get_attendance(self.request.user):
-                events_answered += 1
+        events_answered = upcoming_events.filter(
+            attendances__person=self.request.user
+        ).count()
+
         if upcoming_events_count == events_answered:
-            return f"Du har svart på alle {upcoming_events_count} framtidige hendigar! Godt jobba!"
-        return f"Du har svart på {events_answered}/{upcoming_events_count} av framtidige hendigar!"
+            return upcoming_events_count
+        return f"{events_answered}/{upcoming_events_count}"
 
     def get_minutes(self):
         """Returns the 5 most recent minutes."""

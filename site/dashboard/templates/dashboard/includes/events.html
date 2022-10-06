@@ -1,5 +1,9 @@
 <h2>Hendingar</h2>
-{{number_events_answered}} 
+{% if  "/"  in number_events_answered %}
+ Du har svart på {{number_events_answered}} av framtidige hendingar!
+ {% else %}
+ Du har svart på alle {{number_events_answered}} framtidige hendingar! Godt jobba!
+ {% endif %}
 
 <ul>
     {% for event in events %}
