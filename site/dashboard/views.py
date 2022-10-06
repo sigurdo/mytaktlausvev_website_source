@@ -51,6 +51,18 @@ class Dashboard(LoginRequiredMixin, TemplateView):
 
         return Event.objects.upcoming()[:5]
 
+    def get_number_events_answered(self):
+        """Returns the amount of upcoming events a user has answered"""
+        upcoming_events = Event.objects.upcoming()
+        upcoming_events_count = upcoming_events.count()
+        events_answered = 0
+        for event in upcoming_events:
+            if event.get_attendance(self.request.user):
+                events_answered += 1
+        if upcoming_events_count == events_answered:
+            return f"Du har svart på alle {upcoming_events_count} framtidige hendigar! Godt jobba!"
+        return f"Du har svart på {events_answered}/{upcoming_events_count} av framtidige hendigar!"
+
     def get_minutes(self):
         """Returns the 5 most recent minutes."""
         return Minutes.objects.all()[:5]
@@ -132,4 +144,5 @@ class Dashboard(LoginRequiredMixin, TemplateView):
         if kwargs["current_birthdays"]:
             kwargs["birthday_song"] = self.get_birthday_song()
         kwargs["latest_scores"] = self.get_latest_scores()
+        kwargs["number_events_answered"] = self.get_number_events_answered()
         return super().get_context_data(**kwargs)
