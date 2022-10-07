@@ -50,7 +50,7 @@ class Score(ArticleMixin):
         verbose_name="opphaveleg ifrå", blank=True, max_length=255
     )
     transcribed_by = CharField(
-        verbose_name="transkribert av", blank=True, max_length=225
+        verbose_name="transkribert av", blank=True, max_length=255
     )
     sound_file = FileField(
         verbose_name="lydfil",
