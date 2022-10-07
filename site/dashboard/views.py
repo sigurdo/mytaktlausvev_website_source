@@ -51,6 +51,20 @@ class Dashboard(LoginRequiredMixin, TemplateView):
 
         return Event.objects.upcoming()[:5]
 
+    def get_number_events_answered(self):
+        """Returns the amount of upcoming events (within a year) a user has answered"""
+        upcoming_events = Event.objects.upcoming().filter(
+            start_time__lte=timezone.now() + timedelta(days=366),
+        )
+        upcoming_events_count = upcoming_events.count()
+        events_answered = upcoming_events.filter(
+            attendances__person=self.request.user
+        ).count()
+
+        if upcoming_events_count == events_answered:
+            return upcoming_events_count
+        return f"{events_answered}/{upcoming_events_count}"
+
     def get_minutes(self):
         """Returns the 5 most recent minutes."""
         return Minutes.objects.all()[:5]
@@ -132,4 +146,5 @@ class Dashboard(LoginRequiredMixin, TemplateView):
         if kwargs["current_birthdays"]:
             kwargs["birthday_song"] = self.get_birthday_song()
         kwargs["latest_scores"] = self.get_latest_scores()
+        kwargs["number_events_answered"] = self.get_number_events_answered()
         return super().get_context_data(**kwargs)
