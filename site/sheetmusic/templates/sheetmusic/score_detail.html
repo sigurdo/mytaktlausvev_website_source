@@ -28,7 +28,7 @@
     </section>
     {% endif %}
 
-    {% if score.arrangement or score.originally_from or score.sound_file or score.sound_link %}
+    {% if score.arrangement or score.originally_from or score.transcribed_by or score.sound_file or score.sound_link %}
     <section>
         <dl>
             {% if score.arrangement %}
@@ -39,6 +39,11 @@
             {% if score.originally_from %}
                 <dt> Opphaveleg ifrå </dt>
                 <dd> {{ score.originally_from }} </dd>
+            {% endif %}
+
+            {% if score.transcribed_by %}
+                <dt> Transkribert av</dt>
+                <dd> {{ score.transcribed_by }} </dd>
             {% endif %}
 
             {% if score.sound_file %}
