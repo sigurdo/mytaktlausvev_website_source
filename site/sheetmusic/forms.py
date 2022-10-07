@@ -32,6 +32,7 @@ class ScoreForm(ModelForm):
             "title",
             "arrangement",
             "originally_from",
+            "transcribed_by",
             "content",
             "sound_file",
             "sound_link",

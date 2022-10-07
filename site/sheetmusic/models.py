@@ -49,6 +49,9 @@ class Score(ArticleMixin):
     originally_from = CharField(
         verbose_name="opphaveleg ifrå", blank=True, max_length=255
     )
+    transcribed_by = CharField(
+        verbose_name="transkribert av", blank=True, max_length=255
+    )
     sound_file = FileField(
         verbose_name="lydfil",
         upload_to="sheetmusic/sound_files/",
