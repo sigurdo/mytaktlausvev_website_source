@@ -32,6 +32,7 @@
                     <th> Serienummer </th>
                     <th> Kommentar </th>
                     <th> Tilstand </th>
+                    <th> Sist endra </th>
                 </tr>
             </thead>
             <tbody>
@@ -76,6 +77,12 @@
                         ">
                         {{ instrument.get_state_display }}
                     </td>
+                    <td>
+                        <time datetime="{{ instrument.modified | date:"c" }}">
+                            {{ instrument.modified | date:"j. b Y" }}
+                        </time>
+                    </td>
+
                 </tr>
                 {% endfor %}
             </tbody>

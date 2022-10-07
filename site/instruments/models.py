@@ -11,6 +11,8 @@ from django.db.models import (
     UniqueConstraint,
 )
 
+from common.models import CreatedModifiedMixin
+
 
 class InstrumentGroup(Model):
     name = CharField(max_length=255, verbose_name="namn", unique=True)
@@ -61,7 +63,7 @@ class InstrumentLocation(Model):
         verbose_name_plural = "instrumentstadar"
 
 
-class Instrument(Model):
+class Instrument(CreatedModifiedMixin):
     type = ForeignKey(
         InstrumentType,
         verbose_name="instrumenttype",

@@ -1,6 +1,8 @@
 from factory import SubFactory, sequence
 from factory.django import DjangoModelFactory
 
+from accounts.factories import UserFactory
+
 from .models import Instrument, InstrumentGroup, InstrumentLocation, InstrumentType
 
 
@@ -37,3 +39,5 @@ class InstrumentFactory(DjangoModelFactory):
     serial_number = "abc-123"
     comment = ""
     state = Instrument.State.OK
+    created_by = SubFactory(UserFactory)
+    modified_by = SubFactory(UserFactory)
