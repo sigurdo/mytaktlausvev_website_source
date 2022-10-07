@@ -1,9 +1,9 @@
 from factory import SubFactory, sequence
 from factory.django import DjangoModelFactory
 
-from .models import Instrument, InstrumentGroup, InstrumentLocation, InstrumentType
-
 from accounts.factories import UserFactory
+
+from .models import Instrument, InstrumentGroup, InstrumentLocation, InstrumentType
 
 
 class InstrumentGroupFactory(DjangoModelFactory):

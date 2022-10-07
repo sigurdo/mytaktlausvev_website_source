@@ -4,10 +4,11 @@ from .models import Instrument, InstrumentGroup, InstrumentLocation, InstrumentT
 
 
 class InstrumentAdmin(ModelAdmin):
-    
-    list_display = ('type', 'identifier', 'modified_by', 'modified')
 
-    readonly_fields = ('created', 'created_by', 'modified', 'modified_by')
+    list_display = ("type", "identifier", "modified_by", "modified")
+
+    readonly_fields = ("created", "created_by", "modified", "modified_by")
+
 
 site.register(InstrumentGroup)
 site.register(InstrumentType)

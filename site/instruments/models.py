@@ -4,7 +4,6 @@ from django.db.models import (
     RESTRICT,
     SET_NULL,
     CharField,
-    DateTimeField,
     ForeignKey,
     Model,
     TextChoices,
@@ -101,7 +100,6 @@ class Instrument(CreatedModifiedMixin):
         choices=State.choices,
         default=State.OK,
     )
-
 
     def get_state_order(self):
         ordering = ["GOOD", "OK", "BAD", "UNPLAYABLE"]
