@@ -12,6 +12,8 @@ from django.db.models import (
     DateTimeField
 )
 
+from common.models import CreatedModifiedMixin
+
 
 class InstrumentGroup(Model):
     name = CharField(max_length=255, verbose_name="namn", unique=True)
@@ -62,7 +64,7 @@ class InstrumentLocation(Model):
         verbose_name_plural = "instrumentstadar"
 
 
-class Instrument(Model):
+class Instrument(CreatedModifiedMixin):
     type = ForeignKey(
         InstrumentType,
         verbose_name="instrumenttype",
@@ -100,7 +102,6 @@ class Instrument(Model):
         default=State.OK,
     )
 
-    last_modified = DateTimeField(auto_now=True, verbose_name="Sist endra")
 
     def get_state_order(self):
         ordering = ["GOOD", "OK", "BAD", "UNPLAYABLE"]

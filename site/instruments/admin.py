@@ -4,9 +4,9 @@ from django.contrib.admin import ModelAdmin
 from .models import Instrument, InstrumentGroup, InstrumentLocation, InstrumentType
 
 class InstrumentAdmin(ModelAdmin):
-    list_display = ('type', 'identifier', 'last_modified')
+    list_display = ('type', 'identifier', 'modified_by', 'modified')
 
-    readonly_fields = ('last_modified',)
+    readonly_fields = ('created', 'created_by', 'modified', 'modified_by')
 
 site.register(InstrumentGroup)
 site.register(InstrumentType)

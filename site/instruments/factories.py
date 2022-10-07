@@ -3,6 +3,8 @@ from factory.django import DjangoModelFactory
 
 from .models import Instrument, InstrumentGroup, InstrumentLocation, InstrumentType
 
+from accounts.factories import UserFactory
+
 
 class InstrumentGroupFactory(DjangoModelFactory):
     class Meta:
@@ -37,3 +39,5 @@ class InstrumentFactory(DjangoModelFactory):
     serial_number = "abc-123"
     comment = ""
     state = Instrument.State.OK
+    created_by = SubFactory(UserFactory)
+    modified_by = SubFactory(UserFactory)
