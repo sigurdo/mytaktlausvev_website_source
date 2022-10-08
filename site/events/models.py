@@ -13,6 +13,7 @@ from django.db.models import (
     Model,
     TextChoices,
     UniqueConstraint,
+    URLField,
 )
 from django.db.models.query_utils import Q
 from django.urls import reverse
@@ -61,6 +62,8 @@ class Event(ArticleMixin):
         verbose_name="Kategori",
         related_name="events",
     )
+    location = CharField(verbose_name="stad", max_length=255, blank=True)
+    location_link = URLField(verbose_name="stadlenkje", blank=True)
 
     def attending(self):
         return self.attendances.filter(status=Attendance.ATTENDING)

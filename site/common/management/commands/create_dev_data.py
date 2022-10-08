@@ -161,6 +161,7 @@ class Command(BaseCommand):
             modified_by=leader,
             start_time=make_aware(datetime.now() + timedelta(365)),
             category__name="Studentorchestersamling",
+            location="Trondheim",
         )
         EventAttendanceFactory(event=event, person=leader, status=Attendance.ATTENDING)
         EventAttendanceFactory(event=event, person=member, status=Attendance.ATTENDING)
@@ -187,6 +188,8 @@ class Command(BaseCommand):
             modified_by=leader,
             start_time=make_aware(first_wednesday),
             category__name="Øving",
+            location="KJL4",
+            location_link="https://link.mazemap.com/2t59lzj4",
         )
         board_game_night = EventFactory(
             title="Brettspelkveld",
@@ -195,6 +198,8 @@ class Command(BaseCommand):
             modified_by=leader,
             start_time=make_aware(first_wednesday + timedelta(days=1)),
             category__name="Sosialt",
+            location="KJL4",
+            location_link="https://link.mazemap.com/2t59lzj4",
         )
         EventKeyinfoEntryFactory(
             event=board_game_night,
@@ -235,6 +240,8 @@ class Command(BaseCommand):
             modified_by=leader,
             start_time=make_aware(medal_galla_datetime),
             category=event_category_party,
+            location="Nardo klubbhus",
+            location_link="https://goo.gl/maps/aiC3mdPfkRSZ5Q3u5",
         )
         flute = InstrumentGroupFactory(name="Fløyte")
         clarinet = InstrumentGroupFactory(name="Klarinett")

@@ -3,6 +3,16 @@
     <dd>
         {% include "events/includes/event_time.html" with event=event date_format="l j. F, Y – H:i" %}
     </dd>
+    {% if event.location %}
+        <dt>Stad</dt>
+        <dd>
+            {% if event.location_link %}
+                <a href="{{ event.location_link }}" rel="nofollow">{{ event.location }}</a>
+            {% else %}
+                {{ event.location }}
+            {% endif %}
+        </dd>
+    {% endif %}
     <dt>Kategori</dt>
     <dd>
         {{ event.category }}
