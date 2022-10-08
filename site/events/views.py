@@ -18,6 +18,7 @@ from common.forms.views import (
     InlineFormsetUpdateView,
 )
 from common.mixins import PermissionOrCreatedMixin
+from pictures.models import Gallery
 
 from .forms import EventAttendanceForm, EventForm, EventKeyinfoEntryFormset
 from .models import Attendance, Event, EventAttendance
@@ -149,9 +150,13 @@ class EventDetail(LoginRequiredMixin, BreadcrumbsMixin, DetailView):
             )
         return form
 
+    def get_connected_galleries(self):
+        return Gallery.objects.filter(connected_event=self.get_object())
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["form_attendance"] = self.get_form_attendance()
+        context["connected_galleries"] = self.get_connected_galleries()
         return context
 
 

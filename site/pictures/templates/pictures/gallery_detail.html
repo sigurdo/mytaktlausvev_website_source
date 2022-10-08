@@ -46,7 +46,17 @@
         {% if gallery.date_to %}
         - <time datetime="{{ gallery.date_to | date:"c" }}">{{ gallery.date_to }}</time>
         {% endif %}
+        <br>
+        {% if gallery.connected_event %}
+   
+            <strong> Oppkobla hending: </strong> 
+            <a href="{% url 'events:EventDetail' gallery.connected_event.start_time|date:"Y" gallery.connected_event.slug %}">
+                {{gallery.connected_event.title}}
+            </a>
+        {% endif %}
     </p>
+    
+    
 
     {% load markdown %}
     {{ gallery.content | markdown }}

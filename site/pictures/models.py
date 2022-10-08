@@ -4,6 +4,7 @@ from autoslug.fields import AutoSlugField
 from django.conf import settings
 from django.db.models import (
     CASCADE,
+    SET_NULL,
     CharField,
     DateField,
     DateTimeField,
@@ -15,6 +16,7 @@ from django.db.models import (
 from django.urls.base import reverse
 
 from common.models import ArticleMixin
+from events.models import Event
 
 
 class Gallery(ArticleMixin):
@@ -28,6 +30,15 @@ class Gallery(ArticleMixin):
         populate_from="title",
         unique=True,
         editable=True,
+    )
+
+    connected_event = ForeignKey(
+        Event,
+        verbose_name="Oppkobla hending",
+        related_name="connected_event",
+        on_delete=SET_NULL,
+        null=True,
+        blank=True,
     )
 
     def get_absolute_url(self):

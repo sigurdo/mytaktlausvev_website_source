@@ -1,9 +1,11 @@
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
-from django.forms import ClearableFileInput, DateInput, ModelForm
+from django.forms import ClearableFileInput, DateInput, ModelChoiceField, ModelForm
 from django.forms.models import inlineformset_factory
 
 from common.forms.mixins import CleanAllFilesMixin
+from common.forms.widgets import AutocompleteSelect
+from events.models import Event
 
 from .models import Gallery, Image
 
@@ -14,12 +16,17 @@ class GalleryForm(ModelForm):
     helper = FormHelper()
     helper.add_input(Submit("submit", "Lagre galleri"))
 
+    connected_event = ModelChoiceField(
+        queryset=Event.objects.order_by("-start_time"), required=False
+    )
+
     class Meta:
         model = Gallery
-        fields = ["title", "date", "date_to", "content"]
+        fields = ["title", "date", "date_to", "content", "connected_event"]
         widgets = {
             "date": DateInput(attrs={"type": "date"}),
             "date_to": DateInput(attrs={"type": "date"}),
+            "connected_event": AutocompleteSelect,
         }
 
 
