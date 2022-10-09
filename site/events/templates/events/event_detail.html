@@ -54,6 +54,38 @@
     {% include "events/includes/keyinfo_section.html" with event=event only %}
     {% load markdown %}
     {{ event.content | markdown }}
+    
+    {% if event.repertoires.exists or event.repertoire_extra_scores.exists %}
+        <h2 class="fs-3"> Repertoar </h2>
+        <ul>
+            {% if event.repertoires.count <= 1 %}
+                {% for repertoire in event.repertoires.all %}
+                    {% for repertoire_entry in repertoire.entries.all %}
+                        {% with repertoire_entry.score as score %}
+                            <li><a href="{{score.get_absolute_url}}">{{score}}</a></li>
+                        {% endwith %}
+                    {% endfor %}
+                {% endfor %}
+                {% for score in event.repertoire_extra_scores.all %}
+                    <li><a href="{{score.get_absolute_url}}">{{score}}</a></li>
+                {% endfor %}
+            {% else %}
+                {% for repertoire in event.repertoires.all %}
+                    <li><a href="{{repertoire.get_absolute_url}}">{{repertoire}}</a></li>
+                {% endfor %}
+                {% if event.repertoire_extra_scores.exists %}
+                    <li>
+                        I tillegg til
+                        <ul>
+                            {% for score in event.repertoire_extra_scores.all %}
+                                <li><a href="{{score.get_absolute_url}}">{{score}}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                {% endif %}
+            {% endif %}
+        </ul>
+    {% endif %}
 
     <hr />
 

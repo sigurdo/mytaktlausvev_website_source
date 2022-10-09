@@ -13,12 +13,15 @@ from django.db.models import (
     Model,
     TextChoices,
     UniqueConstraint,
+    ManyToManyField,
 )
 from django.db.models.query_utils import Q
 from django.urls import reverse
 from django.utils.timezone import localtime, make_aware, now
 
 from common.models import ArticleMixin
+from repertoire.models import Repertoire
+from sheetmusic.models import Score
 
 
 class EventCategory(Model):
@@ -60,6 +63,18 @@ class Event(ArticleMixin):
         on_delete=PROTECT,
         verbose_name="Kategori",
         related_name="events",
+    )
+    repertoires = ManyToManyField(
+        Repertoire,
+        verbose_name="Repertoar",
+        blank=True,
+        help_text="Repertoar knytt til hendinga.",
+    )
+    repertoire_extra_scores = ManyToManyField(
+        Score,
+        verbose_name="Ekstra notar",
+        blank=True,
+        help_text="Ekstra notar knytt til hendinga.",
     )
 
     def attending(self):
