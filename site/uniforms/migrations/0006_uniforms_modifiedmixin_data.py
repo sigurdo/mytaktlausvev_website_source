@@ -33,7 +33,7 @@ def set_uniform_created_by_modified_by(apps, schema_editor):
 
             for user in jacket_users:
                 users += user.username + " "
-            jacket.note =  users
+            jacket.comment =  users
         jacket.save()
 
 

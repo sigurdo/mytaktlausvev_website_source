@@ -45,7 +45,7 @@ from sheetmusic.factories import (
     PdfFactory,
     ScoreFactory,
 )
-from uniforms.factories import JacketFactory, JacketLocationFactory, JacketUserFactory
+from uniforms.factories import JacketFactory, JacketLocationFactory
 from uniforms.models import Jacket
 
 
@@ -327,13 +327,15 @@ class Command(BaseCommand):
         )
         jacket_1 = JacketFactory(
             number=1,
-            comment="",
+            comment="pensjonist låner 7.10",
             state=Jacket.State.NEEDS_REPAIR,
             location=jacket_at_storage,
+            user=aspirant,
+            
         )
         JacketFactory(
             number=2,
-            comment="Mangler 3 knapper og en lomme",
+            state_comment="Mangler 3 knapper og en lomme",
             state=Jacket.State.UNUSABLE,
             location=jacket_at_storage,
         )
@@ -341,31 +343,14 @@ class Command(BaseCommand):
             number=42,
             state=Jacket.State.GOOD,
             location=jacket_at_home,
+            user=member,
         )
         jacket_65 = JacketFactory(
             number=65,
             state=Jacket.State.NEEDS_REPAIR,
             location=jacket_at_storage,
-        )
-        JacketUserFactory(
             user=leader,
-            jacket=jacket_65,
         )
-        JacketUserFactory(
-            user=member,
-            jacket=jacket_42,
-        )
-        JacketUserFactory(
-            user=aspirant,
-            jacket=jacket_1,
-        )
-        JacketUserFactory(
-            user=retiree,
-            jacket=jacket_1,
-            is_owner=False,
-        )
-        JacketUserFactory()
-        JacketUserFactory()
 
         general = ForumFactory(title="General", description="For general stuff.")
         ForumFactory(

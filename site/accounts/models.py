@@ -166,10 +166,6 @@ class UserCustom(AbstractUser):
         else:
             return static("accounts/default-avatar.svg")
 
-    """def get_jacket(self):
-        return Jacket.objects.filter(jacket__user=self).first()
-         """
-
     def get_absolute_url(self):
         return reverse("accounts:ProfileDetail", args=[self.slug])
 

@@ -34,7 +34,7 @@ class JacketLocation(Model):
 class Jacket(CreatedModifiedMixin):
     number = IntegerField(verbose_name="jakkenummer", unique=True)
     comment = TextField(verbose_name="kommentar", blank=True)
-    note = TextField(verbose_name="merknad", blank=True)
+    state_comment = TextField(verbose_name="tilstandskommentar", blank=True)
     
 
     class State(TextChoices):
@@ -58,7 +58,7 @@ class Jacket(CreatedModifiedMixin):
 
     user = ForeignKey(
         settings.AUTH_USER_MODEL,
-        verbose_name="vert lånt av",
+        verbose_name="eigar",
         related_name="jackets",
         on_delete=SET_NULL,
         null=True,
@@ -87,38 +87,4 @@ class Jacket(CreatedModifiedMixin):
         ordering = ["number"]
         verbose_name = "jakke"
         verbose_name_plural = "jakker"
-
-
-class JacketUser(Model):
-    user = OneToOneField(
-        UserCustom,
-        verbose_name="brukar",
-        related_name="jacket_user",
-        on_delete=CASCADE,
-    )
-    jacket = ForeignKey(
-        Jacket,
-        verbose_name="jakke",
-        related_name="jacket_users",
-        on_delete=CASCADE,
-    )
-    is_owner = BooleanField(
-        verbose_name="er eigar",
-        default=True,
-    )
-
-    def __str__(self):
-        return f"{self.user} - {self.jacket}"
-
-    class Meta:
-        verbose_name = "Jakkebrukar"
-        verbose_name_plural = "Jakkebrukarar"
-        ordering = ["user"]
-        constraints = [
-            UniqueConstraint(
-                name="one_owner_per_jacket",
-                fields=["jacket"],
-                condition=Q(is_owner=True),
-            ),
-        ]
 

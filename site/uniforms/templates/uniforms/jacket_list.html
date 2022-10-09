@@ -29,8 +29,8 @@
                     <th> Jakkenummer </th>
                     <th> Stad </th>
                     <th> Eigar </th>
-                    <th> Merknad </th>
                     <th> Kommentar </th>
+                    <th> Tilsstandskommentar </th>
                     <th> Tilstand </th>
                     <th> Sist endra </th>
                 </tr>
@@ -57,8 +57,8 @@
                             ({{ jacket.user.get_membership_status_display }})
                         {% endif %}
                     {% endif %} </td>
-                    <td> {{ jacket.note }} </td>
                     <td> {{ jacket.comment }} </td>
+                    <td> {{ jacket.state_comment }} </td>
                     <td
                         data-order="{{ jacket.get_state_order }}"
                         class="

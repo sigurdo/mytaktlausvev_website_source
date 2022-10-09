@@ -58,8 +58,8 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name="jacket",
-            name="note",
-            field=models.TextField(blank=True, verbose_name="merknad"),
+            name="state_comment",
+            field=models.TextField(blank=True, verbose_name="tilstandskommentar"),
         ),
         migrations.AddField(
             model_name="jacket",
@@ -70,7 +70,7 @@ class Migration(migrations.Migration):
                 on_delete=django.db.models.deletion.SET_NULL,
                 related_name="uniforms",
                 to=settings.AUTH_USER_MODEL,
-                verbose_name="vert lånt av",
+                verbose_name="eigar",
             ),
         ),
     ]

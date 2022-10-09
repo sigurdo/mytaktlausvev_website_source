@@ -3,7 +3,7 @@ from factory.django import DjangoModelFactory
 
 from accounts.factories import UserFactory
 
-from .models import Jacket, JacketLocation, JacketUser
+from .models import Jacket, JacketLocation
 
 
 class JacketLocationFactory(DjangoModelFactory):
@@ -22,16 +22,7 @@ class JacketFactory(DjangoModelFactory):
     location = SubFactory(JacketLocationFactory)
     comment = ""
     user = None
-    note = ""
+    state_comment = ""
     created_by = SubFactory(UserFactory)
     modified_by = SubFactory(UserFactory)
     
-
-
-class JacketUserFactory(DjangoModelFactory):
-    class Meta:
-        model = JacketUser
-
-    user = SubFactory(UserFactory)
-    jacket = SubFactory(JacketFactory)
-    is_owner = True
