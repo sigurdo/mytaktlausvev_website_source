@@ -21,6 +21,8 @@ class JacketFactory(DjangoModelFactory):
     number = sequence(lambda n: 1 + n)
     location = SubFactory(JacketLocationFactory)
     comment = ""
+    created_by = SubFactory(UserFactory)
+    modified_by = SubFactory(UserFactory)
 
 
 class JacketUserFactory(DjangoModelFactory):

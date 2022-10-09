@@ -29,12 +29,15 @@
                     <th> Jakkenummer </th>
                     <th> Stad </th>
                     <th> Eigar </th>
+                    <th> Gammal Eigar</th>
                     <th> Ekstra brukarar </th>
                     {% if perms.uniforms.change_jacket %}
                     <th> Rediger brukarar </th>
                     {% endif %}
+                    <th> Merknad </th>
                     <th> Kommentar </th>
                     <th> Tilstand </th>
+                    <th> Sist endra </th>
                 </tr>
             </thead>
             <tbody>
@@ -53,6 +56,12 @@
                         {{ jacket.number }}
                     </td>
                     <td> {{ jacket.location }} </td>
+                    <td> {% if jacket.user %}
+                        <a href="{% url "accounts:ProfileDetail" jacket.user.slug %}"> {{ jacket.user }} </a>
+                        {% if not jacket.user.is_active_member %}
+                            ({{ jacket.user.get_membership_status_display }})
+                        {% endif %}
+                    {% endif %} </td>
                     <td>
                         {% with jacket.get_owner as owner %}
                             {% if owner %}
@@ -75,6 +84,7 @@
                         <a class="btn btn-sm btn-primary" href="{% url "uniforms:JacketUsers" jacket.number %}"> Rediger brukarar </a>
                     </td>
                     {% endif %}
+                    <td> {{ jacket.note }} </td>
                     <td> {{ jacket.comment }} </td>
                     <td
                         data-order="{{ jacket.get_state_order }}"
@@ -89,6 +99,11 @@
                         "
                     >
                         {{ jacket.get_state_display }}
+                    </td>
+                    <td>
+                        <time datetime="{{ jacket.modified | date:"c" }}">
+                            {{ jacket.modified | date:"j. b Y" }}
+                        </time>
                     </td>
                 </tr>
                 {% endfor %}

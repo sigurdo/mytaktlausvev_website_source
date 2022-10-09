@@ -1,5 +1,7 @@
+from django.conf import settings
 from django.db.models import (
     RESTRICT,
+    SET_NULL,
     CharField,
     ForeignKey,
     IntegerField,
@@ -15,6 +17,8 @@ from django.db.models.query_utils import Q
 
 from accounts.models import UserCustom
 
+from common.models import CreatedModifiedMixin
+
 
 class JacketLocation(Model):
     name = CharField(max_length=255, verbose_name="namn", unique=True)
@@ -27,9 +31,11 @@ class JacketLocation(Model):
         verbose_name_plural = "jakkestadar"
 
 
-class Jacket(Model):
+class Jacket(CreatedModifiedMixin):
     number = IntegerField(verbose_name="jakkenummer", unique=True)
     comment = TextField(verbose_name="kommentar", blank=True)
+    note = TextField(verbose_name="merknad", blank=True)
+    
 
     class State(TextChoices):
         GOOD = "GOOD", "God"
@@ -48,6 +54,15 @@ class Jacket(Model):
         verbose_name="stad",
         related_name="jackets",
         on_delete=RESTRICT,
+    )
+
+    user = ForeignKey(
+        settings.AUTH_USER_MODEL,
+        verbose_name="vert lånt av",
+        related_name="uniforms",
+        on_delete=SET_NULL,
+        null=True,
+        blank=True,
     )
 
     def get_state_order(self):
