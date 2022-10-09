@@ -89,7 +89,7 @@ class Jacket(CreatedModifiedMixin):
         verbose_name_plural = "jakker"
 
 
-class JacketUser(Model):
+""" class JacketUser(Model):
     user = OneToOneField(
         UserCustom,
         verbose_name="brukar",
@@ -121,3 +121,4 @@ class JacketUser(Model):
                 condition=Q(is_owner=True),
             ),
         ]
+""" 
