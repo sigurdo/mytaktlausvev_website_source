@@ -102,6 +102,7 @@ class Event(ArticleMixin):
         constraints = [
             CheckConstraint(
                 name="event_location_map_link_is_blank_if_location_is_blank",
+                violation_error_message="Kan ikkje setje kartlenkje utan stad.",
                 check=((Q(location="") & Q(location_map_link="")) | ~Q(location="")),
             )
         ]

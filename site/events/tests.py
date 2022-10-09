@@ -495,7 +495,7 @@ class EventCreateTestSuite(TestMixin, TestCase):
         self.assertLoginRequired(self.get_url())
 
     def test_can_set_fields_on_model(self):
-        """You should be able to set start_time and end_time through form."""
+        """Robustness test. You should be able to set model fields through form."""
         form_data = self.create_required_form_data()
         form_data["start_time_0"] = "2030-1-2"
         form_data["start_time_1"] = "20:30"
