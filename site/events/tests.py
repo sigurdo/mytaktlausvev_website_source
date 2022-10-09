@@ -158,6 +158,19 @@ class EventTestSuite(TestCase):
         with self.assertRaises(ProtectedError):
             self.event.category.delete()
 
+    def test_can_set_map_link_with_location(self):
+        EventFactory(location="some place", location_map_link="https://some.link/")
+
+    def test_cannot_set_map_link_without_location(self):
+        with self.assertRaises(IntegrityError):
+            EventFactory(location="", location_map_link="https://some.link/")
+
+    def test_can_set_location_without_map_link(self):
+        EventFactory(location="some place", location_map_link="")
+
+    def test_can_set_neither_location_nor_map_link(self):
+        EventFactory(location="", location_map_link="")
+
 
 class EventAttendanceTestSuite(TestCase):
     def setUp(self):
@@ -481,34 +494,23 @@ class EventCreateTestSuite(TestMixin, TestCase):
         """Should require login."""
         self.assertLoginRequired(self.get_url())
 
-    def test_can_set_time(self):
+    def test_can_set_fields_on_model(self):
         """You should be able to set start_time and end_time through form."""
         form_data = self.create_required_form_data()
         form_data["start_time_0"] = "2030-1-2"
         form_data["start_time_1"] = "20:30"
         form_data["end_time_0"] = "2030-1-2"
         form_data["end_time_1"] = "20:32"
+        form_data["location"] = "A place"
+        form_data["location_map_link"] = "https://a.place.no/"
         user = SuperUserFactory()
         self.client.force_login(user)
         self.client.post(self.get_url(), form_data)
         event = Event.objects.last()
         self.assertEqual(event.start_time, make_aware(datetime(2030, 1, 2, 20, 30)))
         self.assertEqual(event.end_time, make_aware(datetime(2030, 1, 2, 20, 32)))
-
-    def test_can_set_location(self):
-        """You should be able to set location through form."""
-        form_data = self.create_required_form_data()
-        form_data["location"] = "A place"
-        form_data["location_link"] = "https://a.place.no/"
-        user = SuperUserFactory()
-        self.client.force_login(user)
-        self.client.post(
-            self.get_url(),
-            form_data,
-        )
-        event = Event.objects.last()
         self.assertEqual(event.location, form_data["location"])
-        self.assertEqual(event.location_link, form_data["location_link"])
+        self.assertEqual(event.location_map_link, form_data["location_map_link"])
 
     def test_keyinfo(self):
         """Should be able to create keyinfo correctly."""

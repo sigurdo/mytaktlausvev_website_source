@@ -6,8 +6,8 @@
     {% if event.location %}
         <dt>Stad</dt>
         <dd>
-            {% if event.location_link %}
-                <a href="{{ event.location_link }}" rel="nofollow">{{ event.location }}</a>
+            {% if event.location_map_link %}
+                <a href="{{ event.location_map_link }}" rel="nofollow">{{ event.location }}</a>
             {% else %}
                 {{ event.location }}
             {% endif %}
