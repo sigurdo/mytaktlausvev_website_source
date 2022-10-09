@@ -69,17 +69,6 @@ class Jacket(CreatedModifiedMixin):
         ordering = ["GOOD", "NEEDS_REPAIR", "UNUSABLE"]
         return ordering.index(self.state)
 
-    def get_owner(self):
-        try:
-            return self.jacket_users.get(is_owner=True).user
-        except:
-            return None
-
-    def get_extra_users(self):
-        return UserCustom.objects.filter(
-            jacket_user__jacket=self, jacket_user__is_owner=False
-        ).all()
-
     def __str__(self):
         return f"Jakke {self.number}"
 
@@ -87,4 +76,12 @@ class Jacket(CreatedModifiedMixin):
         ordering = ["number"]
         verbose_name = "jakke"
         verbose_name_plural = "jakker"
+        constraints = [
+            UniqueConstraint(
+                name="one_owner_per_jacket",
+                fields=[ "user"],
+            ),
+        ]
+
+
 

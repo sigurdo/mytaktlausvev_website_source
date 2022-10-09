@@ -28,9 +28,7 @@ class JacketForm(ModelForm):
             "user",
             "comment",
             "state_comment",
-            
             "state",
-            
         ]
         widgets = {
             "comment": TextInput,
