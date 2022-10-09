@@ -25,10 +25,16 @@ class JacketForm(ModelForm):
         fields = [
             "number",
             "location",
+            "user",
+            "note",
             "comment",
             "state",
+            
         ]
-        widgets = {"comment": TextInput}
+        widgets = {
+            "comment": TextInput,
+            "note": TextInput,
+            "user": AutocompleteSelect}
 
 
 class JacketsFormsetHelper(FormHelper):

@@ -59,7 +59,7 @@ class Jacket(CreatedModifiedMixin):
     user = ForeignKey(
         settings.AUTH_USER_MODEL,
         verbose_name="vert lånt av",
-        related_name="uniforms",
+        related_name="jackets",
         on_delete=SET_NULL,
         null=True,
         blank=True,
@@ -89,7 +89,7 @@ class Jacket(CreatedModifiedMixin):
         verbose_name_plural = "jakker"
 
 
-""" class JacketUser(Model):
+class JacketUser(Model):
     user = OneToOneField(
         UserCustom,
         verbose_name="brukar",
@@ -121,4 +121,4 @@ class Jacket(CreatedModifiedMixin):
                 condition=Q(is_owner=True),
             ),
         ]
-""" 
+

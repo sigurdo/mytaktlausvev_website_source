@@ -27,7 +27,7 @@
         {% endif %}
     </dd>
 
-    {% with user.get_jacket as jacket %}
+    {% with user.jackets.first as jacket %}
     {% if jacket %}
         <dt>Jakkenummer</dt>
         <dd>{{ jacket.number }}</dd>

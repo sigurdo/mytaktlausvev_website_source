@@ -29,11 +29,6 @@
                     <th> Jakkenummer </th>
                     <th> Stad </th>
                     <th> Eigar </th>
-                    <th> Gammal Eigar</th>
-                    <th> Ekstra brukarar </th>
-                    {% if perms.uniforms.change_jacket %}
-                    <th> Rediger brukarar </th>
-                    {% endif %}
                     <th> Merknad </th>
                     <th> Kommentar </th>
                     <th> Tilstand </th>
@@ -62,28 +57,6 @@
                             ({{ jacket.user.get_membership_status_display }})
                         {% endif %}
                     {% endif %} </td>
-                    <td>
-                        {% with jacket.get_owner as owner %}
-                            {% if owner %}
-                                <a href="{% url "accounts:ProfileDetail" owner.slug %}"> {{ owner }} </a>
-                                {% if not owner.is_active_member %}
-                                    ({{ owner.get_membership_status_display }})
-                                {% endif %}
-                            {% endif %}
-                        {% endwith %}
-                    </td>
-                    <td>
-                        {% with jacket.get_extra_users as users %}
-                            {% for user in users %}
-                                <a href="{% url "accounts:ProfileDetail" user.slug %}">{{ user }}</a>{% if forloop.counter < users|length %},{% endif %}
-                            {% endfor %}
-                        {% endwith %}
-                    </td>
-                    {% if perms.uniforms.change_jacket %}
-                    <td>
-                        <a class="btn btn-sm btn-primary" href="{% url "uniforms:JacketUsers" jacket.number %}"> Rediger brukarar </a>
-                    </td>
-                    {% endif %}
                     <td> {{ jacket.note }} </td>
                     <td> {{ jacket.comment }} </td>
                     <td

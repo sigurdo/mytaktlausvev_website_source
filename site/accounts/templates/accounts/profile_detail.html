@@ -142,12 +142,16 @@
                                     </dd>
                                 {% endif %}
 
-                                {% with profile.get_jacket as jacket %}
-                                {% if jacket %}
-                                    <dt>Jakkenummer</dt>
-                                    <dd>{{ jacket.number }}</dd>
-                                {% endif %}
-                                {% endwith %}
+                                {% if profile.jackets.exists %}
+                                <dt>Jakkenummer</dt>
+                                <dd>
+                                    {% for jacket in profile.jackets.all %}
+                                        {{ jacket.number }} <br>
+                                        {% endfor %}
+                                    
+                                </dd>
+                            {% endif %}
+                                
                             </dl>
                         </div>
                     </section>
