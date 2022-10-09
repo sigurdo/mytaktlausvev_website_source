@@ -6,16 +6,10 @@ from django.db.models import (
     ForeignKey,
     IntegerField,
     Model,
-    OneToOneField,
     TextChoices,
     TextField,
     UniqueConstraint,
 )
-from django.db.models.deletion import CASCADE
-from django.db.models.fields import BooleanField
-from django.db.models.query_utils import Q
-
-from accounts.models import UserCustom
 
 from common.models import CreatedModifiedMixin
 
@@ -35,7 +29,6 @@ class Jacket(CreatedModifiedMixin):
     number = IntegerField(verbose_name="jakkenummer", unique=True)
     comment = TextField(verbose_name="kommentar", blank=True)
     state_comment = TextField(verbose_name="tilstandskommentar", blank=True)
-    
 
     class State(TextChoices):
         GOOD = "GOOD", "God"
@@ -79,9 +72,6 @@ class Jacket(CreatedModifiedMixin):
         constraints = [
             UniqueConstraint(
                 name="one_owner_per_jacket",
-                fields=[ "user"],
+                fields=["user"],
             ),
         ]
-
-
-

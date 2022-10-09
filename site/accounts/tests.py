@@ -127,7 +127,6 @@ class UserCustomTest(TestMixin, TestCase):
         user = UserFactory()
         self.assertEqual(user.get_avatar_url(), static("accounts/default-avatar.svg"))
 
-
     def test_light_mode_defaults_to_false(self):
         """`light_mode` should default to false."""
         user = UserFactory()

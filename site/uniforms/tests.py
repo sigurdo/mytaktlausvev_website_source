@@ -1,10 +1,8 @@
-from http import HTTPStatus
-
 from django.db import IntegrityError
 from django.test import TestCase
 from django.urls import reverse
 
-from accounts.factories import SuperUserFactory, UserFactory
+from accounts.factories import SuperUserFactory
 from common.mixins import TestMixin
 from common.test_utils import create_formset_post_data
 
@@ -126,5 +124,3 @@ class JacketsUpdateTestSuite(TestMixin, TestCase):
         self.client.force_login(SuperUserFactory())
         self.client.post(self.get_url(), self.create_post_data())
         self.assertEqual(Jacket.objects.count(), 0)
-
-

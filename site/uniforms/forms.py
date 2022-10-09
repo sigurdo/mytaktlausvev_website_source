@@ -1,16 +1,7 @@
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
-from django.core.exceptions import ValidationError
-from django.forms import (
-    BooleanField,
-    ChoiceField,
-    Form,
-    ModelForm,
-    TextInput,
-    modelformset_factory,
-)
+from django.forms import ModelForm, TextInput, modelformset_factory
 
-from accounts.models import UserCustom
 from common.forms.layouts import DynamicFormsetButton
 from common.forms.widgets import AutocompleteSelect
 
@@ -33,7 +24,8 @@ class JacketForm(ModelForm):
         widgets = {
             "comment": TextInput,
             "state_comment": TextInput,
-            "user": AutocompleteSelect}
+            "user": AutocompleteSelect,
+        }
 
 
 class JacketsFormsetHelper(FormHelper):
@@ -54,5 +46,3 @@ JacketsFormset = modelformset_factory(
 
 
 JacketsFormset.helper = JacketsFormsetHelper()
-
-

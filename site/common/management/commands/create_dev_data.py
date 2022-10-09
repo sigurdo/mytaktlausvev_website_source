@@ -325,13 +325,12 @@ class Command(BaseCommand):
         jacket_at_storage = JacketLocationFactory(
             name="Jakkeskapet",
         )
-        jacket_1 = JacketFactory(
+        JacketFactory(
             number=1,
             comment="pensjonist låner 7.10",
             state=Jacket.State.NEEDS_REPAIR,
             location=jacket_at_storage,
             user=aspirant,
-            
         )
         JacketFactory(
             number=2,
@@ -339,13 +338,13 @@ class Command(BaseCommand):
             state=Jacket.State.UNUSABLE,
             location=jacket_at_storage,
         )
-        jacket_42 = JacketFactory(
+        JacketFactory(
             number=42,
             state=Jacket.State.GOOD,
             location=jacket_at_home,
             user=member,
         )
-        jacket_65 = JacketFactory(
+        JacketFactory(
             number=65,
             state=Jacket.State.NEEDS_REPAIR,
             location=jacket_at_storage,

@@ -25,4 +25,3 @@ class JacketFactory(DjangoModelFactory):
     state_comment = ""
     created_by = SubFactory(UserFactory)
     modified_by = SubFactory(UserFactory)
-    

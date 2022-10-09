@@ -1,11 +1,6 @@
 from django.urls import path
 
-from .views import (
-    
-    JacketList,
-    JacketsUpdate,
-
-)
+from .views import JacketList, JacketsUpdate
 
 app_name = "uniforms"
 
