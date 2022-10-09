@@ -21,13 +21,12 @@ def set_uniform_created_by_modified_by(apps, schema_editor):
         test_user = find_test_user(UserCustom)
         jacket.created_by = test_user
         jacket.modified_by = test_user
-        owner = jacket.jacket_users.get(is_owner=True).user
-        if owner:
-            jacket.user = owner
-        jacketUsers = UserCustom.objects.filter(
+        if jacket.jacket_users.filter(is_owner=True).exists():
+            jacket.user = jacket.jacket_users.get(is_owner=True).user
+        
+        jacket.note =  UserCustom.objects.filter(
             jacket_user__jacket=jacket, jacket_user__is_owner=False
         ).all()
-        jacket.note = map(str, jacketUsers)
         jacket.save()
 
 
