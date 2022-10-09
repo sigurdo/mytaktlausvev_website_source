@@ -32,15 +32,6 @@ class Gallery(ArticleMixin):
         editable=True,
     )
 
-    connected_event = ForeignKey(
-        Event,
-        verbose_name="Oppkobla hending",
-        related_name="connected_event",
-        on_delete=SET_NULL,
-        null=True,
-        blank=True,
-    )
-
     def get_absolute_url(self):
         return reverse("pictures:GalleryDetail", args=[self.slug])
 

@@ -48,8 +48,11 @@ class EventForm(ModelForm):
 
     class Meta:
         model = Event
-        fields = ["title", "category", "start_time", "end_time", "content"]
-        widgets = {"category": AutocompleteSelect}
+        fields = ["title", "category", "start_time", "end_time", "content", "connected_gallery"]
+        widgets = {
+            "category": AutocompleteSelect, 
+            "connected_gallery" : AutocompleteSelect
+            }
 
 
 class EventAttendanceForm(ModelForm):

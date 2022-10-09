@@ -5,6 +5,7 @@ from django.conf import settings
 from django.db.models import (
     CASCADE,
     PROTECT,
+    SET_NULL,
     CharField,
     DateTimeField,
     FloatField,
@@ -19,6 +20,8 @@ from django.urls import reverse
 from django.utils.timezone import localtime, make_aware, now
 
 from common.models import ArticleMixin
+
+from pictures.models import Gallery
 
 
 class EventCategory(Model):
@@ -61,6 +64,16 @@ class Event(ArticleMixin):
         verbose_name="Kategori",
         related_name="events",
     )
+
+    connected_gallery = ForeignKey(
+        Gallery,
+        verbose_name="Oppkobla galleri",
+        related_name="connected_gallery",
+        on_delete=SET_NULL,
+        null=True,
+        blank=True,
+    )
+
 
     def attending(self):
         return self.attendances.filter(status=Attendance.ATTENDING)
