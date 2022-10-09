@@ -32,6 +32,8 @@ class EventForm(ModelForm):
         "category",
         "start_time",
         "end_time",
+        "location",
+        "location_map_link",
         Fieldset(
             "Nykelinfo",
             HTML(
@@ -48,7 +50,15 @@ class EventForm(ModelForm):
 
     class Meta:
         model = Event
-        fields = ["title", "category", "start_time", "end_time", "content"]
+        fields = [
+            "title",
+            "category",
+            "start_time",
+            "end_time",
+            "content",
+            "location",
+            "location_map_link",
+        ]
         widgets = {"category": AutocompleteSelect}
 
 
