@@ -125,12 +125,12 @@ class JacketsUpdateTestSuite(TestMixin, TestCase):
         self.client.post(self.get_url(), self.create_post_data())
         self.assertEqual(Jacket.objects.count(), 0)
 
+
 class JacketOwnerTestSuite(TestMixin, TestCase):
     def setUp(self):
         self.user = UserFactory(name="Imogen Temult")
         self.jacket = JacketFactory(number=42, owner=self.user)
-    
+
     def test_max_one_jacket_per_user(self):
         with self.assertRaises(IntegrityError):
             JacketFactory(owner=self.user)
-
