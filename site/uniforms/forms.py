@@ -16,7 +16,7 @@ class JacketForm(ModelForm):
         fields = [
             "number",
             "location",
-            "user",
+            "owner",
             "comment",
             "state_comment",
             "state",
@@ -24,7 +24,7 @@ class JacketForm(ModelForm):
         widgets = {
             "comment": TextInput,
             "state_comment": TextInput,
-            "user": AutocompleteSelect,
+            "owner": AutocompleteSelect,
         }
 
 
