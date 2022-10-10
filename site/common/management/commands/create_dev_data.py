@@ -45,7 +45,7 @@ from sheetmusic.factories import (
     PdfFactory,
     ScoreFactory,
 )
-from uniforms.factories import JacketFactory, JacketLocationFactory, JacketUserFactory
+from uniforms.factories import JacketFactory, JacketLocationFactory
 from uniforms.models import Jacket
 
 
@@ -332,47 +332,34 @@ class Command(BaseCommand):
         jacket_at_storage = JacketLocationFactory(
             name="Jakkeskapet",
         )
-        jacket_1 = JacketFactory(
+        jacket_at_catacombs = JacketLocationFactory(
+            name="Katakombene",
+        )
+        JacketFactory(
             number=1,
-            comment="",
+            comment="pensjonist låner 7.10",
             state=Jacket.State.NEEDS_REPAIR,
             location=jacket_at_storage,
+            owner=aspirant,
         )
         JacketFactory(
             number=2,
-            comment="Mangler 3 knapper og en lomme",
+            state_comment="Mangler 3 knapper og en lomme",
             state=Jacket.State.UNUSABLE,
-            location=jacket_at_storage,
+            location=jacket_at_catacombs,
         )
-        jacket_42 = JacketFactory(
+        JacketFactory(
             number=42,
             state=Jacket.State.GOOD,
             location=jacket_at_home,
+            owner=member,
         )
-        jacket_65 = JacketFactory(
+        JacketFactory(
             number=65,
             state=Jacket.State.NEEDS_REPAIR,
             location=jacket_at_storage,
+            owner=leader,
         )
-        JacketUserFactory(
-            user=leader,
-            jacket=jacket_65,
-        )
-        JacketUserFactory(
-            user=member,
-            jacket=jacket_42,
-        )
-        JacketUserFactory(
-            user=aspirant,
-            jacket=jacket_1,
-        )
-        JacketUserFactory(
-            user=retiree,
-            jacket=jacket_1,
-            is_owner=False,
-        )
-        JacketUserFactory()
-        JacketUserFactory()
 
         general = ForumFactory(title="General", description="For general stuff.")
         ForumFactory(
