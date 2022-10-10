@@ -17,13 +17,11 @@
     <dd>
         {{ event.category }}
     </dd>
-    {% if connected_galleries %}
-    <dt>Oppkobla galleri</dt>
-    <dd>
-        {% for gallery in connected_galleries %}
-               <a href="{{ gallery.get_absolute_url }}">{{ gallery.title }}</a>
-        {% endfor %}
-    </dd>
+    {% if event.connected_gallery %}
+        <dt>Oppkobla galleri</dt>
+        <dd>
+            <a href="{{ event.connected_gallery.get_absolute_url }}">{{ event.connected_gallery.title }}</a>
+        </dd>
     {% endif %}
     {% for entry in event.keyinfo_entries.all %}
         <dt>{{ entry.key }}</dt>

@@ -22,7 +22,6 @@ from django.urls import reverse
 from django.utils.timezone import localtime, make_aware, now
 
 from common.models import ArticleMixin
-
 from pictures.models import Gallery
 
 
@@ -76,12 +75,11 @@ class Event(ArticleMixin):
     connected_gallery = ForeignKey(
         Gallery,
         verbose_name="Oppkobla galleri",
-        related_name="connected_gallery",
+        related_name="connected_events",
         on_delete=SET_NULL,
         null=True,
         blank=True,
     )
-
 
     def attending(self):
         return self.attendances.filter(status=Attendance.ATTENDING)

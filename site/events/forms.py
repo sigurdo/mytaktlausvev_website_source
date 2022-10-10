@@ -34,6 +34,7 @@ class EventForm(ModelForm):
         "end_time",
         "location",
         "location_map_link",
+        "connected_gallery",
         Fieldset(
             "Nykelinfo",
             HTML(
@@ -58,8 +59,12 @@ class EventForm(ModelForm):
             "content",
             "location",
             "location_map_link",
+            "connected_gallery",
         ]
-        widgets = {"category": AutocompleteSelect}
+        widgets = {
+            "category": AutocompleteSelect,
+            "connected_gallery": AutocompleteSelect,
+        }
 
 
 class EventAttendanceForm(ModelForm):

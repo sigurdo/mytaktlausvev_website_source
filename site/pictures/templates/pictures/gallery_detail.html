@@ -47,12 +47,14 @@
         - <time datetime="{{ gallery.date_to | date:"c" }}">{{ gallery.date_to }}</time>
         {% endif %}
         <br>
-        {% if gallery.connected_event %}
+        {% if gallery.connected_events.exists %}
    
-            <strong> Oppkobla hending: </strong> 
-            <a href="{% url 'events:EventDetail' gallery.connected_event.start_time|date:"Y" gallery.connected_event.slug %}">
-                {{gallery.connected_event.title}}
-            </a>
+            <strong> Oppkobla hendingar: </strong> 
+            {% for event in gallery.connected_events.all %}
+            <a href="{% url 'events:EventDetail' event.start_time|date:"Y" event.slug %}">
+                {{event.title}}
+            </a> 
+            {% endfor %}
         {% endif %}
     </p>
     

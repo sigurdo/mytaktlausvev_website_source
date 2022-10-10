@@ -4,7 +4,6 @@ from autoslug.fields import AutoSlugField
 from django.conf import settings
 from django.db.models import (
     CASCADE,
-    SET_NULL,
     CharField,
     DateField,
     DateTimeField,
@@ -16,7 +15,6 @@ from django.db.models import (
 from django.urls.base import reverse
 
 from common.models import ArticleMixin
-from events.models import Event
 
 
 class Gallery(ArticleMixin):

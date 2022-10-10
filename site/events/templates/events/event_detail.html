@@ -51,7 +51,7 @@
 {% endblock header %}
 
 {% block content %}
-    {% include "events/includes/keyinfo_section.html" with event=event connected_galleries=connected_galleries only %}
+    {% include "events/includes/keyinfo_section.html" with event=event only %}
     {% load markdown %}
     {{ event.content | markdown }}
 
