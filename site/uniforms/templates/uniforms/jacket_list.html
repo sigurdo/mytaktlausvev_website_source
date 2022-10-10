@@ -54,7 +54,7 @@
                     <td> {% if jacket.owner %}
                         <a href="{% url "accounts:ProfileDetail" jacket.owner.slug %}"> {{ jacket.owner }} </a>
                         {% if not jacket.owner.is_active_member %}
-                            ({{ jacket.user.get_membership_status_display }})
+                            ({{ jacket.owner.get_membership_status_display }})
                         {% endif %}
                     {% endif %} </td>
                     <td> {{ jacket.comment }} </td>
