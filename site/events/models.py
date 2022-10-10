@@ -10,10 +10,10 @@ from django.db.models import (
     FloatField,
     ForeignKey,
     Manager,
+    ManyToManyField,
     Model,
     TextChoices,
     UniqueConstraint,
-    ManyToManyField,
 )
 from django.db.models.query_utils import Q
 from django.urls import reverse
