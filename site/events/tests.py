@@ -158,6 +158,19 @@ class EventTestSuite(TestCase):
         with self.assertRaises(ProtectedError):
             self.event.category.delete()
 
+    def test_can_set_map_link_with_location(self):
+        EventFactory(location="some place", location_map_link="https://some.link/")
+
+    def test_cannot_set_map_link_without_location(self):
+        with self.assertRaises(IntegrityError):
+            EventFactory(location="", location_map_link="https://some.link/")
+
+    def test_can_set_location_without_map_link(self):
+        EventFactory(location="some place", location_map_link="")
+
+    def test_can_set_neither_location_nor_map_link(self):
+        EventFactory(location="", location_map_link="")
+
 
 class EventAttendanceTestSuite(TestCase):
     def setUp(self):
@@ -465,43 +478,45 @@ class EventCreateTestSuite(TestMixin, TestCase):
             initial_forms=initial_forms,
         )
 
+    def create_required_form_data(self, include_formset=True):
+        form_data = {
+            "title": "A Title",
+            "category": self.category.pk,
+            "start_time_0": "2021-11-25",
+            "start_time_1": "16:30",
+            "content": "Event text",
+        }
+        if include_formset:
+            form_data.update({**self.create_formset_post_data()})
+        return form_data
+
     def test_requires_login(self):
         """Should require login."""
         self.assertLoginRequired(self.get_url())
 
-    def test_created_by_modified_by_set_to_current_user(self):
-        """Should set `created_by` and `modified_by` to the current user on creation."""
+    def test_can_set_fields_on_model(self):
+        """Robustness test. You should be able to set model fields through form."""
+        form_data = self.create_required_form_data()
+        form_data["start_time_0"] = "2030-1-2"
+        form_data["start_time_1"] = "20:30"
+        form_data["end_time_0"] = "2030-1-2"
+        form_data["end_time_1"] = "20:32"
+        form_data["location"] = "A place"
+        form_data["location_map_link"] = "https://a.place.no/"
         user = SuperUserFactory()
         self.client.force_login(user)
-        self.client.post(
-            self.get_url(),
-            {
-                "title": "A Title",
-                "category": self.category.pk,
-                "start_time_0": "2021-11-25",
-                "start_time_1": "16:30",
-                "content": "Event text",
-                **self.create_formset_post_data(),
-            },
-        )
-
-        self.assertEqual(Event.objects.count(), 1)
+        self.client.post(self.get_url(), form_data)
         event = Event.objects.last()
-        self.assertEqual(event.created_by, user)
-        self.assertEqual(event.modified_by, user)
+        self.assertEqual(event.start_time, make_aware(datetime(2030, 1, 2, 20, 30)))
+        self.assertEqual(event.end_time, make_aware(datetime(2030, 1, 2, 20, 32)))
+        self.assertEqual(event.location, form_data["location"])
+        self.assertEqual(event.location_map_link, form_data["location_map_link"])
 
     def test_keyinfo(self):
         """Should be able to create keyinfo correctly."""
-        user = SuperUserFactory()
-        self.client.force_login(user)
-        self.client.post(
-            self.get_url(),
+        form_data = self.create_required_form_data(include_formset=False)
+        form_data.update(
             {
-                "title": "A Title",
-                "category": self.category.pk,
-                "start_time_0": "2021-11-25",
-                "start_time_1": "16:30",
-                "content": "Event text",
                 **self.create_formset_post_data(
                     data=[
                         {"key": "Price", "info": "100kr", "order": 3},
@@ -509,8 +524,11 @@ class EventCreateTestSuite(TestMixin, TestCase):
                     total_forms=1,
                     initial_forms=0,
                 ),
-            },
+            }
         )
+        user = SuperUserFactory()
+        self.client.force_login(user)
+        self.client.post(self.get_url(), form_data)
         self.assertEqual(EventKeyinfoEntry.objects.count(), 1)
         keyinfo = EventKeyinfoEntry.objects.last()
         self.assertEqual(keyinfo.key, "Price")
@@ -539,6 +557,18 @@ class EventUpdateTestSuite(TestMixin, TestCase):
             initial_forms=initial_forms,
         )
 
+    def create_required_form_data(self, include_formset=True):
+        form_data = {
+            "title": "A Title",
+            "category": self.category.pk,
+            "start_time_0": "2021-11-25",
+            "start_time_1": "16:30",
+            "content": "Event text",
+        }
+        if include_formset:
+            form_data.update({**self.create_formset_post_data()})
+        return form_data
+
     def get_url(self):
         """Returns the URL for the event update view for `event`."""
         return reverse(
@@ -565,36 +595,11 @@ class EventUpdateTestSuite(TestMixin, TestCase):
         response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
-    def test_created_by_not_changed(self):
-        """Should not change `created_by` when updating event."""
-        self.client.force_login(SuperUserFactory())
-        self.client.post(self.get_url(), self.event_data)
-
-        created_by_previous = self.event.created_by
-        self.event.refresh_from_db()
-        self.assertEqual(self.event.created_by, created_by_previous)
-
-    def test_modified_by_set_to_current_user(self):
-        """Should set `modified_by` to the current user on update."""
-        user = SuperUserFactory()
-        self.client.force_login(user)
-        self.client.post(self.get_url(), self.event_data)
-
-        self.event.refresh_from_db()
-        self.assertEqual(self.event.modified_by, user)
-
     def test_keyinfo(self):
         """Should be able to create keyinfo correctly."""
-        user = SuperUserFactory()
-        self.client.force_login(user)
-        self.client.post(
-            self.get_url(),
+        form_data = self.create_required_form_data(include_formset=False)
+        form_data.update(
             {
-                "title": "A Title",
-                "category": self.category.pk,
-                "start_time_0": "2021-11-25",
-                "start_time_1": "16:30",
-                "content": "Event text",
                 **self.create_formset_post_data(
                     data=[
                         {"key": "Price", "info": "100kr", "order": 3},
@@ -602,8 +607,11 @@ class EventUpdateTestSuite(TestMixin, TestCase):
                     total_forms=1,
                     initial_forms=0,
                 ),
-            },
+            }
         )
+        user = SuperUserFactory()
+        self.client.force_login(user)
+        self.client.post(self.get_url(), form_data)
         self.assertEqual(EventKeyinfoEntry.objects.count(), 1)
         keyinfo = EventKeyinfoEntry.objects.last()
         self.assertEqual(keyinfo.key, "Price")
@@ -847,3 +855,9 @@ class EventFeedTestSuite(TestMixin, TestCase):
         event = EventFactory(end_time=None)
         end_time = EventFeed().item_end_datetime(event)
         self.assertEqual(end_time, event.start_time)
+
+    def test_location(self):
+        """calling `.item_location()` should return the event's location."""
+        event = EventFactory(location="Gløs")
+        location = EventFeed().item_location(event)
+        self.assertEqual(location, "Gløs")
