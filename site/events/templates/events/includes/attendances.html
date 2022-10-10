@@ -38,7 +38,7 @@
                             {{ attendance.person.instrument_type.group }}
                         </td>
                         <td>
-                            {{ attendance.person.jackets.first.number }}
+                            {{ attendance.person.jacket.number }}
                         </td>
                         <td class="text-center">
                             {% if user == attendance.person or perms.events.change_eventattendance %}

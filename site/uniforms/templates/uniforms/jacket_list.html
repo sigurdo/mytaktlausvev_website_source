@@ -30,7 +30,7 @@
                     <th> Stad </th>
                     <th> Eigar </th>
                     <th> Kommentar </th>
-                    <th> Tilsstandskommentar </th>
+                    <th> Tilstandskommentar </th>
                     <th> Tilstand </th>
                     <th> Sist endra </th>
                 </tr>
@@ -51,9 +51,9 @@
                         {{ jacket.number }}
                     </td>
                     <td> {{ jacket.location }} </td>
-                    <td> {% if jacket.user %}
-                        <a href="{% url "accounts:ProfileDetail" jacket.user.slug %}"> {{ jacket.user }} </a>
-                        {% if not jacket.user.is_active_member %}
+                    <td> {% if jacket.owner %}
+                        <a href="{% url "accounts:ProfileDetail" jacket.owner.slug %}"> {{ jacket.owner }} </a>
+                        {% if not jacket.owner.is_active_member %}
                             ({{ jacket.user.get_membership_status_display }})
                         {% endif %}
                     {% endif %} </td>

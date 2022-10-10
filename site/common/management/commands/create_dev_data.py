@@ -325,7 +325,7 @@ class Command(BaseCommand):
         jacket_at_storage = JacketLocationFactory(
             name="Jakkeskapet",
         )
-        jacket_at_cathacombes = JacketLocationFactory(
+        jacket_at_catacombs = JacketLocationFactory(
             name="Katakombene",
         )
         JacketFactory(
@@ -339,7 +339,7 @@ class Command(BaseCommand):
             number=2,
             state_comment="Mangler 3 knapper og en lomme",
             state=Jacket.State.UNUSABLE,
-            location=jacket_at_storage,
+            location=jacket_at_catacombs,
         )
         JacketFactory(
             number=42,

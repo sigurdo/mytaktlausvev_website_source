@@ -22,7 +22,7 @@ def set_uniform_created_by_modified_by(apps, schema_editor):
         jacket.modified_by = test_user
         jacket.state_comment = jacket.comment
         if jacket.jacket_users.filter(is_owner=True).exists():
-            jacket.user = jacket.jacket_users.get(is_owner=True).user
+            jacket.owner = jacket.jacket_users.get(is_owner=True).user
         if UserCustom.objects.filter(
             jacket_user__jacket=jacket, jacket_user__is_owner=False
         ).exists():
@@ -32,7 +32,7 @@ def set_uniform_created_by_modified_by(apps, schema_editor):
             users = ""
 
             for user in jacket_users:
-                users += user.username + " "
+                users += user.username + ", "
             jacket.comment = users
         jacket.save()
 
