@@ -154,7 +154,7 @@ class Command(BaseCommand):
         ContactCategoryFactory(name="Generelt")
         ContactCategoryFactory(name="Bli med!")
 
-        event = EventFactory(
+        smash = EventFactory(
             title="SMASH",
             content="SMASH in Trondheim",
             created_by=leader,
@@ -162,13 +162,13 @@ class Command(BaseCommand):
             start_time=make_aware(datetime.now() + timedelta(365)),
             category__name="Studentorchestersamling",
         )
-        EventAttendanceFactory(event=event, person=leader, status=Attendance.ATTENDING)
-        EventAttendanceFactory(event=event, person=member, status=Attendance.ATTENDING)
+        EventAttendanceFactory(event=smash, person=leader, status=Attendance.ATTENDING)
+        EventAttendanceFactory(event=smash, person=member, status=Attendance.ATTENDING)
         EventAttendanceFactory(
-            event=event, person=aspirant, status=Attendance.ATTENDING_MAYBE
+            event=smash, person=aspirant, status=Attendance.ATTENDING_MAYBE
         )
         EventAttendanceFactory(
-            event=event, person=retiree, status=Attendance.ATTENDING_NOT
+            event=smash, person=retiree, status=Attendance.ATTENDING_NOT
         )
         event_category_party = EventCategoryFactory(name="Fest")
         EventFactory(
@@ -770,19 +770,63 @@ class Command(BaseCommand):
             user=leader,
             part=birthday_song_part,
         )
+        brooklyn = ScoreFactory(title="Brooklyn")
+
+        old_concert_scores = [
+            birthday_song,
+            pause_waltz,
+            brooklyn,
+        ]
         old_concert_repertoire = RepertoireFactory(
             name="Bursdagskonsert fra og med, men egentlig uten vals",
             active_until=make_aware(datetime.now() - timedelta(days=14)),
         )
-        RepertoireEntryFactory(repertoire=old_concert_repertoire, score=birthday_song)
-        RepertoireEntryFactory(repertoire=old_concert_repertoire, score=pause_waltz)
-        march_repertoire = RepertoireFactory(name=f"Marsjhefte {datetime.now().year}")
-        RepertoireEntryFactory(repertoire=march_repertoire, score=birthday_song)
+        for score in old_concert_scores:
+            RepertoireEntryFactory(repertoire=old_concert_repertoire, score=score)
+
+        march_booklet_scores = [
+            ScoreFactory(title="Dixieland Strut"),
+            ScoreFactory(title="99 Luftballons"),
+            ScoreFactory(title="Poekemon Theme Song"),
+            ScoreFactory(title="Tiger Rag"),
+            brooklyn,
+        ]
+        march_booklet_repertoire = RepertoireFactory(
+            name=f"Marsjhefte {datetime.now().year}"
+        )
+        for score in march_booklet_scores:
+            RepertoireEntryFactory(repertoire=march_booklet_repertoire, score=score)
+
+        concert_scores = [
+            ScoreFactory(title="Free World Fantasy"),
+            ScoreFactory(title="Mononoke Hime"),
+            ScoreFactory(title="A Link to Dei Taktlause"),
+            ScoreFactory(title="Through the Fire and Flames"),
+            ScoreFactory(title="Pokemon Medley"),
+            brooklyn,
+            pause_waltz,
+        ]
+        concert_end_time = make_aware(datetime.now() + timedelta(days=14))
         concert_repertoire = RepertoireFactory(
             name="Konsert",
-            active_until=make_aware(datetime.now() + timedelta(days=14)),
+            active_until=concert_end_time,
         )
-        RepertoireEntryFactory(repertoire=concert_repertoire, score=pause_waltz)
+        for score in concert_scores:
+            RepertoireEntryFactory(repertoire=concert_repertoire, score=score)
+
+        concert = EventFactory(
+            title="Konsert",
+            category__name="Konsert",
+            content="Vi tek ein konsert a', gutta!",
+            start_time=concert_end_time - timedelta(hours=2),
+            end_time=concert_end_time,
+        )
+        concert.repertoires.set([concert_repertoire])
+        concert.repertoire_extra_scores.set([birthday_song])
+        concert.save()
+        smash.repertoires.set([march_booklet_repertoire])
+        smash.save()
+
         EmbeddableTextFactory(
             name="Framgangsmåte for buttonpdfgenerator",
             content="""
