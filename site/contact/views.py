@@ -38,8 +38,8 @@ class ContactView(FormView):
         intro = f"{form.cleaned_data['name']} ({form.cleaned_data['email']}) sende ei melding gjennom kontaktskjemaet på nettsida."
         return f"{intro}\n\n{form.cleaned_data['message']}"
 
-    def _get_from_mail(self, form):
-        """Returns the from mail, including the sender's name."""
+    def _get_reply_to_mail(self, form):
+        """Returns the reply to mail, including the sender's name."""
         return f'"{form.cleaned_data["name"]}" <{form.cleaned_data["email"]}>'
 
     def _is_spam(self, form) -> bool:
@@ -62,8 +62,7 @@ class ContactView(FormView):
                 settings.EMAIL_HOST_USER,
                 [form.cleaned_data["category"].email],
                 headers={
-                    "From": self._get_from_mail(form),
-                    "Sender": settings.EMAIL_HOST_USER,
+                    "Reply-To": self._get_reply_to_mail(form),
                 },
             ).send(fail_silently=False)
         except SMTPException:
