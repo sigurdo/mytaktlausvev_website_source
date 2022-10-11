@@ -47,6 +47,13 @@ ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "" if PRODUCTION else "*").split
 if DEBUG:
     os.umask(0)
 
+# Debug toolbar should always display if debug is true.
+# The default is to use `INTERNAL_IPS` to determine whether or not to display,
+# which doesn't work with Docker.
+# https://stackoverflow.com/a/50492036
+
+DEBUG_TOOLBAR_CONFIG = {"SHOW_TOOLBAR_CALLBACK": lambda _: DEBUG}
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -59,6 +66,7 @@ INSTALLED_APPS = [
     "django.contrib.humanize",
     "django.contrib.sites",
     "django.contrib.redirects",
+    "debug_toolbar",
     "crispy_forms",
     "crispy_bootstrap5",
     "sass_processor",
@@ -106,6 +114,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
     "watson.middleware.SearchContextMiddleware",
     "django_userforeignkey.middleware.UserForeignKeyMiddleware",
     "common.middleware.RedirectFallbackMiddleware",
