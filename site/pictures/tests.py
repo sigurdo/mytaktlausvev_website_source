@@ -279,8 +279,7 @@ class ImageCreateTestSuite(TestMixin, TestCase):
         self.client.force_login(UserFactory())
         response = self.client.post(self.get_url(), self.image_data)
         self.assertFormError(
-            response,
-            "form",
+            response.context["form"],
             "image",
             "Last opp eit gyldig bilete. Fila du lasta opp var ødelagt eller ikkje eit bilete.",
         )
@@ -294,8 +293,7 @@ class ImageCreateTestSuite(TestMixin, TestCase):
         self.client.force_login(UserFactory())
         response = self.client.post(self.get_url(), self.image_data)
         self.assertFormError(
-            response,
-            "form",
+            response.context["form"],
             "image",
             "Last opp eit gyldig bilete. Fila du lasta opp var ødelagt eller ikkje eit bilete.",
         )
