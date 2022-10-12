@@ -10,6 +10,7 @@ from django.db.models import (
     Manager,
     Model,
     UniqueConstraint,
+    ManyToManyField,
 )
 from django.db.models.query_utils import Q
 from django.urls import reverse
@@ -53,6 +54,12 @@ class Repertoire(CreatedModifiedMixin, Model):
         blank=True,
         null=True,
         help_text="Valfritt. Gjer repertoaret aktivt til og med ein bestemt dato. Om inga dato er satt vert det aktivt for alltid.",
+    )
+    scores = ManyToManyField(
+        Score,
+        verbose_name="notar",
+        through="RepertoireEntry",
+        blank=True,
     )
 
     class Meta:
@@ -110,6 +117,14 @@ class RepertoireEntry(Model):
         on_delete=CASCADE,
         related_name="repertoire_entries",
         verbose_name="note",
+    )
+    order = FloatField(
+        verbose_name="rekkjefølgje",
+        default=0,
+        help_text=(
+            "Definerer rekkjefølgja til nota i repertoaret."
+            "Notar med lik rekkjefølgje vert sortert alfabetisk."
+        ),
     )
 
     class Meta:

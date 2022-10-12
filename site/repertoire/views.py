@@ -11,10 +11,11 @@ from common.forms.views import (
     DeleteViewCustom,
     InlineFormsetCreateView,
     InlineFormsetUpdateView,
+    CreateView,
 )
 from sheetmusic.models import Part
 
-from .forms import RepertoireEntryFormset, RepertoireForm, RepertoirePdfFormset
+from .forms import RepertoireEntryFormset, RepertoireForm, RepertoireAndScoresForm, RepertoirePdfFormset
 from .models import Repertoire
 
 
@@ -71,11 +72,10 @@ class RepertoireDetail(LoginRequiredMixin, BreadcrumbsMixin, DetailView):
 
 
 class RepertoireCreate(
-    PermissionRequiredMixin, BreadcrumbsMixin, InlineFormsetCreateView
+    PermissionRequiredMixin, BreadcrumbsMixin, CreateView
 ):
     model = Repertoire
-    form_class = RepertoireForm
-    formset_class = RepertoireEntryFormset
+    form_class = RepertoireAndScoresForm
     template_name = "common/forms/form.html"
     success_url = reverse_lazy("repertoire:ActiveRepertoires")
     permission_required = "repertoire.add_repertoire"

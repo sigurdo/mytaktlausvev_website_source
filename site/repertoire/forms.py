@@ -11,6 +11,7 @@ from django.forms import (
     Select,
     formset_factory,
     inlineformset_factory,
+    NumberInput,
 )
 from django.urls import reverse
 from PyPDF2 import PdfFileReader, PdfFileWriter
@@ -19,10 +20,11 @@ from common.forms.layouts import DynamicFormsetButton
 from sheetmusic.models import Part, Score
 
 from .models import Repertoire, RepertoireEntry
+from common.forms.widgets import AutocompleteSelectMultiple, AutocompleteSelect
 
 
 class RepertoireForm(ModelForm):
-    """Form for creating and editing repertoires."""
+    """Form for creating and editing a repertoire."""
 
     helper = FormHelper()
     helper.form_tag = False
@@ -35,12 +37,30 @@ class RepertoireForm(ModelForm):
         }
 
 
+class RepertoireAndScoresForm(ModelForm):
+    """Form for creating and editing a repertoire and its scores in an `AutocompleteSelectMultiple`."""
+
+    helper = FormHelper()
+    helper.add_input(Submit("submit", "Lagre"))
+
+    class Meta:
+        model = Repertoire
+        fields = ["name", "order", "active_until", "scores"]
+        widgets = {
+            "active_until": DateInput(attrs={"type": "date"}), "scores": AutocompleteSelectMultiple
+        }
+
+
 class RepertoireEntryForm(ModelForm):
     """Form for creating and editing a repertoire entry."""
 
     class Meta:
         model = RepertoireEntry
-        fields = ["score"]
+        fields = ["score", "order"]
+        help_texts = {"order": ""}
+        widgets = {
+            "score": AutocompleteSelect, "order": NumberInput(attrs={"size": 4})
+        }
 
 
 class RepertoireEntryFormsetHelper(FormHelper):
