@@ -394,4 +394,4 @@ class EventFeed(ICalFeed):
         return item.end_time if item.end_time else item.start_time
 
     def item_location(self, item):
-        return "kommer snart"
+        return item.location

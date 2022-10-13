@@ -36,6 +36,8 @@ class EventForm(ModelForm):
         "category",
         "start_time",
         "end_time",
+        "location",
+        "location_map_link",
         Fieldset(
             "Nykelinfo",
             HTML(
@@ -64,6 +66,8 @@ class EventForm(ModelForm):
             "start_time",
             "end_time",
             "content",
+            "location",
+            "location_map_link",
             "repertoire_include_active",
             "repertoires",
             "repertoire_extra_scores",

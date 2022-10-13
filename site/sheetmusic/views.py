@@ -6,6 +6,7 @@ from typing import Any, Dict
 import django
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
+from django.db.models import Exists, OuterRef
 from django.forms import BaseModelForm
 from django.http import HttpResponse
 from django.http.response import FileResponse
@@ -394,6 +395,19 @@ class PdfsUpload(PermissionOrCreatedMixin, BreadcrumbsMixin, FormView):
 class ScoreList(LoginRequiredMixin, ListView):
     model = Score
     context_object_name = "scores"
+
+    def get_queryset(self):
+        return (
+            super()
+            .get_queryset()
+            .annotate(
+                user_has_favorite_parts=Exists(
+                    FavoritePart.objects.filter(
+                        part__pdf__score=OuterRef("pk"), user=self.request.user
+                    )
+                )
+            )
+        )
 
 
 class PartPdf(LoginRequiredMixin, DetailView):

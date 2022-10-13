@@ -7,6 +7,7 @@ from django.db.models import (
     PROTECT,
     BooleanField,
     CharField,
+    CheckConstraint,
     DateTimeField,
     FloatField,
     ForeignKey,
@@ -15,6 +16,7 @@ from django.db.models import (
     Model,
     TextChoices,
     UniqueConstraint,
+    URLField,
 )
 from django.db.models.query_utils import Q
 from django.urls import reverse
@@ -65,6 +67,12 @@ class Event(ArticleMixin):
         verbose_name="kategori",
         related_name="events",
     )
+    location = CharField(verbose_name="stad", max_length=255, blank=True)
+    location_map_link = URLField(
+        verbose_name="kartlenkje for stad",
+        blank=True,
+        help_text="Lenkje til kart over staden hos ei kartteneste som OpenStreetMap, Google Maps eller MazeMap.",
+    )
     repertoire_include_active = BooleanField(
         verbose_name="inkluder det vanlege repertoaret",
         default=False,
@@ -112,6 +120,13 @@ class Event(ArticleMixin):
         ordering = ["start_time"]
         verbose_name = "hending"
         verbose_name_plural = "hendingar"
+        constraints = [
+            CheckConstraint(
+                name="event_location_map_link_is_blank_if_location_is_blank",
+                violation_error_message="Kan ikkje setje kartlenkje utan stad.",
+                check=((Q(location="") & Q(location_map_link="")) | ~Q(location="")),
+            )
+        ]
 
 
 class Attendance(TextChoices):

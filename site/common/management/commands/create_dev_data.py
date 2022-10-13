@@ -45,7 +45,7 @@ from sheetmusic.factories import (
     PdfFactory,
     ScoreFactory,
 )
-from uniforms.factories import JacketFactory, JacketLocationFactory, JacketUserFactory
+from uniforms.factories import JacketFactory, JacketLocationFactory
 from uniforms.models import Jacket
 
 
@@ -161,6 +161,7 @@ class Command(BaseCommand):
             modified_by=leader,
             start_time=make_aware(datetime.now() + timedelta(365)),
             category__name="Studentorchestersamling",
+            location="Trondheim",
         )
         EventAttendanceFactory(event=smash, person=leader, status=Attendance.ATTENDING)
         EventAttendanceFactory(event=smash, person=member, status=Attendance.ATTENDING)
@@ -187,6 +188,8 @@ class Command(BaseCommand):
             modified_by=leader,
             start_time=make_aware(first_wednesday),
             category__name="Øving",
+            location="KJL4",
+            location_map_link="https://link.mazemap.com/2t59lzj4",
         )
         board_game_night = EventFactory(
             title="Brettspelkveld",
@@ -195,6 +198,8 @@ class Command(BaseCommand):
             modified_by=leader,
             start_time=make_aware(first_wednesday + timedelta(days=1)),
             category__name="Sosialt",
+            location="KJL4",
+            location_map_link="https://link.mazemap.com/2t59lzj4",
         )
         EventKeyinfoEntryFactory(
             event=board_game_night,
@@ -235,6 +240,8 @@ class Command(BaseCommand):
             modified_by=leader,
             start_time=make_aware(medal_galla_datetime),
             category=event_category_party,
+            location="Nardo klubbhus",
+            location_map_link="https://goo.gl/maps/aiC3mdPfkRSZ5Q3u5",
         )
         flute = InstrumentGroupFactory(name="Fløyte")
         clarinet = InstrumentGroupFactory(name="Klarinett")
@@ -325,47 +332,34 @@ class Command(BaseCommand):
         jacket_at_storage = JacketLocationFactory(
             name="Jakkeskapet",
         )
-        jacket_1 = JacketFactory(
+        jacket_at_catacombs = JacketLocationFactory(
+            name="Katakombene",
+        )
+        JacketFactory(
             number=1,
-            comment="",
+            comment="pensjonist låner 7.10",
             state=Jacket.State.NEEDS_REPAIR,
             location=jacket_at_storage,
+            owner=aspirant,
         )
         JacketFactory(
             number=2,
-            comment="Mangler 3 knapper og en lomme",
+            state_comment="Mangler 3 knapper og en lomme",
             state=Jacket.State.UNUSABLE,
-            location=jacket_at_storage,
+            location=jacket_at_catacombs,
         )
-        jacket_42 = JacketFactory(
+        JacketFactory(
             number=42,
             state=Jacket.State.GOOD,
             location=jacket_at_home,
+            owner=member,
         )
-        jacket_65 = JacketFactory(
+        JacketFactory(
             number=65,
             state=Jacket.State.NEEDS_REPAIR,
             location=jacket_at_storage,
+            owner=leader,
         )
-        JacketUserFactory(
-            user=leader,
-            jacket=jacket_65,
-        )
-        JacketUserFactory(
-            user=member,
-            jacket=jacket_42,
-        )
-        JacketUserFactory(
-            user=aspirant,
-            jacket=jacket_1,
-        )
-        JacketUserFactory(
-            user=retiree,
-            jacket=jacket_1,
-            is_owner=False,
-        )
-        JacketUserFactory()
-        JacketUserFactory()
 
         general = ForumFactory(title="General", description="For general stuff.")
         ForumFactory(

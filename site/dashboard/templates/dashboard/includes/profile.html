@@ -27,12 +27,10 @@
         {% endif %}
     </dd>
 
-    {% with user.get_jacket as jacket %}
-    {% if jacket %}
+    {% if user.jacket %}
         <dt>Jakkenummer</dt>
-        <dd>{{ jacket.number }}</dd>
+        <dd>{{ user.jacket.number }}</dd>
     {% endif %}
-    {% endwith %}
 
     <dt>Har lagertilgjenge</dt>
     <dd>{{ user.has_storage_access | yesno | capfirst }}</dd>
