@@ -236,7 +236,19 @@ class RepertoireUpdateTestSuite(TestMixin, TestCase):
         return create_formset_post_data(
             RepertoireEntryFormset,
             data=data,
+            total_forms=1,
         )
+    
+    def create_test_data(self):
+        test_data = self.create_post_data(
+            data=[
+                {"score": self.entry.score.pk, "order": self.entry.order,  "id": self.entry.pk}
+            ]
+        )
+        test_data["name"] = self.repertoire.name
+        test_data["order"] = self.repertoire.order
+        return test_data
+
 
     def get_url(self):
         return reverse("repertoire:RepertoireUpdate", args=[self.repertoire.slug])
@@ -244,11 +256,6 @@ class RepertoireUpdateTestSuite(TestMixin, TestCase):
     def setUp(self):
         self.repertoire = RepertoireFactory()
         self.entry = RepertoireEntryFactory(repertoire=self.repertoire)
-        self.test_data = self.create_post_data(
-            data=[{"score": self.entry.score.pk, "id": self.entry.pk}]
-        )
-        self.test_data["name"] = self.repertoire.name
-        self.test_data["order"] = self.repertoire.order
 
     def test_requires_login(self):
         self.assertLoginRequired(self.get_url())
@@ -262,13 +269,13 @@ class RepertoireUpdateTestSuite(TestMixin, TestCase):
     def test_success_redirect(self):
         user = SuperUserFactory()
         self.client.force_login(user)
-        response = self.client.post(self.get_url(), self.test_data)
+        response = self.client.post(self.get_url(), self.create_test_data())
         self.assertRedirects(response, reverse("repertoire:ActiveRepertoires"))
 
     def test_sets_modified_by_and_not_created_by(self):
         user = SuperUserFactory()
         self.client.force_login(user)
-        self.client.post(self.get_url(), self.test_data)
+        self.client.post(self.get_url(), self.create_test_data())
         repertoire = Repertoire.objects.last()
         self.assertEqual(repertoire.modified_by, user)
         self.assertNotEqual(repertoire.created_by, user)
