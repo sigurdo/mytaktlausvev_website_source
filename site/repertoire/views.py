@@ -3,18 +3,14 @@ from django.db.models import F
 from django.http import FileResponse
 from django.urls import reverse, reverse_lazy
 from django.utils.text import slugify
-from django.views.generic import DetailView, FormView, ListView
+from django.views.generic import CreateView, DetailView, FormView, ListView, UpdateView
 from django.views.generic.detail import SingleObjectMixin
 
 from common.breadcrumbs.breadcrumbs import Breadcrumb, BreadcrumbsMixin
-from common.forms.views import (
-    DeleteViewCustom,
-    InlineFormsetCreateView,
-    InlineFormsetUpdateView,
-)
+from common.forms.views import DeleteViewCustom
 from sheetmusic.models import Part
 
-from .forms import RepertoireEntryFormset, RepertoireForm, RepertoirePdfFormset
+from .forms import RepertoireForm, RepertoirePdfFormset
 from .models import Repertoire
 
 
@@ -70,12 +66,9 @@ class RepertoireDetail(LoginRequiredMixin, BreadcrumbsMixin, DetailView):
         return repertoire_breadcrumbs(repertoire=self.object)
 
 
-class RepertoireCreate(
-    PermissionRequiredMixin, BreadcrumbsMixin, InlineFormsetCreateView
-):
+class RepertoireCreate(PermissionRequiredMixin, BreadcrumbsMixin, CreateView):
     model = Repertoire
     form_class = RepertoireForm
-    formset_class = RepertoireEntryFormset
     template_name = "common/forms/form.html"
     success_url = reverse_lazy("repertoire:ActiveRepertoires")
     permission_required = "repertoire.add_repertoire"
@@ -84,12 +77,9 @@ class RepertoireCreate(
         return repertoire_breadcrumbs()
 
 
-class RepertoireUpdate(
-    PermissionRequiredMixin, BreadcrumbsMixin, InlineFormsetUpdateView
-):
+class RepertoireUpdate(PermissionRequiredMixin, BreadcrumbsMixin, UpdateView):
     model = Repertoire
     form_class = RepertoireForm
-    formset_class = RepertoireEntryFormset
     template_name = "common/forms/form.html"
     success_url = reverse_lazy("repertoire:ActiveRepertoires")
     permission_required = "repertoire.change_repertoire"
@@ -118,10 +108,10 @@ class RepertoirePdf(LoginRequiredMixin, BreadcrumbsMixin, SingleObjectMixin, For
     def get_initial(self):
         return [
             {
-                "score": entry.score,
-                "part": entry.score.find_user_part(self.request.user),
+                "score": score,
+                "part": score.find_user_part(self.request.user),
             }
-            for entry in self.object.entries.all()
+            for score in self.object.scores.all()
         ]
 
     def get_form(self, **kwargs):
