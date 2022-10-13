@@ -956,8 +956,7 @@ class PdfsUploadTestSuite(TestMixin, TestCase):
         self.test_data["files"] = [test_pdf() for _ in range(3)] + [image]
         response = self.upload_pdf()
         self.assertFormError(
-            response,
-            "form",
+            response.context["form"],
             "files",
             f"{image.name}: Filtype {image.content_type} ikkje lovleg",
         )
