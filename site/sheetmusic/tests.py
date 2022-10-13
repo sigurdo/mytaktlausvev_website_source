@@ -24,6 +24,25 @@ from .models import Part, Pdf, Score
 from .views import nav_tabs_score_edit, sheetmusic_breadcrumbs
 
 
+class ScoreManagerTestSuite(TestMixin, TestCase):
+    def test_has_favorite_parts(self):
+        """
+        Should set `user_has_favorite_parts` depending on whether
+        `user` has favorite parts for a score.
+        """
+        user = UserFactory()
+        favorited_part = FavoritePartFactory(user=user).part
+        not_favorited_part = PartFactory()
+
+        scores = Score.objects.has_favorite_parts(user)
+        self.assertTrue(
+            scores.get(pk=favorited_part.pdf.score.pk).user_has_favorite_parts
+        )
+        self.assertFalse(
+            scores.get(pk=not_favorited_part.pdf.score.pk).user_has_favorite_parts
+        )
+
+
 class ScoreTestSuite(TestMixin, TestCase):
     def setUp(self):
         self.instrument_type = InstrumentTypeFactory()

@@ -12,11 +12,14 @@ from django.db.models import (
     BooleanField,
     CharField,
     DateTimeField,
+    Exists,
     F,
     FileField,
     ForeignKey,
     IntegerField,
+    Manager,
     Model,
+    OuterRef,
     TextField,
     UniqueConstraint,
     URLField,
@@ -34,9 +37,19 @@ from instruments.models import InstrumentType
 from web.settings import INSTRUMENTS_YAML_PATH, TESSDATA_DIR
 
 
+class ScoreManager(Manager):
+    def has_favorite_parts(self, user):
+        return super().annotate(
+            user_has_favorite_parts=Exists(
+                FavoritePart.objects.filter(part__pdf__score=OuterRef("pk"), user=user)
+            )
+        )
+
+
 class Score(ArticleMixin):
     """Model representing a score"""
 
+    objects = ScoreManager()
     # Override content to get a more suitable verbose_name
     content = TextField(verbose_name="beskriving", blank=True)
     slug = AutoSlugField(

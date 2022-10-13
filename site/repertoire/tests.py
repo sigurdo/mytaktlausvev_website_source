@@ -96,8 +96,7 @@ class RepertoireFormTestSuite(TestMixin, TestCase):
         form_invalid = RepertoireForm(data)
         self.assertFalse(form_invalid.is_valid())
 
-        score = ScoreFactory()
-        data.update(scores=[score])
+        data.update(scores=[ScoreFactory()])
         form_valid = RepertoireForm(data)
         self.assertTrue(form_valid.is_valid())
 

@@ -1,5 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.db.models import F
+from django.db.models import F, Prefetch
 from django.http import FileResponse
 from django.urls import reverse, reverse_lazy
 from django.utils.text import slugify
@@ -8,7 +8,7 @@ from django.views.generic.detail import SingleObjectMixin
 
 from common.breadcrumbs.breadcrumbs import Breadcrumb, BreadcrumbsMixin
 from common.forms.views import DeleteViewCustom
-from sheetmusic.models import Part
+from sheetmusic.models import Part, Score
 
 from .forms import RepertoireForm, RepertoirePdfFormset
 from .models import Repertoire
@@ -45,6 +45,9 @@ class OldRepertoires(LoginRequiredMixin, BreadcrumbsMixin, ListView):
     template_name = "repertoire/old_repertoires.html"
     ordering = [F("active_until").desc(nulls_first=True)]
 
+    def get_queryset(self):
+        return super().get_queryset().select_related("created_by")
+
     def get_breadcrumbs(self):
         return repertoire_breadcrumbs()
 
@@ -55,12 +58,30 @@ class ActiveRepertoires(LoginRequiredMixin, ListView):
     template_name = "repertoire/active_repertoires.html"
 
     def get_queryset(self):
-        return Repertoire.objects.active()
+        return Repertoire.objects.active().prefetch_related(
+            Prefetch(
+                "scores",
+                queryset=Score.objects.has_favorite_parts(self.request.user),
+            )
+        )
 
 
 class RepertoireDetail(LoginRequiredMixin, BreadcrumbsMixin, DetailView):
     model = Repertoire
     context_object_name = "repertoire"
+
+    def get_queryset(self):
+        return (
+            super()
+            .get_queryset()
+            .select_related("created_by", "modified_by")
+            .prefetch_related(
+                Prefetch(
+                    "scores",
+                    queryset=Score.objects.has_favorite_parts(self.request.user),
+                )
+            )
+        )
 
     def get_breadcrumbs(self):
         return repertoire_breadcrumbs(repertoire=self.object)
