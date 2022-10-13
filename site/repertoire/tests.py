@@ -238,17 +238,20 @@ class RepertoireUpdateTestSuite(TestMixin, TestCase):
             data=data,
             total_forms=1,
         )
-    
+
     def create_test_data(self):
         test_data = self.create_post_data(
             data=[
-                {"score": self.entry.score.pk, "order": self.entry.order,  "id": self.entry.pk}
+                {
+                    "score": self.entry.score.pk,
+                    "order": self.entry.order,
+                    "id": self.entry.pk,
+                }
             ]
         )
         test_data["name"] = self.repertoire.name
         test_data["order"] = self.repertoire.order
         return test_data
-
 
     def get_url(self):
         return reverse("repertoire:RepertoireUpdate", args=[self.repertoire.slug])
