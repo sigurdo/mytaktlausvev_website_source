@@ -50,6 +50,7 @@ class EventForm(ModelForm):
         "content",
         Fieldset(
             "Repertoar",
+            "repertoire_include_active",
             "repertoires",
             "repertoire_extra_scores",
         ),
@@ -63,6 +64,7 @@ class EventForm(ModelForm):
             "start_time",
             "end_time",
             "content",
+            "repertoire_include_active",
             "repertoires",
             "repertoire_extra_scores",
         ]

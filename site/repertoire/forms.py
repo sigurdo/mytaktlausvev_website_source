@@ -8,19 +8,19 @@ from django.forms import (
     IntegerField,
     ModelChoiceField,
     ModelForm,
+    NumberInput,
     Select,
     formset_factory,
     inlineformset_factory,
-    NumberInput,
 )
 from django.urls import reverse
 from PyPDF2 import PdfFileReader, PdfFileWriter
 
 from common.forms.layouts import DynamicFormsetButton
+from common.forms.widgets import AutocompleteSelect, AutocompleteSelectMultiple
 from sheetmusic.models import Part, Score
 
 from .models import Repertoire, RepertoireEntry
-from common.forms.widgets import AutocompleteSelectMultiple, AutocompleteSelect
 
 
 class RepertoireForm(ModelForm):
@@ -47,7 +47,8 @@ class RepertoireAndScoresForm(ModelForm):
         model = Repertoire
         fields = ["name", "order", "active_until", "scores"]
         widgets = {
-            "active_until": DateInput(attrs={"type": "date"}), "scores": AutocompleteSelectMultiple
+            "active_until": DateInput(attrs={"type": "date"}),
+            "scores": AutocompleteSelectMultiple,
         }
 
 
@@ -58,9 +59,7 @@ class RepertoireEntryForm(ModelForm):
         model = RepertoireEntry
         fields = ["score", "order"]
         help_texts = {"order": ""}
-        widgets = {
-            "score": AutocompleteSelect, "order": NumberInput(attrs={"size": 4})
-        }
+        widgets = {"score": AutocompleteSelect, "order": NumberInput(attrs={"size": 4})}
 
 
 class RepertoireEntryFormsetHelper(FormHelper):

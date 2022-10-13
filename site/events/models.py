@@ -5,6 +5,7 @@ from django.conf import settings
 from django.db.models import (
     CASCADE,
     PROTECT,
+    BooleanField,
     CharField,
     DateTimeField,
     FloatField,
@@ -61,18 +62,23 @@ class Event(ArticleMixin):
     category = ForeignKey(
         EventCategory,
         on_delete=PROTECT,
-        verbose_name="Kategori",
+        verbose_name="kategori",
         related_name="events",
+    )
+    repertoire_include_active = BooleanField(
+        verbose_name="inkluder det vanlege repertoaret",
+        default=False,
+        help_text='Gjer at "det vanlege" repertoaret vert knytt til hendinga. Det betyr alle repertoar som er aktive på datoen hendinga skjer.',
     )
     repertoires = ManyToManyField(
         Repertoire,
-        verbose_name="Repertoar",
+        verbose_name="repertoar",
         blank=True,
         help_text="Repertoar knytt til hendinga.",
     )
     repertoire_extra_scores = ManyToManyField(
         Score,
-        verbose_name="Ekstra notar",
+        verbose_name="ekstra notar",
         blank=True,
         help_text="Ekstra notar knytt til hendinga.",
     )

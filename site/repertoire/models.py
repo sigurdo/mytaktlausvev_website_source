@@ -8,9 +8,9 @@ from django.db.models import (
     FloatField,
     ForeignKey,
     Manager,
+    ManyToManyField,
     Model,
     UniqueConstraint,
-    ManyToManyField,
 )
 from django.db.models.query_utils import Q
 from django.urls import reverse
@@ -23,9 +23,12 @@ from sheetmusic.models import Part, Score
 
 
 class RepertoireManager(Manager):
-    def active(self):
+    def active(self, date=None):
+        if date is None:
+            date = now().date()
         return super().filter(
-            Q(active_until__isnull=True) | Q(active_until__gte=now().date())
+            Q(created__date__lte=date)
+            & (Q(active_until__isnull=True) | Q(active_until__gte=date))
         )
 
 

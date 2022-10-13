@@ -7,15 +7,15 @@ from django.views.generic import DetailView, FormView, ListView
 from django.views.generic.detail import SingleObjectMixin
 
 from common.breadcrumbs.breadcrumbs import Breadcrumb, BreadcrumbsMixin
-from common.forms.views import (
-    DeleteViewCustom,
-    InlineFormsetCreateView,
-    InlineFormsetUpdateView,
-    CreateView,
-)
+from common.forms.views import CreateView, DeleteViewCustom, InlineFormsetUpdateView
 from sheetmusic.models import Part
 
-from .forms import RepertoireEntryFormset, RepertoireForm, RepertoireAndScoresForm, RepertoirePdfFormset
+from .forms import (
+    RepertoireAndScoresForm,
+    RepertoireEntryFormset,
+    RepertoireForm,
+    RepertoirePdfFormset,
+)
 from .models import Repertoire
 
 
@@ -60,7 +60,15 @@ class ActiveRepertoires(LoginRequiredMixin, ListView):
     template_name = "repertoire/active_repertoires.html"
 
     def get_queryset(self):
-        return Repertoire.objects.active()
+        queryset_kwargs = {}
+        if self.kwargs.get("date"):
+            queryset_kwargs["date"] = self.kwargs.get("date")
+        return Repertoire.objects.active(**queryset_kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["date"] = self.kwargs.get("date")
+        return context
 
 
 class RepertoireDetail(LoginRequiredMixin, BreadcrumbsMixin, DetailView):
@@ -71,9 +79,7 @@ class RepertoireDetail(LoginRequiredMixin, BreadcrumbsMixin, DetailView):
         return repertoire_breadcrumbs(repertoire=self.object)
 
 
-class RepertoireCreate(
-    PermissionRequiredMixin, BreadcrumbsMixin, CreateView
-):
+class RepertoireCreate(PermissionRequiredMixin, BreadcrumbsMixin, CreateView):
     model = Repertoire
     form_class = RepertoireAndScoresForm
     template_name = "common/forms/form.html"
