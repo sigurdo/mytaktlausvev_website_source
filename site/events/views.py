@@ -2,7 +2,8 @@ from datetime import timedelta
 
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
-from django.db.models.functions.datetime import TruncMonth
+from django.db.models import Exists, OuterRef
+from django.db.models.functions import TruncMonth
 from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
@@ -96,7 +97,18 @@ class EventList(LoginRequiredMixin, BreadcrumbsMixin, ListView):
             case _:
                 queryset = Event.objects.upcoming()
 
-        return queryset.annotate(start_month=TruncMonth("start_time"))
+        return (
+            queryset.annotate(
+                start_month=TruncMonth("start_time"),
+                user_is_attending=Exists(
+                    EventAttendance.objects.filter(
+                        event=OuterRef("pk"), person=self.request.user
+                    )
+                ),
+            )
+            .select_related("category")
+            .prefetch_related("keyinfo_entries")
+        )
 
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
@@ -251,7 +263,13 @@ class EventAttendanceList(PermissionRequiredMixin, BreadcrumbsMixin, ListView):
         return self.event
 
     def get_queryset(self):
-        return self.get_event().attendances.order_by("-created")
+        return (
+            self.get_event()
+            .attendances.select_related(
+                "person__jacket", "person__instrument_type__group"
+            )
+            .order_by("-created")
+        )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

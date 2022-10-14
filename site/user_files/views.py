@@ -20,6 +20,9 @@ class FileList(LoginRequiredMixin, ListView):
     model = File
     context_object_name = "user_files"
 
+    def get_queryset(self):
+        return super().get_queryset().select_related("created_by")
+
 
 class FileServe(UserPassesTestMixin, ServeMediaFiles):
     def setup(self, request, *args, **kwargs):

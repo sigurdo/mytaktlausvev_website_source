@@ -188,7 +188,7 @@ class PartsUpdateIndex(PermissionOrCreatedMixin, BreadcrumbsMixin, ListView):
         return super().setup(request, *args, **kwargs)
 
     def get_queryset(self):
-        return Pdf.objects.filter(score=self.score)
+        return Pdf.objects.filter(score=self.score).prefetch_related("parts")
 
 
 class PartsUpdate(

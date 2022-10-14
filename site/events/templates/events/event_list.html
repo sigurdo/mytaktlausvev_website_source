@@ -62,7 +62,7 @@
             <ol class="list-unstyled">
                 {% for event in group.list %}
                 <li>
-                    {% include "events/includes/event_list_card.html" with event=event user=user csrf_token=csrf_token only %}
+                    {% include "events/includes/event_list_card.html" with event=event csrf_token=csrf_token only %}
                 </li>
                 {% endfor %}
             </ol>
