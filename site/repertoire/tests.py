@@ -35,6 +35,16 @@ class RepertoireManagerTestSuite(TestMixin, TestCase):
         RepertoireFactory(active_until=(now() - timedelta(days=14)).date())
         result = Repertoire.objects.active()
         self.assertEqual(len(result), 0)
+    
+    def test_active_on_date_does_not_include_future_created(self):
+        RepertoireFactory()
+        result = Repertoire.objects.active(date=(now() - timedelta(days=1)).date())
+        self.assertEqual(len(result), 0)
+    
+    def test_active_on_date_does_not_include_past_active(self):
+        RepertoireFactory(active_until=(now() - timedelta(days=1)).date())
+        result = Repertoire.objects.active(date=now().date())
+        self.assertEqual(len(result), 0)
 
 
 class RepertoireTestSuite(TestMixin, TestCase):
