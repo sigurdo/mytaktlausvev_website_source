@@ -38,7 +38,7 @@ from web.settings import INSTRUMENTS_YAML_PATH, TESSDATA_DIR
 
 
 class ScoreManager(Manager):
-    def annotate_has_favorite_parts(self, user):
+    def annotate_user_has_favorite_parts(self, user):
         return super().annotate(
             user_has_favorite_parts=Exists(
                 FavoritePart.objects.filter(part__pdf__score=OuterRef("pk"), user=user)

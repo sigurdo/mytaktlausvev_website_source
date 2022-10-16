@@ -61,7 +61,9 @@ class ActiveRepertoires(LoginRequiredMixin, ListView):
         return Repertoire.objects.active().prefetch_related(
             Prefetch(
                 "scores",
-                queryset=Score.objects.annotate_has_favorite_parts(self.request.user),
+                queryset=Score.objects.annotate_user_has_favorite_parts(
+                    self.request.user
+                ),
             )
         )
 
@@ -78,7 +80,7 @@ class RepertoireDetail(LoginRequiredMixin, BreadcrumbsMixin, DetailView):
             .prefetch_related(
                 Prefetch(
                     "scores",
-                    queryset=Score.objects.annotate_has_favorite_parts(
+                    queryset=Score.objects.annotate_user_has_favorite_parts(
                         self.request.user
                     ),
                 )
