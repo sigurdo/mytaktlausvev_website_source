@@ -88,19 +88,6 @@ class RepertoireTestSuite(TestMixin, TestCase):
         self.assertNotEqual(self.repertoire.slug, other.slug)
 
 
-class RepertoireFormTestSuite(TestMixin, TestCase):
-    def test_validation_error_if_no_scores(self):
-        """The form should not validate if there are no inputted scores."""
-        data = {"name": "Free World Fantasy", "order": 0}
-
-        form_invalid = RepertoireForm(data)
-        self.assertFalse(form_invalid.is_valid())
-
-        data.update(scores=[ScoreFactory()])
-        form_valid = RepertoireForm(data)
-        self.assertTrue(form_valid.is_valid())
-
-
 class RepertoireBreadcrumbsTestSuite(TestMixin, TestCase):
     def test_base(self):
         breadcrumbs = repertoire_breadcrumbs()
