@@ -34,7 +34,7 @@ class ScoreManagerTestSuite(TestMixin, TestCase):
         favorited_part = FavoritePartFactory(user=user).part
         not_favorited_part = PartFactory()
 
-        scores = Score.objects.has_favorite_parts(user)
+        scores = Score.objects.annotate_has_favorite_parts(user)
         self.assertTrue(
             scores.get(pk=favorited_part.pdf.score.pk).user_has_favorite_parts
         )

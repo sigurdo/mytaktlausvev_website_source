@@ -396,7 +396,7 @@ class ScoreList(LoginRequiredMixin, ListView):
     context_object_name = "scores"
 
     def get_queryset(self):
-        return Score.objects.has_favorite_parts(self.request.user)
+        return Score.objects.annotate_has_favorite_parts(self.request.user)
 
 
 class PartPdf(LoginRequiredMixin, DetailView):
