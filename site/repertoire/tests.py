@@ -13,7 +13,7 @@ from common.test_utils import create_formset_post_data
 from sheetmusic.factories import FavoritePartFactory, ScoreFactory
 
 from .factories import RepertoireFactory
-from .forms import RepertoireForm, RepertoirePdfFormset
+from .forms import RepertoirePdfFormset
 from .models import Repertoire
 from .views import repertoire_breadcrumbs
 
