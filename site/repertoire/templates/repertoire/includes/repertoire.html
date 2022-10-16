@@ -7,20 +7,18 @@
         </tr>
     </thead>
     <tbody>
-    {% for entry in repertoire.entries.all %}
+    {% for score in repertoire.scores.all %}
         <tr>
             <td>
-                {{ entry.score }}
+                {{ score }}
             </td>
             <td>
-                {% load has_favorite_part %}
-                {% has_favorite_part user entry.score as has_favorite_part %}
-                {% if has_favorite_part %}
-                    <a href="{% url "sheetmusic:FavoritePartPdf" entry.score.slug %}"> Favorittstemme </a>
+                {% if score.user_has_favorite_parts %}
+                    <a href="{% url "sheetmusic:FavoritePartPdf" score.slug %}"> Favorittstemme </a>
                 {% endif %}
             </td>
             <td>
-                <a href="{% url "sheetmusic:ScoreView" entry.score.slug %}"> Stemmeoversikt </a>
+                <a href="{% url "sheetmusic:ScoreView" score.slug %}"> Stemmeoversikt </a>
             </td>
         </tr>
     {% endfor %}
