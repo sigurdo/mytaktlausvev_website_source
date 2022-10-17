@@ -1,10 +1,10 @@
 <h2 class="fs-3"> Repertoar </h2>
 <ul>
     {% if event.include_active_repertoires %}
-        <li><a href="{% url "repertoire:ActiveRepertoires" event.start_time.date %}">Det vanlege</a></li>
+        <li><a href="{% url "repertoire:ActiveRepertoires" event.start_time.date %}" class="fw-bold">Det vanlege</a></li>
     {% endif %}
     {% for repertoire in event.repertoires.all %}
-        <li><a href="{{repertoire.get_absolute_url}}">{{repertoire}}</a></li>
+        <li><a href="{{repertoire.get_absolute_url}}" class="fw-bold">{{repertoire}}</a></li>
     {% endfor %}
     {% for score in event.extra_scores.all %}
         <li><a href="{{score.get_absolute_url}}">{{score}}</a></li>
