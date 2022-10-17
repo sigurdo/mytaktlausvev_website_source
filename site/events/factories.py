@@ -1,4 +1,4 @@
-from factory import SubFactory, sequence, post_generation
+from factory import SubFactory, post_generation, sequence
 from factory.django import DjangoModelFactory
 
 from accounts.factories import UserFactory
@@ -29,7 +29,7 @@ class EventFactory(DjangoModelFactory):
             return
 
         self.repertoires.set(repertoire_list)
-    
+
     @post_generation
     def repertoire_extra_scores(self, create, repertoire_extra_scores_list):
         if not create or not repertoire_extra_scores_list:
