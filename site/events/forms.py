@@ -10,7 +10,11 @@ from django.forms import (
 from django.utils.timezone import now
 
 from common.forms.layouts import DynamicFormsetButton, FormsetLayoutObject
-from common.forms.widgets import AutocompleteSelect, SplitDateTimeWidgetCustom
+from common.forms.widgets import (
+    AutocompleteSelect,
+    AutocompleteSelectMultiple,
+    SplitDateTimeWidgetCustom,
+)
 
 from .models import Event, EventAttendance, EventKeyinfoEntry
 
@@ -46,6 +50,12 @@ class EventForm(ModelForm):
             FormsetLayoutObject(),
         ),
         "content",
+        Fieldset(
+            "Repertoar",
+            "include_active_repertoires",
+            "repertoires",
+            "extra_scores",
+        ),
     )
 
     class Meta:
@@ -58,8 +68,15 @@ class EventForm(ModelForm):
             "content",
             "location",
             "location_map_link",
+            "include_active_repertoires",
+            "repertoires",
+            "extra_scores",
         ]
-        widgets = {"category": AutocompleteSelect}
+        widgets = {
+            "category": AutocompleteSelect,
+            "repertoires": AutocompleteSelectMultiple,
+            "extra_scores": AutocompleteSelectMultiple,
+        }
 
 
 class EventAttendanceForm(ModelForm):

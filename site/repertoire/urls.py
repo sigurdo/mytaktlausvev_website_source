@@ -14,6 +14,7 @@ app_name = "repertoire"
 
 urlpatterns = [
     path("", ActiveRepertoires.as_view(), name="ActiveRepertoires"),
+    path("dato/<str:date>/", ActiveRepertoires.as_view(), name="ActiveRepertoires"),
     path("gamle/", OldRepertoires.as_view(), name="OldRepertoires"),
     path("nytt/", RepertoireCreate.as_view(), name="RepertoireCreate"),
     path("<slug:slug>/", RepertoireDetail.as_view(), name="RepertoireDetail"),

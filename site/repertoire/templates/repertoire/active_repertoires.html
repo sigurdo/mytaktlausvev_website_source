@@ -1,11 +1,17 @@
 {% extends "base.html" %}
 
 {% block title_page %}
-    Repertoar
+    {% load utils %}
+    {% with view.kwargs.date as date %}
+        Repertoar{% if date %} {{date | parse_iso8601 | date:"j. F Y"}}{% endif %}
+    {% endwith %}
 {% endblock title_page %}
 
 {% block title_content %}
-    Repertoar
+    {% load utils %}
+    {% with view.kwargs.date as date %}
+        Repertoar{% if date %} <time datetime="{{date}}">{{date | parse_iso8601 | date:"j. F Y"}}</time>{% endif %}
+    {% endwith %}
 {% endblock title_content %}
 
 {% block header %}

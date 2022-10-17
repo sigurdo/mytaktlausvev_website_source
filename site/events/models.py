@@ -5,12 +5,14 @@ from django.conf import settings
 from django.db.models import (
     CASCADE,
     PROTECT,
+    BooleanField,
     CharField,
     CheckConstraint,
     DateTimeField,
     FloatField,
     ForeignKey,
     Manager,
+    ManyToManyField,
     Model,
     TextChoices,
     UniqueConstraint,
@@ -21,6 +23,8 @@ from django.urls import reverse
 from django.utils.timezone import localtime, make_aware, now
 
 from common.models import ArticleMixin
+from repertoire.models import Repertoire
+from sheetmusic.models import Score
 
 
 class EventCategory(Model):
@@ -60,7 +64,7 @@ class Event(ArticleMixin):
     category = ForeignKey(
         EventCategory,
         on_delete=PROTECT,
-        verbose_name="Kategori",
+        verbose_name="kategori",
         related_name="events",
     )
     location = CharField(verbose_name="stad", max_length=255, blank=True)
@@ -68,6 +72,23 @@ class Event(ArticleMixin):
         verbose_name="kartlenkje for stad",
         blank=True,
         help_text="Lenkje til kart over staden hos ei kartteneste som OpenStreetMap, Google Maps eller MazeMap.",
+    )
+    include_active_repertoires = BooleanField(
+        verbose_name="inkluder det vanlege repertoaret",
+        default=False,
+        help_text='Gjer at "det vanlege" repertoaret vert knytt til hendinga. Det betyr alle repertoar som er aktive på datoen hendinga skjer.',
+    )
+    repertoires = ManyToManyField(
+        Repertoire,
+        verbose_name="repertoar",
+        blank=True,
+        help_text="Repertoar knytt til hendinga.",
+    )
+    extra_scores = ManyToManyField(
+        Score,
+        verbose_name="ekstra notar",
+        blank=True,
+        help_text="Ekstra notar knytt til hendinga.",
     )
 
     def attending(self):
