@@ -58,10 +58,7 @@ class ActiveRepertoires(LoginRequiredMixin, ListView):
     template_name = "repertoire/active_repertoires.html"
 
     def get_queryset(self):
-        active_kwargs = (
-            {"date": self.kwargs.get("date")} if self.kwargs.get("date") else {}
-        )
-        return Repertoire.objects.active(**active_kwargs).prefetch_related(
+        return Repertoire.objects.active(date=self.kwargs.get("date")).prefetch_related(
             Prefetch(
                 "scores",
                 queryset=Score.objects.annotate_user_has_favorite_parts(
