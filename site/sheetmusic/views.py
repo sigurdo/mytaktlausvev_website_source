@@ -188,7 +188,7 @@ class PartsUpdateIndex(PermissionOrCreatedMixin, BreadcrumbsMixin, ListView):
         return super().setup(request, *args, **kwargs)
 
     def get_queryset(self):
-        return Pdf.objects.filter(score=self.score)
+        return Pdf.objects.filter(score=self.score).prefetch_related("parts")
 
 
 class PartsUpdate(
@@ -394,6 +394,9 @@ class PdfsUpload(PermissionOrCreatedMixin, BreadcrumbsMixin, FormView):
 class ScoreList(LoginRequiredMixin, ListView):
     model = Score
     context_object_name = "scores"
+
+    def get_queryset(self):
+        return Score.objects.annotate_user_has_favorite_parts(self.request.user)
 
 
 class PartPdf(LoginRequiredMixin, DetailView):

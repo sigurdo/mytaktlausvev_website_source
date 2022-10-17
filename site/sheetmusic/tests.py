@@ -24,6 +24,25 @@ from .models import Part, Pdf, Score
 from .views import nav_tabs_score_edit, sheetmusic_breadcrumbs
 
 
+class ScoreManagerTestSuite(TestMixin, TestCase):
+    def test_has_favorite_parts(self):
+        """
+        Should set `user_has_favorite_parts` depending on whether
+        `user` has favorite parts for a score.
+        """
+        user = UserFactory()
+        favorited_part = FavoritePartFactory(user=user).part
+        not_favorited_part = PartFactory()
+
+        scores = Score.objects.annotate_user_has_favorite_parts(user)
+        self.assertTrue(
+            scores.get(pk=favorited_part.pdf.score.pk).user_has_favorite_parts
+        )
+        self.assertFalse(
+            scores.get(pk=not_favorited_part.pdf.score.pk).user_has_favorite_parts
+        )
+
+
 class ScoreTestSuite(TestMixin, TestCase):
     def setUp(self):
         self.instrument_type = InstrumentTypeFactory()
@@ -956,8 +975,7 @@ class PdfsUploadTestSuite(TestMixin, TestCase):
         self.test_data["files"] = [test_pdf() for _ in range(3)] + [image]
         response = self.upload_pdf()
         self.assertFormError(
-            response,
-            "form",
+            response.context["form"],
             "files",
             f"{image.name}: Filtype {image.content_type} ikkje lovleg",
         )

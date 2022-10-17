@@ -23,6 +23,9 @@ class MinutesList(LoginRequiredMixin, ListView):
     context_object_name = "minutes_list"
     paginate_by = 50
 
+    def get_queryset(self):
+        return super().get_queryset().select_related("created_by")
+
 
 class MinutesDetail(LoginRequiredMixin, BreadcrumbsMixin, DetailView):
     model = Minutes

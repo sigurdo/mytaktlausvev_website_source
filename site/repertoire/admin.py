@@ -1,21 +1,15 @@
 """Admin settings for the 'repertoire'-app"""
 
-from django.contrib.admin import ModelAdmin, TabularInline, site
+from django.contrib.admin import ModelAdmin, site
 
-from .models import Repertoire, RepertoireEntry
-
-
-class RepertoireEntryInline(TabularInline):
-    model = RepertoireEntry
-    extra = 1
+from .models import Repertoire
 
 
 class RepertoireAdmin(ModelAdmin):
     list_display = ["name", "active_until", "order"]
     list_editable = ["order"]
     prepopulated_fields = {"slug": ["name"]}
-    inlines = [RepertoireEntryInline]
+    readonly_fields = ("created", "created_by", "modified", "modified_by")
 
 
 site.register(Repertoire, RepertoireAdmin)
-site.register(RepertoireEntry)

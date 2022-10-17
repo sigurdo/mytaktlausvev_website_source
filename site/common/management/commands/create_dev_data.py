@@ -38,14 +38,14 @@ from pictures.factories import GalleryFactory, ImageFactory
 from pictures.models import Image
 from polls.factories import ChoiceFactory, PollFactory, VoteFactory
 from quotes.factories import QuoteFactory
-from repertoire.factories import RepertoireEntryFactory, RepertoireFactory
+from repertoire.factories import RepertoireFactory
 from sheetmusic.factories import (
     FavoritePartFactory,
     PartFactory,
     PdfFactory,
     ScoreFactory,
 )
-from uniforms.factories import JacketFactory, JacketLocationFactory, JacketUserFactory
+from uniforms.factories import JacketFactory, JacketLocationFactory
 from uniforms.models import Jacket
 
 
@@ -332,47 +332,34 @@ class Command(BaseCommand):
         jacket_at_storage = JacketLocationFactory(
             name="Jakkeskapet",
         )
-        jacket_1 = JacketFactory(
+        jacket_at_catacombs = JacketLocationFactory(
+            name="Katakombene",
+        )
+        JacketFactory(
             number=1,
-            comment="",
+            comment="pensjonist låner 7.10",
             state=Jacket.State.NEEDS_REPAIR,
             location=jacket_at_storage,
+            owner=aspirant,
         )
         JacketFactory(
             number=2,
-            comment="Mangler 3 knapper og en lomme",
+            state_comment="Mangler 3 knapper og en lomme",
             state=Jacket.State.UNUSABLE,
-            location=jacket_at_storage,
+            location=jacket_at_catacombs,
         )
-        jacket_42 = JacketFactory(
+        JacketFactory(
             number=42,
             state=Jacket.State.GOOD,
             location=jacket_at_home,
+            owner=member,
         )
-        jacket_65 = JacketFactory(
+        JacketFactory(
             number=65,
             state=Jacket.State.NEEDS_REPAIR,
             location=jacket_at_storage,
+            owner=leader,
         )
-        JacketUserFactory(
-            user=leader,
-            jacket=jacket_65,
-        )
-        JacketUserFactory(
-            user=member,
-            jacket=jacket_42,
-        )
-        JacketUserFactory(
-            user=aspirant,
-            jacket=jacket_1,
-        )
-        JacketUserFactory(
-            user=retiree,
-            jacket=jacket_1,
-            is_owner=False,
-        )
-        JacketUserFactory()
-        JacketUserFactory()
 
         general = ForumFactory(title="General", description="For general stuff.")
         ForumFactory(
@@ -777,19 +764,19 @@ class Command(BaseCommand):
             user=leader,
             part=birthday_song_part,
         )
-        old_concert_repertoire = RepertoireFactory(
+        RepertoireFactory(
             name="Bursdagskonsert fra og med, men egentlig uten vals",
             active_until=make_aware(datetime.now() - timedelta(days=14)),
+            scores=[birthday_song, pause_waltz],
         )
-        RepertoireEntryFactory(repertoire=old_concert_repertoire, score=birthday_song)
-        RepertoireEntryFactory(repertoire=old_concert_repertoire, score=pause_waltz)
-        march_repertoire = RepertoireFactory(name=f"Marsjhefte {datetime.now().year}")
-        RepertoireEntryFactory(repertoire=march_repertoire, score=birthday_song)
-        concert_repertoire = RepertoireFactory(
+        RepertoireFactory(
+            name=f"Marsjhefte {datetime.now().year}", scores=[birthday_song]
+        )
+        RepertoireFactory(
             name="Konsert",
             active_until=make_aware(datetime.now() + timedelta(days=14)),
+            scores=[pause_waltz],
         )
-        RepertoireEntryFactory(repertoire=concert_repertoire, score=pause_waltz)
         EmbeddableTextFactory(
             name="Framgangsmåte for buttonpdfgenerator",
             content="""

@@ -1,6 +1,14 @@
-from django.contrib.admin import site
+from django.contrib.admin import ModelAdmin, site
 
 from .models import Jacket, JacketLocation
 
-site.register(Jacket)
+
+class JacketAdmin(ModelAdmin):
+
+    list_display = ("number", "owner", "modified_by", "modified")
+
+    readonly_fields = ("created", "created_by", "modified", "modified_by")
+
+
+site.register(Jacket, JacketAdmin)
 site.register(JacketLocation)

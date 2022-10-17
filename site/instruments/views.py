@@ -12,6 +12,9 @@ class InstrumentList(LoginRequiredMixin, ListView):
     model = Instrument
     context_object_name = "instruments"
 
+    def get_queryset(self):
+        return super().get_queryset().prefetch_related("type", "location", "user")
+
 
 class InstrumentsUpdate(
     PermissionRequiredMixin,

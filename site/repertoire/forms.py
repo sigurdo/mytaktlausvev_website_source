@@ -10,57 +10,29 @@ from django.forms import (
     ModelForm,
     Select,
     formset_factory,
-    inlineformset_factory,
 )
 from django.urls import reverse
 from PyPDF2 import PdfFileReader, PdfFileWriter
 
-from common.forms.layouts import DynamicFormsetButton
+from common.forms.widgets import AutocompleteSelectMultiple
 from sheetmusic.models import Part, Score
 
-from .models import Repertoire, RepertoireEntry
+from .models import Repertoire
 
 
 class RepertoireForm(ModelForm):
     """Form for creating and editing repertoires."""
 
     helper = FormHelper()
-    helper.form_tag = False
+    helper.add_input(Submit("submit", "Lagre repertoar"))
 
     class Meta:
         model = Repertoire
-        fields = ["name", "order", "active_until"]
+        fields = ["name", "order", "active_until", "scores"]
         widgets = {
             "active_until": DateInput(attrs={"type": "date"}),
+            "scores": AutocompleteSelectMultiple,
         }
-
-
-class RepertoireEntryForm(ModelForm):
-    """Form for creating and editing a repertoire entry."""
-
-    class Meta:
-        model = RepertoireEntry
-        fields = ["score"]
-
-
-class RepertoireEntryFormsetHelper(FormHelper):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.render_required_fields = True
-        self.add_input(DynamicFormsetButton("Legg til endå ein oppføring"))
-        self.add_input(Submit("submit", "Lagre"))
-        self.form_tag = False
-        self.template = "common/forms/table_inline_formset_shade_delete.html"
-
-
-RepertoireEntryFormset = inlineformset_factory(
-    Repertoire,
-    RepertoireEntry,
-    form=RepertoireEntryForm,
-    extra=1,
-)
-
-RepertoireEntryFormset.helper = RepertoireEntryFormsetHelper()
 
 
 class PartChoiceWidget(Select):

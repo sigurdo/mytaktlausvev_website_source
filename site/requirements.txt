@@ -24,4 +24,6 @@ python-magic~=0.4.24
 django-pgtrigger~=2.4
 autoflake==1.4
 django-watson~=1.6.2
+django-debug-toolbar~=3.7
+django-debug-toolbar-template-profiler~=2.1
 git+https://github.com/Shybert/django-userforeignkey@cuztomize-nullability#egg=django-userforeignkey
