@@ -113,6 +113,7 @@ class PollVoteList(LoginRequiredMixin, BreadcrumbsMixin, PollMixin, ListView):
         return (
             super()
             .get_queryset()
+            .select_related("choice", "user")
             .filter(choice__poll=self.get_poll())
             .order_by("-created")
         )

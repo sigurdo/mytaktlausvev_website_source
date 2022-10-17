@@ -17,7 +17,9 @@ def get_navbar_items(user, request_path):
     - `sub_items_annotated` - a list of subitems, annotated with:
         - `is_active`
     """
-    queryset = NavbarItem.objects.filter(parent=None).all()
+    queryset = NavbarItem.objects.filter(parent=None).prefetch_related(
+        "permission_requirements", "children__permission_requirements"
+    )
     items = list(filter(lambda item: item.permitted(user), queryset))
     for item in items:
         item.is_active = item.active(request_path)
