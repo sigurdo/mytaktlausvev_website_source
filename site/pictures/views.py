@@ -42,7 +42,13 @@ class GalleryList(LoginRequiredMixin, ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        return super().get_queryset().exclude(images__isnull=True).order_by("-date")
+        return (
+            super()
+            .get_queryset()
+            .prefetch_related("images")
+            .exclude(images__isnull=True)
+            .order_by("-date")
+        )
 
 
 class NewestImagesList(LoginRequiredMixin, BreadcrumbsMixin, ListView):
@@ -51,7 +57,7 @@ class NewestImagesList(LoginRequiredMixin, BreadcrumbsMixin, ListView):
     paginate_by = 50
 
     def get_queryset(self):
-        return super().get_queryset().order_by("-uploaded")
+        return super().get_queryset().select_related("gallery").order_by("-uploaded")
 
     def get_breadcrumbs(self) -> list:
         return breadcrumbs()

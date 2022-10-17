@@ -1,21 +1,16 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.db.models import F
+from django.db.models import F, Prefetch
 from django.http import FileResponse
 from django.urls import reverse, reverse_lazy
 from django.utils.text import slugify
-from django.views.generic import DetailView, FormView, ListView
+from django.views.generic import CreateView, DetailView, FormView, ListView, UpdateView
 from django.views.generic.detail import SingleObjectMixin
 
 from common.breadcrumbs.breadcrumbs import Breadcrumb, BreadcrumbsMixin
-from common.forms.views import CreateView, DeleteViewCustom, InlineFormsetUpdateView
-from sheetmusic.models import Part
+from common.forms.views import DeleteViewCustom
+from sheetmusic.models import Part, Score
 
-from .forms import (
-    RepertoireAndScoresForm,
-    RepertoireEntryFormset,
-    RepertoireForm,
-    RepertoirePdfFormset,
-)
+from .forms import RepertoireForm, RepertoirePdfFormset
 from .models import Repertoire
 
 
@@ -50,6 +45,9 @@ class OldRepertoires(LoginRequiredMixin, BreadcrumbsMixin, ListView):
     template_name = "repertoire/old_repertoires.html"
     ordering = [F("active_until").desc(nulls_first=True)]
 
+    def get_queryset(self):
+        return super().get_queryset().select_related("created_by")
+
     def get_breadcrumbs(self):
         return repertoire_breadcrumbs()
 
@@ -60,10 +58,17 @@ class ActiveRepertoires(LoginRequiredMixin, ListView):
     template_name = "repertoire/active_repertoires.html"
 
     def get_queryset(self):
-        queryset_kwargs = {}
-        if self.kwargs.get("date"):
-            queryset_kwargs["date"] = self.kwargs.get("date")
-        return Repertoire.objects.active(**queryset_kwargs)
+        active_kwargs = (
+            {"date": self.kwargs.get("date")} if self.kwargs.get("date") else {}
+        )
+        return Repertoire.objects.active(**active_kwargs).prefetch_related(
+            Prefetch(
+                "scores",
+                queryset=Score.objects.annotate_user_has_favorite_parts(
+                    self.request.user
+                ),
+            )
+        )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -75,13 +80,28 @@ class RepertoireDetail(LoginRequiredMixin, BreadcrumbsMixin, DetailView):
     model = Repertoire
     context_object_name = "repertoire"
 
+    def get_queryset(self):
+        return (
+            super()
+            .get_queryset()
+            .select_related("created_by", "modified_by")
+            .prefetch_related(
+                Prefetch(
+                    "scores",
+                    queryset=Score.objects.annotate_user_has_favorite_parts(
+                        self.request.user
+                    ),
+                )
+            )
+        )
+
     def get_breadcrumbs(self):
         return repertoire_breadcrumbs(repertoire=self.object)
 
 
 class RepertoireCreate(PermissionRequiredMixin, BreadcrumbsMixin, CreateView):
     model = Repertoire
-    form_class = RepertoireAndScoresForm
+    form_class = RepertoireForm
     template_name = "common/forms/form.html"
     success_url = reverse_lazy("repertoire:ActiveRepertoires")
     permission_required = "repertoire.add_repertoire"
@@ -90,12 +110,9 @@ class RepertoireCreate(PermissionRequiredMixin, BreadcrumbsMixin, CreateView):
         return repertoire_breadcrumbs()
 
 
-class RepertoireUpdate(
-    PermissionRequiredMixin, BreadcrumbsMixin, InlineFormsetUpdateView
-):
+class RepertoireUpdate(PermissionRequiredMixin, BreadcrumbsMixin, UpdateView):
     model = Repertoire
     form_class = RepertoireForm
-    formset_class = RepertoireEntryFormset
     template_name = "common/forms/form.html"
     success_url = reverse_lazy("repertoire:ActiveRepertoires")
     permission_required = "repertoire.change_repertoire"
@@ -124,10 +141,10 @@ class RepertoirePdf(LoginRequiredMixin, BreadcrumbsMixin, SingleObjectMixin, For
     def get_initial(self):
         return [
             {
-                "score": entry.score,
-                "part": entry.score.find_user_part(self.request.user),
+                "score": score,
+                "part": score.find_user_part(self.request.user),
             }
-            for entry in self.object.entries.all()
+            for score in self.object.scores.all()
         ]
 
     def get_form(self, **kwargs):

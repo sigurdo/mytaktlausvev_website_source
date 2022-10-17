@@ -38,7 +38,7 @@ from pictures.factories import GalleryFactory, ImageFactory
 from pictures.models import Image
 from polls.factories import ChoiceFactory, PollFactory, VoteFactory
 from quotes.factories import QuoteFactory
-from repertoire.factories import RepertoireEntryFactory, RepertoireFactory
+from repertoire.factories import RepertoireFactory
 from sheetmusic.factories import (
     FavoritePartFactory,
     PartFactory,
@@ -771,13 +771,11 @@ class Command(BaseCommand):
             pause_waltz,
             brooklyn,
         ]
-        old_concert_repertoire = RepertoireFactory(
+        RepertoireFactory(
             name="Bursdagskonsert fra og med, men egentlig uten vals",
             active_until=make_aware(datetime.now() - timedelta(days=14)),
+            scores=old_concert_scores,
         )
-        for score in old_concert_scores:
-            RepertoireEntryFactory(repertoire=old_concert_repertoire, score=score)
-
         march_booklet_scores = [
             ScoreFactory(title="Dixieland Strut"),
             ScoreFactory(title="99 Luftballons"),
@@ -786,10 +784,9 @@ class Command(BaseCommand):
             brooklyn,
         ]
         march_booklet_repertoire = RepertoireFactory(
-            name=f"Marsjhefte {datetime.now().year}"
+            name=f"Marsjhefte {datetime.now().year}",
+            scores=march_booklet_scores,
         )
-        for score in march_booklet_scores:
-            RepertoireEntryFactory(repertoire=march_booklet_repertoire, score=score)
 
         concert_scores = [
             ScoreFactory(title="Free World Fantasy"),
@@ -804,9 +801,8 @@ class Command(BaseCommand):
         concert_repertoire = RepertoireFactory(
             name="Konsert",
             active_until=concert_end_time,
+            scores=concert_scores,
         )
-        for score in concert_scores:
-            RepertoireEntryFactory(repertoire=concert_repertoire, score=score)
 
         concert = EventFactory(
             title="Konsert",

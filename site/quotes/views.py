@@ -24,6 +24,14 @@ class QuoteList(LoginRequiredMixin, ListView):
     context_object_name = "quotes"
     paginate_by = 50
 
+    def get_queryset(self):
+        return (
+            super()
+            .get_queryset()
+            .select_related("created_by")
+            .prefetch_related("users")
+        )
+
     def get_context_data(self, **kwargs):
         random_number = random.randint(50, 150)
         random_number2 = random.randint(1, random_number)

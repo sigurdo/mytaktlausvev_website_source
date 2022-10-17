@@ -110,7 +110,7 @@ class Event(ArticleMixin):
         Returns the EventAttendance for the given user on this event.
         Returns None if there is no EventAttendance registered for the user on this event.
         """
-        return EventAttendance.objects.filter(person=user, event=self).first()
+        return self.attendances.filter(person=user).first()
 
     def is_in_future(self):
         """Returns True if the event is in the future."""

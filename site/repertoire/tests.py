@@ -10,10 +10,10 @@ from accounts.factories import SuperUserFactory, UserFactory
 from common.breadcrumbs.breadcrumbs import Breadcrumb
 from common.mixins import TestMixin
 from common.test_utils import create_formset_post_data
-from sheetmusic.factories import FavoritePartFactory
+from sheetmusic.factories import FavoritePartFactory, ScoreFactory
 
-from .factories import RepertoireEntryFactory, RepertoireFactory
-from .forms import RepertoireEntryFormset, RepertoirePdfFormset
+from .factories import RepertoireFactory
+from .forms import RepertoirePdfFormset
 from .models import Repertoire
 from .views import repertoire_breadcrumbs
 
@@ -50,11 +50,9 @@ class RepertoireManagerTestSuite(TestMixin, TestCase):
 class RepertoireTestSuite(TestMixin, TestCase):
     def setUp(self):
         self.user = UserFactory()
-        self.repertoire = RepertoireFactory(name="Marsjhefte")
-        self.entry = RepertoireEntryFactory(repertoire=self.repertoire)
-        self.favorite = FavoritePartFactory(
-            part__pdf__score=self.entry.score, user=self.user
-        )
+        self.score = ScoreFactory()
+        self.repertoire = RepertoireFactory(name="Marsjhefte", scores=[self.score])
+        self.favorite = FavoritePartFactory(part__pdf__score=self.score, user=self.user)
 
     def test_to_str(self):
         self.assertEqual(str(self.repertoire), "Marsjhefte")
@@ -98,16 +96,6 @@ class RepertoireTestSuite(TestMixin, TestCase):
     def test_slug_unique(self):
         other = RepertoireFactory(slug=self.repertoire.slug)
         self.assertNotEqual(self.repertoire.slug, other.slug)
-
-
-class RepertoireEntryTestSuite(TestMixin, TestCase):
-    def setUp(self):
-        self.entry = RepertoireEntryFactory(
-            repertoire__name="Vårkonsert", score__title="Ice Cream"
-        )
-
-    def test_to_str(self):
-        self.assertEqual(str(self.entry), "Vårkonsert - Ice Cream")
 
 
 class RepertoireBreadcrumbsTestSuite(TestMixin, TestCase):
@@ -205,14 +193,11 @@ class OldRepertoiresTestSuite(TestMixin, TestCase):
 
 class RepertoireCreateTestSuite(TestMixin, TestCase):
     def setUp(self):
+        self.score = ScoreFactory()
         self.test_data = {
             "name": "Repertoire",
             "order": 0,
-            **create_formset_post_data(
-                RepertoireEntryFormset,
-                total_forms=0,
-                initial_forms=0,
-            ),
+            "scores": [self.score.pk],
         }
 
     def get_url(self):
@@ -232,43 +217,19 @@ class RepertoireCreateTestSuite(TestMixin, TestCase):
         response = self.client.post(self.get_url(), self.test_data)
         self.assertRedirects(response, reverse("repertoire:ActiveRepertoires"))
 
-    def test_sets_created_by_modified_by(self):
-        user = SuperUserFactory()
-        self.client.force_login(user)
-        self.client.post(self.get_url(), self.test_data)
-        repertoire = Repertoire.objects.last()
-        self.assertEqual(repertoire.created_by, user)
-        self.assertEqual(repertoire.modified_by, user)
-
 
 class RepertoireUpdateTestSuite(TestMixin, TestCase):
-    def create_post_data(self, data=[]):
-        return create_formset_post_data(
-            RepertoireEntryFormset,
-            data=data,
-            total_forms=1,
-        )
-
-    def create_test_data(self):
-        test_data = self.create_post_data(
-            data=[
-                {
-                    "score": self.entry.score.pk,
-                    "order": self.entry.order,
-                    "id": self.entry.pk,
-                }
-            ]
-        )
-        test_data["name"] = self.repertoire.name
-        test_data["order"] = self.repertoire.order
-        return test_data
-
     def get_url(self):
         return reverse("repertoire:RepertoireUpdate", args=[self.repertoire.slug])
 
     def setUp(self):
-        self.repertoire = RepertoireFactory()
-        self.entry = RepertoireEntryFactory(repertoire=self.repertoire)
+        self.score = ScoreFactory()
+        self.repertoire = RepertoireFactory(scores=[self.score])
+        self.test_data = {
+            "name": self.repertoire.name,
+            "order": self.repertoire.order,
+            "scores": [self.score.pk],
+        }
 
     def test_requires_login(self):
         self.assertLoginRequired(self.get_url())
@@ -285,14 +246,6 @@ class RepertoireUpdateTestSuite(TestMixin, TestCase):
         response = self.client.post(self.get_url(), self.create_test_data())
         self.assertRedirects(response, reverse("repertoire:ActiveRepertoires"))
 
-    def test_sets_modified_by_and_not_created_by(self):
-        user = SuperUserFactory()
-        self.client.force_login(user)
-        self.client.post(self.get_url(), self.create_test_data())
-        repertoire = Repertoire.objects.last()
-        self.assertEqual(repertoire.modified_by, user)
-        self.assertNotEqual(repertoire.created_by, user)
-
 
 class RepertoireDeleteTestSuite(TestMixin, TestCase):
     def get_url(self):
@@ -307,17 +260,17 @@ class RepertoireDeleteTestSuite(TestMixin, TestCase):
 
 class RepertoirePdfTestSuite(TestMixin, TestCase):
     def get_url(self):
-        return reverse("repertoire:RepertoirePdf", args=[self.entry.repertoire.slug])
+        return reverse("repertoire:RepertoirePdf", args=[self.repertoire.slug])
 
     def create_post_data(self, data=None):
         if data is None:
             data = [
                 {
-                    "part": self.entry.score.find_user_part(self.user).pk,
-                    "amount": self.amount,
+                    "part": self.score_1.find_user_part(self.user).pk,
+                    "amount": self.amount_1,
                 },
                 {
-                    "part": self.entry_2.score.find_user_part(self.user).pk,
+                    "part": self.score_2.find_user_part(self.user).pk,
                     "amount": self.amount_2,
                 },
             ]
@@ -330,15 +283,12 @@ class RepertoirePdfTestSuite(TestMixin, TestCase):
 
     def setUp(self):
         self.user = UserFactory()
-        self.entry = RepertoireEntryFactory()
-        self.amount = 1
-        self.entry_2 = RepertoireEntryFactory(repertoire=self.entry.repertoire)
-        self.amount_2 = 2
-        self.favorite = FavoritePartFactory(
-            part__pdf__score=self.entry.score, user=self.user
-        )
-        self.favorite_2 = FavoritePartFactory(
-            part__pdf__score=self.entry_2.score, user=self.user
+        (self.score_1, self.score_2) = (ScoreFactory(), ScoreFactory())
+        (self.amount_1, self.amount_2) = (1, 2)
+        self.repertoire = RepertoireFactory(scores=[self.score_1, self.score_2])
+        (self.favorite_1, self.favorite_2) = (
+            FavoritePartFactory(part__pdf__score=self.score_1, user=self.user),
+            FavoritePartFactory(part__pdf__score=self.score_2, user=self.user),
         )
 
     def test_requires_login(self):

@@ -2,15 +2,12 @@ from io import BytesIO
 
 from autoslug import AutoSlugField
 from django.db.models import (
-    CASCADE,
     CharField,
     DateField,
     FloatField,
-    ForeignKey,
     Manager,
     ManyToManyField,
     Model,
-    UniqueConstraint,
 )
 from django.db.models.query_utils import Q
 from django.urls import reverse
@@ -60,9 +57,8 @@ class Repertoire(CreatedModifiedMixin, Model):
     )
     scores = ManyToManyField(
         Score,
+        related_name="repertoires",
         verbose_name="notar",
-        through="RepertoireEntry",
-        blank=True,
     )
 
     class Meta:
@@ -77,19 +73,19 @@ class Repertoire(CreatedModifiedMixin, Model):
         return self.active_until is None or self.active_until >= now().date()
 
     def favorite_parts_pdf_file(self, user):
-        """Returns a PDF contaning the user's favorite parts for the scores in this repertoire."""
+        """Returns a PDF containing the user's favorite parts for the scores in this repertoire."""
         parts = Part.objects.filter(
-            favoring_users__user=user, pdf__score__repertoire_entries__repertoire=self
+            favoring_users__user=user, pdf__score__repertoires=self
         )
         if not parts.exists():
             raise Exception(
                 f"Fann inga favorittstemmer for {user} i repertoaret {self}"
             )
         pdf_writer = PdfFileWriter()
-        for entry in self.entries.all():
+        for score in self.scores.all():
             try:
                 pdf_writer.appendPagesFromReader(
-                    PdfFileReader(entry.score.favorite_parts_pdf_file(user))
+                    PdfFileReader(score.favorite_parts_pdf_file(user))
                 )
             except:
                 pass
@@ -104,41 +100,3 @@ class Repertoire(CreatedModifiedMixin, Model):
 
     def get_absolute_url(self):
         return reverse("repertoire:RepertoireDetail", args=[self.slug])
-
-
-class RepertoireEntry(Model):
-    """Model representing a score entry in a repertoire"""
-
-    repertoire = ForeignKey(
-        Repertoire,
-        on_delete=CASCADE,
-        related_name="entries",
-        verbose_name="repertoar",
-    )
-    score = ForeignKey(
-        Score,
-        on_delete=CASCADE,
-        related_name="repertoire_entries",
-        verbose_name="note",
-    )
-    order = FloatField(
-        verbose_name="rekkjefølgje",
-        default=0,
-        help_text=(
-            "Definerer rekkjefølgja til nota i repertoaret."
-            "Notar med lik rekkjefølgje vert sortert alfabetisk."
-        ),
-    )
-
-    class Meta:
-        constraints = [
-            UniqueConstraint(
-                fields=["repertoire", "score"], name="repertoire_unique_entry"
-            )
-        ]
-        ordering = ["order", "score"]
-        verbose_name = "repertoaroppføring"
-        verbose_name_plural = "repertoaroppføringar"
-
-    def __str__(self):
-        return f"{self.repertoire} - {self.score}"

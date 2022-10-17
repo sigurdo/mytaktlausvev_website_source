@@ -24,6 +24,9 @@ class JacketList(LoginRequiredMixin, ListView):
     model = Jacket
     context_object_name = "jackets"
 
+    def get_queryset(self):
+        return super().get_queryset().prefetch_related("location", "owner")
+
 
 class JacketsUpdate(PermissionRequiredMixin, BreadcrumbsMixin, FormView):
     form_class = JacketsFormset
