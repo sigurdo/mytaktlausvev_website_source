@@ -243,7 +243,7 @@ class RepertoireUpdateTestSuite(TestMixin, TestCase):
     def test_success_redirect(self):
         user = SuperUserFactory()
         self.client.force_login(user)
-        response = self.client.post(self.get_url(), self.create_test_data())
+        response = self.client.post(self.get_url(), self.test_data)
         self.assertRedirects(response, reverse("repertoire:ActiveRepertoires"))
 
 
