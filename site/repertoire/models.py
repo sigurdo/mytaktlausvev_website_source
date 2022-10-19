@@ -12,7 +12,7 @@ from django.db.models import (
 from django.db.models.query_utils import Q
 from django.urls import reverse
 from django.utils.text import slugify
-from django.utils.timezone import now
+from django.utils.timezone import localdate, now
 from PyPDF2 import PdfFileReader, PdfFileWriter
 
 from common.models import CreatedModifiedMixin
@@ -20,9 +20,11 @@ from sheetmusic.models import Part, Score
 
 
 class RepertoireManager(Manager):
-    def active(self):
+    def active(self, date=None):
+        date = date or localdate()
         return super().filter(
-            Q(active_until__isnull=True) | Q(active_until__gte=now().date())
+            (Q(active_until__isnull=True) | Q(active_until__gte=date))
+            & Q(created__date__lte=date)
         )
 
 

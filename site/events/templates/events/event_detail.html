@@ -54,6 +54,10 @@
     {% include "events/includes/keyinfo_section.html" with event=event only %}
     {% load markdown %}
     {{ event.content | markdown }}
+    
+    {% if event.include_active_repertoires or event.repertoires.exists or event.extra_scores.exists %}
+        {% include "events/includes/repertoire.html" with event=event only %}
+    {% endif %}
 
     <hr />
 

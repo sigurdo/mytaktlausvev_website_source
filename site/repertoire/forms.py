@@ -21,7 +21,7 @@ from .models import Repertoire
 
 
 class RepertoireForm(ModelForm):
-    """Form for creating and editing repertoires."""
+    """Form for creating and editing a repertoire."""
 
     helper = FormHelper()
     helper.add_input(Submit("submit", "Lagre repertoar"))

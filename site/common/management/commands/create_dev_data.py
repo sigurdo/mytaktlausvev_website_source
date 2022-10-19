@@ -154,7 +154,7 @@ class Command(BaseCommand):
         ContactCategoryFactory(name="Generelt")
         ContactCategoryFactory(name="Bli med!")
 
-        event = EventFactory(
+        smash = EventFactory(
             title="SMASH",
             content="SMASH in Trondheim",
             created_by=leader,
@@ -163,13 +163,13 @@ class Command(BaseCommand):
             category__name="Studentorchestersamling",
             location="Trondheim",
         )
-        EventAttendanceFactory(event=event, person=leader, status=Attendance.ATTENDING)
-        EventAttendanceFactory(event=event, person=member, status=Attendance.ATTENDING)
+        EventAttendanceFactory(event=smash, person=leader, status=Attendance.ATTENDING)
+        EventAttendanceFactory(event=smash, person=member, status=Attendance.ATTENDING)
         EventAttendanceFactory(
-            event=event, person=aspirant, status=Attendance.ATTENDING_MAYBE
+            event=smash, person=aspirant, status=Attendance.ATTENDING_MAYBE
         )
         EventAttendanceFactory(
-            event=event, person=retiree, status=Attendance.ATTENDING_NOT
+            event=smash, person=retiree, status=Attendance.ATTENDING_NOT
         )
         event_category_party = EventCategoryFactory(name="Fest")
         EventFactory(
@@ -190,6 +190,7 @@ class Command(BaseCommand):
             category__name="Øving",
             location="KJL4",
             location_map_link="https://link.mazemap.com/2t59lzj4",
+            include_active_repertoires=True,
         )
         board_game_night = EventFactory(
             title="Brettspelkveld",
@@ -764,19 +765,58 @@ class Command(BaseCommand):
             user=leader,
             part=birthday_song_part,
         )
+        brooklyn = ScoreFactory(title="Brooklyn")
+
+        old_concert_scores = [
+            birthday_song,
+            pause_waltz,
+            brooklyn,
+        ]
         RepertoireFactory(
             name="Bursdagskonsert fra og med, men egentlig uten vals",
             active_until=make_aware(datetime.now() - timedelta(days=14)),
-            scores=[birthday_song, pause_waltz],
+            scores=old_concert_scores,
         )
-        RepertoireFactory(
-            name=f"Marsjhefte {datetime.now().year}", scores=[birthday_song]
+        march_booklet_scores = [
+            ScoreFactory(title="Dixieland Strut"),
+            ScoreFactory(title="99 Luftballons"),
+            ScoreFactory(title="Poekemon Theme Song"),
+            ScoreFactory(title="Tiger Rag"),
+            brooklyn,
+        ]
+        march_booklet_repertoire = RepertoireFactory(
+            name=f"Marsjhefte {datetime.now().year}",
+            scores=march_booklet_scores,
         )
-        RepertoireFactory(
+
+        concert_scores = [
+            ScoreFactory(title="Free World Fantasy"),
+            ScoreFactory(title="Mononoke Hime"),
+            ScoreFactory(title="A Link to Dei Taktlause"),
+            ScoreFactory(title="Through the Fire and Flames"),
+            ScoreFactory(title="Pokemon Medley"),
+            brooklyn,
+            pause_waltz,
+        ]
+        concert_end_time = make_aware(datetime.now() + timedelta(days=14))
+        concert_repertoire = RepertoireFactory(
             name="Konsert",
-            active_until=make_aware(datetime.now() + timedelta(days=14)),
-            scores=[pause_waltz],
+            active_until=concert_end_time,
+            scores=concert_scores,
         )
+
+        EventFactory(
+            title="Konsert",
+            category__name="Konsert",
+            content="Vi tek ein konsert a', gutta!",
+            start_time=concert_end_time - timedelta(hours=2),
+            end_time=concert_end_time,
+            repertoires=[concert_repertoire],
+            extra_scores=[birthday_song],
+        )
+        smash.repertoires.set([march_booklet_repertoire])
+        smash.save()
+
         EmbeddableTextFactory(
             name="Framgangsmåte for buttonpdfgenerator",
             content="""

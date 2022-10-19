@@ -19,5 +19,4 @@ class RepertoireFactory(DjangoModelFactory):
         if not create or not score_list:
             return
 
-        for score in score_list:
-            self.scores.add(score)
+        self.scores.set(score_list)

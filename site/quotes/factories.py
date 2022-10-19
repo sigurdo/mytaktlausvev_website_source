@@ -20,5 +20,4 @@ class QuoteFactory(DjangoModelFactory):
         if not create or not user_list:
             return
 
-        for user in user_list:
-            self.users.add(user)
+        self.users.set(user_list)
