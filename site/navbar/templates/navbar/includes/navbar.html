@@ -1,16 +1,20 @@
-{% now "d m" as day%}
+{% now "d m" as day %}
+{% now "m" as month %}
 <nav class="navbar p-1 navbar-expand-xl fixed-top navbar-dark {% if user.is_authenticated and day == "31 10" %}" style="background: repeating-linear-gradient(#0D439D, #0D439D 3px, #dce8ff 3px, #dce8ff 6px); {% elif PRODUCTION %} bg-primary {% else %}" style="background-color:#058104; {% endif %}">
     <div class="container-fluid">
         <a class="navbar-brand" href="/"/>
             {% load static %}
-            {% if user.is_authenticated and day == "31 10" %}
-            <img class="w-14 me-2" src="{% static 'images/logo_strindens.svg' %}">
-            <span class="d-none d-sm-inline fw-bold" style="background: rgba(13, 67, 157, 0.7); padding: 10px;">
-            Strindens Promenade Orchester
-            </span>
+            {% if month == "12" %}
+                <img class="w-14 me-2" src="{% static 'images/logo_santa_hat.svg' %}">
+                <span class="d-none d-sm-inline fw-bold">Studentorchesteret Dei Taktlause</span>
+            {% elif user.is_authenticated and day == "31 10" %}
+                <img class="w-14 me-2" src="{% static 'images/logo_strindens.svg' %}">
+                <span class="d-none d-sm-inline fw-bold" style="background: rgba(13, 67, 157, 0.7); padding: 10px;">
+                Strindens Promenade Orchester
+                </span>
             {% else %}
-            <img class="w-14 me-2" src="{% static 'images/logo.svg' %}">
-            <span class="d-none d-sm-inline fw-bold">Studentorchesteret Dei Taktlause</span>
+                <img class="w-14 me-2" src="{% static 'images/logo.svg' %}">
+                <span class="d-none d-sm-inline fw-bold">Studentorchesteret Dei Taktlause</span>
             {% endif %}
         </a>
 
