@@ -95,7 +95,7 @@ class EventList(LoginRequiredMixin, BreadcrumbsMixin, ListView):
             case {"year": year}:
                 queryset = Event.objects.filter(start_time__year=year)
             case {"filter_type": filter_type}:
-                if filter_type == "unanswered":
+                if filter_type == "ikkje-svara-på":
                     queryset = Event.objects.upcoming().exclude(
                         attendances__person=self.request.user
                     )
@@ -113,6 +113,9 @@ class EventList(LoginRequiredMixin, BreadcrumbsMixin, ListView):
                         event=OuterRef("pk"), person=self.request.user
                     )
                 ),
+                user_attending_status=EventAttendance.objects.filter(
+                    event=OuterRef("pk"), person=self.request.user
+                ).values("status"),
             )
             .select_related("category")
             .prefetch_related("keyinfo_entries")

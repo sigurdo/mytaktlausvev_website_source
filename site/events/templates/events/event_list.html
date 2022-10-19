@@ -42,10 +42,10 @@
             {% else %}
                 {% now "Y" as current_year %}
                 <a class="btn btn-primary" href="{% url "events:EventList" current_year %}"> Heile året </a>
-                {% if filter_type == "unanswered" %}
+                {% if filter_type == "ikkje-svara-på" %}
                     <a class="btn btn-primary" href="{% url "events:EventList" %}"> Alle framtidige </a>
                 {% else %}
-                    <a class="btn btn-primary" href="{% url "events:EventListFilter" "unanswered"  %}"> Kun ubesvarte </a>
+                    <a class="btn btn-primary" href="{% url "events:EventListFilter" "ikkje-svara-på"  %}"> Berre hendingar som ikkje er svara på</a>
                 {% endif %}
             {% endif %}
         </nav>

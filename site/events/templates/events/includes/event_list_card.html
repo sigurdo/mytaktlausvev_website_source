@@ -5,7 +5,7 @@
                 {{ event }}
             </a>
         </h3>
-
+        
         {% include "events/includes/keyinfo_section.html" with event=event only %}
 
         {% load markdown %}
@@ -14,6 +14,11 @@
         {% else %}
             {{ event.content|markdown|truncatewords_html:12 }}
         {% endif %}
+
+        <dt>Ditt svar</dt>
+            <dd>
+                {{ event.user_attending_status }} 
+            </dd>
 
         {% if event.is_in_future and not event.user_is_attending %}
             <form action="{{ event.attendance_form.helper.form_action }}" method="POST">
