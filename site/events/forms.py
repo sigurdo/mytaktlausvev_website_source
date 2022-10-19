@@ -77,7 +77,7 @@ class EventForm(ModelForm):
         widgets = {
             "category": AutocompleteSelect,
             "repertoires": AutocompleteSelectMultiple,
-            "extra_scores": AutocompleteSelectMultiple, 
+            "extra_scores": AutocompleteSelectMultiple,
             "connected_gallery": AutocompleteSelect,
         }
 
