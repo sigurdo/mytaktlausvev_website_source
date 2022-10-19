@@ -10,5 +10,9 @@ COPY scripts/sheetmusic.sh /app/
 ARG SHEETMUSIC="yes"
 RUN if [ $SHEETMUSIC = yes ]; then sh sheetmusic.sh; fi
 
+# Download dependencies
+COPY scripts/downloads.sh /app/
+RUN ./downloads.sh
+
 COPY site/requirements.txt /app/
 RUN pip install --no-cache -r requirements.txt

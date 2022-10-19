@@ -2,9 +2,10 @@
     <table class="table table-sm table-striped">
         <thead>
             <tr>
-                <th> Stemme </th>
-                <th> PDF </th>
-                <th> Favoritt </th>
+                <th>Stemme</th>
+                <th><span class="visually-hidden">Les</span></th>
+                <th><span class="visually-hidden">Last ned</span></th>
+                <th><span class="visually-hidden">Favoritt</span></th>
             </tr>
         </thead>
 
@@ -15,7 +16,11 @@
                     {{ part }}
                 </td>
                 <td>
-                    <a href="{% url 'sheetmusic:PartPdf' part.pdf.score.slug part.slug %}"> PDF </a>
+                    {% load utils %}
+                    <a href="{{ part.get_absolute_url|embed_pdf_url }}" class="btn btn-secondary btn-sm"> Les </a>
+                </td>
+                <td>
+                    <a href="{{ part.get_absolute_url }}" download class="btn btn-primary btn-sm"> Last ned </a>
                 </td>
                 <td>
                     <form
