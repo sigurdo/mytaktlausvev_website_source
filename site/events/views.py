@@ -94,8 +94,8 @@ class EventList(LoginRequiredMixin, BreadcrumbsMixin, ListView):
         match self.kwargs:
             case {"year": year}:
                 queryset = Event.objects.filter(start_time__year=year)
-            case {"slug": slug}:
-                if slug == "unanswered":
+            case {"filter_type": filter_type}:
+                if filter_type == "unanswered":
                     queryset = Event.objects.upcoming().exclude(
                         attendances__person=self.request.user
                     )
@@ -123,8 +123,8 @@ class EventList(LoginRequiredMixin, BreadcrumbsMixin, ListView):
             event.attendance_form = self.get_attendance_form(event)
         if self.kwargs.get("year"):
             context_data["year"] = self.kwargs.get("year")
-        if self.kwargs.get("slug"):
-            context_data["slug"] = self.kwargs.get("slug")
+        if self.kwargs.get("filter_type"):
+            context_data["filter_type"] = self.kwargs.get("filter_type")
         return context_data
 
     def get_attendance_form(self, event):
