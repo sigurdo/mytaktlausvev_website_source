@@ -15,6 +15,7 @@ from django.urls import reverse
 from PyPDF2 import PdfFileReader, PdfFileWriter
 
 from common.forms.widgets import AutocompleteSelectMultiple
+from common.templatetags.utils import embed_pdf_url
 from sheetmusic.models import Part, Score
 
 from .models import Repertoire
@@ -66,8 +67,8 @@ class PartChoiceField(ModelChoiceField):
             # the usual label:
             "label": super().label_from_instance(part),
             # the new data attribute:
-            "data-pdf-url": reverse(
-                "sheetmusic:PartPdf", args=[part.pdf.score.slug, part.slug]
+            "data-pdf-url": embed_pdf_url(
+                reverse("sheetmusic:PartPdf", args=[part.pdf.score.slug, part.slug])
             ),
         }
 
