@@ -56,7 +56,9 @@
 
                         <td>
                             {% if score.user_has_favorite_parts %}
-                                <a href="{% url "sheetmusic:FavoritePartPdf" score.slug %}"> Favorittstemme </a>
+                                {% load utils %}
+                                {% url "sheetmusic:FavoritePartPdf" score.slug as favorite_part_pdf_url%}
+                                <a href="{{ favorite_part_pdf_url|embed_pdf_url}}"> Favorittstemme </a>
                             {% endif %}
                         </td>
 

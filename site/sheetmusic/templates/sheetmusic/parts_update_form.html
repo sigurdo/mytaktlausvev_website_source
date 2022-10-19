@@ -5,7 +5,8 @@
 {% block form %}
 <div class="row">
     <div class="col-lg-6 d-none d-lg-block">
-        <iframe class="sticky-top w-100 pdf-iframe" src="{{pdf.file.url}}"></iframe>
+        {% load utils %}
+        <iframe class="sticky-top w-100 pdf-iframe" src="{{pdf.file.url|embed_pdf_url}}"></iframe>
     </div>
     <section class="col-lg-6 col-12">
         {% load crispy_forms_tags %}
