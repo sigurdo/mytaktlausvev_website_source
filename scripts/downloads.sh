@@ -2,9 +2,7 @@
 set -e               # Exit on error
 cd /app/             # Set working directory to /app/
 
-mkdir downloads
-mkdir downloads/static
-mkdir downloads/static/js
+mkdir -p downloads/static/js
 
 # pdf.js
 mkdir downloads/static/js/pdf.js
