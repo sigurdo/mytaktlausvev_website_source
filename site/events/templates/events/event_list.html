@@ -45,7 +45,7 @@
                 {% if filter_type == "unanswered" %}
                     <a class="btn btn-primary" href="{% url "events:EventList" %}"> Alle framtidige </a>
                 {% else %}
-                    <a class="btn btn-primary" href="{% url "events:EventList" "unanswered"  %}"> Kun ubesvarte </a>
+                    <a class="btn btn-primary" href="{% url "events:EventListFilter" "unanswered"  %}"> Kun ubesvarte </a>
                 {% endif %}
             {% endif %}
         </nav>

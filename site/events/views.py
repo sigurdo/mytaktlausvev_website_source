@@ -99,6 +99,8 @@ class EventList(LoginRequiredMixin, BreadcrumbsMixin, ListView):
                     queryset = Event.objects.upcoming().exclude(
                         attendances__person=self.request.user
                     )
+                else:
+                    queryset = Event.objects.upcoming()
 
             case _:
                 queryset = Event.objects.upcoming()
