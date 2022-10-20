@@ -38,7 +38,6 @@ class EventForm(ModelForm):
         "end_time",
         "location",
         "location_map_link",
-        "connected_gallery",
         Fieldset(
             "Nykelinfo",
             HTML(
@@ -57,6 +56,7 @@ class EventForm(ModelForm):
             "repertoires",
             "extra_scores",
         ),
+        "gallery",
     )
 
     class Meta:
@@ -72,13 +72,13 @@ class EventForm(ModelForm):
             "include_active_repertoires",
             "repertoires",
             "extra_scores",
-            "connected_gallery",
+            "gallery",
         ]
         widgets = {
             "category": AutocompleteSelect,
             "repertoires": AutocompleteSelectMultiple,
             "extra_scores": AutocompleteSelectMultiple,
-            "connected_gallery": AutocompleteSelect,
+            "gallery": AutocompleteSelect,
         }
 
 

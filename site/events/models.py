@@ -93,10 +93,10 @@ class Event(ArticleMixin):
         help_text="Ekstra notar knytt til hendinga.",
     )
 
-    connected_gallery = ForeignKey(
+    gallery = ForeignKey(
         Gallery,
-        verbose_name="Oppkobla galleri",
-        related_name="connected_events",
+        verbose_name="galleri",
+        related_name="events",
         on_delete=SET_NULL,
         null=True,
         blank=True,

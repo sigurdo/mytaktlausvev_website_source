@@ -21,15 +21,16 @@ class GalleryForm(ModelForm):
     helper = FormHelper()
     helper.add_input(Submit("submit", "Lagre galleri"))
 
-    connected_events = ModelMultipleChoiceField(
+    events = ModelMultipleChoiceField(
         queryset=Event.objects.order_by("-start_time"),
         required=False,
         widget=AutocompleteSelectMultiple,
+        label="Hendingar",
     )
 
     class Meta:
         model = Gallery
-        fields = ["title", "date", "date_to", "content", "connected_events"]
+        fields = ["title", "date", "date_to", "content", "events"]
         widgets = {
             "date": DateInput(attrs={"type": "date"}),
             "date_to": DateInput(attrs={"type": "date"}),
@@ -37,21 +38,12 @@ class GalleryForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if self.instance.id and self.instance.connected_events:
-            self.initial["connected_events"] = self.instance.connected_events.all()
+        if self.instance.id:
+            self.initial["events"] = self.instance.events.all()
 
     def save(self):
-        gallery = super().save(commit=False)
-        gallery.save()
-        events = self.cleaned_data["connected_events"]
-        old_events = Event.objects.filter(connected_gallery=gallery)
-        for event in events:
-            event.connected_gallery = gallery
-            event.save()
-        for old_event in old_events:
-            if old_event not in events:
-                old_event.connected_gallery = None
-                old_event.save()
+        gallery = super().save()
+        gallery.events.set(self.cleaned_data["events"])
         return gallery
 
 

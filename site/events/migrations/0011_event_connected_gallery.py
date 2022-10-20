@@ -14,14 +14,14 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddField(
             model_name="event",
-            name="connected_gallery",
+            name="gallery",
             field=models.ForeignKey(
                 blank=True,
                 null=True,
                 on_delete=django.db.models.deletion.SET_NULL,
-                related_name="connected_events",
+                related_name="events",
                 to="pictures.gallery",
-                verbose_name="Oppkobla galleri",
+                verbose_name="galleri",
             ),
         ),
     ]
