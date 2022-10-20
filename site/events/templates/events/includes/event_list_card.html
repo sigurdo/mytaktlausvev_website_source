@@ -14,11 +14,13 @@
         {% else %}
             {{ event.content|markdown|truncatewords_html:12 }}
         {% endif %}
-
-        <dt>Ditt svar</dt>
+        <dl class="dl-inline">
+            <dt>Ditt svar</dt>
             <dd>
-                {{ event.user_attending_status }} 
+                {% load get_user_attending_status %}
+                {% translate_attending_status event.user_attending_status %}
             </dd>
+        </dl>
 
         {% if event.is_in_future and not event.user_is_attending %}
             <form action="{{ event.attendance_form.helper.form_action }}" method="POST">
