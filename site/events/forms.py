@@ -56,6 +56,7 @@ class EventForm(ModelForm):
             "repertoires",
             "extra_scores",
         ),
+        "gallery",
     )
 
     class Meta:
@@ -71,11 +72,13 @@ class EventForm(ModelForm):
             "include_active_repertoires",
             "repertoires",
             "extra_scores",
+            "gallery",
         ]
         widgets = {
             "category": AutocompleteSelect,
             "repertoires": AutocompleteSelectMultiple,
             "extra_scores": AutocompleteSelectMultiple,
+            "gallery": AutocompleteSelect,
         }
 
 

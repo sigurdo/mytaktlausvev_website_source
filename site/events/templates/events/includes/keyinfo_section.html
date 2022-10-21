@@ -17,6 +17,12 @@
     <dd>
         {{ event.category }}
     </dd>
+    {% if event.gallery %}
+        <dt>Galleri</dt>
+        <dd>
+            <a href="{{ event.gallery.get_absolute_url }}">{{ event.gallery.title }}</a>
+        </dd>
+    {% endif %}
     {% for entry in event.keyinfo_entries.all %}
         <dt>{{ entry.key }}</dt>
         {% load markdown %}

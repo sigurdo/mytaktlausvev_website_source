@@ -3,11 +3,30 @@
         <a href="{{ gallery.get_absolute_url }}">{{ gallery.title }}</a>
     </h2>
 
-    <strong>Dato:</strong>
-    <time datetime="{{ gallery.date | date:"c" }}">{{ gallery.date }}</time>
-    {% if gallery.date_to %}
-    - <time datetime="{{ gallery.date_to | date:"c" }}">{{ gallery.date_to }}</time>
-    {% endif %}
+    <dl class="dl-inline">
+        <dt>Dato</dt>
+        <dd>
+            <time datetime="{{ gallery.date | date:"c" }}">{{ gallery.date }}</time>
+            {% if gallery.date_to %}
+            - <time datetime="{{ gallery.date_to | date:"c" }}">{{ gallery.date_to }}</time>
+            {% endif %}
+        </dd>
+
+        {% if gallery.events.exists %}
+            <dt>Hendingar</dt>
+            {% for event in gallery.events.all %}
+                <dd>
+                    {% spaceless %}
+                    <a
+                        href="{{ event.get_absolute_url }}"
+                    >{{event.title}}</a>
+                    {% if not forloop.last %}<span>,</span>{% endif %}
+                    {% endspaceless %}
+
+                </dd>
+            {% endfor %}
+        {% endif %}
+    </dl>
 </header>
 
 {% firstof identifier gallery.slug as identifier %}

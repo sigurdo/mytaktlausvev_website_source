@@ -5,6 +5,7 @@ from django.conf import settings
 from django.db.models import (
     CASCADE,
     PROTECT,
+    SET_NULL,
     BooleanField,
     CharField,
     CheckConstraint,
@@ -23,6 +24,7 @@ from django.urls import reverse
 from django.utils.timezone import localtime, make_aware, now
 
 from common.models import ArticleMixin
+from pictures.models import Gallery
 from repertoire.models import Repertoire
 from sheetmusic.models import Score
 
@@ -89,6 +91,15 @@ class Event(ArticleMixin):
         verbose_name="ekstra notar",
         blank=True,
         help_text="Ekstra notar knytt til hendinga.",
+    )
+
+    gallery = ForeignKey(
+        Gallery,
+        verbose_name="galleri",
+        related_name="events",
+        on_delete=SET_NULL,
+        null=True,
+        blank=True,
     )
 
     def attending(self):
