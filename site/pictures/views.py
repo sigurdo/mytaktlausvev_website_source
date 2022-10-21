@@ -45,7 +45,7 @@ class GalleryList(LoginRequiredMixin, ListView):
         return (
             super()
             .get_queryset()
-            .prefetch_related("images")
+            .prefetch_related("images", "events")
             .exclude(images__isnull=True)
             .order_by("-date")
         )
