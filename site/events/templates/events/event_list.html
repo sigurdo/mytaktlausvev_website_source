@@ -18,31 +18,34 @@
 {% block content %}
     <section class="mb-3">
         <nav class="mb-3">
-            {% if year %}
-            <ol class="list-unstyled">
-                <li class="d-inline">
-                    <a class="btn btn-primary" href="{% url "events:EventList" year|add:"-2" %}"> {{year|add:"-2"}} </a>
-                </li>
-                <li class="d-inline">
-                    <a class="btn btn-primary" href="{% url "events:EventList" year|add:"-1" %}"> {{year|add:"-1"}} </a>
-                </li>
-                <li class="d-inline">
-                    <a class="btn btn-primary active" href="{% url "events:EventList" year|add:"0" %}"> {{year|add:"0"}} </a>
-                </li>
-                <li class="d-inline">
-                    <a class="btn btn-primary" href="{% url "events:EventList" year|add:"1" %}"> {{year|add:"1"}} </a>
-                </li>
-                <li class="d-inline">
-                    <a class="btn btn-primary" href="{% url "events:EventList" year|add:"2" %}"> {{year|add:"2"}} </a>
-                </li>
-            </ol>
+            {% if view.kwargs.year %}
+                {% with view.kwargs.year as year %}
+                    <ol class="list-unstyled">
+                        <li class="d-inline">
+                            <a class="btn btn-primary" href="{% url "events:EventList" year|add:"-2" %}"> {{year|add:"-2"}} </a>
+                        </li>
+                        <li class="d-inline">
+                            <a class="btn btn-primary" href="{% url "events:EventList" year|add:"-1" %}"> {{year|add:"-1"}} </a>
+                        </li>
+                        <li class="d-inline">
+                            <a class="btn btn-primary active" href="{% url "events:EventList" year|add:"0" %}"> {{year|add:"0"}} </a>
+                        </li>
+                        <li class="d-inline">
+                            <a class="btn btn-primary" href="{% url "events:EventList" year|add:"1" %}"> {{year|add:"1"}} </a>
+                        </li>
+                        <li class="d-inline">
+                            <a class="btn btn-primary" href="{% url "events:EventList" year|add:"2" %}"> {{year|add:"2"}} </a>
+                        </li>
+                    </ol>
+                {% endwith %}
+            
         </nav>
         <nav class="mb-3">
             <a class="btn btn-primary" href="{% url "events:EventList" %}"> Alle framtidige </a>
             {% else %}
                 {% now "Y" as current_year %}
                 <a class="btn btn-primary" href="{% url "events:EventList" current_year %}"> Heile året </a>
-                {% if filter_type == "ikkje-svara-på" %}
+                {% if view.kwargs.filter_type == "ikkje-svara-på" %}
                     <a class="btn btn-primary" href="{% url "events:EventList" %}"> Alle framtidige </a>
                 {% else %}
                     <a class="btn btn-primary" href="{% url "events:EventListFilter" "ikkje-svara-på"  %}"> Berre hendingar som ikkje er svara på</a>

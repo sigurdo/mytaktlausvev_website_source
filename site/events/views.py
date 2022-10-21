@@ -2,7 +2,7 @@ from datetime import timedelta
 
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
-from django.db.models import Exists, OuterRef
+from django.db.models import OuterRef
 from django.db.models.functions import TruncMonth
 from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404
@@ -108,11 +108,6 @@ class EventList(LoginRequiredMixin, BreadcrumbsMixin, ListView):
         return (
             queryset.annotate(
                 start_month=TruncMonth("start_time"),
-                user_is_attending=Exists(
-                    EventAttendance.objects.filter(
-                        event=OuterRef("pk"), person=self.request.user
-                    )
-                ),
                 user_attending_status=EventAttendance.objects.filter(
                     event=OuterRef("pk"), person=self.request.user
                 ).values("status"),
@@ -126,10 +121,7 @@ class EventList(LoginRequiredMixin, BreadcrumbsMixin, ListView):
         for event in context_data["events"]:
             # Set attendance form on all events
             event.attendance_form = self.get_attendance_form(event)
-        if self.kwargs.get("year"):
-            context_data["year"] = self.kwargs.get("year")
-        if self.kwargs.get("filter_type"):
-            context_data["filter_type"] = self.kwargs.get("filter_type")
+
         return context_data
 
     def get_attendance_form(self, event):
