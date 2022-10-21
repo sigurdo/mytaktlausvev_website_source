@@ -2,7 +2,7 @@ from datetime import timedelta
 
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
-from django.db.models import Exists, OuterRef
+from django.db.models import OuterRef
 from django.db.models.functions import TruncMonth
 from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404
@@ -94,17 +94,23 @@ class EventList(LoginRequiredMixin, BreadcrumbsMixin, ListView):
         match self.kwargs:
             case {"year": year}:
                 queryset = Event.objects.filter(start_time__year=year)
+            case {"filter_type": filter_type}:
+                if filter_type == "ikkje-svara-på":
+                    queryset = Event.objects.upcoming().exclude(
+                        attendances__person=self.request.user
+                    )
+                else:
+                    queryset = Event.objects.upcoming()
+
             case _:
                 queryset = Event.objects.upcoming()
 
         return (
             queryset.annotate(
                 start_month=TruncMonth("start_time"),
-                user_is_attending=Exists(
-                    EventAttendance.objects.filter(
-                        event=OuterRef("pk"), person=self.request.user
-                    )
-                ),
+                user_attending_status=EventAttendance.objects.filter(
+                    event=OuterRef("pk"), person=self.request.user
+                ).values("status"),
             )
             .select_related("category")
             .prefetch_related("keyinfo_entries")
@@ -115,8 +121,7 @@ class EventList(LoginRequiredMixin, BreadcrumbsMixin, ListView):
         for event in context_data["events"]:
             # Set attendance form on all events
             event.attendance_form = self.get_attendance_form(event)
-        if self.kwargs.get("year"):
-            context_data["year"] = self.kwargs.get("year")
+
         return context_data
 
     def get_attendance_form(self, event):

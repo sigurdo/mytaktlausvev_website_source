@@ -7,6 +7,9 @@ app_name = "events"
 urlpatterns = [
     path("", views.EventList.as_view(), name="EventList"),
     path("<int:year>/", views.EventList.as_view(), name="EventList"),
+    path(
+        "filter/<str:filter_type>/", views.EventList.as_view(), name="EventListFilter"
+    ),
     path("ny/", views.EventCreate.as_view(), name="EventCreate"),
     path("<int:year>/<slug:slug>/", views.EventDetail.as_view(), name="EventDetail"),
     path(
