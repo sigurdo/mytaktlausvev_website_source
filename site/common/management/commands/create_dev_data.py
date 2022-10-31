@@ -190,6 +190,7 @@ class Command(BaseCommand):
             category__name="Øving",
             location="KJL4",
             location_map_link="https://link.mazemap.com/2t59lzj4",
+            repertoire_include_active=True,
         )
         board_game_night = EventFactory(
             title="Brettspelkveld",
