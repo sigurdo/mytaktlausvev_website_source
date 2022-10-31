@@ -66,8 +66,8 @@ class Dashboard(LoginRequiredMixin, TemplateView):
         return f"{events_answered}/{upcoming_events_count}"
 
     def get_minutes(self):
-        """Returns the 5 most recent minutes."""
-        return Minutes.objects.all()[:5]
+        """Returns the 5 most recently created minutes."""
+        return Minutes.objects.order_by("-created")[:5]
 
     def get_latest_galleries(self):
         """Returns the 2 galleries with most recent image uploads."""
