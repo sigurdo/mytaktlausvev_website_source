@@ -67,11 +67,6 @@ class ActiveRepertoires(LoginRequiredMixin, ListView):
             )
         )
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["date"] = self.kwargs.get("date")
-        return context
-
 
 class RepertoireDetail(LoginRequiredMixin, BreadcrumbsMixin, DetailView):
     model = Repertoire
