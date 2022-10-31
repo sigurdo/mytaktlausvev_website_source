@@ -171,6 +171,10 @@ class EventTestSuite(TestCase):
     def test_can_set_neither_location_nor_map_link(self):
         EventFactory(location="", location_map_link="")
 
+    def test_repertoire_include_active_defaults_to_false(self):
+        event = EventFactory()
+        self.assertFalse(event.repertoire_include_active)
+
 
 class EventAttendanceTestSuite(TestCase):
     def setUp(self):
