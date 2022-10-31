@@ -2,7 +2,7 @@
 
 {% block title_page %}
     {% load utils %}
-    Repertoar{% if date %} <time datetime="{{date}}">{{date | parse_iso8601 | date:"j. F Y"}}</time>{% endif %}
+    Repertoar{% if date %} {{date | parse_iso8601 | date:"j. F Y"}}{% endif %}
 {% endblock title_page %}
 
 {% block title_content %}
