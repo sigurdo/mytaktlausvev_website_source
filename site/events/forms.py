@@ -52,9 +52,9 @@ class EventForm(ModelForm):
         "content",
         Fieldset(
             "Repertoar",
-            "repertoire_include_active",
+            "include_active_repertoires",
             "repertoires",
-            "repertoire_extra_scores",
+            "extra_scores",
         ),
     )
 
@@ -68,14 +68,14 @@ class EventForm(ModelForm):
             "content",
             "location",
             "location_map_link",
-            "repertoire_include_active",
+            "include_active_repertoires",
             "repertoires",
-            "repertoire_extra_scores",
+            "extra_scores",
         ]
         widgets = {
             "category": AutocompleteSelect,
             "repertoires": AutocompleteSelectMultiple,
-            "repertoire_extra_scores": AutocompleteSelectMultiple,
+            "extra_scores": AutocompleteSelectMultiple,
         }
 
 

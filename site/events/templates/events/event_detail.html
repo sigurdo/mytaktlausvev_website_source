@@ -55,7 +55,7 @@
     {% load markdown %}
     {{ event.content | markdown }}
     
-    {% if event.repertoire_include_active or event.repertoires.exists or event.repertoire_extra_scores.exists %}
+    {% if event.include_active_repertoires or event.repertoires.exists or event.extra_scores.exists %}
         {% include "events/includes/repertoire.html" with event=event only %}
     {% endif %}
 

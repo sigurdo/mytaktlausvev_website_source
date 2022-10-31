@@ -31,11 +31,11 @@ class EventFactory(DjangoModelFactory):
         self.repertoires.set(repertoire_list)
 
     @post_generation
-    def repertoire_extra_scores(self, create, repertoire_extra_scores_list):
-        if not create or not repertoire_extra_scores_list:
+    def extra_scores(self, create, extra_scores_list):
+        if not create or not extra_scores_list:
             return
 
-        self.repertoire_extra_scores.set(repertoire_extra_scores_list)
+        self.extra_scores.set(extra_scores_list)
 
 
 class EventAttendanceFactory(DjangoModelFactory):

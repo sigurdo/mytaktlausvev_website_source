@@ -73,7 +73,7 @@ class Event(ArticleMixin):
         blank=True,
         help_text="Lenkje til kart over staden hos ei kartteneste som OpenStreetMap, Google Maps eller MazeMap.",
     )
-    repertoire_include_active = BooleanField(
+    include_active_repertoires = BooleanField(
         verbose_name="inkluder det vanlege repertoaret",
         default=False,
         help_text='Gjer at "det vanlege" repertoaret vert knytt til hendinga. Det betyr alle repertoar som er aktive på datoen hendinga skjer.',
@@ -84,7 +84,7 @@ class Event(ArticleMixin):
         blank=True,
         help_text="Repertoar knytt til hendinga.",
     )
-    repertoire_extra_scores = ManyToManyField(
+    extra_scores = ManyToManyField(
         Score,
         verbose_name="ekstra notar",
         blank=True,
