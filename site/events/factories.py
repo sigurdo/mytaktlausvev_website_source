@@ -1,4 +1,4 @@
-from factory import SubFactory, sequence
+from factory import SubFactory, sequence, post_generation
 from factory.django import DjangoModelFactory
 
 from accounts.factories import UserFactory
@@ -22,6 +22,20 @@ class EventFactory(DjangoModelFactory):
     created_by = SubFactory(UserFactory)
     modified_by = SubFactory(UserFactory)
     category = SubFactory(EventCategoryFactory)
+
+    @post_generation
+    def repertoires(self, create, repertoire_list):
+        if not create or not repertoire_list:
+            return
+
+        self.repertoires.set(repertoire_list)
+    
+    @post_generation
+    def repertoire_extra_scores(self, create, repertoire_extra_scores_list):
+        if not create or not repertoire_extra_scores_list:
+            return
+
+        self.repertoire_extra_scores.set(repertoire_extra_scores_list)
 
 
 class EventAttendanceFactory(DjangoModelFactory):

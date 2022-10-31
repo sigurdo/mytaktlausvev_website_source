@@ -804,16 +804,15 @@ class Command(BaseCommand):
             scores=concert_scores,
         )
 
-        concert = EventFactory(
+        EventFactory(
             title="Konsert",
             category__name="Konsert",
             content="Vi tek ein konsert a', gutta!",
             start_time=concert_end_time - timedelta(hours=2),
             end_time=concert_end_time,
+            repertoires=[concert_repertoire],
+            repertoire_extra_scores=[birthday_song],
         )
-        concert.repertoires.set([concert_repertoire])
-        concert.repertoire_extra_scores.set([birthday_song])
-        concert.save()
         smash.repertoires.set([march_booklet_repertoire])
         smash.save()
 
