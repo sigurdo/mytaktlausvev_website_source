@@ -2,7 +2,7 @@
 $enable-shadows: true;
 
 // Colors
-$primary: #a50104;
+$primary: (MYTAKTLAUSVEV_VARIABLE(appearance.primary_color));
 $secondary: #848201;
 $navbar-dark-color: rgba(255, 255, 255, 0.9);
 $button-color-advent-calendar: #5d4f8a;
