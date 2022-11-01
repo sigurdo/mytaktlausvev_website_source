@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 
 from django.test import TestCase
 from django.urls import reverse
@@ -90,11 +90,14 @@ class DashboardTestSuite(TestMixin, TestCase):
         self.assertIn("events", context)
         self.assertQuerysetEqual(context["events"], Event.objects.upcoming())
 
-    def test_minutes_in_context(self):
-        MinutesFactory()
-        context = self.get_context()
-        self.assertIn("minutes", context)
-        self.assertEquals(len(list(context["minutes"])), 1)
+    def test_minutes_ordered_by_created_date(self):
+        minutes = [
+            MinutesFactory(),
+            MinutesFactory(date=date.today() + timedelta(days=1)),
+            MinutesFactory(date=date.today() - timedelta(days=1)),
+        ]
+        minutes.reverse()
+        self.assertQuerysetEqual(minutes, self.get_context()["minutes"])
 
     def test_latest_galleries_in_context(self):
         ImageFactory()
