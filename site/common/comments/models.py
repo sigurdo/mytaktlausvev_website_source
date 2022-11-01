@@ -15,11 +15,18 @@ class Comment(CreatedModifiedMixin):
     def get_absolute_url(self):
         return f"{self.content_object.get_absolute_url()}#comment-{self.pk}"
 
-    def __str__(self):
+    def truncated(self):
+        """
+        Returns the comment truncated to 25 characters with an ellipsis.
+        Whitespace is stripped before truncation.
+        """
         stripped = self.comment.rstrip()
         if len(stripped) <= 25:
             return stripped
         return stripped[0:24] + "…"
+
+    def __str__(self):
+        return self.truncated()
 
     class Meta:
         verbose_name = "kommentar"

@@ -34,22 +34,29 @@ class CommentTestCase(TestCase):
             f"{reverse('articles:ArticleDetail', args=[self.article.slug])}#comment-{self.comment.pk}",
         )
 
-    def test_to_str_comment_shorter_than_25_characters(self):
-        """`__str__` should be the entire comment when it's shorter than 25 characters."""
-        self.assertEqual(str(self.comment), self.comment.comment)
+    def test_truncated_comment_shorter_than_25_characters(self):
+        """`truncated()` should be the entire comment when it's shorter than 25 characters."""
+        self.assertEqual(self.comment.truncated(), self.comment.comment)
 
-    def test_to_str_comment_longer_than_25_characters(self):
+    def test_truncated_comment_longer_than_25_characters(self):
         """
-        `__str__` should truncate comment when it has more than 25 characters,
+        `truncated()` should truncate comment when it has more than 25 characters,
         and add an ellipsis.
         """
-        self.assertEqual(str(self.comment_long), self.comment_long.comment[0:24] + "…")
-
-    def test_to_str_strips_whitespace_before_checking(self):
-        """`__str__` should strip whitespace before checking length."""
         self.assertEqual(
-            str(self.comment_whitespace), self.comment_whitespace.comment.rstrip()
+            self.comment_long.truncated(), self.comment_long.comment[0:24] + "…"
         )
+
+    def test_truncated_strips_whitespace_before_checking(self):
+        """`truncated()` should strip whitespace before checking length."""
+        self.assertEqual(
+            self.comment_whitespace.truncated(),
+            self.comment_whitespace.comment.rstrip(),
+        )
+
+    def test_to_str_is_truncated(self):
+        """`__str__` should return a truncated version of the comment."""
+        self.assertEqual(str(self.comment_long), self.comment_long.truncated())
 
 
 class CommentCreateTestCase(TestMixin, TestCase):
