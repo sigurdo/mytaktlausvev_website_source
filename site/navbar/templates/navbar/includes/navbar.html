@@ -1,6 +1,6 @@
 {% now "d m" as day %}
 {% now "m" as month %}
-<nav class="navbar p-1 navbar-expand-xl fixed-top navbar-dark {% if user.is_authenticated and day == "31 10" %}" style="background: repeating-linear-gradient(#0D439D, #0D439D 3px, #dce8ff 3px, #dce8ff 6px); {% elif PRODUCTION %} bg-primary {% else %}" style="background-color:#058104; {% endif %}">
+<nav class="navbar p-1 navbar-expand-xl fixed-top navbar-dark {% if user.is_authenticated and day == "31 10" %}" style="background: repeating-linear-gradient(#0D439D, #0D439D 3px, #dce8ff 3px, #dce8ff 6px); {% elif PRODUCTION %} bg-primary {% else %}" style="background-color: (MYTAKTLAUSVEV_VARIABLE(appearance.navbar.development_background_color)); {% endif %}">
     <div class="container-fluid">
         <a class="navbar-brand" href="/"/>
             {% load static %}
