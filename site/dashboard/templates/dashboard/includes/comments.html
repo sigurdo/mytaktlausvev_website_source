@@ -4,7 +4,7 @@
     {% for comment in comments %}
     <li>
         {% load markdown %}
-        <a href="{{ comment.get_absolute_url }}">{{ comment.comment | markdown_inline_no_links }}</a>
+        <a href="{{ comment.get_absolute_url }}">{{ comment.truncated | markdown_inline_no_links }}</a>
         <div>
             {% load humanize %}
             <time
