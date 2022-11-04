@@ -71,7 +71,7 @@ ALLOWED_BLOCK_ATTRIBUTES = ["src", "alt", "width", "height", "class"]
 
 def get_class_apply_filter(allowed_tags):
     full_class_map = {
-        "table": "table table-striped",
+        "table": "table table-striped w-auto",
         "img": "img-fluid d-block m-auto",
         "a": "text-break",
         "h1": "fs-2",
