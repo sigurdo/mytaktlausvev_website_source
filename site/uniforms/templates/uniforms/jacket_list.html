@@ -73,7 +73,7 @@
                     >
                         {{ jacket.get_state_display }}
                     </td>
-                    <td>
+                    <td data-order="{{ jacket.modified | date:"U" }}">
                         <time datetime="{{ jacket.modified | date:"c" }}">
                             {{ jacket.modified | date:"j. b Y" }}
                         </time>
