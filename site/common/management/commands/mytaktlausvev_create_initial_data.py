@@ -34,7 +34,7 @@ class Command(BaseCommand):
         article_wiki = ArticleFactory(
             title="Wiki",
             content="",
-            public=True,
+            public=False,
             comments_allowed=True,
             created_by=superuser,
             modified_by=superuser,
@@ -65,7 +65,7 @@ Eit navigasjonslinepunkt kan kreve innlogging. Dette gjer at navigasjonslinepunk
 Innbyggbare tekstar er ein samling av diverse tekstar som vert bygd inn på ulike stader i nettsida, som f. eks. innhaldet i velkomsteposten som automatisk vert sendt ut når ein ny brukar vert oppretta. Desse kan du redigere under [Adminstrasjon](/admin/) > [Innbyggbare tekstar](/admin/embeddable_text/embeddabletext/)
 
 """,
-            public=True,
+            public=False,
             comments_allowed=True,
             created_by=superuser,
             modified_by=superuser,
