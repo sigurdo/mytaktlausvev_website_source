@@ -17,7 +17,7 @@ class Quote(CreatedModifiedMixin):
     users = ManyToManyField(
         settings.AUTH_USER_MODEL,
         related_name="quotes",
-        verbose_name="medlem som vert sitert",
+        verbose_name="involverte medlemmar",
         blank=True,
     )
 
