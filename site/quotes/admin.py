@@ -14,7 +14,7 @@ class QuoteAdmin(admin.ModelAdmin):
     def quoted_as_or_users_view(self, obj):
         return obj.quoted_as_or_users()
 
-    @admin.display(description="involverte brukarar")
+    @admin.display(description="involverte medlemmar")
     def get_involved_users(self, obj):
         return ", ".join(user.get_name() for user in obj.users.all())
 
