@@ -435,3 +435,25 @@ class FavoritePart(Model):
         return reverse(
             "sheetmusic:ScoreView", kwargs={"slug": self.part.pdf.score.slug}
         )
+
+
+class Original(Model):
+    """Model representing an original score file."""
+
+    score = ForeignKey(
+        Score, verbose_name="note", on_delete=CASCADE, related_name="originals"
+    )
+    file = FileField("fil", upload_to="sheetmusic/originals/", max_length=255)
+    filename_original = CharField("opphaveleg filnamn", max_length=255)
+    timestamp = DateTimeField("tidsmerke", auto_now_add=True)
+
+    def __str__(self):
+        return self.filename_original
+
+    def get_absolute_url(self):
+        return reverse("sheetmusic:ScoreView", kwargs={"slug": self.score.slug})
+
+    class Meta:
+        ordering = ["filename_original"]
+        verbose_name = "original"
+        verbose_name_plural = "originalar"

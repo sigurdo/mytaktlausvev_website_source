@@ -18,7 +18,13 @@ from common.test_utils import (
 )
 from instruments.factories import InstrumentTypeFactory
 
-from .factories import FavoritePartFactory, PartFactory, PdfFactory, ScoreFactory
+from .factories import (
+    FavoritePartFactory,
+    OriginalFactory,
+    PartFactory,
+    PdfFactory,
+    ScoreFactory,
+)
 from .forms import EditPdfFormset, PartsUpdateAllFormset, PartsUpdateFormset
 from .models import Part, Pdf, Score
 from .views import nav_tabs_score_edit, sheetmusic_breadcrumbs
@@ -340,6 +346,21 @@ class FavoritePartTestSuite(TestMixin, TestCase):
         self.assertEqual(
             self.favorite_part.get_absolute_url(),
             reverse("sheetmusic:ScoreView", kwargs={"slug": self.part.pdf.score.slug}),
+        )
+
+
+class OriginalTestSuite(TestMixin, TestCase):
+    def setUp(self):
+        self.original = OriginalFactory()
+
+    def test_to_str(self):
+        """`__str__` should be the original filename."""
+        self.assertEqual(str(self.original), self.original.filename_original)
+
+    def test_get_absolute_url(self):
+        self.assertEqual(
+            self.original.get_absolute_url(),
+            reverse("sheetmusic:ScoreView", kwargs={"slug": self.original.score.slug}),
         )
 
 
