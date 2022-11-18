@@ -99,14 +99,28 @@
     </section>
     {% endif %}
 
-    {% if pdfs %}
+    {% if score.pdfs.exists %}
     <section>
         <h2 class="fs-3"> Opphavelege PDFar </h2>
 
         <ul class="list-unstyled">
-            {% for pdf in pdfs %}
+            {% for pdf in score.pdfs.all %}
                 <li>
                     <a href="{{ pdf.file.url }}"> {{ pdf }} </a>
+                </li>
+            {% endfor %}
+        </ul>
+    </section>
+    {% endif %}
+
+    {% if score.originals.exists %}
+    <section>
+        <h2 class="fs-3"> Originalar </h2>
+
+        <ul class="list-unstyled">
+            {% for original in score.originals.all %}
+                <li>
+                    <a href="{{ original.file.url }}"> {{ original }} </a>
                 </li>
             {% endfor %}
         </ul>
