@@ -214,3 +214,32 @@ class UploadOriginalsForm(ModelForm):
         fields = ["file"]
         widgets = {"file": ClearableFileInput(attrs={"multiple": True})}
         labels = {"file": "Originalar"}
+
+
+class EditOriginalForm(ModelForm):
+    """Form for editing an original score file."""
+
+    helper = FormHelper()
+
+    class Meta:
+        model = Original
+        fields = ["file"]
+
+
+EditOriginalFormset = modelformset_factory(
+    Original,
+    form=EditOriginalForm,
+    can_delete=True,
+    extra=0,
+)
+
+
+class EditOriginalFormsetHelper(FormHelper):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.render_required_fields = True
+        self.template = "common/forms/table_inline_formset_shade_delete.html"
+        self.add_input(Submit("submit", "Lagre originalar"))
+
+
+EditOriginalFormset.helper = EditOriginalFormsetHelper()

@@ -25,7 +25,12 @@ from .factories import (
     PdfFactory,
     ScoreFactory,
 )
-from .forms import EditPdfFormset, PartsUpdateAllFormset, PartsUpdateFormset
+from .forms import (
+    EditOriginalFormset,
+    EditPdfFormset,
+    PartsUpdateAllFormset,
+    PartsUpdateFormset,
+)
 from .models import Original, Part, Pdf, Score
 from .views import nav_tabs_score_edit, sheetmusic_breadcrumbs
 
@@ -1049,6 +1054,70 @@ class FavoritePartPdfTestSuite(TestMixin, TestCase):
         self.assertEqual(response["content-type"], "application/pdf")
 
 
+class OriginalsUpdateTestSuite(TestMixin, TestCase):
+    def setUp(self):
+        self.score = ScoreFactory()
+        self.original = OriginalFactory(score=self.score)
+
+    def create_post_data(self, data=[]):
+        return create_formset_post_data(
+            EditOriginalFormset,
+            defaults={
+                "id": str(self.original.pk),
+            },
+            data=data,
+        )
+
+    def get_url(self):
+        return reverse("sheetmusic:OriginalsUpdate", args=[self.score.slug])
+
+    def test_requires_login(self):
+        self.assertLoginRequired(self.get_url())
+
+    def test_requires_permission(self):
+        self.assertPermissionRequired(
+            self.get_url(),
+            "sheetmusic.change_original",
+            "sheetmusic.delete_original",
+        )
+
+    def test_succeeds_if_not_permission_but_is_author(self):
+        """
+        Should succeed if the user is the author,
+        even if the user doesn't have permission to delete originals.
+        """
+        self.client.force_login(self.score.created_by)
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+    def test_success_redirect(self):
+        user = SuperUserFactory()
+        self.client.force_login(user)
+        response = self.client.post(self.get_url(), self.create_post_data())
+        self.assertRedirects(
+            response, reverse("sheetmusic:ScoreView", args=[self.score.slug])
+        )
+
+    def test_delete(self):
+        user = SuperUserFactory()
+        self.client.force_login(user)
+        self.client.post(
+            self.get_url(),
+            self.create_post_data([{"DELETE": "on"}]),
+        )
+        count = self.score.originals.count()
+        self.assertEqual(count, 0)
+
+    def test_modified_by_of_score_set_to_current_user(self):
+        """Should set `modified_by` of the score to the current user on update."""
+        user = SuperUserFactory()
+        self.client.force_login(user)
+        self.client.post(self.get_url(), self.create_post_data())
+
+        self.score.refresh_from_db()
+        self.assertEqual(self.score.modified_by, user)
+
+
 class OriginalsUploadTestSuite(TestMixin, TestCase):
     def setUp(self):
         self.score = ScoreFactory()
@@ -1095,3 +1164,12 @@ class OriginalsUploadTestSuite(TestMixin, TestCase):
         self.client.force_login(SuperUserFactory())
         self.client.post(self.get_url(), {"file": [test_pdf(), test_pdf(), test_pdf()]})
         self.assertEqual(Original.objects.count(), 3)
+
+    def test_modified_by_of_score_set_to_current_user(self):
+        """Should set `modified_by` of the score to the current user on update."""
+        user = SuperUserFactory()
+        self.client.force_login(user)
+        self.client.post(self.get_url(), self.test_data)
+
+        self.score.refresh_from_db()
+        self.assertEqual(self.score.modified_by, user)

@@ -20,6 +20,7 @@ from common.forms.views import DeleteViewCustom
 from common.mixins import PermissionOrCreatedMixin
 
 from .forms import (
+    EditOriginalFormset,
     EditPdfFormset,
     EditPdfFormsetHelper,
     PartsUpdateAllFormset,
@@ -48,6 +49,11 @@ def nav_tabs_score_edit(score, user):
             "url": reverse("sheetmusic:PdfsUpload", args=[score.slug]),
             "name": "PDF-opplasting",
             "permissions": ["sheetmusic.add_pdf", "sheetmusic.add_part"],
+        },
+        {
+            "url": reverse("sheetmusic:OriginalsUpdate", args=[score.slug]),
+            "name": "Originalar",
+            "permissions": ["sheetmusic.change_original", "sheetmusic.delete_original"],
         },
         {
             "url": reverse("sheetmusic:OriginalsUpload", args=[score.slug]),
@@ -478,5 +484,45 @@ class OriginalsUpload(PermissionOrCreatedMixin, BreadcrumbsMixin, FormView):
         return super().get_context_data(**kwargs)
 
     def form_valid(self, form):
-        form.save(score=self.get_score())
-        return super().form_valid(form)
+        with transaction.atomic():
+            # Update `modified` and `modified_by`
+            self.get_score().save()
+            form.save(score=self.get_score())
+            return super().form_valid(form)
+
+
+class OriginalsUpdate(
+    PermissionOrCreatedMixin, BreadcrumbsMixin, SingleObjectMixin, FormView
+):
+    model = Score
+    form_class = EditOriginalFormset
+    template_name = "common/forms/form.html"
+    context_object_name = "score"
+    permission_required = ("sheetmusic.change_original", "sheetmusic.delete_original")
+
+    def setup(self, request, *args, **kwargs):
+        """Set `self.object` for `SingleObjectMixin` compatibility."""
+        super().setup(request, *args, **kwargs)
+        self.object = self.get_object()
+
+    def get_success_url(self) -> str:
+        return self.object.get_absolute_url()
+
+    def get_breadcrumbs(self):
+        return sheetmusic_breadcrumbs(score=self.object)
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["queryset"] = self.object.originals.all()
+        return kwargs
+
+    def form_valid(self, form):
+        with transaction.atomic():
+            # Update `modified` and `modified_by`
+            self.object.save()
+            form.save()
+            return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        kwargs["nav_tabs"] = nav_tabs_score_edit(self.object, self.request.user)
+        return super().get_context_data(**kwargs)
