@@ -17,6 +17,11 @@ urlpatterns = [
         "<slug:slug>/rediger/pdfar/ny/", views.PdfsUpload.as_view(), name="PdfsUpload"
     ),
     path(
+        "<slug:slug>/rediger/originalar/ny/",
+        views.OriginalsUpload.as_view(),
+        name="OriginalsUpload",
+    ),
+    path(
         "<slug:slug>/rediger/stemmer/",
         views.PartsUpdateIndex.as_view(),
         name="PartsUpdateIndex",

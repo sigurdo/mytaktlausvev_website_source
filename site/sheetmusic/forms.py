@@ -17,7 +17,7 @@ from django.forms import (
 from common.forms.layouts import DynamicFormsetButton
 from common.forms.mixins import CleanAllFilesMixin
 
-from .models import Part, Pdf, Score, pdf_file_validators
+from .models import Original, Part, Pdf, Score, pdf_file_validators
 
 
 class ScoreForm(ModelForm):
@@ -198,3 +198,19 @@ class EditPdfFormsetHelper(FormHelper):
 
 
 EditPdfFormset.helper = EditPdfFormsetHelper()
+
+
+class UploadOriginalsForm(ModelForm):
+    helper = FormHelper()
+    helper.add_input(Submit("submit", "Lagre originalar"))
+
+    def save(self, score, commit=True):
+        """Saves all submitted files as originals of `score`. Ignores value of `commit`."""
+        for file in self.files.getlist("file"):
+            Original.objects.create(score=score, file=file, filename_original=file.name)
+
+    class Meta:
+        model = Original
+        fields = ["file"]
+        widgets = {"file": ClearableFileInput(attrs={"multiple": True})}
+        labels = {"file": "Originalar"}

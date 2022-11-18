@@ -25,6 +25,7 @@ from .forms import (
     PartsUpdateAllFormset,
     PartsUpdateFormset,
     ScoreForm,
+    UploadOriginalsForm,
     UploadPdfForm,
 )
 from .models import FavoritePart, Part, Pdf, Score
@@ -47,6 +48,11 @@ def nav_tabs_score_edit(score, user):
             "url": reverse("sheetmusic:PdfsUpload", args=[score.slug]),
             "name": "PDF-opplasting",
             "permissions": ["sheetmusic.add_pdf", "sheetmusic.add_part"],
+        },
+        {
+            "url": reverse("sheetmusic:OriginalsUpload", args=[score.slug]),
+            "name": "Originalopplasting",
+            "permissions": ["sheetmusic.add_original"],
         },
     ]
     if score.created_by == user:
@@ -441,3 +447,36 @@ class FavoritePartUpdate(LoginRequiredMixin, View):
         favorite = FavoritePart.objects.get(user=request.user, part__pk=data["part_pk"])
         favorite.delete()
         return django.http.HttpResponse("deleted")
+
+
+class OriginalsUpload(PermissionOrCreatedMixin, BreadcrumbsMixin, FormView):
+    form_class = UploadOriginalsForm
+    template_name = "common/forms/form.html"
+    context_object_name = "score"
+    permission_required = ("sheetmusic.add_original",)
+
+    score = None
+
+    def get_score(self):
+        if not self.score:
+            self.score = get_object_or_404(Score, slug=self.kwargs["slug"])
+        return self.score
+
+    def get_success_url(self) -> str:
+        return self.get_score().get_absolute_url()
+
+    def get_breadcrumbs(self):
+        return sheetmusic_breadcrumbs(score=self.get_score())
+
+    def get_permission_check_object(self):
+        return self.get_score()
+
+    def get_context_data(self, **kwargs):
+        kwargs[self.context_object_name] = self.get_score()
+        kwargs["object"] = self.get_score()
+        kwargs["nav_tabs"] = nav_tabs_score_edit(self.get_score(), self.request.user)
+        return super().get_context_data(**kwargs)
+
+    def form_valid(self, form):
+        form.save(score=self.get_score())
+        return super().form_valid(form)

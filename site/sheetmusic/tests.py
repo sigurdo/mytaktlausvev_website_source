@@ -26,7 +26,7 @@ from .factories import (
     ScoreFactory,
 )
 from .forms import EditPdfFormset, PartsUpdateAllFormset, PartsUpdateFormset
-from .models import Part, Pdf, Score
+from .models import Original, Part, Pdf, Score
 from .views import nav_tabs_score_edit, sheetmusic_breadcrumbs
 
 
@@ -423,13 +423,6 @@ class ScoreViewTestSuite(TestMixin, TestCase):
         self.client.force_login(user)
         response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, HTTPStatus.OK)
-
-    def test_pdf_in_context(self):
-        user = UserFactory()
-        pdf = PdfFactory(score=self.score)
-        self.client.force_login(user)
-        context = self.client.get(self.get_url()).context
-        self.assertEqual(list(context["pdfs"]), [pdf])
 
     def test_parts_in_context(self):
         user = UserFactory()
@@ -1054,3 +1047,51 @@ class FavoritePartPdfTestSuite(TestMixin, TestCase):
             )
         )
         self.assertEqual(response["content-type"], "application/pdf")
+
+
+class OriginalsUploadTestSuite(TestMixin, TestCase):
+    def setUp(self):
+        self.score = ScoreFactory()
+        self.file = test_pdf()
+        self.test_data = {"file": self.file}
+
+    def get_url(self):
+        return reverse("sheetmusic:OriginalsUpload", args=[self.score.slug])
+
+    def test_requires_login(self):
+        self.assertLoginRequired(self.get_url())
+
+    def test_requires_permission(self):
+        self.assertPermissionRequired(
+            self.get_url(),
+            "sheetmusic.add_original",
+        )
+
+    def test_succeeds_if_not_permission_but_is_author(self):
+        """
+        Should succeed if the user is the author,
+        even if the user doesn't have permission to upload originals.
+        """
+        self.client.force_login(self.score.created_by)
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+    def test_success_redirect(self):
+        self.client.force_login(SuperUserFactory())
+        response = self.client.post(self.get_url(), self.test_data)
+        self.assertRedirects(
+            response, reverse("sheetmusic:ScoreView", args=[self.score.slug])
+        )
+
+    def test_preserves_filename(self):
+        """Should preserve the original filename."""
+        self.client.force_login(SuperUserFactory())
+        self.client.post(self.get_url(), self.test_data)
+        original = Original.objects.last()
+        self.assertEqual(original.filename_original, self.file.name)
+
+    def test_upload_multiple_originals(self):
+        """Should let you upload multiple originals at the same time."""
+        self.client.force_login(SuperUserFactory())
+        self.client.post(self.get_url(), {"file": [test_pdf(), test_pdf(), test_pdf()]})
+        self.assertEqual(Original.objects.count(), 3)
