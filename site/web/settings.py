@@ -147,6 +147,7 @@ CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS", "http://localhost"
     " "
 )
 
+
 X_FRAME_OPTIONS = "SAMEORIGIN"
 
 ROOT_URLCONF = "web.urls"
@@ -191,6 +192,12 @@ DATABASES = {
 
 
 AUTH_USER_MODEL = "accounts.UserCustom"
+
+# Allow inactive users to authenticate in the auth backend, but block login in the login form.
+# This enables giving inactive users a custom error message when they try to login.
+# Without this, inactive users are told that their username and/or password is wrong.
+
+AUTHENTICATION_BACKENDS = ["django.contrib.auth.backends.AllowAllUsersModelBackend"]
 
 # Password hashers
 # https://docs.djangoproject.com/en/3.0/ref/settings/#std:setting-PASSWORD_HASHERS
