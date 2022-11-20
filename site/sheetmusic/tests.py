@@ -15,6 +15,7 @@ from common.test_utils import (
     test_image,
     test_pdf,
     test_pdf_multipage,
+    test_txt_file,
 )
 from instruments.factories import InstrumentTypeFactory
 
@@ -996,7 +997,7 @@ class PdfsUploadTestSuite(TestMixin, TestCase):
         self.assertFormError(
             response.context["form"],
             "files",
-            f"{image.name}: Filtype {image.content_type} ikkje lovleg",
+            f"{image.name}: Filending '.gif' ikkje lovleg.",
         )
 
 
@@ -1121,7 +1122,7 @@ class OriginalsUpdateTestSuite(TestMixin, TestCase):
 class OriginalsUploadTestSuite(TestMixin, TestCase):
     def setUp(self):
         self.score = ScoreFactory()
-        self.file = test_pdf()
+        self.file = test_txt_file(name="Free World Fantasy.mscz")
         self.test_data = {"file": self.file}
 
     def get_url(self):
@@ -1162,7 +1163,10 @@ class OriginalsUploadTestSuite(TestMixin, TestCase):
     def test_upload_multiple_originals(self):
         """Should let you upload multiple originals at the same time."""
         self.client.force_login(SuperUserFactory())
-        self.client.post(self.get_url(), {"file": [test_pdf(), test_pdf(), test_pdf()]})
+        self.client.post(
+            self.get_url(),
+            {"file": [test_txt_file(name="Sjøbanan.mscz") for _ in range(3)]},
+        )
         self.assertEqual(Original.objects.count(), 3)
 
     def test_modified_by_of_score_set_to_current_user(self):
