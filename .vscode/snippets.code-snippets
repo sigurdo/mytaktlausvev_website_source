@@ -136,9 +136,9 @@
 			"",
 			"    $3",
 			"{% endblock header %}",
-			"    $4",
-			"{% block content %}",
 			"",
+			"{% block content %}",
+			"    $4",
 			"{% endblock content %}",
 			""
 		],
