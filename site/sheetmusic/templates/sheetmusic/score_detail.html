@@ -113,14 +113,14 @@
     </section>
     {% endif %}
 
-    {% if score.originals.exists %}
+    {% if score.edit_files.exists %}
     <section>
-        <h2 class="fs-3"> Originalar </h2>
+        <h2 class="fs-3"> Redigeringsfiler </h2>
 
         <ul class="list-unstyled">
-            {% for original in score.originals.all %}
+            {% for edit_file in score.edit_files.all %}
                 <li>
-                    <a href="{{ original.file.url }}"> {{ original }} </a>
+                    <a href="{{ edit_file.file.url }}"> {{ edit_file }} </a>
                 </li>
             {% endfor %}
         </ul>

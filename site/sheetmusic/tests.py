@@ -20,19 +20,19 @@ from common.test_utils import (
 from instruments.factories import InstrumentTypeFactory
 
 from .factories import (
+    EditFileFactory,
     FavoritePartFactory,
-    OriginalFactory,
     PartFactory,
     PdfFactory,
     ScoreFactory,
 )
 from .forms import (
-    EditOriginalFormset,
+    EditEditFileFormset,
     EditPdfFormset,
     PartsUpdateAllFormset,
     PartsUpdateFormset,
 )
-from .models import Original, Part, Pdf, Score
+from .models import EditFile, Part, Pdf, Score
 from .views import nav_tabs_score_edit, sheetmusic_breadcrumbs
 
 
@@ -355,18 +355,18 @@ class FavoritePartTestSuite(TestMixin, TestCase):
         )
 
 
-class OriginalTestSuite(TestMixin, TestCase):
+class EditFileTestSuite(TestMixin, TestCase):
     def setUp(self):
-        self.original = OriginalFactory()
+        self.edit_file = EditFileFactory()
 
     def test_to_str(self):
-        """`__str__` should be the original filename."""
-        self.assertEqual(str(self.original), self.original.filename_original)
+        """`__str__` should be the edit file filename."""
+        self.assertEqual(str(self.edit_file), self.edit_file.filename_original)
 
     def test_get_absolute_url(self):
         self.assertEqual(
-            self.original.get_absolute_url(),
-            reverse("sheetmusic:ScoreView", kwargs={"slug": self.original.score.slug}),
+            self.edit_file.get_absolute_url(),
+            reverse("sheetmusic:ScoreView", kwargs={"slug": self.edit_file.score.slug}),
         )
 
 
@@ -1055,22 +1055,22 @@ class FavoritePartPdfTestSuite(TestMixin, TestCase):
         self.assertEqual(response["content-type"], "application/pdf")
 
 
-class OriginalsUpdateTestSuite(TestMixin, TestCase):
+class EditFilesUpdateTestSuite(TestMixin, TestCase):
     def setUp(self):
         self.score = ScoreFactory()
-        self.original = OriginalFactory(score=self.score)
+        self.edit_file = EditFileFactory(score=self.score)
 
     def create_post_data(self, data=[]):
         return create_formset_post_data(
-            EditOriginalFormset,
+            EditEditFileFormset,
             defaults={
-                "id": str(self.original.pk),
+                "id": str(self.edit_file.pk),
             },
             data=data,
         )
 
     def get_url(self):
-        return reverse("sheetmusic:OriginalsUpdate", args=[self.score.slug])
+        return reverse("sheetmusic:EditFilesUpdate", args=[self.score.slug])
 
     def test_requires_login(self):
         self.assertLoginRequired(self.get_url())
@@ -1078,14 +1078,14 @@ class OriginalsUpdateTestSuite(TestMixin, TestCase):
     def test_requires_permission(self):
         self.assertPermissionRequired(
             self.get_url(),
-            "sheetmusic.change_original",
-            "sheetmusic.delete_original",
+            "sheetmusic.change_editfile",
+            "sheetmusic.delete_editfile",
         )
 
     def test_succeeds_if_not_permission_but_is_author(self):
         """
         Should succeed if the user is the author,
-        even if the user doesn't have permission to delete originals.
+        even if the user doesn't have permission to delete edit files.
         """
         self.client.force_login(self.score.created_by)
         response = self.client.get(self.get_url())
@@ -1106,7 +1106,7 @@ class OriginalsUpdateTestSuite(TestMixin, TestCase):
             self.get_url(),
             self.create_post_data([{"DELETE": "on"}]),
         )
-        count = self.score.originals.count()
+        count = self.score.edit_files.count()
         self.assertEqual(count, 0)
 
     def test_modified_by_of_score_set_to_current_user(self):
@@ -1119,14 +1119,14 @@ class OriginalsUpdateTestSuite(TestMixin, TestCase):
         self.assertEqual(self.score.modified_by, user)
 
 
-class OriginalsUploadTestSuite(TestMixin, TestCase):
+class EditFilesUploadTestSuite(TestMixin, TestCase):
     def setUp(self):
         self.score = ScoreFactory()
         self.file = test_txt_file(name="Free World Fantasy.mscz")
         self.test_data = {"file": self.file}
 
     def get_url(self):
-        return reverse("sheetmusic:OriginalsUpload", args=[self.score.slug])
+        return reverse("sheetmusic:EditFilesUpload", args=[self.score.slug])
 
     def test_requires_login(self):
         self.assertLoginRequired(self.get_url())
@@ -1134,13 +1134,13 @@ class OriginalsUploadTestSuite(TestMixin, TestCase):
     def test_requires_permission(self):
         self.assertPermissionRequired(
             self.get_url(),
-            "sheetmusic.add_original",
+            "sheetmusic.add_editfile",
         )
 
     def test_succeeds_if_not_permission_but_is_author(self):
         """
         Should succeed if the user is the author,
-        even if the user doesn't have permission to upload originals.
+        even if the user doesn't have permission to upload edit files.
         """
         self.client.force_login(self.score.created_by)
         response = self.client.get(self.get_url())
@@ -1157,17 +1157,17 @@ class OriginalsUploadTestSuite(TestMixin, TestCase):
         """Should preserve the original filename."""
         self.client.force_login(SuperUserFactory())
         self.client.post(self.get_url(), self.test_data)
-        original = Original.objects.last()
-        self.assertEqual(original.filename_original, self.file.name)
+        edit_file = EditFile.objects.last()
+        self.assertEqual(edit_file.filename_original, self.file.name)
 
-    def test_upload_multiple_originals(self):
-        """Should let you upload multiple originals at the same time."""
+    def test_upload_multiple_edit_files(self):
+        """Should let you upload multiple edit files at the same time."""
         self.client.force_login(SuperUserFactory())
         self.client.post(
             self.get_url(),
             {"file": [test_txt_file(name="Sjøbanan.mscz") for _ in range(3)]},
         )
-        self.assertEqual(Original.objects.count(), 3)
+        self.assertEqual(EditFile.objects.count(), 3)
 
     def test_modified_by_of_score_set_to_current_user(self):
         """Should set `modified_by` of the score to the current user on update."""

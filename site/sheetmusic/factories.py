@@ -5,7 +5,7 @@ from accounts.factories import UserFactory
 from common.test_utils import test_pdf, test_txt_file
 from instruments.factories import InstrumentTypeFactory
 
-from .models import FavoritePart, Original, Part, Pdf, Score
+from .models import EditFile, FavoritePart, Part, Pdf, Score
 
 
 class ScoreFactory(DjangoModelFactory):
@@ -46,9 +46,9 @@ class FavoritePartFactory(DjangoModelFactory):
     part = SubFactory(PartFactory)
 
 
-class OriginalFactory(DjangoModelFactory):
+class EditFileFactory(DjangoModelFactory):
     class Meta:
-        model = Original
+        model = EditFile
 
     score = SubFactory(ScoreFactory)
     file = test_txt_file(name="Free World Fantasy.mscz")

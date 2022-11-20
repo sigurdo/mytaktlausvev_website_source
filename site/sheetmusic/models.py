@@ -422,15 +422,15 @@ class FavoritePart(Model):
         )
 
 
-class Original(Model):
-    """Model representing an original score file."""
+class EditFile(Model):
+    """Model representing an edit file for a score."""
 
     score = ForeignKey(
-        Score, verbose_name="note", on_delete=CASCADE, related_name="originals"
+        Score, verbose_name="note", on_delete=CASCADE, related_name="edit_files"
     )
     file = FileField(
         "fil",
-        upload_to="sheetmusic/originals/",
+        upload_to="sheetmusic/edit_files/",
         validators=[FileTypeValidator([".mscz", ".mscx", ".niff", ".sib", ".musx"])],
         max_length=255,
     )
@@ -445,5 +445,5 @@ class Original(Model):
 
     class Meta:
         ordering = ["filename_original"]
-        verbose_name = "original"
-        verbose_name_plural = "originalar"
+        verbose_name = "redigeringsfil"
+        verbose_name_plural = "redigeringsfiler"

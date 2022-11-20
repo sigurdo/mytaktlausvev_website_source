@@ -17,14 +17,14 @@ urlpatterns = [
         "<slug:slug>/rediger/pdfar/ny/", views.PdfsUpload.as_view(), name="PdfsUpload"
     ),
     path(
-        "<slug:slug>/rediger/originalar/",
-        views.OriginalsUpdate.as_view(),
-        name="OriginalsUpdate",
+        "<slug:slug>/rediger/redigeringsfiler/",
+        views.EditFilesUpdate.as_view(),
+        name="EditFilesUpdate",
     ),
     path(
-        "<slug:slug>/rediger/originalar/ny/",
-        views.OriginalsUpload.as_view(),
-        name="OriginalsUpload",
+        "<slug:slug>/rediger/redigeringsfiler/ny/",
+        views.EditFilesUpload.as_view(),
+        name="EditFilesUpload",
     ),
     path(
         "<slug:slug>/rediger/stemmer/",

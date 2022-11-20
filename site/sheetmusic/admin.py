@@ -2,7 +2,7 @@
 
 from django.contrib.admin import ModelAdmin, TabularInline, display, site
 
-from .models import Original, Part, Pdf, Score
+from .models import EditFile, Part, Pdf, Score
 
 
 class PdfInline(TabularInline):
@@ -10,8 +10,8 @@ class PdfInline(TabularInline):
     show_change_link = True
 
 
-class OriginalInline(TabularInline):
-    model = Original
+class EditFileInline(TabularInline):
+    model = EditFile
     show_change_link = True
 
 
@@ -19,7 +19,7 @@ class ScoreAdmin(ModelAdmin):
     list_display = ("title", "arrangement", "originally_from", "created")
     search_fields = ("title", "arrangement", "originally_from")
     prepopulated_fields = {"slug": ("title",)}
-    inlines = (PdfInline, OriginalInline)
+    inlines = (PdfInline, EditFileInline)
 
 
 class PartInline(TabularInline):
@@ -46,7 +46,7 @@ class PartAdmin(ModelAdmin):
         return obj.pdf.score
 
 
-class OriginalAdmin(ModelAdmin):
+class EditFileAdmin(ModelAdmin):
     list_display = ("filename_original", "score")
     search_fields = ("filename_original", "score__title")
 
@@ -54,4 +54,4 @@ class OriginalAdmin(ModelAdmin):
 site.register(Score, ScoreAdmin)
 site.register(Pdf, PdfAdmin)
 site.register(Part, PartAdmin)
-site.register(Original, OriginalAdmin)
+site.register(EditFile, EditFileAdmin)

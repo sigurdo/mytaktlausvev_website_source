@@ -20,13 +20,13 @@ from common.forms.views import DeleteViewCustom
 from common.mixins import PermissionOrCreatedMixin
 
 from .forms import (
-    EditOriginalFormset,
+    EditEditFileFormset,
     EditPdfFormset,
     EditPdfFormsetHelper,
     PartsUpdateAllFormset,
     PartsUpdateFormset,
     ScoreForm,
-    UploadOriginalsForm,
+    UploadEditFilesForm,
     UploadPdfForm,
 )
 from .models import FavoritePart, Part, Pdf, Score
@@ -51,14 +51,14 @@ def nav_tabs_score_edit(score, user):
             "permissions": ["sheetmusic.add_pdf", "sheetmusic.add_part"],
         },
         {
-            "url": reverse("sheetmusic:OriginalsUpdate", args=[score.slug]),
-            "name": "Originalar",
-            "permissions": ["sheetmusic.change_original", "sheetmusic.delete_original"],
+            "url": reverse("sheetmusic:EditFilesUpdate", args=[score.slug]),
+            "name": "Redigeringsfiler",
+            "permissions": ["sheetmusic.change_editfile", "sheetmusic.delete_editfile"],
         },
         {
-            "url": reverse("sheetmusic:OriginalsUpload", args=[score.slug]),
-            "name": "Originalopplasting",
-            "permissions": ["sheetmusic.add_original"],
+            "url": reverse("sheetmusic:EditFilesUpload", args=[score.slug]),
+            "name": "Redigeringsfilopplasting",
+            "permissions": ["sheetmusic.add_editfile"],
         },
     ]
     if score.created_by == user:
@@ -455,11 +455,11 @@ class FavoritePartUpdate(LoginRequiredMixin, View):
         return django.http.HttpResponse("deleted")
 
 
-class OriginalsUpload(PermissionOrCreatedMixin, BreadcrumbsMixin, FormView):
-    form_class = UploadOriginalsForm
+class EditFilesUpload(PermissionOrCreatedMixin, BreadcrumbsMixin, FormView):
+    form_class = UploadEditFilesForm
     template_name = "common/forms/form.html"
     context_object_name = "score"
-    permission_required = ("sheetmusic.add_original",)
+    permission_required = ("sheetmusic.add_editfile",)
 
     score = None
 
@@ -491,14 +491,14 @@ class OriginalsUpload(PermissionOrCreatedMixin, BreadcrumbsMixin, FormView):
             return super().form_valid(form)
 
 
-class OriginalsUpdate(
+class EditFilesUpdate(
     PermissionOrCreatedMixin, BreadcrumbsMixin, SingleObjectMixin, FormView
 ):
     model = Score
-    form_class = EditOriginalFormset
+    form_class = EditEditFileFormset
     template_name = "common/forms/form.html"
     context_object_name = "score"
-    permission_required = ("sheetmusic.change_original", "sheetmusic.delete_original")
+    permission_required = ("sheetmusic.change_editfile", "sheetmusic.delete_editfile")
 
     def setup(self, request, *args, **kwargs):
         """Set `self.object` for `SingleObjectMixin` compatibility."""
@@ -513,7 +513,7 @@ class OriginalsUpdate(
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs["queryset"] = self.object.originals.all()
+        kwargs["queryset"] = self.object.edit_files.all()
         return kwargs
 
     def form_valid(self, form):

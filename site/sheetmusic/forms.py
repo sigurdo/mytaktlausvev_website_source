@@ -17,7 +17,7 @@ from django.forms import (
 from common.forms.layouts import DynamicFormsetButton
 from common.forms.mixins import CleanAllFilesMixin
 
-from .models import Original, Part, Pdf, Score, pdf_file_validators
+from .models import EditFile, Part, Pdf, Score, pdf_file_validators
 
 
 class ScoreForm(ModelForm):
@@ -200,46 +200,46 @@ class EditPdfFormsetHelper(FormHelper):
 EditPdfFormset.helper = EditPdfFormsetHelper()
 
 
-class UploadOriginalsForm(ModelForm):
+class UploadEditFilesForm(ModelForm):
     helper = FormHelper()
-    helper.add_input(Submit("submit", "Lagre originalar"))
+    helper.add_input(Submit("submit", "Lagre redigeringsfiler"))
 
     def save(self, score, commit=True):
-        """Saves all submitted files as originals of `score`. Ignores value of `commit`."""
+        """Saves all submitted files as edit files of `score`. Ignores value of `commit`."""
         for file in self.files.getlist("file"):
-            Original.objects.create(score=score, file=file, filename_original=file.name)
+            EditFile.objects.create(score=score, file=file, filename_original=file.name)
 
     class Meta:
-        model = Original
+        model = EditFile
         fields = ["file"]
         widgets = {"file": ClearableFileInput(attrs={"multiple": True})}
-        labels = {"file": "Originalar"}
+        labels = {"file": "Redigeringsfiler"}
 
 
-class EditOriginalForm(ModelForm):
-    """Form for editing an original score file."""
+class EditEditFileForm(ModelForm):
+    """Form for editing an edit file for a score."""
 
     helper = FormHelper()
 
     class Meta:
-        model = Original
+        model = EditFile
         fields = ["file"]
 
 
-EditOriginalFormset = modelformset_factory(
-    Original,
-    form=EditOriginalForm,
+EditEditFileFormset = modelformset_factory(
+    EditFile,
+    form=EditEditFileForm,
     can_delete=True,
     extra=0,
 )
 
 
-class EditOriginalFormsetHelper(FormHelper):
+class EditEditFileFormsetHelper(FormHelper):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.render_required_fields = True
         self.template = "common/forms/table_inline_formset_shade_delete.html"
-        self.add_input(Submit("submit", "Lagre originalar"))
+        self.add_input(Submit("submit", "Lagre redigeringsfiler"))
 
 
-EditOriginalFormset.helper = EditOriginalFormsetHelper()
+EditEditFileFormset.helper = EditEditFileFormsetHelper()
