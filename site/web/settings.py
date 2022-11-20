@@ -102,6 +102,7 @@ INSTALLED_APPS = [
     "common.comments",
     "common.markdown",
     "common.breadcrumbs",
+    "common.pdfs",
     "sidebar",
     "articles",
     "storage",

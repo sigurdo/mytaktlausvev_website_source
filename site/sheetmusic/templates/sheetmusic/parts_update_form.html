@@ -5,7 +5,7 @@
 {% block form %}
 <div class="row">
     <div class="col-lg-6 d-none d-lg-block">
-        {% load utils %}
+        {% load embed_pdf_url %}
         <iframe class="sticky-top w-100 pdf-iframe" src="{{pdf.file.url|embed_pdf_url}}"></iframe>
     </div>
     <section class="col-lg-6 col-12">

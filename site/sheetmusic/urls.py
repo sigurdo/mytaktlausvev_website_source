@@ -38,6 +38,11 @@ urlpatterns = [
         name="FavoritePartPdf",
     ),
     path(
+        "<slug:score_slug>/stemme/<slug:slug>/les/",
+        views.PartDetail.as_view(),
+        name="PartDetail",
+    ),
+    path(
         "<slug:score_slug>/stemme/<slug:slug>/",
         views.PartPdf.as_view(),
         name="PartPdf",

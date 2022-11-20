@@ -1,0 +1,7 @@
+from django.apps import AppConfig
+
+
+class PdfsConfig(AppConfig):
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "common.pdfs"
+    verbose_name = "PDFar"

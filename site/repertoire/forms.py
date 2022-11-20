@@ -15,7 +15,7 @@ from django.urls import reverse
 from PyPDF2 import PdfFileReader, PdfFileWriter
 
 from common.forms.widgets import AutocompleteSelectMultiple
-from common.templatetags.utils import embed_pdf_url
+from common.pdfs.templatetags.embed_pdf_url import embed_pdf_url
 from sheetmusic.models import Part, Score
 
 from .models import Repertoire
