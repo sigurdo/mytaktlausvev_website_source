@@ -879,5 +879,9 @@ Her kan du skrive nykelinformasjon om hendinga. Oppføringane du skriv vil verte
         EmbeddableTextFactory(
             name="Buttonmotivbibliotek", content="Her finn du ferdiglaga buttonmotiv!"
         )
+        EmbeddableTextFactory(
+            name="Inaktiv brukar",
+            content="Du har ikkje betalt medlemskontingent for Dei Taktlause. Du har difor fått status som inaktiv.",
+        )
         OrchestraFactory(name="Dragern")
         OrchestraFactory(name="Motstanden")
