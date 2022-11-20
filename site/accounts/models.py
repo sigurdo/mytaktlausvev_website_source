@@ -75,10 +75,6 @@ class UserCustom(AbstractUser):
         blank=True,
     )
 
-    @property
-    def is_active(self):
-        return self.membership_status != UserCustom.MembershipStatus.INACTIVE
-
     class MembershipStatus(TextChoices):
         PAYING = "PAYING", "Betalande"
         ASPIRANT = "ASPIRANT", "Aspirant"
