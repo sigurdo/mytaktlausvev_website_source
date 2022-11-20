@@ -1,0 +1,19 @@
+{% extends 'base_base.html' %}
+
+{% block title_page %}{{ part.pdf.score.title }} {{ part }}{% endblock title_page %}
+
+{% block css %}
+    {% load sass_tags %}
+    <link rel="stylesheet" href="{% sass_src "common/pdfs/part_read_minimal.scss" %}">
+{% endblock css %}
+
+{% block body %}
+    <div id="canvas-container" class="d-flex justify-content-center flex-wrap"></div>
+{% endblock body %}
+
+{% block js %}
+    <span id="pdf_url" data-pdf-url="{{ pdf_url }}">
+    {% load static %}
+    <script src="{% static "js/pdf.js/build/pdf.js" %}"></script>
+    <script src="{% static "common/pdfs/part_read_minimal.js" %}"></script>
+{% endblock js %}

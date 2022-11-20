@@ -1,9 +1,7 @@
 from os.path import basename
 
 from django import template
-from django.templatetags.static import static
 from django.utils.dateparse import parse_datetime
-from django.utils.safestring import mark_safe
 
 register = template.Library()
 
@@ -34,8 +32,3 @@ def contained_in(list, container):
 @register.filter
 def parse_iso8601(value):
     return parse_datetime(value)
-
-
-@register.filter
-def embed_pdf_url(pdf_url):
-    return mark_safe(f"{static('js/pdf.js/web/viewer.html')}?file={pdf_url}")

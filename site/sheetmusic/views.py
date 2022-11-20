@@ -18,6 +18,7 @@ from django.views.generic.edit import CreateView, FormView, UpdateView
 from common.breadcrumbs.breadcrumbs import Breadcrumb, BreadcrumbsMixin
 from common.forms.views import DeleteViewCustom
 from common.mixins import PermissionOrCreatedMixin
+from common.pdfs.views import PdfReadMinimalMixin
 
 from .forms import (
     EditPdfFormset,
@@ -397,6 +398,21 @@ class ScoreList(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         return Score.objects.annotate_user_has_favorite_parts(self.request.user)
+
+
+class PartDetail(LoginRequiredMixin, PdfReadMinimalMixin, DetailView):
+    model = Part
+    context_object_name = "part"
+
+    def pdf_url(self):
+        return self.get_object().get_pdf_url()
+
+    def get_object(self, queryset=None):
+        if queryset is None:
+            queryset = self.get_queryset()
+        score_slug = self.kwargs["score_slug"]
+        slug = self.kwargs[self.slug_url_kwarg]
+        return queryset.get(**{self.slug_field: slug}, pdf__score__slug=score_slug)
 
 
 class PartPdf(LoginRequiredMixin, DetailView):

@@ -381,6 +381,12 @@ class Part(Model):
 
     def get_absolute_url(self):
         return reverse(
+            "sheetmusic:PartDetail",
+            kwargs={"score_slug": self.pdf.score.slug, "slug": self.slug},
+        )
+
+    def get_pdf_url(self):
+        return reverse(
             "sheetmusic:PartPdf",
             kwargs={"score_slug": self.pdf.score.slug, "slug": self.slug},
         )

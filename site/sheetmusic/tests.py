@@ -286,7 +286,7 @@ class PartTestSuite(TestMixin, TestCase):
         self.assertEqual(
             self.part.get_absolute_url(),
             reverse(
-                "sheetmusic:PartPdf",
+                "sheetmusic:PartDetail",
                 kwargs={"score_slug": self.pdf.score.slug, "slug": self.part.slug},
             ),
         )
