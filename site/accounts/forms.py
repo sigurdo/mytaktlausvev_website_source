@@ -118,7 +118,7 @@ class UserCustomUpdateForm(ModelForm):
         Fieldset("Taktlaus-ting", "instrument_type", "membership_period"),
         Fieldset("Kalenderintegrasjon", "calendar_feed_start_date"),
         Fieldset("Anna", "light_mode", "image_sharing_consent", "orchestras"),
-        Submit("submit", "Rediger brukar"),
+        Submit("submit", "Lagre brukar"),
     )
 
     class Meta:
