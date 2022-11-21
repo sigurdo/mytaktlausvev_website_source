@@ -1,5 +1,6 @@
 from datetime import timedelta
 
+from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import OuterRef
@@ -373,7 +374,7 @@ class EventAttendanceDelete(
 
 class EventFeed(ICalFeed):
     product_id = "-//taktlaus.no//kalender//NO-NN"
-    timezone = "UTC"
+    timezone = settings.TIME_ZONE
     title = "Taktlauskalender"
     description = "Kalender for taktlause hendingar"
 
@@ -410,10 +411,10 @@ class EventFeed(ICalFeed):
         return f"https://taktlaus.no{item.get_absolute_url()}"
 
     def item_start_datetime(self, item):
-        return item.start_time
+        return localtime(item.start_time)
 
     def item_end_datetime(self, item):
-        return item.end_time if item.end_time else item.start_time
+        return localtime(item.end_time if item.end_time else item.start_time)
 
     def item_location(self, item):
         return item.location
