@@ -28,7 +28,14 @@ class UserAdminCustom(UserAdmin):
         ),
         (
             "Taktlaus-ting",
-            {"fields": ("membership_status", "membership_period", "instrument_type")},
+            {
+                "fields": (
+                    "membership_status",
+                    "membership_period",
+                    "instrument_type",
+                    "can_wear_hats",
+                )
+            },
         ),
         (
             "Kalenderintegrasjon",
@@ -47,9 +54,16 @@ class UserAdminCustom(UserAdmin):
         ),
         (_("Important dates"), {"fields": ("last_login", "date_joined")}),
     )
-    list_display = ("username", "email", "name", "membership_status", "date_joined")
+    list_display = (
+        "username",
+        "email",
+        "name",
+        "membership_status",
+        "date_joined",
+        "can_wear_hats",
+    )
     list_filter = ("is_staff", "is_superuser", "groups", "membership_status")
-    list_editable = ("membership_status",)
+    list_editable = ("membership_status", "can_wear_hats")
     search_fields = ("username", "name", "email")
 
 

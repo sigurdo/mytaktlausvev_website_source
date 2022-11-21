@@ -98,6 +98,11 @@
                                 <dt>Medlemsperiode</dt>
                                 <dd>{% firstof profile.membership_period "Ukjent" %}</dd>
 
+                                 {% if profile.can_wear_hats != None %}
+                                    <dt>Kan bruka hattar?</dt>
+                                    <dd>{{ profile.can_wear_hats|yesno|capfirst }}</dd>
+                                 {% endif %}
+
                                 <dt>Roller</dt>
                                 <dd>
                                     {% if not profile.groups.exists %}
