@@ -1,8 +1,20 @@
 
 {% extends "base.html" %}
 
-{% block title_page %}Hendingar{% if year %} {{year}}{% endif %}{% endblock title_page %}
-{% block title_content %}Hendingar{% if year %} {{year}}{% endif %}{% endblock title_content %}
+{% block title_page %}
+    {% if view.kwargs.year %}
+        Hendingar {{ view.kwargs.year }}
+    {% else %}
+        Framtidige hendingar
+    {% endif %}
+{% endblock title_page %}
+{% block title_content %}
+    {% if view.kwargs.year %}
+        Hendingar {{ view.kwargs.year }}
+    {% else %}
+        Framtidige hendingar
+    {% endif %}
+{% endblock title_content %}
 
 {% block header %}
     {{ block.super }}
@@ -38,7 +50,7 @@
                         </li>
                     </ol>
                 {% endwith %}
-            
+
         </nav>
         <nav class="mb-3">
             <a class="btn btn-primary" href="{% url "events:EventList" %}"> Alle framtidige </a>
