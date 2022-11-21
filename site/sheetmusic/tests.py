@@ -15,12 +15,24 @@ from common.test_utils import (
     test_image,
     test_pdf,
     test_pdf_multipage,
+    test_txt_file,
 )
 from instruments.factories import InstrumentTypeFactory
 
-from .factories import FavoritePartFactory, PartFactory, PdfFactory, ScoreFactory
-from .forms import EditPdfFormset, PartsUpdateAllFormset, PartsUpdateFormset
-from .models import Part, Pdf, Score
+from .factories import (
+    EditFileFactory,
+    FavoritePartFactory,
+    PartFactory,
+    PdfFactory,
+    ScoreFactory,
+)
+from .forms import (
+    EditEditFileFormset,
+    EditPdfFormset,
+    PartsUpdateAllFormset,
+    PartsUpdateFormset,
+)
+from .models import EditFile, Part, Pdf, Score
 from .views import nav_tabs_score_edit, sheetmusic_breadcrumbs
 
 
@@ -343,6 +355,21 @@ class FavoritePartTestSuite(TestMixin, TestCase):
         )
 
 
+class EditFileTestSuite(TestMixin, TestCase):
+    def setUp(self):
+        self.edit_file = EditFileFactory()
+
+    def test_to_str(self):
+        """`__str__` should be the edit file filename."""
+        self.assertEqual(str(self.edit_file), self.edit_file.filename_original)
+
+    def test_get_absolute_url(self):
+        self.assertEqual(
+            self.edit_file.get_absolute_url(),
+            reverse("sheetmusic:ScoreView", kwargs={"slug": self.edit_file.score.slug}),
+        )
+
+
 class SheetmusicBreadcrumbsTestSuite(TestMixin, TestCase):
     def test_normal(self):
         self.assertEqual(
@@ -402,13 +429,6 @@ class ScoreViewTestSuite(TestMixin, TestCase):
         self.client.force_login(user)
         response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, HTTPStatus.OK)
-
-    def test_pdf_in_context(self):
-        user = UserFactory()
-        pdf = PdfFactory(score=self.score)
-        self.client.force_login(user)
-        context = self.client.get(self.get_url()).context
-        self.assertEqual(list(context["pdfs"]), [pdf])
 
     def test_parts_in_context(self):
         user = UserFactory()
@@ -977,7 +997,7 @@ class PdfsUploadTestSuite(TestMixin, TestCase):
         self.assertFormError(
             response.context["form"],
             "files",
-            f"{image.name}: Filtype {image.content_type} ikkje lovleg",
+            f"{image.name}: Filending '.gif' ikkje lovleg.",
         )
 
 
@@ -1033,3 +1053,127 @@ class FavoritePartPdfTestSuite(TestMixin, TestCase):
             )
         )
         self.assertEqual(response["content-type"], "application/pdf")
+
+
+class EditFilesUpdateTestSuite(TestMixin, TestCase):
+    def setUp(self):
+        self.score = ScoreFactory()
+        self.edit_file = EditFileFactory(score=self.score)
+
+    def create_post_data(self, data=[]):
+        return create_formset_post_data(
+            EditEditFileFormset,
+            defaults={
+                "id": str(self.edit_file.pk),
+            },
+            data=data,
+        )
+
+    def get_url(self):
+        return reverse("sheetmusic:EditFilesUpdate", args=[self.score.slug])
+
+    def test_requires_login(self):
+        self.assertLoginRequired(self.get_url())
+
+    def test_requires_permission(self):
+        self.assertPermissionRequired(
+            self.get_url(),
+            "sheetmusic.change_editfile",
+            "sheetmusic.delete_editfile",
+        )
+
+    def test_succeeds_if_not_permission_but_is_author(self):
+        """
+        Should succeed if the user is the author,
+        even if the user doesn't have permission to delete edit files.
+        """
+        self.client.force_login(self.score.created_by)
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+    def test_success_redirect(self):
+        user = SuperUserFactory()
+        self.client.force_login(user)
+        response = self.client.post(self.get_url(), self.create_post_data())
+        self.assertRedirects(
+            response, reverse("sheetmusic:ScoreView", args=[self.score.slug])
+        )
+
+    def test_delete(self):
+        user = SuperUserFactory()
+        self.client.force_login(user)
+        self.client.post(
+            self.get_url(),
+            self.create_post_data([{"DELETE": "on"}]),
+        )
+        count = self.score.edit_files.count()
+        self.assertEqual(count, 0)
+
+    def test_modified_by_of_score_set_to_current_user(self):
+        """Should set `modified_by` of the score to the current user on update."""
+        user = SuperUserFactory()
+        self.client.force_login(user)
+        self.client.post(self.get_url(), self.create_post_data())
+
+        self.score.refresh_from_db()
+        self.assertEqual(self.score.modified_by, user)
+
+
+class EditFilesUploadTestSuite(TestMixin, TestCase):
+    def setUp(self):
+        self.score = ScoreFactory()
+        self.file = test_txt_file(name="Free World Fantasy.mscz")
+        self.test_data = {"file": self.file}
+
+    def get_url(self):
+        return reverse("sheetmusic:EditFilesUpload", args=[self.score.slug])
+
+    def test_requires_login(self):
+        self.assertLoginRequired(self.get_url())
+
+    def test_requires_permission(self):
+        self.assertPermissionRequired(
+            self.get_url(),
+            "sheetmusic.add_editfile",
+        )
+
+    def test_succeeds_if_not_permission_but_is_author(self):
+        """
+        Should succeed if the user is the author,
+        even if the user doesn't have permission to upload edit files.
+        """
+        self.client.force_login(self.score.created_by)
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+    def test_success_redirect(self):
+        self.client.force_login(SuperUserFactory())
+        response = self.client.post(self.get_url(), self.test_data)
+        self.assertRedirects(
+            response, reverse("sheetmusic:ScoreView", args=[self.score.slug])
+        )
+
+    def test_preserves_filename(self):
+        """Should preserve the original filename."""
+        self.client.force_login(SuperUserFactory())
+        self.client.post(self.get_url(), self.test_data)
+        edit_file = EditFile.objects.last()
+        self.assertEqual(edit_file.filename_original, self.file.name)
+
+    def test_upload_multiple_edit_files(self):
+        """Should let you upload multiple edit files at the same time."""
+        self.client.force_login(SuperUserFactory())
+        self.client.post(
+            self.get_url(),
+            {"file": [test_txt_file(name="Sjøbanan.mscz") for _ in range(3)]},
+        )
+        self.assertEqual(EditFile.objects.count(), 3)
+
+    def test_modified_by_of_score_set_to_current_user(self):
+        """Should set `modified_by` of the score to the current user on update."""
+        user = SuperUserFactory()
+        self.client.force_login(user)
+        self.client.post(self.get_url(), self.test_data)
+
+        self.score.refresh_from_db()
+        self.assertEqual(self.score.modified_by, user)

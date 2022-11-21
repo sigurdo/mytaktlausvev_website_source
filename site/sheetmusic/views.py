@@ -21,11 +21,13 @@ from common.mixins import PermissionOrCreatedMixin
 from common.pdfs.views import PdfReadMinimalMixin
 
 from .forms import (
+    EditEditFileFormset,
     EditPdfFormset,
     EditPdfFormsetHelper,
     PartsUpdateAllFormset,
     PartsUpdateFormset,
     ScoreForm,
+    UploadEditFilesForm,
     UploadPdfForm,
 )
 from .models import FavoritePart, Part, Pdf, Score
@@ -48,6 +50,16 @@ def nav_tabs_score_edit(score, user):
             "url": reverse("sheetmusic:PdfsUpload", args=[score.slug]),
             "name": "PDF-opplasting",
             "permissions": ["sheetmusic.add_pdf", "sheetmusic.add_part"],
+        },
+        {
+            "url": reverse("sheetmusic:EditFilesUpdate", args=[score.slug]),
+            "name": "Redigeringsfiler",
+            "permissions": ["sheetmusic.change_editfile", "sheetmusic.delete_editfile"],
+        },
+        {
+            "url": reverse("sheetmusic:EditFilesUpload", args=[score.slug]),
+            "name": "Redigeringsfilopplasting",
+            "permissions": ["sheetmusic.add_editfile"],
         },
     ]
     if score.created_by == user:
@@ -83,12 +95,10 @@ class ScoreView(LoginRequiredMixin, BreadcrumbsMixin, DetailView):
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         user = self.request.user
-        pdfs = Pdf.objects.filter(score=self.get_object())
-        parts = Part.objects.filter(pdf__in=pdfs)
+        parts = Part.objects.filter(pdf__in=self.object.pdfs.all())
         for part in parts:
             part.favorite = part.is_favorite_for(user)
         context = super().get_context_data(**kwargs)
-        context["pdfs"] = pdfs
         context["parts"] = parts
         context["parts_favorite"] = list(filter(lambda part: part.favorite, parts))
         if user.instrument_type:
@@ -459,3 +469,76 @@ class FavoritePartUpdate(LoginRequiredMixin, View):
         favorite = FavoritePart.objects.get(user=request.user, part__pk=data["part_pk"])
         favorite.delete()
         return django.http.HttpResponse("deleted")
+
+
+class EditFilesUpload(PermissionOrCreatedMixin, BreadcrumbsMixin, FormView):
+    form_class = UploadEditFilesForm
+    template_name = "common/forms/form.html"
+    context_object_name = "score"
+    permission_required = ("sheetmusic.add_editfile",)
+
+    score = None
+
+    def get_score(self):
+        if not self.score:
+            self.score = get_object_or_404(Score, slug=self.kwargs["slug"])
+        return self.score
+
+    def get_success_url(self) -> str:
+        return self.get_score().get_absolute_url()
+
+    def get_breadcrumbs(self):
+        return sheetmusic_breadcrumbs(score=self.get_score())
+
+    def get_permission_check_object(self):
+        return self.get_score()
+
+    def get_context_data(self, **kwargs):
+        kwargs[self.context_object_name] = self.get_score()
+        kwargs["object"] = self.get_score()
+        kwargs["nav_tabs"] = nav_tabs_score_edit(self.get_score(), self.request.user)
+        return super().get_context_data(**kwargs)
+
+    def form_valid(self, form):
+        with transaction.atomic():
+            # Update `modified` and `modified_by`
+            self.get_score().save()
+            form.save(score=self.get_score())
+            return super().form_valid(form)
+
+
+class EditFilesUpdate(
+    PermissionOrCreatedMixin, BreadcrumbsMixin, SingleObjectMixin, FormView
+):
+    model = Score
+    form_class = EditEditFileFormset
+    template_name = "common/forms/form.html"
+    context_object_name = "score"
+    permission_required = ("sheetmusic.change_editfile", "sheetmusic.delete_editfile")
+
+    def setup(self, request, *args, **kwargs):
+        """Set `self.object` for `SingleObjectMixin` compatibility."""
+        super().setup(request, *args, **kwargs)
+        self.object = self.get_object()
+
+    def get_success_url(self) -> str:
+        return self.object.get_absolute_url()
+
+    def get_breadcrumbs(self):
+        return sheetmusic_breadcrumbs(score=self.object)
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["queryset"] = self.object.edit_files.all()
+        return kwargs
+
+    def form_valid(self, form):
+        with transaction.atomic():
+            # Update `modified` and `modified_by`
+            self.object.save()
+            form.save()
+            return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        kwargs["nav_tabs"] = nav_tabs_score_edit(self.object, self.request.user)
+        return super().get_context_data(**kwargs)

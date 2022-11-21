@@ -17,7 +17,7 @@ from django.forms import (
 from common.forms.layouts import DynamicFormsetButton
 from common.forms.mixins import CleanAllFilesMixin
 
-from .models import Part, Pdf, Score, pdf_file_validators
+from .models import EditFile, Part, Pdf, Score, pdf_file_validators
 
 
 class ScoreForm(ModelForm):
@@ -198,3 +198,48 @@ class EditPdfFormsetHelper(FormHelper):
 
 
 EditPdfFormset.helper = EditPdfFormsetHelper()
+
+
+class UploadEditFilesForm(ModelForm):
+    helper = FormHelper()
+    helper.add_input(Submit("submit", "Lagre redigeringsfiler"))
+
+    def save(self, score, commit=True):
+        """Saves all submitted files as edit files of `score`. Ignores value of `commit`."""
+        for file in self.files.getlist("file"):
+            EditFile.objects.create(score=score, file=file, filename_original=file.name)
+
+    class Meta:
+        model = EditFile
+        fields = ["file"]
+        widgets = {"file": ClearableFileInput(attrs={"multiple": True})}
+        labels = {"file": "Redigeringsfiler"}
+
+
+class EditEditFileForm(ModelForm):
+    """Form for editing an edit file for a score."""
+
+    helper = FormHelper()
+
+    class Meta:
+        model = EditFile
+        fields = ["file"]
+
+
+EditEditFileFormset = modelformset_factory(
+    EditFile,
+    form=EditEditFileForm,
+    can_delete=True,
+    extra=0,
+)
+
+
+class EditEditFileFormsetHelper(FormHelper):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.render_required_fields = True
+        self.template = "common/forms/table_inline_formset_shade_delete.html"
+        self.add_input(Submit("submit", "Lagre redigeringsfiler"))
+
+
+EditEditFileFormset.helper = EditEditFileFormsetHelper()
