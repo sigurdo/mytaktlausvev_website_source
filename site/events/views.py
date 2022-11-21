@@ -399,7 +399,7 @@ class EventFeed(ICalFeed):
     def item_title(self, item):
         return item.title
 
-    def item_decription(self, item):
+    def item_description(self, item):
         return item.content
 
     def item_link(self, item):
