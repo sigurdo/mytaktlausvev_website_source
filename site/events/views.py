@@ -400,7 +400,11 @@ class EventFeed(ICalFeed):
         return item.title
 
     def item_description(self, item):
-        return item.content
+        return f"""\
+{self.item_link(item)}
+
+{item.content}
+"""
 
     def item_link(self, item):
         return f"https://taktlaus.no{item.get_absolute_url()}"
