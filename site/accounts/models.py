@@ -109,7 +109,8 @@ class UserCustom(AbstractUser):
         "kan bruka hattar",
         null=True,
         default=False,
-        help_text="Har tatt opptaket, og kan difor bruka hattar, og treng ikkje bruka aluminiumsfoliehatt")
+        help_text="Har teke opptaket, og kan difor bruka hattar, og treng ikkje å bruka aluminiumsfoliehatt",
+    )
 
     class ImageSharingConsent(TextChoices):
         YES = "YES", "Ja"
