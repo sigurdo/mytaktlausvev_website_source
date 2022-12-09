@@ -155,7 +155,7 @@ class ScoreTestSuite(TestMixin, TestCase):
 
 class PdfTestSuite(TestMixin, TestCase):
     def setUp(self):
-        self.pdf = PdfFactory(filename_original="Chirp - saxofon.pdf")
+        self.pdf = PdfFactory(filename_original="Chirp - saksofon.pdf")
 
     def test_slug_derived_from_original_filename_no_extension(self):
         """Should derive slug from original filename, without extension."""
@@ -188,9 +188,9 @@ class PdfTestSuite(TestMixin, TestCase):
         """
         Checks that sheatless understands that there is written tuba inside the PDF.
         """
-        InstrumentTypeFactory(name="Fløyte")
-        InstrumentTypeFactory(name="Klarinett")
-        tuba = InstrumentTypeFactory(name="Tuba")
+        InstrumentTypeFactory(name="Fløyte", detection_keywords=["Fløyte"])
+        InstrumentTypeFactory(name="Klarinett", detection_keywords=["Klarinett"])
+        tuba = InstrumentTypeFactory(name="Tuba", detection_keywords=["Tuba"])
         self.pdf.find_parts_with_sheatless()
         self.pdf.refresh_from_db()
         self.assertEqual(self.pdf.parts.count(), 1)
@@ -200,9 +200,11 @@ class PdfTestSuite(TestMixin, TestCase):
         """
         Checks that find_parts_from_original_filename understands that the original filename indicates saxophone.
         """
-        InstrumentTypeFactory(name="Fløyte")
-        InstrumentTypeFactory(name="Klarinett")
-        saxophone = InstrumentTypeFactory(name="Altsaksofon")
+        InstrumentTypeFactory(name="Fløyte", detection_keywords=["Fløyte"])
+        InstrumentTypeFactory(name="Klarinett", detection_keywords=["Klarinett"])
+        saxophone = InstrumentTypeFactory(
+            name="Altsaksofon", detection_keywords=["Saksofon"]
+        )
         self.pdf.find_parts_from_original_filename()
         self.pdf.refresh_from_db()
         self.assertEqual(self.pdf.parts.count(), 1)
@@ -883,10 +885,14 @@ class PdfsUpdateTestSuite(TestMixin, TestCase):
 
 class PdfsUploadTestSuite(TestMixin, TestCase):
     def setUp(self):
-        self.flute = InstrumentTypeFactory(name="Fløyte")
-        self.clarinet = InstrumentTypeFactory(name="Klarinett")
-        self.tuba = InstrumentTypeFactory(name="Tuba")
-        self.euphonium = InstrumentTypeFactory(name="Eufonium")
+        self.flute = InstrumentTypeFactory(name="Fløyte", detection_keywords=["Fløyte"])
+        self.clarinet = InstrumentTypeFactory(
+            name="Klarinett", detection_keywords=["Klarinett"]
+        )
+        self.tuba = InstrumentTypeFactory(name="Tuba", detection_keywords=["Tuba"])
+        self.euphonium = InstrumentTypeFactory(
+            name="Eufonium", detection_keywords=["Eufonium"]
+        )
         self.score = ScoreFactory()
         self.pdf_file = test_pdf_multipage(
             ["Tuba", "Eufonium"], name="Fløyte og klarinett.pdf"
