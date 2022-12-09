@@ -10,10 +10,17 @@ from .factories import (
     InstrumentFactory,
     InstrumentGroupFactory,
     InstrumentLocationFactory,
+    InstrumentTypeDetectionExceptionFactory,
+    InstrumentTypeDetectionKeywordFactory,
     InstrumentTypeFactory,
 )
 from .forms import InstrumentFormset
-from .models import Instrument, InstrumentType
+from .models import (
+    Instrument,
+    InstrumentType,
+    InstrumentTypeDetectionException,
+    InstrumentTypeDetectionKeyword,
+)
 
 
 class InstrumentGroupTestSuite(TestMixin, TestCase):
@@ -62,6 +69,70 @@ class InstrumentTypeTestSuite(TestMixin, TestCase):
         unknown.instrument_group = InstrumentGroupFactory()
         self.assertEqual(unknown, InstrumentType.unknown())
         self.assertEqual(InstrumentType.objects.count(), 2)
+
+
+class InstrumentTypeDetectionKeywordTestSuite(TestMixin, TestCase):
+    def setUp(self):
+        self.detection_keyword = InstrumentTypeDetectionKeywordFactory()
+
+    def test_to_str(self):
+        """`__str__` should equal the keyword."""
+        self.assertEqual(str(self.detection_keyword), self.detection_keyword.keyword)
+
+    def test_keyword_unique(self):
+        """Keywords should be unique."""
+        with self.assertRaises(IntegrityError):
+            InstrumentTypeDetectionKeywordFactory(
+                keyword=self.detection_keyword.keyword
+            )
+
+    def test_ordering(self):
+        """Should be ordered by the keyword."""
+        self.assertModelOrdering(
+            InstrumentTypeDetectionKeyword,
+            InstrumentTypeDetectionKeywordFactory,
+            [
+                {"keyword": "a"},
+                {"keyword": "b"},
+                {"keyword": "c"},
+            ],
+        )
+
+
+class InstrumentTypeDetectionExceptionTestSuite(TestMixin, TestCase):
+    def setUp(self):
+        self.detection_exception = InstrumentTypeDetectionExceptionFactory()
+
+    def test_to_str(self):
+        """`__str__` should equal the exception."""
+        self.assertEqual(
+            str(self.detection_exception), self.detection_exception.exception
+        )
+
+    def test_exception_unique_for_each_instrument(self):
+        """Exceptions should be unique for each instrument."""
+        InstrumentTypeDetectionExceptionFactory(
+            exception=self.detection_exception.exception,
+            instrument_type=InstrumentTypeFactory(),
+        )
+
+        with self.assertRaises(IntegrityError):
+            InstrumentTypeDetectionExceptionFactory(
+                exception=self.detection_exception.exception,
+                instrument_type=self.detection_exception.instrument_type,
+            )
+
+    def test_ordering(self):
+        """Should be ordered by the exception."""
+        self.assertModelOrdering(
+            InstrumentTypeDetectionException,
+            InstrumentTypeDetectionExceptionFactory,
+            [
+                {"exception": "a"},
+                {"exception": "b"},
+                {"exception": "c"},
+            ],
+        )
 
 
 class InstrumentLocationTestSuite(TestMixin, TestCase):
