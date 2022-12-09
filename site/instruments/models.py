@@ -5,6 +5,7 @@ from django.db.models import (
     SET_NULL,
     CharField,
     ForeignKey,
+    Manager,
     Model,
     TextChoices,
     TextField,
@@ -26,7 +27,25 @@ class InstrumentGroup(Model):
         ordering = ["name"]
 
 
+class InstrumentTypeManager(Manager):
+    def sheatless_format(self):
+        """Returns instrument types in a `Sheatless`-compatible format."""
+        return {
+            instrument_type.name: {
+                "include": instrument_type.detection_keywords.values_list(
+                    "keyword", flat=True
+                ),
+                "exceptions": instrument_type.detection_exceptions.values_list(
+                    "exception", flat=True
+                ),
+            }
+            for instrument_type in super().all()
+        }
+
+
 class InstrumentType(Model):
+    objects = InstrumentTypeManager()
+
     name = CharField(max_length=255, verbose_name="namn", unique=True)
     group = ForeignKey(
         InstrumentGroup,
@@ -50,6 +69,48 @@ class InstrumentType(Model):
             name="Ukjend", defaults={"group": group_unknown}
         )
         return type_unknown
+
+
+class InstrumentTypeDetectionKeyword(Model):
+    keyword = CharField("nykelord", max_length=255, unique=True)
+    instrument_type = ForeignKey(
+        InstrumentType,
+        verbose_name="instrumenttype",
+        related_name="detection_keywords",
+        on_delete=CASCADE,
+    )
+
+    def __str__(self):
+        return self.keyword
+
+    class Meta:
+        verbose_name = "instrumenttypeattkjenningnykelord"
+        verbose_name_plural = "instrumenttypeattkjenningnykelord"
+        ordering = ["keyword"]
+
+
+class InstrumentTypeDetectionException(Model):
+    exception = CharField("unntak", max_length=255)
+    instrument_type = ForeignKey(
+        InstrumentType,
+        verbose_name="instrumenttype",
+        related_name="detection_exceptions",
+        on_delete=CASCADE,
+    )
+
+    def __str__(self):
+        return self.exception
+
+    class Meta:
+        verbose_name = "instrumenttypeattkjenningunntak"
+        verbose_name_plural = "instrumenttypeattkjenningunntak"
+        ordering = ["exception"]
+        constraints = [
+            UniqueConstraint(
+                fields=["exception", "instrument_type"],
+                name="detection_exception_unique_for_instrument_type",
+            )
+        ]
 
 
 class InstrumentLocation(Model):

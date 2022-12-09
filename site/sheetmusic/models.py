@@ -34,7 +34,7 @@ from sheatless import PdfPredictor, predict_part_from_string
 from common.forms.validators import FileTypeValidator
 from common.models import ArticleMixin
 from instruments.models import InstrumentType
-from web.settings import INSTRUMENTS_YAML_PATH, TESSDATA_DIR
+from web.settings import TESSDATA_DIR
 
 
 class ScoreManager(Manager):
@@ -244,7 +244,7 @@ class Pdf(Model):
                     crop_to_top=True,
                     tessdata_dir=TESSDATA_DIR,
                     tesseract_languages=["nor"],
-                    instruments_file=INSTRUMENTS_YAML_PATH,
+                    instruments=InstrumentType.objects.sheatless_format(),
                     full_score_threshold=2,
                     full_score_label="Partitur",
                 )
@@ -269,7 +269,8 @@ class Pdf(Model):
     def find_parts_from_original_filename(self):
         filename, _ = os.path.splitext(self.filename_original)
         part = predict_part_from_string(
-            filename, instruments_file=INSTRUMENTS_YAML_PATH
+            filename,
+            instruments=InstrumentType.objects.sheatless_format(),
         )
         if part is None:
             return

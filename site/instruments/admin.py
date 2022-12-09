@@ -1,6 +1,13 @@
-from django.contrib.admin import ModelAdmin, site
+from django.contrib.admin import ModelAdmin, TabularInline, site
 
-from .models import Instrument, InstrumentGroup, InstrumentLocation, InstrumentType
+from .models import (
+    Instrument,
+    InstrumentGroup,
+    InstrumentLocation,
+    InstrumentType,
+    InstrumentTypeDetectionException,
+    InstrumentTypeDetectionKeyword,
+)
 
 
 class InstrumentGroupAdmin(ModelAdmin):
@@ -8,10 +15,22 @@ class InstrumentGroupAdmin(ModelAdmin):
     search_fields = ("name",)
 
 
+class InstrumentTypeDetectionKeywordInline(TabularInline):
+    model = InstrumentTypeDetectionKeyword
+
+
+class InstrumentTypeDetectionExceptionInline(TabularInline):
+    model = InstrumentTypeDetectionException
+
+
 class InstrumentTypeAdmin(ModelAdmin):
     list_display = ("name", "group")
     search_fields = ("name", "group__name")
     list_filter = ("group",)
+    inlines = [
+        InstrumentTypeDetectionKeywordInline,
+        InstrumentTypeDetectionExceptionInline,
+    ]
 
 
 class InstrumentLocationAdmin(ModelAdmin):
