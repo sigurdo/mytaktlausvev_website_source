@@ -17,10 +17,14 @@ class InstrumentGroupAdmin(ModelAdmin):
 
 class InstrumentTypeDetectionKeywordInline(TabularInline):
     model = InstrumentTypeDetectionKeyword
+    verbose_name = "attkjenningsnykelord"
+    verbose_name_plural = "attkjenningsnykelord"
 
 
 class InstrumentTypeDetectionExceptionInline(TabularInline):
     model = InstrumentTypeDetectionException
+    verbose_name = "attkjenningsunntak"
+    verbose_name_plural = "attkjenningsunntak"
 
 
 class InstrumentTypeAdmin(ModelAdmin):

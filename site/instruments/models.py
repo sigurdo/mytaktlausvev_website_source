@@ -84,8 +84,8 @@ class InstrumentTypeDetectionKeyword(Model):
         return self.keyword
 
     class Meta:
-        verbose_name = "instrumenttypeattkjenningnykelord"
-        verbose_name_plural = "instrumenttypeattkjenningnykelord"
+        verbose_name = "instrumenttypeattkjenningsnykelord"
+        verbose_name_plural = "instrumenttypeattkjenningsnykelord"
         ordering = ["keyword"]
 
 
@@ -102,8 +102,8 @@ class InstrumentTypeDetectionException(Model):
         return self.exception
 
     class Meta:
-        verbose_name = "instrumenttypeattkjenningunntak"
-        verbose_name_plural = "instrumenttypeattkjenningunntak"
+        verbose_name = "instrumenttypeattkjenningsunntak"
+        verbose_name_plural = "instrumenttypeattkjenningsunntak"
         ordering = ["exception"]
         constraints = [
             UniqueConstraint(
