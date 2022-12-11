@@ -83,13 +83,6 @@ class ImageTestSuite(TestMixin, TestCase):
         self.image.gallery.delete()
         self.assertFalse(Image.objects.all().exists())
 
-    def test_deleting_image_deletes_file_on_disk(self):
-        """Deleting an image should delete the image file on the disk."""
-        image = ImageFactory()
-        self.assertTrue(os.path.exists(image.image.path))
-        image.delete()
-        self.assertFalse(os.path.exists(image.image.path))
-
 
 class ImageCreateFormTestSuite(TestMixin, TestCase):
     def setUp(self):

@@ -24,8 +24,6 @@ from django.db.models import (
     UniqueConstraint,
     URLField,
 )
-from django.db.models.signals import pre_delete, pre_save
-from django.dispatch import receiver
 from django.urls import reverse
 from django.utils.text import slugify
 from PyPDF2 import PdfFileMerger, PdfFileReader, PdfFileWriter
@@ -162,25 +160,6 @@ class Score(ArticleMixin):
         return self.pdfs.filter(processing=True).exists()
 
 
-@receiver(pre_save, sender=Score, dispatch_uid="score_pre_save_receiver")
-def score_pre_save_receiver(sender, instance: Score, using, **kwargs):
-    """
-    Delete eventual old sound_file from filesystem
-    """
-    if not instance.pk:
-        return
-
-    try:
-        old_file = Score.objects.get(pk=instance.pk).sound_file
-    except Score.DoesNotExist:
-        return
-
-    new_file = instance.sound_file
-    if old_file and not old_file == new_file:
-        if os.path.isfile(old_file.path):
-            os.remove(old_file.path)
-
-
 pdf_file_validators = [FileTypeValidator([".pdf"])]
 
 
@@ -229,14 +208,14 @@ class Pdf(Model):
         return os.path.splitext(self.filename_original)[0]
 
     def num_of_pages(self):
-        pdf_reader = PdfFileReader(self.file.path, strict=False)
+        pdf_reader = PdfFileReader(self.file.open(), strict=False)
         return pdf_reader.getNumPages()
 
     def find_parts_with_sheatless(self):
         self.processing = True
         self.save()
         try:
-            with open(self.file.path, "rb") as pdf_file:
+            with self.file.open() as pdf_file:
                 pdf_predictor = PdfPredictor(
                     pdf_file.read(),
                     use_lstm=True,
@@ -309,15 +288,6 @@ class Pdf(Model):
         ).save()
 
 
-@receiver(pre_delete, sender=Pdf, dispatch_uid="pdf_delete_images")
-def pdf_pre_delete_receiver(sender, instance: Pdf, using, **kwargs):
-    """
-    Delete pdf file from filesystem
-    """
-    if os.path.isfile(instance.file.path):
-        os.remove(instance.file.path)
-
-
 class Part(Model):
     """Model representing a part"""
 
@@ -379,7 +349,7 @@ class Part(Model):
 
     def pdf_file(self):
         """Returns the PDF that contains only this part"""
-        pdf = PdfFileReader(self.pdf.file.path)
+        pdf = PdfFileReader(self.pdf.file.open())
         pdf_writer = PdfFileWriter()
         for page_nr in range(self.from_page, self.to_page + 1):
             pdf_writer.addPage(pdf.getPage(page_nr - 1))
