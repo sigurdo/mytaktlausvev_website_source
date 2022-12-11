@@ -1,9 +1,7 @@
 from http import HTTPStatus
 
-from django.conf import settings
 from django.test import TestCase
 from django.urls import reverse
-from django.utils.encoding import escape_uri_path
 from django.utils.text import slugify
 
 from accounts.factories import SuperUserFactory
