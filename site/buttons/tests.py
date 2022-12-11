@@ -31,7 +31,7 @@ class ButtonDesignTestSuite(TestMixin, TestCase):
         """Should link to the serve view."""
         self.assertEqual(
             self.button_design.get_absolute_url(),
-            reverse("buttons:ButtonDesignServe", args=[self.button_design.slug]),
+            reverse("buttons:ButtonDesignRedirect", args=[self.button_design.slug]),
         )
 
     def test_creates_slug_from_name_automatically(self):
@@ -116,13 +116,13 @@ class ButtonsViewTestSuite(TestMixin, TestCase):
         self.assertNotEqual(response["content-type"], "application/pdf")
 
 
-class ButtonDesignServeTestSuite(TestMixin, TestCase):
+class ButtonDesignRedirectTestSuite(TestMixin, TestCase):
     def setUp(self):
         self.button_design = ButtonDesignFactory()
         self.public_button_design = ButtonDesignFactory(public=True)
 
     def get_url(self, button_design):
-        return reverse("buttons:ButtonDesignServe", args=[button_design.slug])
+        return reverse("buttons:ButtonDesignRedirect", args=[button_design.slug])
 
     def test_requires_login(self):
         """Should require login."""
@@ -132,16 +132,14 @@ class ButtonDesignServeTestSuite(TestMixin, TestCase):
         """Public button designs should not require login."""
         self.client.logout()
         response = self.client.get(self.get_url(self.public_button_design))
-        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertEqual(response.status_code, HTTPStatus.FOUND)
+        self.assertFalse(response.url.startswith(reverse("login")))
 
-    def test_serve(self):
-        """Should serve the correct image."""
+    def test_redirects_to_image(self):
+        """Should redirect to the image."""
         response = self.client.get(self.get_url(self.public_button_design))
-        self.assertEqual(
-            response["X-Accel-Redirect"],
-            escape_uri_path(
-                f"{settings.MEDIA_URL_NGINX}{self.public_button_design.image.name}"
-            ),
+        self.assertRedirects(
+            response, self.public_button_design.image.url, fetch_redirect_response=False
         )
 
 

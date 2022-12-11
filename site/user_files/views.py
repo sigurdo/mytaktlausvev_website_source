@@ -1,11 +1,10 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse, reverse_lazy
-from django.views.generic import CreateView, ListView, UpdateView
+from django.views.generic import CreateView, ListView, RedirectView, UpdateView
 
 from common.breadcrumbs.breadcrumbs import Breadcrumb, BreadcrumbsMixin
 from common.forms.views import DeleteViewCustom
 from common.mixins import PermissionOrCreatedMixin
-from serve_media_files.views import ServeMediaFiles
 
 from .forms import FileForm
 from .models import File
@@ -24,19 +23,19 @@ class FileList(LoginRequiredMixin, ListView):
         return super().get_queryset().select_related("created_by")
 
 
-class FileServe(UserPassesTestMixin, ServeMediaFiles):
+class FileRedirect(UserPassesTestMixin, RedirectView):
     def setup(self, request, *args, **kwargs):
         slug = kwargs["slug"]
         self.file = File.objects.only("file", "public").get(slug=slug)
         return super().setup(request, *args, **kwargs)
 
-    def get_file_path(self):
-        return self.file.file.name
-
     def test_func(self):
         if self.file.public:
             return True
         return self.request.user.is_authenticated
+
+    def get_redirect_url(self, *args, **kwargs):
+        return self.file.file.url
 
 
 class FileCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):

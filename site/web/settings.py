@@ -295,10 +295,29 @@ USE_TZ = True
 WATSON_POSTGRES_SEARCH_CONFIG = "pg_catalog.norwegian"
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/3.0/howto/static-files/
+# Static files and media files
+# https://docs.djangoproject.com/en/4.1/topics/files/
+# https://docs.djangoproject.com/en/4.1/howto/static-files/
+# https://django-storages.readthedocs.io/en/latest/backends/azure.html
 
-STATIC_URL = "/static/"
+if PRODUCTION:
+    DEFAULT_FILE_STORAGE = "common.storages.AzureMediaStorage"
+    STATICFILES_STORAGE = "common.storages.AzureStaticStorage"
+
+    AZURE_STORAGE_KEY = os.environ.get("AZURE_STORAGE_KEY")
+    AZURE_ACCOUNT_NAME = os.environ.get("AZURE_ACCOUNT_NAME", "taktlausveven")
+    AZURE_MEDIA_CONTAINER = os.environ.get("AZURE_MEDIA_CONTAINER", "media")
+    AZURE_STATIC_CONTAINER = os.environ.get("AZURE_STATIC_CONTAINER", "static")
+    AZURE_CUSTOM_DOMAIN = f"{AZURE_ACCOUNT_NAME}.azureedge.net"
+
+    MEDIA_URL = f"https://{AZURE_CUSTOM_DOMAIN}/{AZURE_MEDIA_CONTAINER}/"
+    STATIC_URL = f"https://{AZURE_CUSTOM_DOMAIN}/{AZURE_STATIC_CONTAINER}/"
+else:
+    MEDIA_URL = "/media/"
+    MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+    STATIC_URL = "/static/"
+
+# Used in both dev and prod to temporarily store generated static files
 STATIC_ROOT = os.path.join(BASE_DIR, "..", "staticfiles")
 
 STATICFILES_DIRS = [
@@ -312,11 +331,6 @@ STATICFILES_FINDERS = [
     "sass_processor.finders.CssFinder",
 ]
 
-MEDIA_URL = "/media/"
-MEDIA_URL_NGINX = "/media_nginx/"
-MEDIA_ROOT = (
-    os.path.join(BASE_DIR, "media") if DEBUG else os.path.join(BASE_DIR, "..", "media")
-)
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
@@ -330,7 +344,7 @@ CRISPY_FAIL_SILENTLY = not DEBUG
 
 # Sass config
 
-# Default is 5, while 8 is required by bootsrap
+# Default is 5, while 8 is required by Bootstrap
 SASS_PRECISION = 8
 
 # Default for DEBUG is nested, while I think expanded is better
@@ -347,5 +361,5 @@ SASS_PROCESSOR_INCLUDE_DIRS = [
 ENABLE_PWA_MANIFEST = True
 ENABLE_SERVICEWORKER = not DEBUG
 
-# Miscellangeous constants
+# Miscellaneous constants
 BIRTHDAY_SONG_SLUG = "hurra-for-deg"

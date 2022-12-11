@@ -5,13 +5,12 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import FileResponse, HttpResponseBadRequest
 from django.urls import reverse, reverse_lazy
-from django.views.generic import CreateView, FormView, UpdateView
+from django.views.generic import CreateView, FormView, RedirectView, UpdateView
 
 from buttons.models import ButtonDesign
 from common.breadcrumbs.breadcrumbs import Breadcrumb, BreadcrumbsMixin
 from common.forms.views import DeleteViewCustom
 from common.mixins import PermissionOrCreatedMixin
-from serve_media_files.views import ServeMediaFiles
 
 from .button_pdf_generator import button_pdf_generator
 from .forms import ButtonDesignForm, ButtonsForm
@@ -60,18 +59,18 @@ class ButtonsView(FormView):
         return FileResponse(pdf, content_type="application/pdf", filename="buttons.pdf")
 
 
-class ButtonDesignServe(UserPassesTestMixin, ServeMediaFiles):
+class ButtonDesignRedirect(UserPassesTestMixin, RedirectView):
     def setup(self, request, *args, **kwargs):
         self.button_design = ButtonDesign.objects.get(slug=kwargs["slug"])
         super().setup(request, *args, **kwargs)
-
-    def get_file_path(self):
-        return self.button_design.image.name
 
     def test_func(self):
         if self.button_design.public:
             return True
         return self.request.user.is_authenticated
+
+    def get_redirect_url(self, *args, **kwargs):
+        return self.button_design.image.url
 
 
 class ButtonDesignCreate(

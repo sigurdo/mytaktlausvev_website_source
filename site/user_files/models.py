@@ -20,7 +20,7 @@ class File(CreatedModifiedMixin):
         return self.name
 
     def get_absolute_url(self):
-        return reverse("user_files:FileServe", args=[self.slug])
+        return reverse("user_files:FileRedirect", args=[self.slug])
 
     class Meta:
         ordering = [Lower("name")]
