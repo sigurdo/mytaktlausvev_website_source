@@ -20,7 +20,7 @@ class FileTestCase(TestMixin, TestCase):
         """Should link to the serve view for the file."""
         self.assertEqual(
             self.file.get_absolute_url(),
-            reverse("user_files:FileRedirect", args=[self.file.slug]),
+            reverse("user_files:FileServe", args=[self.file.slug]),
         )
 
     def test_to_str(self):
@@ -64,13 +64,13 @@ class FileListTestSuite(TestMixin, TestCase):
         self.assertLoginRequired(self.get_url())
 
 
-class FileRedirectTestSuite(TestMixin, TestCase):
+class FileServeTestSuite(TestMixin, TestCase):
     def setUp(self):
         self.file = FileFactory()
         self.public_file = FileFactory(public=True)
 
     def get_url(self, file):
-        return reverse("user_files:FileRedirect", args=[file.slug])
+        return reverse("user_files:FileServe", args=[file.slug])
 
     def test_requires_login(self):
         """Should require login."""
@@ -80,15 +80,13 @@ class FileRedirectTestSuite(TestMixin, TestCase):
         """Public file should not require login."""
         self.client.logout()
         response = self.client.get(self.get_url(self.public_file))
-        self.assertEqual(response.status_code, HTTPStatus.FOUND)
-        self.assertFalse(response.url.startswith(reverse("login")))
+        self.assertEqual(response.status_code, HTTPStatus.OK)
 
-    def test_redirects_to_file(self):
-        """Should redirect to the file."""
+    def test_serves_file(self):
+        """Should serve the file."""
         response = self.client.get(self.get_url(self.public_file))
-        self.assertRedirects(
-            response, self.public_file.file.url, fetch_redirect_response=False
-        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertEqual(response["content-type"], "audio/mpeg")
 
 
 class FileCreateTestSuite(TestMixin, TestCase):

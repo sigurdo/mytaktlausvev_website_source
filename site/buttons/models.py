@@ -19,7 +19,7 @@ class ButtonDesign(CreatedModifiedMixin):
         return self.name
 
     def get_absolute_url(self):
-        return reverse("buttons:ButtonDesignRedirect", args=[self.slug])
+        return reverse("buttons:ButtonDesignServe", args=[self.slug])
 
     class Meta:
         ordering = ["name"]

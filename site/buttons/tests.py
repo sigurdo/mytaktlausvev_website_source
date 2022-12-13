@@ -29,7 +29,7 @@ class ButtonDesignTestSuite(TestMixin, TestCase):
         """Should link to the serve view."""
         self.assertEqual(
             self.button_design.get_absolute_url(),
-            reverse("buttons:ButtonDesignRedirect", args=[self.button_design.slug]),
+            reverse("buttons:ButtonDesignServe", args=[self.button_design.slug]),
         )
 
     def test_creates_slug_from_name_automatically(self):
@@ -114,13 +114,13 @@ class ButtonsViewTestSuite(TestMixin, TestCase):
         self.assertNotEqual(response["content-type"], "application/pdf")
 
 
-class ButtonDesignRedirectTestSuite(TestMixin, TestCase):
+class ButtonDesignServeTestSuite(TestMixin, TestCase):
     def setUp(self):
         self.button_design = ButtonDesignFactory()
         self.public_button_design = ButtonDesignFactory(public=True)
 
     def get_url(self, button_design):
-        return reverse("buttons:ButtonDesignRedirect", args=[button_design.slug])
+        return reverse("buttons:ButtonDesignServe", args=[button_design.slug])
 
     def test_requires_login(self):
         """Should require login."""
@@ -130,15 +130,13 @@ class ButtonDesignRedirectTestSuite(TestMixin, TestCase):
         """Public button designs should not require login."""
         self.client.logout()
         response = self.client.get(self.get_url(self.public_button_design))
-        self.assertEqual(response.status_code, HTTPStatus.FOUND)
-        self.assertFalse(response.url.startswith(reverse("login")))
+        self.assertEqual(response.status_code, HTTPStatus.OK)
 
-    def test_redirects_to_image(self):
-        """Should redirect to the image."""
+    def test_serves_button_design(self):
+        """Should serve the button design."""
         response = self.client.get(self.get_url(self.public_button_design))
-        self.assertRedirects(
-            response, self.public_button_design.image.url, fetch_redirect_response=False
-        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertEqual(response["content-type"], "image/jpeg")
 
 
 class ButtonDesignCreateTestSuite(TestMixin, TestCase):

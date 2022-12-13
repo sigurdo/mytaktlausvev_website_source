@@ -9,8 +9,8 @@ urlpatterns = [
     path("nytt-design/", views.ButtonDesignCreate.as_view(), name="ButtonDesignCreate"),
     path(
         "<slug:slug>/",
-        views.ButtonDesignRedirect.as_view(),
-        name="ButtonDesignRedirect",
+        views.ButtonDesignServe.as_view(),
+        name="ButtonDesignServe",
     ),
     path(
         "<slug:slug>/rediger/",
