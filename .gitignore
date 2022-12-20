@@ -26,11 +26,12 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
-
+# Editor related
 .vscode
 !.vscode/snippets.code-snippets
 *.sublime-workspace
 *.sublime-project
+.devcontainer
 
 # Python
 __pycache__/

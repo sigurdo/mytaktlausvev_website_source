@@ -10,6 +10,7 @@ def random_sample_queryset(queryset: QuerySet, samples: int):
     """
     total: int = queryset.count()
     to_show: int = min(total, samples)
+    random.seed()
     sample_indexes = random.sample(range(0, total), to_show)
     sample = []
     for i in range(to_show):

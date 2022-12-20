@@ -40,6 +40,7 @@ urlpatterns = [
     path("fotoarkiv/", include("pictures.urls")),
     path("referat/", include("minutes.urls")),
     path("brukarfiler/", include("user_files.urls")),
+    path("pdfar/", include("common.pdfs.urls")),
     path(f"{settings.MEDIA_URL.strip('/')}/", include("serve_media_files.urls")),
     path("", include("search.urls")),
     path("", include("easter_eggs.urls")),

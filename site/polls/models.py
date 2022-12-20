@@ -66,7 +66,7 @@ class Poll(CreatedModifiedMixin):
         return self.votes().count()
 
     def num_voting(self):
-        """Returns the amount of people who have voted for this people."""
+        """Returns the amount of people who have voted for this poll."""
         return self.votes().distinct("user").count()
 
     def winner(self):
@@ -112,11 +112,11 @@ class Choice(Model):
     def percentage(self):
         """
         Returns the number of votes for this choice
-        as a percentage of the poll's total amount of votes.
+        as a percentage of the poll's total amount of voters.
         """
-        num_votes = self.poll.num_votes()
-        if num_votes:
-            ratio = self.votes.count() / num_votes
+        num_voting = self.poll.num_voting()
+        if num_voting:
+            ratio = self.votes.count() / num_voting
         else:
             ratio = 0
         return f"{ratio:.0%}"

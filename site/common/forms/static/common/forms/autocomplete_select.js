@@ -5,6 +5,7 @@ window.addEventListener("load", () => {
     const settings = {
       allowEmptyOption: true,
       plugins: ["dropdown_input"],
+      maxOptions: null,
     };
     new TomSelect(element, settings);
   });
@@ -17,6 +18,7 @@ window.addEventListener("load", () => {
       const settings = {
         allowEmptyOption: true,
         plugins: ["dropdown_input", "checkbox_options"],
+        maxOptions: null,
       };
       new TomSelect(element, settings);
     });

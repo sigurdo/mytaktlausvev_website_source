@@ -122,4 +122,26 @@
 		],
 		"description": "Create a new TestSuite for a view that requires permission",
 	},
+	"Django template boilerplate": {
+		"scope": "django-html",
+		"prefix": ["boilerplate", "extends base.html"],
+		"body": [
+			"{% extends 'base.html' %}",
+			"",
+			"{% block title_page %}{{ $1 }}{% endblock title_page %}",
+			"{% block title_content %}{{ $2 }}{% endblock title_content %}",
+			"",
+			"{% block header %}",
+			"    {{ block.super }}",
+			"",
+			"    $3",
+			"{% endblock header %}",
+			"",
+			"{% block content %}",
+			"    $4",
+			"{% endblock content %}",
+			""
+		],
+		"description": "Django template boilerplate"
+	}
 }

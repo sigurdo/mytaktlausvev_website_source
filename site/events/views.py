@@ -1,5 +1,6 @@
 from datetime import timedelta
 
+from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import OuterRef
@@ -207,11 +208,6 @@ class EventCreate(LoginRequiredMixin, BreadcrumbsMixin, InlineFormsetCreateView)
             EventAttendance.objects.create(
                 event=self.object, person=marius, status=Attendance.ATTENDING
             )
-        sigrid = UserCustom.objects.filter(username="Sigride").first()
-        if sigrid:
-            EventAttendance.objects.create(
-                event=self.object, person=sigrid, status=Attendance.ATTENDING
-            )
 
         return response
 
@@ -378,7 +374,7 @@ class EventAttendanceDelete(
 
 class EventFeed(ICalFeed):
     product_id = "-//taktlaus.no//kalender//NO-NN"
-    timezone = "UTC"
+    timezone = settings.TIME_ZONE
     title = "Taktlauskalender"
     description = "Kalender for taktlause hendingar"
 
@@ -404,17 +400,21 @@ class EventFeed(ICalFeed):
     def item_title(self, item):
         return item.title
 
-    def item_decription(self, item):
-        return item.content
+    def item_description(self, item):
+        return f"""\
+{self.item_link(item)}
+
+{item.content}
+"""
 
     def item_link(self, item):
         return f"https://taktlaus.no{item.get_absolute_url()}"
 
     def item_start_datetime(self, item):
-        return item.start_time
+        return localtime(item.start_time)
 
     def item_end_datetime(self, item):
-        return item.end_time if item.end_time else item.start_time
+        return localtime(item.end_time if item.end_time else item.start_time)
 
     def item_location(self, item):
         return item.location

@@ -105,6 +105,13 @@ class UserCustom(AbstractUser):
         help_text="Aktiver lys modus. Lys modus vert ikkje aktivt støtta, og er difor ikkje anbefalt.",
     )
 
+    can_wear_hats = BooleanField(
+        "kan bruka hattar",
+        null=True,
+        default=False,
+        help_text="Har teke opptaket, og kan difor bruka hattar, og treng ikkje å bruka aluminiumsfoliehatt",
+    )
+
     class ImageSharingConsent(TextChoices):
         YES = "YES", "Ja"
         GROUP_ONLY = "GROUP_ONLY", "Berre gruppebilete"

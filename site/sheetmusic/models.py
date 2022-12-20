@@ -34,7 +34,7 @@ from sheatless import PdfPredictor, predict_part_from_string
 from common.forms.validators import FileTypeValidator
 from common.models import ArticleMixin
 from instruments.models import InstrumentType
-from web.settings import INSTRUMENTS_YAML_PATH, TESSDATA_DIR
+from web.settings import TESSDATA_DIR
 
 
 class ScoreManager(Manager):
@@ -72,13 +72,7 @@ class Score(ArticleMixin):
         default="",
         validators=[
             FileTypeValidator(
-                {
-                    "audio/mpeg": [".mp3"],
-                    "audio/midi": [".midi", ".mid"],
-                    "audio/ogg": [".ogg"],
-                    "audio/mp4": [".mp4", ".m4a"],
-                    "audio/flac": [".flac"],
-                },
+                [".mp3", ".midi", ".mid", ".ogg", ".mp4", ".m4a", ".flac"]
             )
         ],
     )
@@ -187,16 +181,7 @@ def score_pre_save_receiver(sender, instance: Score, using, **kwargs):
             os.remove(old_file.path)
 
 
-pdf_file_validators = [
-    FileTypeValidator(
-        {
-            "application/pdf": [".pdf"],
-            "application/x-pdf": [".pdf"],
-            "application/x-bzpdf": [".pdf"],
-            "application/x-gzpdf": [".pdf"],
-        }
-    ),
-]
+pdf_file_validators = [FileTypeValidator([".pdf"])]
 
 
 def pdf_filename_no_extension(pdf):
@@ -259,7 +244,7 @@ class Pdf(Model):
                     crop_to_top=True,
                     tessdata_dir=TESSDATA_DIR,
                     tesseract_languages=["nor"],
-                    instruments_file=INSTRUMENTS_YAML_PATH,
+                    instruments=InstrumentType.objects.sheatless_format(),
                     full_score_threshold=2,
                     full_score_label="Partitur",
                 )
@@ -284,7 +269,8 @@ class Pdf(Model):
     def find_parts_from_original_filename(self):
         filename, _ = os.path.splitext(self.filename_original)
         part = predict_part_from_string(
-            filename, instruments_file=INSTRUMENTS_YAML_PATH
+            filename,
+            instruments=InstrumentType.objects.sheatless_format(),
         )
         if part is None:
             return
@@ -381,6 +367,12 @@ class Part(Model):
 
     def get_absolute_url(self):
         return reverse(
+            "sheetmusic:PartDetail",
+            kwargs={"score_slug": self.pdf.score.slug, "slug": self.slug},
+        )
+
+    def get_pdf_url(self):
+        return reverse(
             "sheetmusic:PartPdf",
             kwargs={"score_slug": self.pdf.score.slug, "slug": self.slug},
         )
@@ -435,3 +427,30 @@ class FavoritePart(Model):
         return reverse(
             "sheetmusic:ScoreView", kwargs={"slug": self.part.pdf.score.slug}
         )
+
+
+class EditFile(Model):
+    """Model representing an edit file for a score."""
+
+    score = ForeignKey(
+        Score, verbose_name="note", on_delete=CASCADE, related_name="edit_files"
+    )
+    file = FileField(
+        "fil",
+        upload_to="sheetmusic/edit_files/",
+        validators=[FileTypeValidator([".mscz", ".mscx", ".niff", ".sib", ".musx"])],
+        max_length=255,
+    )
+    filename_original = CharField("opphaveleg filnamn", max_length=255)
+    timestamp = DateTimeField("tidsmerke", auto_now_add=True)
+
+    def __str__(self):
+        return self.filename_original
+
+    def get_absolute_url(self):
+        return reverse("sheetmusic:ScoreView", kwargs={"slug": self.score.slug})
+
+    class Meta:
+        ordering = ["filename_original"]
+        verbose_name = "redigeringsfil"
+        verbose_name_plural = "redigeringsfiler"

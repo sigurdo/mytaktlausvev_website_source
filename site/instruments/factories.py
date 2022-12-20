@@ -1,9 +1,16 @@
-from factory import SubFactory, sequence
+from factory import SubFactory, post_generation, sequence
 from factory.django import DjangoModelFactory
 
 from accounts.factories import UserFactory
 
-from .models import Instrument, InstrumentGroup, InstrumentLocation, InstrumentType
+from .models import (
+    Instrument,
+    InstrumentGroup,
+    InstrumentLocation,
+    InstrumentType,
+    InstrumentTypeDetectionException,
+    InstrumentTypeDetectionKeyword,
+)
 
 
 class InstrumentGroupFactory(DjangoModelFactory):
@@ -19,6 +26,50 @@ class InstrumentTypeFactory(DjangoModelFactory):
 
     name = sequence(lambda n: f"Instrumenttype #{n}")
     group = SubFactory(InstrumentGroupFactory)
+
+    @post_generation
+    def detection_keywords(self, create, detection_keyword_list):
+        if not create or not detection_keyword_list:
+            return
+
+        self.detection_keywords.set(
+            [
+                InstrumentTypeDetectionKeywordFactory(
+                    keyword=keyword, instrument_type=self
+                )
+                for keyword in detection_keyword_list
+            ]
+        )
+
+    @post_generation
+    def detection_exceptions(self, create, detection_exception_list):
+        if not create or not detection_exception_list:
+            return
+
+        self.detection_exceptions.set(
+            [
+                InstrumentTypeDetectionExceptionFactory(
+                    exception=exception, instrument_type=self
+                )
+                for exception in detection_exception_list
+            ]
+        )
+
+
+class InstrumentTypeDetectionKeywordFactory(DjangoModelFactory):
+    class Meta:
+        model = InstrumentTypeDetectionKeyword
+
+    keyword = sequence(lambda n: f"Instrumenttypeattkjenningnykelord #{n}")
+    instrument_type = SubFactory(InstrumentTypeFactory)
+
+
+class InstrumentTypeDetectionExceptionFactory(DjangoModelFactory):
+    class Meta:
+        model = InstrumentTypeDetectionException
+
+    exception = sequence(lambda n: f"Instrumenttypeattkjenningunntak #{n}")
+    instrument_type = SubFactory(InstrumentTypeFactory)
 
 
 class InstrumentLocationFactory(DjangoModelFactory):

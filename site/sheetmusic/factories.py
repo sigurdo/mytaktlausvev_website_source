@@ -2,10 +2,10 @@ from factory import SubFactory, sequence
 from factory.django import DjangoModelFactory
 
 from accounts.factories import UserFactory
-from common.test_utils import test_pdf
+from common.test_utils import test_pdf, test_txt_file
 from instruments.factories import InstrumentTypeFactory
 
-from .models import FavoritePart, Part, Pdf, Score
+from .models import EditFile, FavoritePart, Part, Pdf, Score
 
 
 class ScoreFactory(DjangoModelFactory):
@@ -44,3 +44,12 @@ class FavoritePartFactory(DjangoModelFactory):
 
     user = SubFactory(UserFactory)
     part = SubFactory(PartFactory)
+
+
+class EditFileFactory(DjangoModelFactory):
+    class Meta:
+        model = EditFile
+
+    score = SubFactory(ScoreFactory)
+    file = test_txt_file(name="Free World Fantasy.mscz")
+    filename_original = test_txt_file(name="Free World Fantasy.mscz").name

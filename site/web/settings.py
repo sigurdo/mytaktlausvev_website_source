@@ -19,13 +19,6 @@ from django.contrib.messages import constants as messages
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TESSDATA_DIR = os.path.join(BASE_DIR, "..", "tessdata", "tessdata_best-4.1.0")
-INSTRUMENTS_YAML_PATH = os.path.abspath(
-    os.path.join(
-        BASE_DIR,
-        "sheetmusic",
-        "instruments.yaml",
-    )
-)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
@@ -102,6 +95,7 @@ INSTALLED_APPS = [
     "common.comments",
     "common.markdown",
     "common.breadcrumbs",
+    "common.pdfs",
     "sidebar",
     "articles",
     "storage",
@@ -147,6 +141,7 @@ CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS", "http://localhost"
     " "
 )
 
+
 X_FRAME_OPTIONS = "SAMEORIGIN"
 
 ROOT_URLCONF = "web.urls"
@@ -191,6 +186,12 @@ DATABASES = {
 
 
 AUTH_USER_MODEL = "accounts.UserCustom"
+
+# Allow inactive users to authenticate in the auth backend, but block login in the login form.
+# This enables giving inactive users a custom error message when they try to login.
+# Without this, inactive users are told that their username and/or password is wrong.
+
+AUTHENTICATION_BACKENDS = ["django.contrib.auth.backends.AllowAllUsersModelBackend"]
 
 # Password hashers
 # https://docs.djangoproject.com/en/3.0/ref/settings/#std:setting-PASSWORD_HASHERS

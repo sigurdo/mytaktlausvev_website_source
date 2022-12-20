@@ -49,7 +49,7 @@
             {% endif %}
         </dd>
 
-        {% if gallery.events %}
+        {% if gallery.events.exists %}
             <dt>Hendingar</dt>
             {% for event in gallery.events.all %}
                 <dd>
