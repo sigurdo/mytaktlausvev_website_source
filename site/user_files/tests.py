@@ -1,9 +1,7 @@
 from http import HTTPStatus
 
-from django.conf import settings
 from django.test import TestCase
 from django.urls import reverse
-from django.utils.encoding import escape_uri_path
 from django.utils.text import slugify
 
 from accounts.factories import SuperUserFactory
@@ -84,13 +82,11 @@ class FileServeTestSuite(TestMixin, TestCase):
         response = self.client.get(self.get_url(self.public_file))
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
-    def test_serve(self):
-        """Should serve the correct file."""
+    def test_serves_file(self):
+        """Should serve the file."""
         response = self.client.get(self.get_url(self.public_file))
-        self.assertEqual(
-            response["X-Accel-Redirect"],
-            escape_uri_path(f"{settings.MEDIA_URL_NGINX}{self.public_file.file.name}"),
-        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertEqual(response["content-type"], "audio/mpeg")
 
 
 class FileCreateTestSuite(TestMixin, TestCase):

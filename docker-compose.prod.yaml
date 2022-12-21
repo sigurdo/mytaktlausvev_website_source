@@ -12,9 +12,6 @@ services:
     build:
       context: .
       dockerfile: deployment/Dockerfile.django
-    volumes:
-      - static_files:/app/staticfiles
-      - ~/media_files:/app/media
     env_file:
       - deployment/.prod.env
     command: gunicorn web.wsgi:application --bind 0.0.0.0:8000 --chdir site
@@ -31,8 +28,6 @@ services:
       - deployment/.prod.env
     volumes:
       - nginx_secrets:/etc/letsencrypt
-      - static_files:/app/staticfiles
-      - ~/media_files:/app/media
     ports:
       - 80:80
       - 443:443
@@ -42,4 +37,3 @@ services:
 volumes:
   db_prod:
   nginx_secrets:
-  static_files:
