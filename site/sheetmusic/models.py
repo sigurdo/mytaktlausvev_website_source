@@ -25,7 +25,6 @@ from django.db.models import (
     URLField,
 )
 from django.urls import reverse
-from django.utils.text import slugify
 from PyPDF2 import PdfFileMerger, PdfFileReader, PdfFileWriter
 from sheatless import PdfPredictor, predict_part_from_string
 

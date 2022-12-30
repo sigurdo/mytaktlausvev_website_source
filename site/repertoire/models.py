@@ -11,7 +11,6 @@ from django.db.models import (
 )
 from django.db.models.query_utils import Q
 from django.urls import reverse
-from django.utils.text import slugify
 from django.utils.timezone import localdate, now
 from PyPDF2 import PdfFileReader, PdfFileWriter
 

@@ -2,7 +2,6 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.db.models import F, Prefetch
 from django.http import FileResponse
 from django.urls import reverse, reverse_lazy
-from django.utils.text import slugify
 from django.views.generic import CreateView, DetailView, FormView, ListView, UpdateView
 from django.views.generic.detail import SingleObjectMixin
 
