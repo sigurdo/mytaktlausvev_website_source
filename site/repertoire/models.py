@@ -94,8 +94,8 @@ class Repertoire(CreatedModifiedMixin, Model):
         return output_stream
 
     def favorite_parts_pdf_filename(self, user):
-        """Returns a nice filename for the PDF that contains the users favorite parts for this repertoire."""
-        return slugify(f"{self.name} {user}") + ".pdf"
+        """Returns a nice filename for the PDF that contains the user's favorite parts for this repertoire."""
+        return f"{self.name} - {user}.pdf"
 
     def get_absolute_url(self):
         return reverse("repertoire:RepertoireDetail", args=[self.slug])

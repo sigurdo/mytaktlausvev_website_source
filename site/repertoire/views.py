@@ -152,11 +152,10 @@ class RepertoirePdf(LoginRequiredMixin, BreadcrumbsMixin, SingleObjectMixin, For
 
     def form_valid(self, form):
         output_stream = form.save()
-        filename = slugify(f"{self.object} {self.request.user}") + ".pdf"
         return FileResponse(
             output_stream,
             content_type="application/pdf",
-            filename=filename,
+            filename=self.object.favorite_parts_pdf_filename(self.request.user),
         )
 
     def get_context_data(self, **kwargs):

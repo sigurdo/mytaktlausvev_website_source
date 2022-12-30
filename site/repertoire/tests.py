@@ -63,7 +63,7 @@ class RepertoireTestSuite(TestMixin, TestCase):
 
     def test_pdf_filename(self):
         pdf_filename = self.repertoire.favorite_parts_pdf_filename(self.user)
-        self.assertEqual(pdf_filename, f"marsjhefte-{self.user.slug}.pdf")
+        self.assertEqual(pdf_filename, f"Marsjhefte - {self.user}.pdf")
 
     def test_pdf_file_no_favorite(self):
         self.favorite.delete()

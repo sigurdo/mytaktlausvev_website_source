@@ -121,11 +121,11 @@ class Score(ArticleMixin):
         return output_stream
 
     def favorite_parts_pdf_filename(self, user):
-        return slugify(f"{self.title} {user}") + ".pdf"
+        return f"{self.title} - {user}.pdf"
 
     def pdf_filename(self):
         """Returns a nice filename for a PDF containing all parts of this score."""
-        return slugify(f"{self.title} alle stemmer") + ".pdf"
+        return f"{self.title} - Alle stemmer.pdf"
 
     def pdf_file(self):
         """Returns a PDF containing all parts of this score."""
@@ -142,7 +142,7 @@ class Score(ArticleMixin):
 
     def zip_filename(self):
         """Returns a nice filename for a ZIP file containing all parts of this score."""
-        return slugify(f"{self.title} alle stemmer") + ".zip"
+        return f"{self.title} - Alle stemmer.zip"
 
     def zip_file(self):
         """Returns a ZIP file containing all parts of this score."""
@@ -376,7 +376,7 @@ class Part(Model):
 
     def pdf_filename(self):
         """Returns a nice filename for the PDF that contains only this part"""
-        return slugify(f"{self.pdf.score.title} {self}") + ".pdf"
+        return f"{self.pdf.score.title} - {self}.pdf"
 
 
 class FavoritePart(Model):
