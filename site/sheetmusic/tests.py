@@ -323,16 +323,6 @@ class PartTestSuite(TestMixin, TestCase):
         part = PartFactory(pdf=pdf, instrument_type=trombone, part_number=1)
         self.assertEquals(part.pdf_filename(), "99-luftballons-trombone-1.pdf")
 
-    def test_is_favorite_for(self):
-        """
-        Checks that is_favorite_for returns True when user has part as favorite and False when not.
-        """
-        user = UserFactory()
-        self.part.refresh_from_db()
-        self.assertFalse(self.part.is_favorite_for(user))
-        FavoritePartFactory(user=user, part=self.part)
-        self.assertTrue(self.part.is_favorite_for(user))
-
 
 class FavoritePartTestSuite(TestMixin, TestCase):
     def setUp(self):

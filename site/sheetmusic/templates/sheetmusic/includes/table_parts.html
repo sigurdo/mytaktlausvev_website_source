@@ -25,13 +25,13 @@
                 <td>
                     <form
                         action="{% url "sheetmusic:FavoritePartUpdate" %}"
-                        data-method="{% if part.favorite %}DELETE{% else %}POST{% endif %}"
+                        data-method="{% if part.is_favorite %}DELETE{% else %}POST{% endif %}"
                         class="form-favorite-part"
                     >
                         <input type="hidden" name="part_pk" value="{{ part.pk }}" />
                         <button class="bg-transparent border-0">
                             {% load static %}
-                            {% if part.favorite %}
+                            {% if part.is_favorite %}
                                 <img src="{% static 'sheetmusic/star-filled.svg' %}" alt="Fjern som favoritt" />
                             {% else %}
                                 <img src="{% static 'sheetmusic/star-outline.svg' %}" alt="Gjer til favoritt" />

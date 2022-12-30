@@ -288,8 +288,24 @@ class Pdf(Model):
         ).save()
 
 
+class PartManager(Manager):
+    def get_queryset(self):
+        """
+        Since `instrument_type` is used in Part's string function,
+        always querying for it ahead of time often leads to a performance boost.
+        """
+        return super().get_queryset().select_related("instrument_type")
+
+    def annotate_is_favorite(self, user):
+        return super().annotate(
+            is_favorite=Exists(user.favorite_parts.filter(part=OuterRef("pk")))
+        )
+
+
 class Part(Model):
     """Model representing a part"""
+
+    objects = PartManager()
 
     instrument_type = ForeignKey(
         InstrumentType,
@@ -361,9 +377,6 @@ class Part(Model):
     def pdf_filename(self):
         """Returns a nice filename for the PDF that contains only this part"""
         return slugify(f"{self.pdf.score.title} {self}") + ".pdf"
-
-    def is_favorite_for(self, user):
-        return user.favorite_parts.filter(part=self).exists()
 
 
 class FavoritePart(Model):
