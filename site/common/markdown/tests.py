@@ -4,7 +4,7 @@ from bleach import Cleaner
 from django.test import TestCase
 from marko import Markdown
 
-from .extensions import KWordCensorExtension
+from .extensions import HardBreakExtension, KWordCensorExtension
 from .filters import ClassApplyFilter
 from .templatetags.markdown import (
     clean,
@@ -31,6 +31,15 @@ class KWordCensorTestSuite(TestCase):
         self.assertEqual(self.converter.convert("\KORPS"), "<p>KORPS</p>\n")
         self.assertEqual(self.converter.convert("\Korps"), "<p>Korps</p>\n")
         self.assertEqual(self.converter.convert("\kOrPs"), "<p>kOrPs</p>\n")
+
+
+class HardBreakTestSuite(TestCase):
+    def test_renders_newline_as_hard_break(self):
+        """Should render a newline as a hard break."""
+        converter = Markdown(extensions=[HardBreakExtension()])
+        self.assertEqual(
+            converter.convert("before\nafter"), "<p>before<br />\nafter</p>\n"
+        )
 
 
 class ClassApplyTestSuite(TestCase):

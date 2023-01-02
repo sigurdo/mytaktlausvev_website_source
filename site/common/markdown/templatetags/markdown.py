@@ -8,7 +8,7 @@ from marko import Markdown
 from marko.ext.codehilite import CodeHilite
 from marko.ext.gfm import GFM
 
-from ..extensions import KWordCensorExtension, NewlineToBreakExtension
+from ..extensions import HardBreakExtension, KWordCensorExtension
 from ..filters import ClassApplyFilter
 
 register = template.Library()
@@ -102,7 +102,7 @@ def markdown(string):
             GFM(),
             CodeHilite(),
             KWordCensorExtension(),
-            NewlineToBreakExtension(),
+            HardBreakExtension(),
         ]
     )
     return clean(converter.convert(string))
@@ -167,7 +167,7 @@ def markdown_inline_filter(string, allow_links=True):
             GFM(),
             CodeHilite(),
             KWordCensorExtension(),
-            NewlineToBreakExtension(),
+            HardBreakExtension(),
         ]
     )
     converted = converter.convert(string)

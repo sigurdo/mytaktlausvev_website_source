@@ -35,5 +35,5 @@ class HardBreakMixin:
         return "<br />\n"
 
 
-class NewlineToBreakExtension:
+class HardBreakExtension:
     renderer_mixins = [HardBreakMixin]
