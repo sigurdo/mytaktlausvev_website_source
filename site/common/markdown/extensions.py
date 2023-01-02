@@ -1,4 +1,4 @@
-from marko.inline import InlineElement, LineBreak
+from marko.inline import InlineElement
 
 
 class KWordCensor(InlineElement):
