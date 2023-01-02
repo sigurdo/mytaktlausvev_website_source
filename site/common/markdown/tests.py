@@ -2,7 +2,7 @@ from functools import partial
 
 from bleach import Cleaner
 from django.test import TestCase
-from markdown import Markdown
+from marko import Markdown
 
 from .extensions import KWordCensorExtension
 from .filters import ClassApplyFilter
@@ -16,21 +16,21 @@ from .templatetags.markdown import (
 
 class KWordCensorTestSuite(TestCase):
     def setUp(self):
-        self.md = Markdown(extensions=[KWordCensorExtension()])
+        self.converter = Markdown(extensions=[KWordCensorExtension()])
 
     def test_case_insensitive_censor(self):
         """Censor should be case-insensitive."""
-        self.assertEqual(self.md.convert("korps"), "<p>k****</p>")
-        self.assertEqual(self.md.convert("KORPS"), "<p>K****</p>")
-        self.assertEqual(self.md.convert("Korps"), "<p>K****</p>")
-        self.assertEqual(self.md.convert("kOrPs"), "<p>k****</p>")
+        self.assertEqual(self.converter.convert("korps"), "<p>k****</p>\n")
+        self.assertEqual(self.converter.convert("KORPS"), "<p>K****</p>\n")
+        self.assertEqual(self.converter.convert("Korps"), "<p>K****</p>\n")
+        self.assertEqual(self.converter.convert("kOrPs"), "<p>k****</p>\n")
 
     def test_can_escape_censor(self):
         """Should be able to escape the censor with \\"""
-        self.assertEqual(self.md.convert("\korps"), "<p>korps</p>")
-        self.assertEqual(self.md.convert("\KORPS"), "<p>KORPS</p>")
-        self.assertEqual(self.md.convert("\Korps"), "<p>Korps</p>")
-        self.assertEqual(self.md.convert("\kOrPs"), "<p>kOrPs</p>")
+        self.assertEqual(self.converter.convert("\korps"), "<p>korps</p>\n")
+        self.assertEqual(self.converter.convert("\KORPS"), "<p>KORPS</p>\n")
+        self.assertEqual(self.converter.convert("\Korps"), "<p>Korps</p>\n")
+        self.assertEqual(self.converter.convert("\kOrPs"), "<p>kOrPs</p>\n")
 
 
 class ClassApplyTestSuite(TestCase):
@@ -60,7 +60,7 @@ class ClassApplyTestSuite(TestCase):
 class CleanTestSuite(TestCase):
     def test_allows_links_by_default(self):
         """Should allow links by default."""
-        html = 'Link til <a class="text-break" href="site.com" rel="nofollow">site</a>'
+        html = 'Link til <a class="text-break" href="site.com">site</a>'
         cleaned = clean(html)
         self.assertEqual(cleaned, html)
 
@@ -79,13 +79,6 @@ class CleanTestSuite(TestCase):
         """Setting `allow_blocks=False` should escape blocks."""
         cleaned = clean("<p>Avsnitt</p>", allow_blocks=False)
         self.assertEqual(cleaned, "&lt;p&gt;Avsnitt&lt;/p&gt;")
-
-    def test_linkifies_url(self):
-        cleaned = clean("Link: http://taktlaus.bet")
-        self.assertEqual(
-            cleaned,
-            'Link: <a href="http://taktlaus.bet" rel="nofollow" class="text-break">http://taktlaus.bet</a>',
-        )
 
 
 class EscapeNonInlineMarkdownTestSuite(TestCase):
@@ -172,11 +165,6 @@ class MarkdownInlineFilterTestSuite(TestCase):
         """Strikethrough should be supported."""
         result = markdown_inline_filter("Noe ~~gjennomstreket~~")
         self.assertEqual(result, "Noe <del>gjennomstreket</del>")
-
-    def test_supports_underline(self):
-        """Underline should be supported."""
-        result = markdown_inline_filter("Noe __understreket__")
-        self.assertEqual(result, "Noe <ins>understreket</ins>")
 
     def test_censors_k_word(self):
         """The K-word should be censored."""

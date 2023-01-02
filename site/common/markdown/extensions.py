@@ -1,54 +1,39 @@
-from markdown.extensions import Extension
-from markdown.inlinepatterns import InlineProcessor, SimpleTagPattern
+from marko.inline import InlineElement, LineBreak
 
 
-class StrikethroughExtension(Extension):
+class KWordCensor(InlineElement):
+    """Censor the dreaded K-word. Censorship can be escaped with `\\`"""
+
+    pattern = r"(\\)?(korps)(?i)"
+
+    def __init__(self, match):
+        self.should_censor = match.group(1) != "\\"
+        self.word = match.group(2)
+
+
+class KWordCensorMixin:
+    def render_k_word_censor(self, element):
+        if not element.should_censor:
+            return element.word
+        return element.word[0] + "*" * (len(element.word) - 1)
+
+
+class KWordCensorExtension:
+    elements = [KWordCensor]
+    renderer_mixins = [KWordCensorMixin]
+
+
+class HardBreakMixin:
     """
-    Enables using "~~something~~" to strikethrough text with the `del` tag.
+    Alywas render line breaks as hard breaks.
+
+    See the GitHub-Flavored Markdown spec for an explanation:
+    https://github.github.com/gfm/#hard-line-breaks
     """
 
-    RE = r"(~~)(.*?)~~"
-
-    def extendMarkdown(self, md):
-        md.inlinePatterns.register(SimpleTagPattern(self.RE, "del"), "del-pattern", 200)
+    def render_line_break(self, _) -> str:
+        return "<br />\n"
 
 
-class UnderlineExtension(Extension):
-    """
-    Enables using "__something__" to underline text with the `ins` tag.
-    """
-
-    RE = r"(__)(.*?)__"
-
-    def extendMarkdown(self, md):
-        md.inlinePatterns.register(SimpleTagPattern(self.RE, "ins"), "ins-pattern", 200)
-
-
-class CensorshipProcessor(InlineProcessor):
-    """
-    Censors everything except the first letter of the matched string.
-    Censorship can be escaped with `\\`
-    """
-
-    def __init__(self, pattern, md=None):
-        """
-        Match \\ at the beginning of the pattern,
-        to enable escaping the censor.
-        """
-        super().__init__(f"(\\\)?{pattern}", md)
-
-    def handleMatch(self, m, data):
-        if m.group(1) == "\\":
-            censored = m.group(0)[1:]
-        else:
-            censored = m.group(0)[0] + "*" * (len(m.group(0)) - 1)
-        return censored, m.start(0), m.end(0)
-
-
-class KWordCensorExtension(Extension):
-    """Markdown extension that censors the dreaded K-word."""
-
-    RE = r"korps(?i)"
-
-    def extendMarkdown(self, md):
-        md.inlinePatterns.register(CensorshipProcessor(self.RE), "k-word-censor", 451)
+class NewlineToBreakExtension:
+    renderer_mixins = [HardBreakMixin]
