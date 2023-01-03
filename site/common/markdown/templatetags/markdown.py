@@ -80,6 +80,7 @@ def clean(html, allow_links=True, allow_blocks=True):
         "table": "table table-striped w-auto",
         "img": "img-fluid d-block m-auto",
         "a": "text-break",
+        "blockquote": "markdown-quote",
         "h1": "fs-2",
         "h2": "fs-3",
         "h3": "fs-4",
