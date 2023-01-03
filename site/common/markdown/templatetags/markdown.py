@@ -1,19 +1,15 @@
 from functools import partial
 from re import sub
 
-import markdown as md
 from bleach import Cleaner
-from bleach.linkifier import LinkifyFilter, build_url_re
 from django import template
 from django.utils.safestring import mark_safe
+from marko import Markdown
+from marko.ext.codehilite import CodeHilite
+from marko.ext.gfm import GFM
 
-from ..extensions import (
-    KWordCensorExtension,
-    StrikethroughExtension,
-    UnderlineExtension,
-)
+from ..extensions import HardBreakExtension, KWordCensorExtension
 from ..filters import ClassApplyFilter
-from ..tlds import TLDS
 
 register = template.Library()
 
@@ -27,6 +23,7 @@ ALLOWED_BASE_TAGS = [
     "u",
     "ins",
     "del",
+    "s",
     "small",
     "span",
 ]
@@ -69,8 +66,17 @@ ALLOWED_BLOCK_TAGS = [
 ALLOWED_BLOCK_ATTRIBUTES = ["src", "alt", "width", "height", "class"]
 
 
-def get_class_apply_filter(allowed_tags):
-    full_class_map = {
+def clean(html, allow_links=True, allow_blocks=True):
+    allowed_tags = ALLOWED_BASE_TAGS.copy()
+    allowed_attributes = ALLOWED_BASE_ATTRIBUTES.copy()
+    if allow_links:
+        allowed_tags += ALLOWED_LINK_TAGS
+        allowed_attributes += ALLOWED_LINK_ATTRIBUTES
+    if allow_blocks:
+        allowed_tags += ALLOWED_BLOCK_TAGS
+        allowed_attributes += ALLOWED_BLOCK_ATTRIBUTES
+
+    class_map = {
         "table": "table table-striped w-auto",
         "img": "img-fluid d-block m-auto",
         "a": "text-break",
@@ -80,33 +86,10 @@ def get_class_apply_filter(allowed_tags):
         "h4": "fs-5",
         "h5": "fs-6",
     }
-    class_map = {
-        tag: classes
-        for tag, classes in filter(
-            lambda item: item[0] in allowed_tags, full_class_map.items()
-        )
-    }
-    return partial(ClassApplyFilter, class_map=class_map)
-
-
-def clean(html, allow_links=True, allow_blocks=True):
-    allowed_tags = ALLOWED_BASE_TAGS.copy()
-    allowed_attributes = ALLOWED_BASE_ATTRIBUTES.copy()
-    filters = []
-    if allow_links:
-        allowed_tags += ALLOWED_LINK_TAGS
-        allowed_attributes += ALLOWED_LINK_ATTRIBUTES
-        filters.append(
-            partial(LinkifyFilter, url_re=build_url_re(tlds=TLDS), parse_email=True)
-        )
-    if allow_blocks:
-        allowed_tags += ALLOWED_BLOCK_TAGS
-        allowed_attributes += ALLOWED_BLOCK_ATTRIBUTES
-    filters.append(get_class_apply_filter(allowed_tags))
     cleaner = Cleaner(
         tags=allowed_tags,
         attributes=allowed_attributes,
-        filters=filters,
+        filters=[partial(ClassApplyFilter, class_map=class_map)],
     )
     bleached = cleaner.clean(html)
     return mark_safe(bleached)
@@ -114,19 +97,15 @@ def clean(html, allow_links=True, allow_blocks=True):
 
 @register.filter(is_safe=True)
 def markdown(string):
-    converted = md.markdown(
-        string,
+    converter = Markdown(
         extensions=[
-            "nl2br",
-            "fenced_code",
-            "codehilite",
-            "tables",
-            StrikethroughExtension(),
-            UnderlineExtension(),
+            GFM(),
+            CodeHilite(),
             KWordCensorExtension(),
-        ],
+            HardBreakExtension(),
+        ]
     )
-    return clean(converted)
+    return clean(converter.convert(string))
 
 
 def escape_non_inline_markdown(string):
@@ -136,7 +115,7 @@ def escape_non_inline_markdown(string):
     e.g. "# Unintentional header" becomes "\# Unintentional header". Input string
     is assumed to not contain any newlines.
 
-    Logic behind regex patterns is described on the wiki,
+    The logic behind the regex patterns is described on the wiki:
     https://gitlab.com/taktlause/taktlausveven/-/wikis/Markdown
     """
 
@@ -183,24 +162,20 @@ def markdown_inline_filter(string, allow_links=True):
     if not allow_links:
         string = escape_markdown_links(string)
 
-    converted = md.markdown(
-        string,
+    converter = Markdown(
         extensions=[
-            StrikethroughExtension(),
-            UnderlineExtension(),
+            GFM(),
+            CodeHilite(),
             KWordCensorExtension(),
-        ],
+            HardBreakExtension(),
+        ]
     )
+    converted = converter.convert(string)
 
-    # Strip away <p> and </p>
-    converted = sub(r"^<p>(.*)</p>$", r"\1", converted)
+    # Strip away <p>, </p>, \n
+    converted = sub(r"^<p>(.*)</p>\n$", r"\1", converted)
 
-    if allow_links:
-        bleached = clean(converted, allow_blocks=False)
-    else:
-        bleached = clean(converted, allow_links=False, allow_blocks=False)
-
-    return bleached
+    return clean(converted, allow_links=allow_links, allow_blocks=False)
 
 
 @register.filter(is_safe=True)
