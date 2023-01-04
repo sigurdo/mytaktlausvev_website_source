@@ -11,6 +11,7 @@ from django.db.models import (
 )
 from django.db.models.query_utils import Q
 from django.urls import reverse
+from django.utils.text import get_valid_filename
 from django.utils.timezone import localdate, now
 from PyPDF2 import PdfFileReader, PdfFileWriter
 
@@ -94,7 +95,7 @@ class Repertoire(CreatedModifiedMixin, Model):
 
     def favorite_parts_pdf_filename(self, user):
         """Returns a nice filename for the PDF that contains the user's favorite parts for this repertoire."""
-        return f"{self.name} - {user}.pdf"
+        return get_valid_filename(f"{self.name} {user}.pdf")
 
     def get_absolute_url(self):
         return reverse("repertoire:RepertoireDetail", args=[self.slug])

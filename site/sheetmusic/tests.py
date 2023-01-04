@@ -135,7 +135,7 @@ class ScoreTestSuite(TestMixin, TestCase):
         """
         user = UserFactory(username="Kul Type")
         result = self.score.favorite_parts_pdf_filename(user)
-        self.assertEquals(result, "Chirp - Kul Type.pdf")
+        self.assertEquals(result, "Chirp_Kul_Type.pdf")
 
     def test_is_processing(self):
         """
@@ -321,7 +321,7 @@ class PartTestSuite(TestMixin, TestCase):
         pdf = PdfFactory(score=score)
         trombone = InstrumentTypeFactory(name="Trombone")
         part = PartFactory(pdf=pdf, instrument_type=trombone, part_number=1)
-        self.assertEquals(part.pdf_filename(), "99 Luftballons - Trombone 1.pdf")
+        self.assertEquals(part.pdf_filename(), "99_Luftballons_Trombone_1.pdf")
 
 
 class FavoritePartTestSuite(TestMixin, TestCase):

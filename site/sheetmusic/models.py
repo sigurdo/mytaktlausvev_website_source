@@ -25,6 +25,7 @@ from django.db.models import (
     URLField,
 )
 from django.urls import reverse
+from django.utils.text import get_valid_filename
 from PyPDF2 import PdfFileMerger, PdfFileReader, PdfFileWriter
 from sheatless import PdfPredictor, predict_part_from_string
 
@@ -120,11 +121,11 @@ class Score(ArticleMixin):
         return output_stream
 
     def favorite_parts_pdf_filename(self, user):
-        return f"{self.title} - {user}.pdf"
+        return get_valid_filename(f"{self.title} {user}.pdf")
 
     def pdf_filename(self):
         """Returns a nice filename for a PDF containing all parts of this score."""
-        return f"{self.title} - Alle stemmer.pdf"
+        return get_valid_filename(f"{self.title} Alle stemmer.pdf")
 
     def pdf_file(self):
         """Returns a PDF containing all parts of this score."""
@@ -141,7 +142,7 @@ class Score(ArticleMixin):
 
     def zip_filename(self):
         """Returns a nice filename for a ZIP file containing all parts of this score."""
-        return f"{self.title} - Alle stemmer.zip"
+        return get_valid_filename(f"{self.title} Alle stemmer.zip")
 
     def zip_file(self):
         """Returns a ZIP file containing all parts of this score."""
@@ -375,7 +376,7 @@ class Part(Model):
 
     def pdf_filename(self):
         """Returns a nice filename for the PDF that contains only this part"""
-        return f"{self.pdf.score.title} - {self}.pdf"
+        return get_valid_filename(f"{self.pdf.score.title} {self}.pdf")
 
 
 class FavoritePart(Model):
