@@ -27,6 +27,10 @@
             <a href="{% url 'repertoire:RepertoireCreate' %}" class="btn btn-primary btn-sm my-1"> Nytt repertoar </a>
         </li>
         {% endif %}
+
+        <li class="list-inline-item">
+            <a href="{% url 'sheetmusic:ScoreList' %}" class="btn btn-primary btn-sm my-1"> Alle notar </a>
+        </li>
     </ul>
 {% endblock header %}
 
