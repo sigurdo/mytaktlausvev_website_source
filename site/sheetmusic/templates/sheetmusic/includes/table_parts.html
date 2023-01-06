@@ -20,18 +20,18 @@
                     <a href="{{ part.get_absolute_url }}" class="btn btn-secondary btn-sm"> Les </a>
                 </td>
                 <td>
-                    <a href="{{ part.get_pdf_url }}" download class="btn btn-primary btn-sm"> Last ned </a>
+                    <a href="{{ part.get_pdf_url }}" class="btn btn-primary btn-sm"> Last ned </a>
                 </td>
                 <td>
                     <form
                         action="{% url "sheetmusic:FavoritePartUpdate" %}"
-                        data-method="{% if part.favorite %}DELETE{% else %}POST{% endif %}"
+                        data-method="{% if part.is_favorite %}DELETE{% else %}POST{% endif %}"
                         class="form-favorite-part"
                     >
                         <input type="hidden" name="part_pk" value="{{ part.pk }}" />
                         <button class="bg-transparent border-0">
                             {% load static %}
-                            {% if part.favorite %}
+                            {% if part.is_favorite %}
                                 <img src="{% static 'sheetmusic/star-filled.svg' %}" alt="Fjern som favoritt" />
                             {% else %}
                                 <img src="{% static 'sheetmusic/star-outline.svg' %}" alt="Gjer til favoritt" />

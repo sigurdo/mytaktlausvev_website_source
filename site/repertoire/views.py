@@ -2,7 +2,6 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.db.models import F, Prefetch
 from django.http import FileResponse
 from django.urls import reverse, reverse_lazy
-from django.utils.text import slugify
 from django.views.generic import CreateView, DetailView, FormView, ListView, UpdateView
 from django.views.generic.detail import SingleObjectMixin
 
@@ -152,11 +151,10 @@ class RepertoirePdf(LoginRequiredMixin, BreadcrumbsMixin, SingleObjectMixin, For
 
     def form_valid(self, form):
         output_stream = form.save()
-        filename = slugify(f"{self.object} {self.request.user}") + ".pdf"
         return FileResponse(
             output_stream,
             content_type="application/pdf",
-            filename=filename,
+            filename=self.object.favorite_parts_pdf_filename(self.request.user),
         )
 
     def get_context_data(self, **kwargs):

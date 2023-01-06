@@ -49,7 +49,7 @@ class RepertoireManagerTestSuite(TestMixin, TestCase):
 
 class RepertoireTestSuite(TestMixin, TestCase):
     def setUp(self):
-        self.user = UserFactory()
+        self.user = UserFactory(name="Leiar")
         self.score = ScoreFactory()
         self.repertoire = RepertoireFactory(name="Marsjhefte", scores=[self.score])
         self.favorite = FavoritePartFactory(part__pdf__score=self.score, user=self.user)
@@ -63,7 +63,7 @@ class RepertoireTestSuite(TestMixin, TestCase):
 
     def test_pdf_filename(self):
         pdf_filename = self.repertoire.favorite_parts_pdf_filename(self.user)
-        self.assertEqual(pdf_filename, f"marsjhefte-{self.user.slug}.pdf")
+        self.assertEqual(pdf_filename, "Marsjhefte_Leiar.pdf")
 
     def test_pdf_file_no_favorite(self):
         self.favorite.delete()

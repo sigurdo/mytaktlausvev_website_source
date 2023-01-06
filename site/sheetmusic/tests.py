@@ -131,11 +131,11 @@ class ScoreTestSuite(TestMixin, TestCase):
 
     def test_favorite_parts_pdf_filename(self):
         """
-        Checks that favorite_parts_pdf_filename returns "chirp-kultype.pdf" for a user named kultype.
+        Checks that `favorite_parts_pdf_filename` returns an approriate filename for the PDF.
         """
-        user = UserFactory(username="kultype")
+        user = UserFactory(username="Kul Type")
         result = self.score.favorite_parts_pdf_filename(user)
-        self.assertEquals(result, "chirp-kultype.pdf")
+        self.assertEquals(result, "Chirp_Kul_Type.pdf")
 
     def test_is_processing(self):
         """
@@ -315,23 +315,13 @@ class PartTestSuite(TestMixin, TestCase):
 
     def test_pdf_filename(self):
         """
-        Checks that pdf_filename returns "99-luftballons-trombone-1.pdf"
+        Checks that `pdf_filename` returns an appropriate filename for the PDF.
         """
         score = ScoreFactory(title="99 Luftballons")
         pdf = PdfFactory(score=score)
         trombone = InstrumentTypeFactory(name="Trombone")
         part = PartFactory(pdf=pdf, instrument_type=trombone, part_number=1)
-        self.assertEquals(part.pdf_filename(), "99-luftballons-trombone-1.pdf")
-
-    def test_is_favorite_for(self):
-        """
-        Checks that is_favorite_for returns True when user has part as favorite and False when not.
-        """
-        user = UserFactory()
-        self.part.refresh_from_db()
-        self.assertFalse(self.part.is_favorite_for(user))
-        FavoritePartFactory(user=user, part=self.part)
-        self.assertTrue(self.part.is_favorite_for(user))
+        self.assertEquals(part.pdf_filename(), "99_Luftballons_Trombone_1.pdf")
 
 
 class FavoritePartTestSuite(TestMixin, TestCase):
@@ -455,12 +445,12 @@ class ScoreViewTestSuite(TestMixin, TestCase):
         context = self.client.get(self.get_url()).context
         self.assertEqual(list(context["parts_instrument_group"]), [part])
 
-    def test_favorite_on_parts_in_context(self):
+    def test_is_favorite_on_parts_in_context(self):
         user = UserFactory()
         FavoritePartFactory(user=user, part__pdf__score=self.score)
         self.client.force_login(user)
         context = self.client.get(self.get_url()).context
-        self.assertTrue(list(context["parts"])[0].favorite)
+        self.assertTrue(list(context["parts"])[0].is_favorite)
 
 
 class ScoreCreateTestSuite(TestMixin, TestCase):

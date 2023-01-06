@@ -25,7 +25,7 @@ from django.db.models import (
     URLField,
 )
 from django.urls import reverse
-from django.utils.text import slugify
+from django.utils.text import get_valid_filename
 from PyPDF2 import PdfFileMerger, PdfFileReader, PdfFileWriter
 from sheatless import PdfPredictor, predict_part_from_string
 
@@ -121,11 +121,11 @@ class Score(ArticleMixin):
         return output_stream
 
     def favorite_parts_pdf_filename(self, user):
-        return slugify(f"{self.title} {user}") + ".pdf"
+        return get_valid_filename(f"{self.title} {user}.pdf")
 
     def pdf_filename(self):
         """Returns a nice filename for a PDF containing all parts of this score."""
-        return slugify(f"{self.title} alle stemmer") + ".pdf"
+        return get_valid_filename(f"{self.title} Alle stemmer.pdf")
 
     def pdf_file(self):
         """Returns a PDF containing all parts of this score."""
@@ -142,7 +142,7 @@ class Score(ArticleMixin):
 
     def zip_filename(self):
         """Returns a nice filename for a ZIP file containing all parts of this score."""
-        return slugify(f"{self.title} alle stemmer") + ".zip"
+        return get_valid_filename(f"{self.title} Alle stemmer.zip")
 
     def zip_file(self):
         """Returns a ZIP file containing all parts of this score."""
@@ -288,8 +288,24 @@ class Pdf(Model):
         ).save()
 
 
+class PartManager(Manager):
+    def get_queryset(self):
+        """
+        Since `instrument_type` is used in Part's string function,
+        always querying for it ahead of time often leads to a performance boost.
+        """
+        return super().get_queryset().select_related("instrument_type")
+
+    def annotate_is_favorite(self, user):
+        return super().annotate(
+            is_favorite=Exists(user.favorite_parts.filter(part=OuterRef("pk")))
+        )
+
+
 class Part(Model):
     """Model representing a part"""
+
+    objects = PartManager()
 
     instrument_type = ForeignKey(
         InstrumentType,
@@ -360,10 +376,7 @@ class Part(Model):
 
     def pdf_filename(self):
         """Returns a nice filename for the PDF that contains only this part"""
-        return slugify(f"{self.pdf.score.title} {self}") + ".pdf"
-
-    def is_favorite_for(self, user):
-        return user.favorite_parts.filter(part=self).exists()
+        return get_valid_filename(f"{self.pdf.score.title} {self}.pdf")
 
 
 class FavoritePart(Model):
