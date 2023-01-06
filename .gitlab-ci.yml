@@ -1,9 +1,7 @@
 image: docker/compose
 
 variables:
-  DOCKER_HOST: tcp://docker:2375
-  DOCKER_DRIVER: overlay2
-  DOCKER_TLS_CERTDIR: ""
+  GIT_SUBMODULE_STRATEGY: recursive
 
 services:
   - docker:stable-dind
@@ -39,8 +37,6 @@ verify-merge-request:
     - docker-compose down
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-  tags:
-    - docker
 
 verify-deploy:
   stage: test
@@ -54,26 +50,27 @@ verify-deploy:
     - docker-compose down
   rules:
     - if: $CI_COMMIT_TAG =~ /^v.*/
-  tags:
-    - docker
 
 deploy:
+  image: mcr.microsoft.com/azure-cli
   stage: deploy
   environment: production
   before_script:
-    - apk update
-    - apk add openssh-client
-    - eval $(ssh-agent -s)
-    - echo "$ID_RSA" | tr -d '\r' | ssh-add - # funky stuffs from gitlab to remove line endings
-    - mkdir -p ~/.ssh
-    - chmod 700 ~/.ssh
+    - az login --service-principal -u $AZURE_APP_ID -p $AZURE_PASSWORD --tenant $AZURE_TENANT
   script:
-    - ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no "$SERVER_USER"@"$SERVER_IP" "~/veven/taktlausveven/deployment/deploy.sh"
-    # Variables ID_RSA, SERVER_USER and SERVER_IP are set in settings -> ci/cd -> variables
+    - az acr build
+      --resource-group taktlausveven
+      --registry taktlausveven
+      --image taktlausveven-django:latest
+      --file deployment/Dockerfile.prod .
+    - curl $PULL_IMAGE_WEBHOOK -d ""
+    - sleep 300
+    - curl https://taktlaus.no/
+      --fail
+      --max-time 20
+      --retry 3
   rules:
     - if: $CI_COMMIT_TAG =~ /^v.*/
-  tags:
-    - taktlaustenaren
 
 success-notification:
   stage: notification
@@ -82,7 +79,7 @@ success-notification:
     - apk add --update git curl
     - wget https://raw.githubusercontent.com/Shybert/gitlab-ci-discord-webhook/proper-logos/send.sh
     - chmod +x send.sh
-    - sh send.sh success $WEBHOOK_URL
+    - sh send.sh success $DISCORD_DEPLOY_NOTIFICATION_WEBHOOK
   rules:
     - if: $CI_COMMIT_TAG =~ /^v.*/
   when: on_success
@@ -93,7 +90,7 @@ failure-notification:
     - apk add --update git curl
     - wget https://raw.githubusercontent.com/Shybert/gitlab-ci-discord-webhook/proper-logos/send.sh
     - chmod +x send.sh
-    - sh send.sh failure $WEBHOOK_URL
+    - sh send.sh failure $DISCORD_DEPLOY_NOTIFICATION_WEBHOOK
   rules:
     - if: $CI_COMMIT_TAG =~ /^v.*/
   when: on_failure

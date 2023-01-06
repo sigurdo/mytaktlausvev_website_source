@@ -4,7 +4,7 @@ crispy-bootstrap5~=0.6
 psycopg2-binary~=2.8
 libsass~=0.20
 django-sass-processor~=1.0
-markdown~=3.3
+marko[codehilite]==1.2.2
 bleach~=3.3
 factory-boy~=3.2
 django-autoslug~=1.9
@@ -17,7 +17,7 @@ flake8-isort~=4.1
 django-tree-queries==0.6.0
 Pygments~=2.10
 Pillow~=9.0.0
-sheatless~=1.9.2
+sheatless~=1.9.3
 PyPDF2~=1.26.0
 django-ical~=1.8.0
 django-pgtrigger~=2.4

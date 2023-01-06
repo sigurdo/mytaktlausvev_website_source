@@ -95,19 +95,17 @@ class ScoreView(LoginRequiredMixin, BreadcrumbsMixin, DetailView):
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         user = self.request.user
-        parts = Part.objects.filter(pdf__in=self.object.pdfs.all())
-        for part in parts:
-            part.favorite = part.is_favorite_for(user)
+        parts = (
+            Part.objects.annotate_is_favorite(user)
+            .filter(pdf__in=self.object.pdfs.all())
+            .select_related("pdf__score")
+        )
         context = super().get_context_data(**kwargs)
         context["parts"] = parts
-        context["parts_favorite"] = list(filter(lambda part: part.favorite, parts))
+        context["parts_favorite"] = parts.filter(is_favorite=True)
         if user.instrument_type:
-            context["parts_instrument_group"] = list(
-                filter(
-                    lambda part: part.instrument_type.group
-                    == user.instrument_type.group,
-                    parts,
-                )
+            context["parts_instrument_group"] = parts.filter(
+                instrument_type__group=user.instrument_type.group
             )
         return context
 

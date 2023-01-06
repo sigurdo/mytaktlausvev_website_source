@@ -13,7 +13,7 @@ class Command(BaseCommand):
 
     def _write_style(self, directory, style):
         path = os.path.join(directory, f"codestyle-{style}.scss")
-        formatter = HtmlFormatter(cssclass="codehilite", style=style)
+        formatter = HtmlFormatter(cssclass="highlight", style=style)
         with open(path, "w") as file:
             file.write(formatter.get_style_defs())
 

@@ -10,7 +10,16 @@
 {% block header %}
     {{ block.super }}
 
-    <a class="btn btn-primary btn-sm my-1" href="{% url 'sheetmusic:ScoreCreate' %}"> Ny note </a>
+
+    <ul class="list-inline my-1">
+        <li class="list-inline-item">
+            <a href="{% url 'sheetmusic:ScoreCreate' %}" class="btn btn-primary btn-sm my-1"> Ny note </a>
+        </li>
+
+        <li class="list-inline-item">
+            <a href="{% url 'repertoire:ActiveRepertoires' %}" class="btn btn-primary btn-sm my-1"> Repertoar </a>
+        </li>
+    </ul>
 {% endblock header %}
 
 {% block content %}
