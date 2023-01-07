@@ -77,7 +77,7 @@ success-notification:
   image: alpine:latest
   script:
     - apk add --update git curl
-    - wget https://raw.githubusercontent.com/Shybert/gitlab-ci-discord-webhook/proper-logos/send.sh
+    - wget https://gitlab.com/taktlause/gitlab-ci-discord-webhook/-/raw/proper-logos/send.sh
     - chmod +x send.sh
     - sh send.sh success $DISCORD_DEPLOY_NOTIFICATION_WEBHOOK
   rules:
@@ -88,7 +88,7 @@ failure-notification:
   image: alpine:latest
   script:
     - apk add --update git curl
-    - wget https://raw.githubusercontent.com/Shybert/gitlab-ci-discord-webhook/proper-logos/send.sh
+    - wget https://gitlab.com/taktlause/gitlab-ci-discord-webhook/-/raw/proper-logos/send.sh
     - chmod +x send.sh
     - sh send.sh failure $DISCORD_DEPLOY_NOTIFICATION_WEBHOOK
   rules:
