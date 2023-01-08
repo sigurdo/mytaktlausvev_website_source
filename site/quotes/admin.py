@@ -10,6 +10,8 @@ class QuoteAdmin(admin.ModelAdmin):
     search_fields = ("quote", "quoted_as")
     filter_horizontal = ("users",)
 
+    readonly_fields = ("created", "created_by", "modified", "modified_by")
+
     @admin.display(description="Sitert som")
     def quoted_as_or_users_view(self, obj):
         return obj.quoted_as_or_users()
