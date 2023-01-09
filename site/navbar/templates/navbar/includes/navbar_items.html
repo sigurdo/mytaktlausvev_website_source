@@ -1,4 +1,3 @@
-{% now "d m" as day%}
 <ul class="nav navbar-nav me-auto" >
     {% for item in navbar_items %}
         <li class="nav-item dropdown">
@@ -17,11 +16,7 @@
                     {% else %}
                         aria-expanded="false"
                     {% endif %}
-                {% endif %}
-                {% if user.is_authenticated and day == "31 10" %} 
-                    style="background: rgba(13, 67, 157, 0.7);" 
-                {% endif %}
-                >
+                {% endif %}>
                 {{item.text}}
             </a>
             {% if item.is_dropdown %}
