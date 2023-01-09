@@ -1,0 +1,41 @@
+version: "3"
+
+services:
+  db:
+    image: postgres:14.1-alpine
+    volumes:
+      - db_prod:/var/lib/postgresql/data:Z
+    env_file:
+      - deployment/.prod.env
+
+  django:
+    build:
+      context: .
+      dockerfile: deployment/Dockerfile.prod
+    volumes:
+      - static_files:/app/staticfiles
+      - ~/media_files:/app/media
+    env_file:
+      - deployment/.prod.env
+    depends_on:
+      - db
+
+  nginx:
+    image: jonasal/nginx-certbot:4.0.0-alpine
+    env_file:
+      - deployment/.prod.env
+    volumes:
+      - nginx_secrets:/etc/letsencrypt
+      - ./deployment/nginx.conf:/etc/nginx/user_conf.d/nginx.conf
+      - static_files:/app/staticfiles
+      - ~/media_files:/app/media
+    ports:
+      - 80:80
+      - 443:443
+    depends_on:
+      - django
+
+volumes:
+  db_prod:
+  nginx_secrets:
+  static_files:

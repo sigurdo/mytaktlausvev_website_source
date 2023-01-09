@@ -15,7 +15,7 @@ class Command(BaseCommand):
     def handle(self, **options):
         Site.objects.update_or_create(
             id=settings.SITE_ID,
-            defaults={"domain": "localhost:8000", "name": "localhost"},
+            defaults={"domain": "(MYTAKTLAUSVEV_VARIABLE(initial_data.site.domain))", "name": "main"},
         )
 
         superuser = UserCustom.objects.create_superuser(

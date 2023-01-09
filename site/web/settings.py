@@ -300,7 +300,7 @@ WATSON_POSTGRES_SEARCH_CONFIG = "pg_catalog.norwegian"
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 # https://django-storages.readthedocs.io/en/latest/backends/azure.html
 
-if PRODUCTION:
+if PRODUCTION and "(MYTAKTLAUSVEV_VARIABLE(production.hosting_solution))" == "azure":
     DEFAULT_FILE_STORAGE = "common.storages.AzureMediaStorage"
     STATICFILES_STORAGE = "common.storages.AzureStaticStorage"
 
@@ -316,6 +316,11 @@ else:
     MEDIA_URL = "/media/"
     MEDIA_ROOT = os.path.join(BASE_DIR, "media")
     STATIC_URL = "/static/"
+
+# Modifications to support producion hosting on server
+MEDIA_URL_NGINX = "/media_nginx/"
+if PRODUCTION and "(MYTAKTLAUSVEV_VARIABLE(production.hosting_solution))" == "server":
+    MEDIA_ROOT = os.path.join(BASE_DIR, "..", "media")
 
 # Used in both dev and prod to temporarily store generated static files
 STATIC_ROOT = os.path.join(BASE_DIR, "..", "staticfiles")

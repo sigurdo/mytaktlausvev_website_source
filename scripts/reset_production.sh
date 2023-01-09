@@ -10,7 +10,7 @@ docker-compose -f docker-compose.prod.yaml build
 docker-compose -f docker-compose.prod.yaml run --rm django python site/manage.py migrate
 
 echo Creating development data
-docker-compose -f docker-compose.prod.yaml run --rm django site/manage.py mytaktlausvev_create_initial_data
+docker-compose -f docker-compose.prod.yaml run --rm django site/manage.py create_dev_data
 
 echo Stopping Docker container
 docker-compose -f docker-compose.prod.yaml down
