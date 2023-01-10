@@ -1,6 +1,8 @@
-# Taktlausveven
+*forked from [Taktlausveven](https://gitlab.com/taktlause/taktlausveven/)*
 
-Studentorchesteret Dei Taktlause's new website.
+# (MYTAKTLAUSVEV_VARIABLE(readme.project_title))
+
+(MYTAKTLAUSVEV_VARIABLE(readme.orchestra_name))'s new website.
 
 ## Development
 
