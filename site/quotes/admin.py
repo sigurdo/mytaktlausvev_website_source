@@ -7,8 +7,10 @@ from .models import Quote
 
 class QuoteAdmin(admin.ModelAdmin):
     list_display = ("quote", "quoted_as_or_users_view", "get_involved_users", "created")
-    search_fields = ("quote", "quoted_as")
+    search_fields = ("quote", "quoted_as", "users__name")
     filter_horizontal = ("users",)
+
+    readonly_fields = ("created", "created_by", "modified", "modified_by")
 
     @admin.display(description="Sitert som")
     def quoted_as_or_users_view(self, obj):
