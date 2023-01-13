@@ -6,7 +6,7 @@ services:
     volumes:
       - db_prod:/var/lib/postgresql/data:Z
     env_file:
-      - deployment/.prod.env
+      - deployment/server/prod.env
 
   django:
     build:
@@ -16,17 +16,17 @@ services:
       - static_files:/app/staticfiles
       - ~/media_files:/app/media
     env_file:
-      - deployment/.prod.env
+      - deployment/server/prod.env
     depends_on:
       - db
 
   nginx:
     image: jonasal/nginx-certbot:4.0.0-alpine
     env_file:
-      - deployment/.prod.env
+      - deployment/server/prod.env
     volumes:
       - nginx_secrets:/etc/letsencrypt
-      - ./deployment/nginx.conf:/etc/nginx/user_conf.d/nginx.conf
+      - ./deployment/server/nginx.conf:/etc/nginx/user_conf.d/nginx.conf
       - static_files:/app/staticfiles
       - ~/media_files:/app/media
     ports:
