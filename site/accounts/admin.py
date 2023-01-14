@@ -27,7 +27,7 @@ class UserAdminCustom(UserAdmin):
             },
         ),
         (
-            "Taktlaus-ting",
+            "(MYTAKTLAUSVEV_VARIABLE(appearance.accounts.orchestra_stuff_fieldset))",
             {
                 "fields": (
                     "membership_status",
