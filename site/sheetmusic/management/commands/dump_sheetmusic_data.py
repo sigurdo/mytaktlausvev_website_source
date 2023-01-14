@@ -47,7 +47,7 @@ class Command(BaseCommand):
                     "title": "Score title",
                     "pdfs": [
                         {
-                            "url": "https://taktlaus.no/path/to.pdf",
+                            "url": "https://(MYTAKTLAUSVEV_VARIABLE(domain))/path/to.pdf",
                             "parts": [
                                 {
                                     "instrument_type_pk": 42,

@@ -34,12 +34,12 @@
 		<link rel="manifest" href="{% static "pwa/manifest.json" %}">
 		<!-- Add to homescreen for Chrome on Android -->
 		<meta name="mobile-web-app-capable" content="yes">
-		<meta name="application-name" content="Taktlausveven">
+		<meta name="application-name" content="(MYTAKTLAUSVEV_VARIABLE(appearance.manifest.name))">
 		<!-- Add to homescreen for Safari on iOS -->
 		<meta name="apple-mobile-web-app-capable" content="yes">
-		<meta name="apple-mobile-web-app-title" content="Taktlausveven">
+		<meta name="apple-mobile-web-app-title" content="(MYTAKTLAUSVEV_VARIABLE(appearance.manifest.name))">
 		<meta name="apple-mobile-web-app-status-bar-style" content="default">
-		<link rel="apple-touch-icon" href="/static/images/apple-touch-icon.png" sizes="">
+		<link rel="apple-touch-icon" href="/static/(MYTAKTLAUSVEV_VARIABLE(appearance.manifest.apple_touch_icon))" sizes="">
 	{% endif %}
 	{% if ENABLE_SERVICEWORKER %}
 		<!-- Register serviceworker -->

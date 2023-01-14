@@ -47,5 +47,5 @@ urlpatterns = [
         views.EventAttendanceDelete.as_view(),
         name="EventAttendanceDelete",
     ),
-    path("taktlaushendingar.ics", views.EventFeed(), name="EventFeed"),
+    path("(MYTAKTLAUSVEV_VARIABLE(appearance.events.feed.filename))", views.EventFeed(), name="EventFeed"),
 ]

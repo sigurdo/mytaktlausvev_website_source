@@ -1123,7 +1123,7 @@ class Command(BaseCommand):
         )
         EmbeddableTextFactory(
             name="Velkomenepost",
-            content='Hei og velkomen til Studentorchesteret Dei Taktlause! Brukarnamnet ditt er "{{ username }}".',
+            content='Hei og velkomen til (MYTAKTLAUSVEV_VARIABLE(appearance.orchestra_name))! Brukarnamnet ditt er "{{ username }}".',
         )
         EmbeddableTextFactory(
             name="Stemmeredigeringstips",
@@ -1151,7 +1151,7 @@ Her kan du skrive nykelinformasjon om hendinga. Oppføringane du skriv vil verte
         )
         EmbeddableTextFactory(
             name="Inaktiv brukar",
-            content="Du har ikkje betalt medlemskontingent for Dei Taktlause. Du har difor fått status som inaktiv.",
+            content="Du har ikkje betalt medlemskontingent for (MYTAKTLAUSVEV_VARIABLE(appearance.orchestra_name_short)). Du har difor fått status som inaktiv.",
         )
         OrchestraFactory(name="Dragern")
         OrchestraFactory(name="Motstanden")

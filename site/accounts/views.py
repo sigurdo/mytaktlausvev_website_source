@@ -44,7 +44,7 @@ class UserCustomCreate(PermissionRequiredMixin, BreadcrumbsMixin, CreateView):
         )
         html = markdown(template)
         send_mail(
-            "Velkomen til Studentorchesteret Dei Taktlause!",
+            "Velkomen til (MYTAKTLAUSVEV_VARIABLE(appearance.orchestra_name))!",
             embeddable_text.content,
             settings.EMAIL_HOST_USER,
             [self.object.email],

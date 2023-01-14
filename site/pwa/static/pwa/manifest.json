@@ -1,13 +1,13 @@
 
 {
-    "name": "Taktlausveven",
-    "short_name": "Taktlausveven",
-    "description": "Heimvevstaden til Studentorchesteret Dei Taktlause",
+    "name": "(MYTAKTLAUSVEV_VARIABLE(appearance.manifest.name))",
+    "short_name": "(MYTAKTLAUSVEV_VARIABLE(appearance.manifest.short_name))",
+    "description": "(MYTAKTLAUSVEV_VARIABLE(appearance.manifest.description))",
     "start_url": "/",
     "display": "standalone",
     "scope": "/",
-    "background_color": "#ffffff",
-    "theme_color": "#a50104",
+    "background_color": "(MYTAKTLAUSVEV_VARIABLE(appearance.manifest.background_color))",
+    "theme_color": "(MYTAKTLAUSVEV_VARIABLE(appearance.manifest.theme_color))",
     "status_bar": "default",
     "icons": [{
         "src": "/static/images/logo.svg",

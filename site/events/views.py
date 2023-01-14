@@ -373,10 +373,10 @@ class EventAttendanceDelete(
 
 
 class EventFeed(ICalFeed):
-    product_id = "-//taktlaus.no//kalender//NO-NN"
+    product_id = "-//(MYTAKTLAUSVEV_VARIABLE(domain))//kalender//NO-NN"
     timezone = settings.TIME_ZONE
-    title = "Taktlauskalender"
-    description = "Kalender for taktlause hendingar"
+    title = "(MYTAKTLAUSVEV_VARIABLE(appearance.events.feed.title))"
+    description = "(MYTAKTLAUSVEV_VARIABLE(appearance.events.feed.description))"
 
     def __call__(self, request, *args, **kwargs):
         token = request.GET.get("token", None)
@@ -395,7 +395,7 @@ class EventFeed(ICalFeed):
         return Event.objects.filter(start_time__gte=start_date)
 
     def item_guid(self, item):
-        return f"@taktlaus.no{item.get_absolute_url()}"
+        return f"@(MYTAKTLAUSVEV_VARIABLE(domain)){item.get_absolute_url()}"
 
     def item_title(self, item):
         return item.title
@@ -408,7 +408,7 @@ class EventFeed(ICalFeed):
 """
 
     def item_link(self, item):
-        return f"https://taktlaus.no{item.get_absolute_url()}"
+        return f"https://(MYTAKTLAUSVEV_VARIABLE(domain)){item.get_absolute_url()}"
 
     def item_start_datetime(self, item):
         return localtime(item.start_time)

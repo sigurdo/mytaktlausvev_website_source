@@ -15,7 +15,7 @@ class Command(BaseCommand):
     def handle(self, **options):
         Site.objects.update_or_create(
             id=settings.SITE_ID,
-            defaults={"domain": "(MYTAKTLAUSVEV_VARIABLE(initial_data.site.domain))", "name": "main"},
+            defaults={"domain": "(MYTAKTLAUSVEV_VARIABLE(domain))", "name": "main"},
         )
 
         superuser = UserCustom.objects.create_superuser(
@@ -44,7 +44,7 @@ class Command(BaseCommand):
             content=f"""
 Gratulerer!
 
-Du har nå satt opp ein vevside for (MYTAKTLAUSVEV_VARIABLE(initial_data.orchestra_name)). Her finn du nokre tips for å kome i gang.
+Du har nå satt opp ein vevside for (MYTAKTLAUSVEV_VARIABLE(appearance.orchestra_name)). Her finn du nokre tips for å kome i gang.
 
 ## Lage brukarar
 
@@ -299,7 +299,7 @@ Innbyggbare tekstar er ein samling av diverse tekstar som vert bygd inn på ulik
         )
         EmbeddableTextFactory(
             name="Velkomenepost",
-            content='Hei og velkomen til (MYTAKTLAUSVEV_VARIABLE(initial_data.orchestra_name))! Brukarnamnet ditt er "{{ username }}".',
+            content='Hei og velkomen til (MYTAKTLAUSVEV_VARIABLE(appearance.orchestra_name))! Brukarnamnet ditt er "{{ username }}".',
         )
         EmbeddableTextFactory(
             name="Stemmeredigeringstips",

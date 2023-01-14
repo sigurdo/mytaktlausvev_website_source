@@ -45,7 +45,7 @@ class UserCustomCreateForm(UserCreationForm):
             "student_card_number",
             "no_storage_access",
         ),
-        Fieldset("Taktlaus-ting", "instrument_type", "membership_period"),
+        Fieldset("(MYTAKTLAUSVEV_VARIABLE(appearance.accounts.orchestra_stuff_fieldset))", "instrument_type", "membership_period"),
         Submit("submit", "Lag brukar"),
     )
 
@@ -115,7 +115,7 @@ class UserCustomUpdateForm(ModelForm):
             "home_page",
             "student_card_number",
         ),
-        Fieldset("Taktlaus-ting", "instrument_type", "membership_period"),
+        Fieldset("(MYTAKTLAUSVEV_VARIABLE(appearance.accounts.orchestra_stuff_fieldset))", "instrument_type", "membership_period"),
         Fieldset("Kalenderintegrasjon", "calendar_feed_start_date"),
         Fieldset("Anna", "light_mode", "image_sharing_consent", "orchestras"),
         Submit("submit", "Lagre brukar"),
