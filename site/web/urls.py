@@ -47,8 +47,8 @@ urlpatterns = [
     path("", include("articles.urls")),
 ] + (
     static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-    if "(MYTAKTLAUSVEV_VARIABLE(production.hosting_solution))" == "azure" else
-    [path(f"{settings.MEDIA_URL.strip('/')}/", include("serve_media_files.urls"))]
+    if "(MYTAKTLAUSVEV_VARIABLE(production.hosting_solution))" == "azure"
+    else [path(f"{settings.MEDIA_URL.strip('/')}/", include("serve_media_files.urls"))]
 )
 
 

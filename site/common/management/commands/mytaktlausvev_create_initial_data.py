@@ -7,6 +7,7 @@ from accounts.models import UserCustom
 from articles.factories import ArticleFactory
 from common.embeddable_text.factories import EmbeddableTextFactory
 from contact.factories import ContactCategoryFactory
+from instruments.factories import InstrumentGroupFactory, InstrumentTypeFactory
 from navbar.factories import NavbarItemFactory
 from navbar.models import NavbarItem
 
@@ -324,4 +325,723 @@ Her kan du skrive nykelinformasjon om hendinga. Oppføringane du skriv vil verte
         )
         EmbeddableTextFactory(
             name="Buttonmotivbibliotek", content="Her finn du ferdiglaga buttonmotiv!"
+        )
+
+        group_flute = InstrumentGroupFactory(name="Fløyte")
+        group_clarinet = InstrumentGroupFactory(name="Klarinett")
+        group_trumpet = InstrumentGroupFactory(name="Trompet")
+        group_horn = InstrumentGroupFactory(name="Horn")
+        group_saxophone = InstrumentGroupFactory(name="Saksofon")
+        group_trombone = InstrumentGroupFactory(name="Trombone")
+        group_euphonium = InstrumentGroupFactory(name="Eufonium")
+        group_tuba = InstrumentGroupFactory(name="Tuba")
+        group_percussion = InstrumentGroupFactory(name="Slagverk")
+        group_conductor = InstrumentGroupFactory(name="Dirigent")
+        group_other = InstrumentGroupFactory(name="Anna")
+        group_string = InstrumentGroupFactory(name="Strykeinstrument")
+        group_guitar = InstrumentGroupFactory(name="Gitar")
+
+        InstrumentTypeFactory(
+            name="Pikkolo",
+            group=group_flute,
+            detection_keywords=[
+                "pikkolo",
+                "piccolo",
+            ],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Fløyte",
+            group=group_flute,
+            detection_keywords=[
+                "flute",
+                "fløyte",
+                "flauta",
+                "phloitte",
+            ],
+            detection_exceptions=[
+                "piccolo",
+                "pikkolo",
+            ],
+        )
+        InstrumentTypeFactory(
+            name="Obo",
+            group=group_flute,
+            detection_keywords=[
+                "oboe",
+                "obo",
+            ],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Klarinett",
+            group=group_clarinet,
+            detection_keywords=[
+                "klarinet",
+                "clarinet",
+                "clarinete",
+                "lakris",
+                "lakriids",
+            ],
+            detection_exceptions=[
+                "bass",
+                "alt",
+                "eb",
+                "boeugd-guld-lakriids",
+            ],
+        )
+        InstrumentTypeFactory(
+            name="Bassklarinett",
+            group=group_clarinet,
+            detection_keywords=[
+                "bassklarinet",
+                "bass klarinet",
+                "bass clarinet",
+            ],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Altklarinett",
+            group=group_clarinet,
+            detection_keywords=[
+                "altklarinet",
+                "alto clarinet",
+            ],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Eb-klarinett",
+            group=group_clarinet,
+            detection_keywords=[
+                "eb clarinet",
+                "eb-clarinet",
+                "eb-klarinet",
+                "eb klarinet",
+            ],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Fagott",
+            group=group_clarinet,
+            detection_keywords=[
+                "bassoon",
+                "fagott",
+            ],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Trompet",
+            group=group_trumpet,
+            detection_keywords=[
+                "trumpet",
+                "trompet",
+                "trompeta",
+                "fliscorno",
+                "fliscomo",
+                "trompang",
+            ],
+            detection_exceptions=[
+                "bass-trompang",
+            ],
+        )
+        InstrumentTypeFactory(
+            name="Kornett",
+            group=group_trumpet,
+            detection_keywords=[
+                "kornett",
+                "komett",
+                "cornet",
+                "comet",
+                "chornæt",
+            ],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Tenorhorn",
+            group=group_horn,
+            detection_keywords=[
+                "tenororn",
+                "tenorhom",
+                "bb-horn",
+                "bb horn",
+            ],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Sopransaksofon",
+            group=group_saxophone,
+            detection_keywords=[
+                "sopransaks",
+                "sopransax",
+                "sopransaxofon",
+                "sopransaksofon",
+                "soprano saxophone",
+                "soprano sax",
+                "saxo soprano",
+            ],
+            detection_exceptions=[
+                "sopran",
+                "tenor",
+                "baryton",
+                "baritone",
+                "barítono",
+            ],
+        )
+        InstrumentTypeFactory(
+            name="Altsaksofon",
+            group=group_saxophone,
+            detection_keywords=[
+                "altsax",
+                "altsaxofon",
+                "saxofon",
+                "altsaks",
+                "altsaksofon",
+                "saksofon",
+                "saxophone",
+                "alto saxophone",
+                "alto sax",
+                "saxo alto",
+                "alt-boeugd-guld-lakriids",
+            ],
+            detection_exceptions=[
+                "sopran",
+                "tenor",
+                "baryton",
+                "baritone",
+                "barítono",
+            ],
+        )
+        InstrumentTypeFactory(
+            name="Tenorsaksofon",
+            group=group_saxophone,
+            detection_keywords=[
+                "tenorsaks",
+                "tenorsaksofon",
+                "tenorsax",
+                "tenorsaxofon",
+                "tenor sax",
+                "saxo tenore",
+                "tenor-boeugd-guld-lakriids",
+            ],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Barytonsaksofon",
+            group=group_saxophone,
+            detection_keywords=[
+                "barytonsaxofon",
+                "barytonsaksofon",
+                "barysax",
+                "barysaks",
+                "saxo barítono",
+                "baritone saxophone",
+                "baritone sax",
+                "bariton-boeugd-guld-lakriids",
+            ],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Trombone",
+            group=group_trombone,
+            detection_keywords=[
+                "trombone",
+                "trombón",
+                "trækbasun",
+            ],
+            detection_exceptions=[
+                "sopran",
+                "bass",
+            ],
+        )
+        InstrumentTypeFactory(
+            name="Soprantrombone",
+            group=group_trombone,
+            detection_keywords=[
+                "soprantrombone",
+                "soprano trombone",
+                "trombón soprano",
+            ],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Basstrombone",
+            group=group_trombone,
+            detection_keywords=[
+                "basstrombone",
+                "bass trombone",
+                "trombón basso",
+            ],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Eufonium",
+            group=group_euphonium,
+            detection_keywords=[
+                "eufonium",
+                "euphonium",
+                "juff",
+                "reiisetuba",
+            ],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Baryton",
+            group=group_euphonium,
+            detection_keywords=[
+                "baryton",
+                "baritone",
+                "bombardíno",
+            ],
+            detection_exceptions=[
+                "barytonsaxofon",
+                "barytonsaksofon",
+                "baritone sax",
+            ],
+        )
+        InstrumentTypeFactory(
+            name="Tuba",
+            group=group_tuba,
+            detection_keywords=[
+                "tuba",
+                "bass",
+                "eb-tuba",
+                "eb tuba",
+                "bb-tuba",
+                "bb tuba",
+                "bass-trompang",
+            ],
+            detection_exceptions=[
+                "trombone",
+                "clarinet",
+                "klarinett",
+                "guitar",
+                "bassoon",
+                "el-bass",
+                "el bass",
+                "electric bass",
+                "string bass",
+                "bass drum",
+                "reiisetuba",
+            ],
+        )
+        InstrumentTypeFactory(
+            name="Slagverk",
+            group=group_percussion,
+            detection_keywords=[],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Skarptromme",
+            group=group_percussion,
+            detection_keywords=[
+                "caja",
+                "snare drum",
+                "skarptromme",
+            ],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Stortromme",
+            group=group_percussion,
+            detection_keywords=[
+                "stortromme",
+                "bass drum",
+                "basstromme",
+            ],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Cymbal",
+            group=group_percussion,
+            detection_keywords=[
+                "cymbal",
+            ],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Kubjelle",
+            group=group_percussion,
+            detection_keywords=[
+                "kubjelle",
+                "cow bell",
+            ],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Tamburin",
+            group=group_percussion,
+            detection_keywords=[
+                "pandereta",
+                "tamburin",
+            ],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Triangel",
+            group=group_percussion,
+            detection_keywords=[
+                "triangel",
+                "triangle",
+            ],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Pauker",
+            group=group_percussion,
+            detection_keywords=[
+                "pauk",
+                "timpani",
+                "timbales",
+            ],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Perkusjon",
+            group=group_percussion,
+            detection_keywords=[
+                "slagverk",
+                "perkusjon",
+                "percussion",
+            ],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Tom-toms",
+            group=group_percussion,
+            detection_keywords=[
+                "tom-tom",
+                "tom tom",
+                "trio tom",
+            ],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Harpe",
+            group=group_other,
+            detection_keywords=[],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Orgel",
+            group=group_other,
+            detection_keywords=[],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Soprankornett",
+            group=group_trumpet,
+            detection_keywords=[],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Piano",
+            group=group_other,
+            detection_keywords=[],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Fele",
+            group=group_string,
+            detection_keywords=[],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Bratsj",
+            group=group_string,
+            detection_keywords=[],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Cello",
+            group=group_string,
+            detection_keywords=[],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Pikkoloobo",
+            group=group_flute,
+            detection_keywords=[],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Kontrabass",
+            group=group_string,
+            detection_keywords=[],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Mellofon",
+            group=group_trumpet,
+            detection_keywords=[],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Kontrabassklarinett",
+            group=group_clarinet,
+            detection_keywords=[],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Susafon",
+            group=group_tuba,
+            detection_keywords=[],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Synthesizer",
+            group=group_other,
+            detection_keywords=[],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Bongotrommer",
+            group=group_percussion,
+            detection_keywords=[],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Tenortuba",
+            group=group_tuba,
+            detection_keywords=[],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Ukjend",
+            group=group_other,
+            detection_keywords=[],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Marakas",
+            group=group_percussion,
+            detection_keywords=[],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Melodisk slagverk",
+            group=group_percussion,
+            detection_keywords=[
+                "melodisk",
+                "mallets",
+            ],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Bassaksofon",
+            group=group_saxophone,
+            detection_keywords=[],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Pikkolotrompet",
+            group=group_trumpet,
+            detection_keywords=[],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Quad-trommer",
+            group=group_percussion,
+            detection_keywords=[
+                "quad tom",
+            ],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Basstrompet",
+            group=group_trumpet,
+            detection_keywords=[],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Engelsk horn",
+            group=group_flute,
+            detection_keywords=[],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Quint-trommer",
+            group=group_percussion,
+            detection_keywords=[],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Xylofon",
+            group=group_percussion,
+            detection_keywords=[
+                "xylophone",
+                "xylofon",
+            ],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Marimba",
+            group=group_percussion,
+            detection_keywords=[
+                "marimba",
+            ],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Vibrafon",
+            group=group_percussion,
+            detection_keywords=[],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Kontrafagott",
+            group=group_clarinet,
+            detection_keywords=[],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Althorn",
+            group=group_horn,
+            detection_keywords=[
+                "althorn",
+                "althom",
+                "eb-horn",
+                "eb horn",
+                "ephterslags-speciialiist eb",
+            ],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Ambolt",
+            group=group_percussion,
+            detection_keywords=[
+                "ambolt",
+                "anvil",
+            ],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Banjo",
+            group=group_other,
+            detection_keywords=[
+                "banjo",
+            ],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Valthorn",
+            group=group_horn,
+            detection_keywords=[
+                "horn",
+                "hom",
+                "trompa",
+                "f-horn",
+                "f horn",
+                "ephterslags-speciialiist",
+                "valthorn",
+            ],
+            detection_exceptions=[
+                "althorn",
+                "althom",
+                "eb-horn",
+                "eb horn",
+                "tenororn",
+                "tenorhom",
+                "bb-horn",
+                "bb horn",
+                "ephterslags-speciialiist eb",
+            ],
+        )
+        InstrumentTypeFactory(
+            name="Flygelhorn",
+            group=group_trumpet,
+            detection_keywords=[
+                "flugelhorn",
+                "flugelhom",
+                "flygelhorn",
+                "flygelhom",
+            ],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Klokkespill",
+            group=group_percussion,
+            detection_keywords=[
+                "klokkespill",
+                "lyre",
+                "lyra",
+                "bells",
+                "glockenspiel",
+            ],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Vaskebrett",
+            group=group_percussion,
+            detection_keywords=[
+                "vaskebrett",
+            ],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Bassgitar",
+            group=group_guitar,
+            detection_keywords=[
+                "bass guitar",
+                "el-bass",
+                "el bass",
+                "electric bass",
+            ],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Gitar",
+            group=group_guitar,
+            detection_keywords=[
+                "guitar",
+            ],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Partitur",
+            group=group_conductor,
+            detection_keywords=[
+                "partitur",
+                "score",
+                "conductor",
+            ],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Conga",
+            group=group_percussion,
+            detection_keywords=[
+                "conga",
+            ],
+            detection_exceptions=[],
+        )
+        InstrumentTypeFactory(
+            name="Trommesett",
+            group=group_percussion,
+            detection_keywords=[
+                "tromme",
+                "drum",
+                "trommesett",
+                "drum set",
+                "drumset",
+                "platos y campanas",
+            ],
+            detection_exceptions=[
+                "caja",
+                "snare drum",
+                "skarptromme",
+                "stortromme",
+                "bass",
+                "conga",
+                "conga drum",
+            ],
+        )
+        InstrumentTypeFactory(
+            name="Vokal",
+            group=group_other,
+            detection_keywords=[
+                "vokal",
+                "vocal",
+                "voice",
+            ],
+            detection_exceptions=[],
         )
