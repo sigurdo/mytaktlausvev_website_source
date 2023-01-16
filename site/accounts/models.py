@@ -123,7 +123,7 @@ class UserCustom(AbstractUser):
         max_length=30,
         choices=ImageSharingConsent.choices,
         default=ImageSharingConsent.UNKNOWN,
-        help_text="Om bilete du er med i kan delast på DT sine sosiale medier.",
+        help_text="Om bilete du er med i kan delast på våre sosiale medier.",
     )
 
     calendar_feed_token = CharField(
