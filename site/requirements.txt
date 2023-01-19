@@ -18,7 +18,7 @@ django-tree-queries==0.6.0
 Pygments~=2.10
 Pillow~=9.0.0
 sheatless~=1.9.3
-PyPDF2~=1.26.0
+pypdf==3.2.1
 django-ical~=1.8.0
 django-pgtrigger~=2.4
 autoflake==1.4

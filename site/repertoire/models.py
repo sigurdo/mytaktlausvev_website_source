@@ -13,7 +13,7 @@ from django.db.models.query_utils import Q
 from django.urls import reverse
 from django.utils.text import get_valid_filename
 from django.utils.timezone import localdate, now
-from PyPDF2 import PdfFileReader, PdfFileWriter
+from pypdf import PdfReader, PdfWriter
 
 from common.models import CreatedModifiedMixin
 from sheetmusic.models import Part, Score
@@ -80,11 +80,11 @@ class Repertoire(CreatedModifiedMixin, Model):
             raise Exception(
                 f"Fann inga favorittstemmer for {user} i repertoaret {self}"
             )
-        pdf_writer = PdfFileWriter()
+        pdf_writer = PdfWriter()
         for score in self.scores.all():
             try:
-                pdf_writer.appendPagesFromReader(
-                    PdfFileReader(score.favorite_parts_pdf_file(user))
+                pdf_writer.append_pages_from_reader(
+                    PdfReader(score.favorite_parts_pdf_file(user))
                 )
             except:
                 pass
