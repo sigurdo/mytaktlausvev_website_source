@@ -26,7 +26,7 @@ from django.db.models import (
 )
 from django.urls import reverse
 from django.utils.text import get_valid_filename
-from PyPDF2 import PdfFileMerger, PdfFileReader, PdfFileWriter
+from pypdf import PdfMerger, PdfReader, PdfWriter
 from sheatless import PdfPredictor, predict_part_from_string
 
 from common.forms.validators import FileTypeValidator
@@ -112,9 +112,9 @@ class Score(ArticleMixin):
         parts = Part.objects.filter(favoring_users__user=user, pdf__score=self)
         if not parts.exists():
             raise Exception(f"Fann inga favorittstemmer for {user} for nota {self}")
-        pdf_writer = PdfFileWriter()
+        pdf_writer = PdfWriter()
         for part in parts:
-            pdf_writer.appendPagesFromReader(PdfFileReader(part.pdf_file()))
+            pdf_writer.append_pages_from_reader(PdfReader(part.pdf_file()))
         output_stream = io.BytesIO()
         pdf_writer.write(output_stream)
         output_stream.seek(0)
@@ -129,10 +129,10 @@ class Score(ArticleMixin):
 
     def pdf_file(self):
         """Returns a PDF containing all parts of this score."""
-        pdf_merger = PdfFileMerger()
+        pdf_merger = PdfMerger()
         for part in Part.objects.filter(pdf__score=self):
             part_pdf_stream = part.pdf_file()
-            part_pdf_reader = PdfFileReader(part_pdf_stream)
+            part_pdf_reader = PdfReader(part_pdf_stream)
             pdf_merger.append(part_pdf_reader)
         pdf_stream = io.BytesIO()
         pdf_merger.write(pdf_stream)
@@ -208,8 +208,8 @@ class Pdf(Model):
         return os.path.splitext(self.filename_original)[0]
 
     def num_of_pages(self):
-        pdf_reader = PdfFileReader(self.file.open(), strict=False)
-        return pdf_reader.getNumPages()
+        pdf_reader = PdfReader(self.file.open(), strict=False)
+        return len(pdf_reader.pages)
 
     def find_parts_with_sheatless(self):
         self.processing = True
@@ -365,10 +365,10 @@ class Part(Model):
 
     def pdf_file(self):
         """Returns the PDF that contains only this part"""
-        pdf = PdfFileReader(self.pdf.file.open())
-        pdf_writer = PdfFileWriter()
+        pdf = PdfReader(self.pdf.file.open())
+        pdf_writer = PdfWriter()
         for page_nr in range(self.from_page, self.to_page + 1):
-            pdf_writer.addPage(pdf.getPage(page_nr - 1))
+            pdf_writer.add_page(pdf.pages[page_nr - 1])
         output_stream = io.BytesIO()
         pdf_writer.write(output_stream)
         output_stream.seek(0)

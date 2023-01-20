@@ -12,7 +12,7 @@ from django.forms import (
     formset_factory,
 )
 from django.urls import reverse
-from PyPDF2 import PdfFileReader, PdfFileWriter
+from pypdf import PdfReader, PdfWriter
 
 from common.forms.widgets import AutocompleteSelectMultiple
 from sheetmusic.models import Part, Score
@@ -90,13 +90,13 @@ class RepertoirePdfFormsetHelper(FormHelper):
 
 
 def RepertoirePdfFormset_save(self):
-    pdf_writer = PdfFileWriter()
+    pdf_writer = PdfWriter()
     for form in self:
         part = form.cleaned_data["part"]
         if part is None:
             continue
         for _ in range(form.cleaned_data["amount"]):
-            pdf_writer.appendPagesFromReader(PdfFileReader(part.pdf_file()))
+            pdf_writer.append_pages_from_reader(PdfReader(part.pdf_file()))
     output_stream = BytesIO()
     pdf_writer.write(output_stream)
     output_stream.seek(0)

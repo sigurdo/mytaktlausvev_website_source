@@ -4,7 +4,7 @@ from io import BytesIO
 from django.test import TestCase
 from django.urls import reverse
 from django.utils.timezone import now
-from PyPDF2 import PdfFileReader
+from pypdf import PdfReader
 
 from accounts.factories import SuperUserFactory, UserFactory
 from common.breadcrumbs.breadcrumbs import Breadcrumb
@@ -298,5 +298,5 @@ class RepertoirePdfTestSuite(TestMixin, TestCase):
         self.client.force_login(self.user)
         response = self.client.post(self.get_url(), self.create_post_data())
         self.assertEqual(response["content-type"], "application/pdf")
-        pdf_reader = PdfFileReader(BytesIO(response.getvalue()))
-        self.assertEqual(pdf_reader.getNumPages(), 3)
+        pdf_reader = PdfReader(BytesIO(response.getvalue()))
+        self.assertEqual(len(pdf_reader.pages), 3)

@@ -5,7 +5,7 @@ from django.db import IntegrityError
 from django.test import TestCase
 from django.urls import reverse
 from django.utils.text import slugify
-from PyPDF2 import PdfFileReader
+from pypdf import PdfReader
 
 from accounts.factories import SuperUserFactory, UserFactory
 from common.breadcrumbs.breadcrumbs import Breadcrumb
@@ -126,8 +126,8 @@ class ScoreTestSuite(TestMixin, TestCase):
             part = PartFactory(pdf=self.pdf_1)
             FavoritePartFactory(user=user, part=part)
         pdf_stream = self.score.favorite_parts_pdf_file(user)
-        pdf_reader = PdfFileReader(pdf_stream)
-        self.assertEqual(pdf_reader.getNumPages(), 3)
+        pdf_reader = PdfReader(pdf_stream)
+        self.assertEqual(len(pdf_reader.pages), 3)
 
     def test_favorite_parts_pdf_filename(self):
         """
@@ -310,8 +310,8 @@ class PartTestSuite(TestMixin, TestCase):
         Checks that pdf_file has 1 page
         """
         pdf_stream = self.part.pdf_file()
-        pdf_reader = PdfFileReader(pdf_stream)
-        self.assertEqual(pdf_reader.getNumPages(), 1)
+        pdf_reader = PdfReader(pdf_stream)
+        self.assertEqual(len(pdf_reader.pages), 1)
 
     def test_pdf_filename(self):
         """
