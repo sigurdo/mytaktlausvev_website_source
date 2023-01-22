@@ -95,13 +95,19 @@ class Command(BaseCommand):
             membership_status=UserCustom.MembershipStatus.PAYING,
         )
 
-        board = Group.objects.create(name="Styret")
+        board = Group.objects.create(name="styret")
         board.user_set.add(leader)
         board.user_set.add(musical_leader)
-        lurkar = Group.objects.create(name="Lurkargjengen")
+        lurkar = Group.objects.create(name="lurkargjengen")
         lurkar.user_set.add(leader)
         lurkar.user_set.add(retiree)
         lurkar.user_set.add(aspirant)
+        instrument_group_leaders = Group.objects.create(
+            name=settings.INSTRUMENT_GROUP_LEADERS_NAME
+        )
+        instrument_group_leaders.user_set.add(leader)
+        instrument_group_leaders.user_set.add(musical_leader)
+        instrument_group_leaders.user_set.add(member)
 
         article_about = ArticleFactory(
             title="Om oss",
@@ -724,9 +730,16 @@ class Command(BaseCommand):
             parent=about_dropdown,
         )
         NavbarItemFactory(
+            text="Instrumentgruppeleiarar",
+            link=reverse("instruments:InstrumentGroupLeaderList"),
+            order=3,
+            requires_login=True,
+            parent=about_dropdown,
+        )
+        NavbarItemFactory(
             text="Kontakt oss",
             link=reverse("contact:ContactView"),
-            order=3,
+            order=4,
             requires_login=False,
             parent=about_dropdown,
         )
@@ -1152,6 +1165,10 @@ Her kan du skrive nykelinformasjon om hendinga. Oppføringane du skriv vil verte
         EmbeddableTextFactory(
             name="Inaktiv brukar",
             content="Du har ikkje betalt medlemskontingent for Dei Taktlause. Du har difor fått status som inaktiv.",
+        )
+        EmbeddableTextFactory(
+            name="Instrumentgruppeleiararliste",
+            content="Liste over instrumentgruppeleiarar.",
         )
         OrchestraFactory(name="Dragern")
         OrchestraFactory(name="Motstanden")

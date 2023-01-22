@@ -193,4 +193,5 @@ class UserCustom(AbstractUser):
                 "view_calendar_feed_settings",
                 "Kan sjå innstillinger for kalenderintegrasjon",
             ),
+            ("edit_instrument_group_leaders", "Kan redigere instrumentgruppeleiarar"),
         )

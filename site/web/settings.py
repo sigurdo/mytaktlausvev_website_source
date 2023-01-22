@@ -362,4 +362,6 @@ ENABLE_PWA_MANIFEST = True
 ENABLE_SERVICEWORKER = not DEBUG
 
 # Miscellaneous constants
+
+INSTRUMENT_GROUP_LEADERS_NAME = "instrumentgruppeleiar"
 BIRTHDAY_SONG_SLUG = "hurra-for-deg"
