@@ -1,7 +1,9 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.models import Group
 from django.urls import reverse
 from django.views.generic import FormView, ListView
 
+from accounts.models import UserCustom
 from common.breadcrumbs.breadcrumbs import Breadcrumb, BreadcrumbsMixin
 
 from .forms import InstrumentFormset
@@ -46,3 +48,15 @@ class InstrumentsUpdate(
 
     def form_invalid(self, form):
         return super().form_invalid(form)
+
+
+class InstrumentGroupLeaderList(LoginRequiredMixin, ListView):
+    model = UserCustom
+    context_object_name = "instrument_group_leaders"
+    template_name = "instruments/instrument_group_leader_list.html"
+
+    def get_queryset(self):
+        instrument_leaders_group, _ = Group.objects.get_or_create(
+            name="instrumentgruppeleiar"
+        )
+        return instrument_leaders_group.user_set.all()

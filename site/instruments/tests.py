@@ -241,3 +241,11 @@ class InstrumentsUpdateTestSuite(TestMixin, TestCase):
         self.client.force_login(SuperUserFactory())
         self.client.post(self.get_url(), self.create_post_data())
         self.assertEqual(Instrument.objects.count(), 0)
+
+
+class InstrumentGroupLeaderListTestSuite(TestMixin, TestCase):
+    def get_url(self):
+        return reverse("instruments:InstrumentGroupLeaderList")
+
+    def test_requires_login(self):
+        self.assertLoginRequired(self.get_url())
