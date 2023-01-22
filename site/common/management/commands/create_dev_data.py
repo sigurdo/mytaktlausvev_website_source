@@ -102,7 +102,9 @@ class Command(BaseCommand):
         lurkar.user_set.add(leader)
         lurkar.user_set.add(retiree)
         lurkar.user_set.add(aspirant)
-        instrument_group_leaders = Group.objects.create(name="instrumentgruppeleiar")
+        instrument_group_leaders = Group.objects.create(
+            name=settings.INSTRUMENT_GROUP_LEADERS_NAME
+        )
         instrument_group_leaders.user_set.add(leader)
         instrument_group_leaders.user_set.add(musical_leader)
         instrument_group_leaders.user_set.add(member)

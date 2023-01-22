@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth.models import Group
 from django.db import IntegrityError
 from django.test import TestCase
@@ -259,7 +260,7 @@ class InstrumentGroupLeadersFormTestSuite(TestMixin, TestCase):
     def setUp(self):
         self.user = UserFactory()
         self.instrument_leader_group = Group.objects.create(
-            name="instrumentgruppeleiar"
+            name=settings.INSTRUMENT_GROUP_LEADERS_NAME
         )
         self.instrument_leader_group.user_set.add(self.user)
 
@@ -275,7 +276,7 @@ class InstrumentGroupLeadersUpdateTestSuite(TestMixin, TestCase):
 
     def setUp(self):
         self.instrument_leader_group = Group.objects.create(
-            name="instrumentgruppeleiar"
+            name=settings.INSTRUMENT_GROUP_LEADERS_NAME
         )
 
         self.form = InstrumentGroupLeadersForm()

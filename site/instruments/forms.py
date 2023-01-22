@@ -1,5 +1,6 @@
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
+from django.conf import settings
 from django.contrib.auth.models import Group
 from django.forms import (
     Form,
@@ -70,7 +71,7 @@ class InstrumentGroupLeadersForm(Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.instrument_leaders_group, _ = Group.objects.get_or_create(
-            name="instrumentgruppeleiar"
+            name=settings.INSTRUMENT_GROUP_LEADERS_NAME
         )
         self.fields[
             "instrument_group_leaders"

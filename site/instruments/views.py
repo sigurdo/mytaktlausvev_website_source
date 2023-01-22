@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.models import Group
 from django.contrib.messages.views import SuccessMessageMixin
@@ -58,7 +59,7 @@ class InstrumentGroupLeaderList(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         instrument_leaders_group, _ = Group.objects.get_or_create(
-            name="instrumentgruppeleiar"
+            name=settings.INSTRUMENT_GROUP_LEADERS_NAME
         )
         return instrument_leaders_group.user_set.all()
 
