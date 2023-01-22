@@ -1,12 +1,13 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.models import Group
+from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse
 from django.views.generic import FormView, ListView
 
 from accounts.models import UserCustom
 from common.breadcrumbs.breadcrumbs import Breadcrumb, BreadcrumbsMixin
 
-from .forms import InstrumentFormset
+from .forms import InstrumentFormset, InstrumentGroupLeadersForm
 from .models import Instrument
 
 
@@ -60,3 +61,31 @@ class InstrumentGroupLeaderList(LoginRequiredMixin, ListView):
             name="instrumentgruppeleiar"
         )
         return instrument_leaders_group.user_set.all()
+
+
+class InstrumentGroupLeadersUpdate(
+    PermissionRequiredMixin, SuccessMessageMixin, BreadcrumbsMixin, FormView
+):
+    form_class = InstrumentGroupLeadersForm
+    template_name = "common/forms/form.html"
+    permission_required = ("accounts.edit_instrument_group_leaders",)
+    success_message = "Instrumentgruppeleiarar redigert."
+
+    def get_success_url(self):
+        return reverse("instruments:InstrumentGroupLeaderList")
+
+    def get_breadcrumbs(self):
+        return [
+            Breadcrumb(
+                reverse("instruments:InstrumentGroupLeaderList"),
+                "Instrumentgruppeleiarar",
+            )
+        ]
+
+    def get_context_data(self, **kwargs):
+        kwargs["form_title"] = "Rediger instrumentgruppeleiarar"
+        return super().get_context_data(**kwargs)
+
+    def form_valid(self, form):
+        form.save()
+        return super().form_valid(form)

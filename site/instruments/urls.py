@@ -1,6 +1,11 @@
 from django.urls import path
 
-from .views import InstrumentGroupLeaderList, InstrumentList, InstrumentsUpdate
+from .views import (
+    InstrumentGroupLeaderList,
+    InstrumentGroupLeadersUpdate,
+    InstrumentList,
+    InstrumentsUpdate,
+)
 
 app_name = "instruments"
 
@@ -11,5 +16,10 @@ urlpatterns = [
         "instrumentgruppeleiarar/",
         InstrumentGroupLeaderList.as_view(),
         name="InstrumentGroupLeaderList",
+    ),
+    path(
+        "instrumentgruppeleiarar/rediger/",
+        InstrumentGroupLeadersUpdate.as_view(),
+        name="InstrumentGroupLeadersUpdate",
     ),
 ]
