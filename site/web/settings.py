@@ -118,6 +118,7 @@ INSTALLED_APPS = [
     "minutes",
     "user_files",
     "external_orchestras",
+    "brewing",
 ]
 
 MIDDLEWARE = [

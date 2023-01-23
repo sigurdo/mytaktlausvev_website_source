@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block title_page %}Brygging{% endblock title_page %}
+{% block title_content %}Brygging{% endblock title_content %}
+
+
+{% block content %}
+    Sum: {{ user.brewing_transactions.sum }}
+{% endblock content %}
