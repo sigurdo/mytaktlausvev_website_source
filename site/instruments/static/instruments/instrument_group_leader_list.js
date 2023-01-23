@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
     new DataTable("#instrument-group-leader-table", {
-        order: [[0, "asc"]],
+        order: [[1, "asc"]],
         paging: false,
         language: {
             zeroRecords: "Ingen instrumentgruppeleiarar funne",
@@ -10,5 +10,10 @@ document.addEventListener("DOMContentLoaded", () => {
             infoFiltered: "(filtrert fra totalt _MAX_ instrumentgruppeleiarar)",
             search: "Søk:",
         },
+        columns: [
+            { orderable: false },
+            null,
+            null,
+        ],
     });
 });
