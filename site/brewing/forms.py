@@ -24,3 +24,26 @@ class DepositForm(ModelForm):
             "user": HiddenInput,
             "type": HiddenInput,
         }
+
+
+class BrewPurchaseForm(ModelForm):
+    helper = FormHelper()
+    helper.add_input(Submit("submit", "Kjøp"))
+
+    def __init__(self, user, price, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.initial["user"] = user
+        self.initial["price"] = price
+        self.initial["type"] = TransactionType.PURCHASE
+        self.fields["user"].disabled = True
+        self.fields["price"].disabled = True
+        self.fields["type"].disabled = True
+
+    class Meta:
+        model = Transaction
+        fields = ["price", "user", "type"]
+        widgets = {
+            "price": HiddenInput,
+            "user": HiddenInput,
+            "type": HiddenInput,
+        }

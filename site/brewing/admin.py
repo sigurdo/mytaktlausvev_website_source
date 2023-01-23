@@ -1,5 +1,6 @@
 from django.contrib.admin import ModelAdmin, site
 
-from .models import Transaction
+from .models import Brew, Transaction
 
+site.register(Brew, ModelAdmin)
 site.register(Transaction, ModelAdmin)

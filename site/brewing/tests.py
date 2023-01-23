@@ -5,7 +5,7 @@ from django.urls import reverse
 from accounts.factories import UserFactory
 from common.mixins import TestMixin
 
-from .factories import TransactionFactory
+from .factories import BrewFactory, TransactionFactory
 from .models import Transaction, TransactionType
 
 
@@ -52,8 +52,11 @@ class DepositCreateTestSuite(TestMixin, TestCase):
         """Should require login."""
         self.assertLoginRequired(self.get_url())
 
-    def test_sets_user_to_logged_in_user(self):
-        """Should set the transaction `user` to the logged-in user."""
+    def test_sets_user_and_transaction_type(self):
+        """
+        Should set the transaction `user` to the logged-in user,
+        and the transaction type to `DEPOSIT`.
+        """
         user = UserFactory()
         self.client.force_login(user)
         self.client.post(self.get_url(), {"price": 20})
@@ -61,14 +64,6 @@ class DepositCreateTestSuite(TestMixin, TestCase):
         self.assertEqual(Transaction.objects.count(), 1)
         deposit = Transaction.objects.last()
         self.assertEqual(deposit.user, user)
-
-    def test_sets_transaction_type_to_deposit(self):
-        """Should set the transaction type to `DEPOSIT`."""
-        self.client.force_login(UserFactory())
-        self.client.post(self.get_url(), {"price": 20})
-
-        self.assertEqual(Transaction.objects.count(), 1)
-        deposit = Transaction.objects.last()
         self.assertEqual(deposit.type, TransactionType.DEPOSIT)
 
     def tests_ignores_changes_to_user_and_type(self):
@@ -103,3 +98,72 @@ class DepositCreateTestSuite(TestMixin, TestCase):
             None,
             "Innbetalingar må ha ein positiv pris, kjøp må ha ein negativ pris.",
         )
+
+    def test_increases_users_balance(self):
+        """Should increase a user's balance."""
+        user = UserFactory()
+        self.assertEqual(user.brewing_transactions.sum(), 0)
+
+        self.client.force_login(user)
+        self.client.post(self.get_url(), {"price": 20})
+        self.assertEqual(user.brewing_transactions.sum(), 20)
+
+
+class BrewPurchaseCreateTestSuite(TestMixin, TestCase):
+    def get_url(self, brew):
+        return reverse("brewing:BrewPurchaseCreate", args=[brew.pk])
+
+    def setUp(self) -> None:
+        self.brew = BrewFactory()
+
+    def test_requires_login(self):
+        """Should require login."""
+        self.assertLoginRequired(self.get_url(self.brew))
+
+    def test_sets_user_and_transaction_type(self):
+        """
+        Should set the transaction `user` to the logged-in user,
+        and the transaction type to `PURCHASE`.
+        """
+        user = UserFactory()
+        self.client.force_login(user)
+        self.client.post(self.get_url(self.brew))
+
+        self.assertEqual(Transaction.objects.count(), 1)
+        purchase = Transaction.objects.last()
+        self.assertEqual(purchase.user, user)
+        self.assertEqual(purchase.type, TransactionType.PURCHASE)
+
+    def test_sets_price_to_brew_price_but_negative(self):
+        """Should set the transaction's price to the brew's price, but negative."""
+        self.client.force_login(UserFactory())
+        self.client.post(self.get_url(self.brew))
+
+        self.assertEqual(Transaction.objects.count(), 1)
+        purchase = Transaction.objects.last()
+        self.assertEqual(purchase.price, -self.brew.price_per_litre)
+
+    def tests_ignores_changes_to_user_and_type(self):
+        """Should ignore changes to the user, transaction type, and price."""
+        logged_in_user = UserFactory()
+        different_user = UserFactory()
+        self.client.force_login(logged_in_user)
+        self.client.post(
+            self.get_url(self.brew),
+            {"price": 20, "user": different_user, "type": TransactionType.DEPOSIT},
+        )
+
+        self.assertEqual(Transaction.objects.count(), 1)
+        purchase = Transaction.objects.last()
+        self.assertEqual(purchase.user, logged_in_user)
+        self.assertEqual(purchase.type, TransactionType.PURCHASE)
+        self.assertEqual(purchase.price, -self.brew.price_per_litre)
+
+    def test_decreases_users_balance(self):
+        """Should decrease a user's balance."""
+        user = UserFactory()
+        self.assertEqual(user.brewing_transactions.sum(), 0)
+
+        self.client.force_login(user)
+        self.client.post(self.get_url(self.brew))
+        self.assertEqual(user.brewing_transactions.sum(), 0 - self.brew.price_per_litre)

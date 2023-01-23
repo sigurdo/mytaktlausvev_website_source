@@ -15,5 +15,18 @@
 
 
 {% block content %}
-    Saldo: {{ user.brewing_transactions.sum }}
+    Saldo: {{ user.brewing_transactions.sum }} NOK
+
+    <section>
+        <h2>Brygg</h2>
+
+        <ul>
+            {% for brew in brews %}
+            <li>
+                <a href="{% url 'brewing:BrewPurchaseCreate' brew.pk %}">{{ brew.name }}</a>
+                – {{ brew.price_per_litre }} NOK
+            </li>
+            {% endfor %}
+        </ul>
+    </section>
 {% endblock content %}

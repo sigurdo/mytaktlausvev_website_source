@@ -13,20 +13,19 @@ from django.db.models.aggregates import Sum
 
 from common.models import CreatedModifiedMixin
 
-# class Brew(CreatedModifiedMixin):
-#     name = CharField("namn", max_length=255, blank=True)
-#     price_per_litre = IntegerField(
-#         "pris per liter",
-#         validators=[MinValueValidator(0)],
-#     )
 
-#     def __str__(self):
-#         return self.name
+class Brew(CreatedModifiedMixin):
+    name = CharField("namn", max_length=255, blank=True)
+    price_per_litre = IntegerField("pris per liter")
 
-#     class Meta:
-#         ordering = ["name"]
-#         verbose_name = "brygg"
-#         verbose_name_plural = "brygg"
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        ordering = ["name"]
+        verbose_name = "brygg"
+        verbose_name_plural = "brygg"
+        # Validate brew price larger than 0!
 
 
 class TransactionManager(Manager):
