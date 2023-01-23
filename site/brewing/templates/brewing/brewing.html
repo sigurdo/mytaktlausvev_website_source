@@ -3,7 +3,17 @@
 {% block title_page %}Brygging{% endblock title_page %}
 {% block title_content %}Brygging{% endblock title_content %}
 
+{% block header %}
+    {{ block.super }}
+
+    <ul class="list-inline my-1">
+        <li class="list-inline-item">
+            <a href="{% url 'brewing:DepositCreate' %}" class="btn btn-primary btn-sm my-1">Ny innbetaling</a>
+        </li>
+    </ul>    
+{% endblock header %}
+
 
 {% block content %}
-    Sum: {{ user.brewing_transactions.sum }}
+    Saldo: {{ user.brewing_transactions.sum }}
 {% endblock content %}

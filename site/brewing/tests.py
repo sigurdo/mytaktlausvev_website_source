@@ -1,11 +1,12 @@
 from django.db import IntegrityError
 from django.test import TestCase
+from django.urls import reverse
 
 from accounts.factories import UserFactory
 from common.mixins import TestMixin
 
 from .factories import TransactionFactory
-from .models import TransactionType
+from .models import Transaction, TransactionType
 
 
 class TransactionTestSuite(TestMixin, TestCase):
@@ -41,3 +42,64 @@ class TransactionTestSuite(TestMixin, TestCase):
         TransactionFactory(price=-20, type=TransactionType.PURCHASE)
         with self.assertRaises(IntegrityError):
             TransactionFactory(price=20, type=TransactionType.PURCHASE)
+
+
+class DepositCreateTestSuite(TestMixin, TestCase):
+    def get_url(self):
+        return reverse("brewing:DepositCreate")
+
+    def test_requires_login(self):
+        """Should require login."""
+        self.assertLoginRequired(self.get_url())
+
+    def test_sets_user_to_logged_in_user(self):
+        """Should set the transaction `user` to the logged-in user."""
+        user = UserFactory()
+        self.client.force_login(user)
+        self.client.post(self.get_url(), {"price": 20})
+
+        self.assertEqual(Transaction.objects.count(), 1)
+        deposit = Transaction.objects.last()
+        self.assertEqual(deposit.user, user)
+
+    def test_sets_transaction_type_to_deposit(self):
+        """Should set the transaction type to `DEPOSIT`."""
+        self.client.force_login(UserFactory())
+        self.client.post(self.get_url(), {"price": 20})
+
+        self.assertEqual(Transaction.objects.count(), 1)
+        deposit = Transaction.objects.last()
+        self.assertEqual(deposit.type, TransactionType.DEPOSIT)
+
+    def tests_ignores_changes_to_user_and_type(self):
+        """Should ignore changes to the user and the transaction type."""
+        logged_in_user = UserFactory()
+        different_user = UserFactory()
+        self.client.force_login(logged_in_user)
+        self.client.post(
+            self.get_url(),
+            {"price": 20, "user": different_user, "type": TransactionType.PURCHASE},
+        )
+
+        self.assertEqual(Transaction.objects.count(), 1)
+        deposit = Transaction.objects.last()
+        self.assertEqual(deposit.user, logged_in_user)
+        self.assertEqual(deposit.type, TransactionType.DEPOSIT)
+
+    def test_rejects_prices_0_or_smaller(self):
+        """Should reject prices that are 0 or smaller."""
+        self.client.force_login(UserFactory())
+
+        response = self.client.post(self.get_url(), {"price": 0})
+        self.assertFormError(
+            response.context["form"],
+            None,
+            "Innbetalingar må ha ein positiv pris, kjøp må ha ein negativ pris.",
+        )
+
+        response = self.client.post(self.get_url(), {"price": -50})
+        self.assertFormError(
+            response.context["form"],
+            None,
+            "Innbetalingar må ha ein positiv pris, kjøp må ha ein negativ pris.",
+        )

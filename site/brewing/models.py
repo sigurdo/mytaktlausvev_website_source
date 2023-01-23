@@ -49,7 +49,7 @@ class Transaction(CreatedModifiedMixin):
         related_name="brewing_transactions",
     )
     price = IntegerField("pris")
-    # Help text? Why is comment necessary?
+    # Help text? Why is comment necessary? Mention that it isn't necessary?
     comment = CharField("kommentar", max_length=255, blank=True)
     type = CharField(
         "type",
