@@ -2,9 +2,11 @@ from django.conf import settings
 from django.db.models import (
     CASCADE,
     CharField,
+    CheckConstraint,
     ForeignKey,
     IntegerField,
     Manager,
+    Q,
     TextChoices,
 )
 from django.db.models.aggregates import Sum
@@ -32,6 +34,11 @@ class TransactionManager(Manager):
         return self.aggregate(sum=Sum("price"))["sum"] or 0
 
 
+class TransactionType(TextChoices):
+    PURCHASE = "PURCHASE", "Kjøp"
+    DEPOSIT = "DEPOSIT", "Innbetaling"
+
+
 class Transaction(CreatedModifiedMixin):
     objects = TransactionManager()
 
@@ -41,17 +48,11 @@ class Transaction(CreatedModifiedMixin):
         on_delete=CASCADE,
         related_name="brewing_transactions",
     )
-    # Require positive/negative depending on type!
     price = IntegerField("pris")
     # Help text? Why is comment necessary?
     comment = CharField("kommentar", max_length=255, blank=True)
-
-    class TransactionType(TextChoices):
-        PURCHASE = "PURCHASE", "Kjøp"
-        DEPOSIT = "DEPOSIT", "Innbetaling"
-
     type = CharField(
-        "medlemsstatus",
+        "type",
         max_length=30,
         choices=TransactionType.choices,
     )
@@ -63,6 +64,16 @@ class Transaction(CreatedModifiedMixin):
         # ordering = ["name"]
         verbose_name = "transaksjon"
         verbose_name_plural = "transaksjonar"
+        constraints = [
+            CheckConstraint(
+                check=(
+                    Q(type=TransactionType.DEPOSIT, price__gt=0)
+                    | Q(type=TransactionType.PURCHASE, price__lt=0)
+                ),
+                name="brew_purchases_must_be_negative",
+                violation_error_message="Innbetalingar må ha ein positiv pris, kjøp må ha ein negativ pris.",
+            )
+        ]
 
     # Optional, required *for new* when transaction type is a purchase?
     # brew = ForeignKey()

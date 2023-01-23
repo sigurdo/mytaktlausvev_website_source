@@ -3,7 +3,7 @@ from factory.django import DjangoModelFactory
 
 from accounts.factories import UserFactory
 
-from .models import Transaction
+from .models import Transaction, TransactionType
 
 
 class TransactionFactory(DjangoModelFactory):
@@ -12,6 +12,6 @@ class TransactionFactory(DjangoModelFactory):
 
     user = SubFactory(UserFactory)
     price = 20
-    type = Transaction.TransactionType.DEPOSIT
+    type = TransactionType.DEPOSIT
     created_by = SubFactory(UserFactory)
     modified_by = SubFactory(UserFactory)

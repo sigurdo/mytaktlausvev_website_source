@@ -1,10 +1,11 @@
+from django.db import IntegrityError
 from django.test import TestCase
 
 from accounts.factories import UserFactory
 from common.mixins import TestMixin
 
 from .factories import TransactionFactory
-from .models import Transaction
+from .models import TransactionType
 
 
 class TransactionTestSuite(TestMixin, TestCase):
@@ -19,12 +20,8 @@ class TransactionTestSuite(TestMixin, TestCase):
         """Should return the sum of all transactions in the queryset."""
         user = UserFactory()
         for _ in range(3):
-            TransactionFactory(
-                user=user, price=20, type=Transaction.TransactionType.DEPOSIT
-            )
-            TransactionFactory(
-                user=user, price=-10, type=Transaction.TransactionType.PURCHASE
-            )
+            TransactionFactory(user=user, price=20, type=TransactionType.DEPOSIT)
+            TransactionFactory(user=user, price=-10, type=TransactionType.PURCHASE)
 
         self.assertEqual(user.brewing_transactions.sum(), 30)
 
@@ -32,3 +29,15 @@ class TransactionTestSuite(TestMixin, TestCase):
         """Should return 0 if the user has no transactions."""
         user = UserFactory()
         self.assertIs(user.brewing_transactions.sum(), 0)
+
+    def test_deposits_must_be_positive(self):
+        """Deposits must have a positive price."""
+        TransactionFactory(price=20, type=TransactionType.DEPOSIT)
+        with self.assertRaises(IntegrityError):
+            TransactionFactory(price=-20, type=TransactionType.DEPOSIT)
+
+    def test_purchases_must_be_negative(self):
+        """Purchases must have a negative price."""
+        TransactionFactory(price=-20, type=TransactionType.PURCHASE)
+        with self.assertRaises(IntegrityError):
+            TransactionFactory(price=20, type=TransactionType.PURCHASE)
