@@ -37,7 +37,13 @@
 {% block content %}
     {% for repertoire in repertoires %}
         <section class="my-3 table-responsive">
-            <h2> {{ repertoire }} </h2>
+            <header>
+                <h2 class="mb-0">{{ repertoire }}</h2>
+
+                {% include "common/includes/created_modified.html" with object=repertoire only %}
+            </header>
+
+
             {% include "repertoire/includes/repertoire.html" with repertoire=repertoire %}
         </section>
     {% endfor %}
