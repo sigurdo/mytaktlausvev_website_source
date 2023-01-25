@@ -6,7 +6,26 @@ from accounts.factories import UserFactory
 from common.mixins import TestMixin
 
 from .factories import BrewFactory, TransactionFactory
-from .models import Transaction, TransactionType
+from .models import Brew, Transaction, TransactionType
+
+
+class BrewTestSuite(TestMixin, TestCase):
+    def test_price_per_0_5(self):
+        brew = BrewFactory(price_per_litre=20)
+        self.assertEqual(brew.price_per_0_5(), 10)
+        brew = BrewFactory(price_per_litre=15)
+        self.assertEqual(brew.price_per_0_5(), 8)
+
+    def test_price_per_0_33(self):
+        brew = BrewFactory(price_per_litre=9)
+        self.assertEqual(brew.price_per_0_33(), 3)
+        brew = BrewFactory(price_per_litre=10)
+        self.assertEqual(brew.price_per_0_33(), 4)
+
+    def test_to_str(self):
+        """`__str__` should be the brew's name."""
+        brew = BrewFactory()
+        self.assertEqual(str(brew), brew.name)
 
 
 class TransactionTestSuite(TestMixin, TestCase):
@@ -110,8 +129,8 @@ class DepositCreateTestSuite(TestMixin, TestCase):
 
 
 class BrewPurchaseCreateTestSuite(TestMixin, TestCase):
-    def get_url(self, brew):
-        return reverse("brewing:BrewPurchaseCreate", args=[brew.pk])
+    def get_url(self, brew, size=Brew.Sizes.SIZE_0_33):
+        return f"{reverse('brewing:BrewPurchaseCreate', args=[brew.pk])}?size={size}"
 
     def setUp(self) -> None:
         self.brew = BrewFactory()
@@ -134,16 +153,34 @@ class BrewPurchaseCreateTestSuite(TestMixin, TestCase):
         self.assertEqual(purchase.user, user)
         self.assertEqual(purchase.type, TransactionType.PURCHASE)
 
-    def test_sets_price_to_brew_price_but_negative(self):
-        """Should set the transaction's price to the brew's price, but negative."""
+    def test_sets_negative_brew_price_based_on_size(self):
+        """Should set the transaction price to the brew's price based on the size, but negative."""
         self.client.force_login(UserFactory())
-        self.client.post(self.get_url(self.brew))
 
-        self.assertEqual(Transaction.objects.count(), 1)
+        self.client.post(self.get_url(self.brew, Brew.Sizes.SIZE_0_33))
         purchase = Transaction.objects.last()
-        self.assertEqual(purchase.price, -self.brew.price_per_litre)
+        self.assertEqual(purchase.price, -self.brew.price_per_0_33())
 
-    def tests_ignores_changes_to_user_and_type(self):
+        self.client.post(self.get_url(self.brew, Brew.Sizes.SIZE_0_5))
+        purchase = Transaction.objects.last()
+        self.assertEqual(purchase.price, -self.brew.price_per_0_5())
+
+    def test_size_0_33_by_default_and_if_size_invalid(self):
+        """
+        Should set the transaction price to the brew's 0.33 L price (negative)
+        if the size is missing or invalid.
+        """
+        self.client.force_login(UserFactory())
+
+        self.client.post(self.get_url(self.brew, ""))
+        purchase = Transaction.objects.last()
+        self.assertEqual(purchase.price, -self.brew.price_per_0_33())
+
+        self.client.post(self.get_url(self.brew, "300 L"))
+        purchase = Transaction.objects.last()
+        self.assertEqual(purchase.price, -self.brew.price_per_0_33())
+
+    def tests_ignores_changes_to_user_type_and_price(self):
         """Should ignore changes to the user, transaction type, and price."""
         logged_in_user = UserFactory()
         different_user = UserFactory()
@@ -157,7 +194,7 @@ class BrewPurchaseCreateTestSuite(TestMixin, TestCase):
         purchase = Transaction.objects.last()
         self.assertEqual(purchase.user, logged_in_user)
         self.assertEqual(purchase.type, TransactionType.PURCHASE)
-        self.assertEqual(purchase.price, -self.brew.price_per_litre)
+        self.assertEqual(purchase.price, -self.brew.price_per_0_33())
 
     def test_decreases_users_balance(self):
         """Should decrease a user's balance."""
@@ -166,4 +203,6 @@ class BrewPurchaseCreateTestSuite(TestMixin, TestCase):
 
         self.client.force_login(user)
         self.client.post(self.get_url(self.brew))
-        self.assertEqual(user.brewing_transactions.sum(), 0 - self.brew.price_per_litre)
+        self.assertEqual(
+            user.brewing_transactions.sum(), 0 - self.brew.price_per_0_33()
+        )

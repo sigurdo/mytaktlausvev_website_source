@@ -2,7 +2,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 from django.forms import HiddenInput, ModelForm, NumberInput
 
-from .models import Transaction, TransactionType
+from .models import Brew, Transaction, TransactionType
 
 
 class DepositForm(ModelForm):
@@ -18,7 +18,7 @@ class DepositForm(ModelForm):
 
     class Meta:
         model = Transaction
-        fields = ["price", "comment", "user", "type"]
+        fields = ["price", "user", "type"]
         widgets = {
             "price": NumberInput(attrs={"min": 1}),
             "user": HiddenInput,
@@ -30,10 +30,15 @@ class BrewPurchaseForm(ModelForm):
     helper = FormHelper()
     helper.add_input(Submit("submit", "Kjøp"))
 
-    def __init__(self, user, price, *args, **kwargs):
+    def __init__(self, user, brew: Brew, size, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
         self.initial["user"] = user
-        self.initial["price"] = price
+        self.initial["price"] = -(
+            brew.price_per_0_5()
+            if size == Brew.Sizes.SIZE_0_5
+            else brew.price_per_0_33()
+        )
         self.initial["type"] = TransactionType.PURCHASE
         self.fields["user"].disabled = True
         self.fields["price"].disabled = True

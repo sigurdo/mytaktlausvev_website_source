@@ -1,3 +1,5 @@
+from math import ceil
+
 from django.conf import settings
 from django.db.models import (
     CASCADE,
@@ -18,7 +20,26 @@ class Brew(CreatedModifiedMixin):
     name = CharField("namn", max_length=255, blank=True)
     price_per_litre = IntegerField("pris per liter")
 
+    class Sizes(TextChoices):
+        SIZE_0_33 = "SIZE_0_33", "0.33 L"
+        SIZE_0_5 = "SIZE_0_5", "0.5 L"
+
+    def price_per_0_33(self):
+        """
+        Returns the price for 0.33 L of the brew,
+        rounded up to an integer.
+        """
+        return ceil(self.price_per_litre / 3)
+
+    def price_per_0_5(self):
+        """
+        Returns the price for 0.5 L of the brew,
+        rounded up to an integer.
+        """
+        return ceil(self.price_per_litre / 2)
+
     def __str__(self):
+        # TODO: Include price?
         return self.name
 
     class Meta:

@@ -1,0 +1,12 @@
+{% extends "common/forms/form.html" %}
+
+{% block form %}
+	<p>
+        {% load utils %}
+        Er du sikker på at du vil kjøpe <strong>{{ brew_size }}</strong> {{ brew }}
+        for <strong>{{ form.price.value|abs }} NOK</strong>?
+    </p>
+
+	{% load crispy_forms_tags %}
+	{% crispy form %}
+{% endblock %}
