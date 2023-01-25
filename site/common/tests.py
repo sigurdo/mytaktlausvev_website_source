@@ -9,7 +9,7 @@ from sheetmusic.factories import PdfFactory
 from .comments.factories import CommentFactory
 from .comments.models import Comment
 from .mixins import TestMixin
-from .templatetags.utils import contained_in, filename, verbose_name
+from .templatetags.utils import abs_filter, contained_in, filename, verbose_name
 
 
 class TemplateUtilsTestSuite(TestMixin, TestCase):
@@ -19,6 +19,15 @@ class TemplateUtilsTestSuite(TestMixin, TestCase):
         self.assertEqual(verbose_name(article), Article._meta.verbose_name)
         comment = CommentFactory(content_object=article)
         self.assertEqual(verbose_name(comment), Comment._meta.verbose_name)
+
+    def test_abs(self):
+        """Should return the absolute value of a number."""
+        self.assertEqual(abs_filter(0), 0)
+        self.assertEqual(abs_filter(35), 35)
+        self.assertEqual(abs_filter(123.876), 123.876)
+        self.assertEqual(abs_filter(-5), 5)
+        self.assertEqual(abs_filter(-32), 32)
+        self.assertEqual(abs_filter(-32.333), 32.333)
 
     def test_filename(self):
         """Should return the base filename of a file."""
