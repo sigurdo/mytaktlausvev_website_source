@@ -5,7 +5,7 @@
 // `is`, or "Inbetween Small", is a
 // new grid breakpoint for tiny devices
 // between Bootstrap's `sm` breakpoint and `xs` breakpoint.
-$grid-breakpoints: map-merge($grid-breakpoints, ("is": 320px));
+$grid-breakpoints: map-merge($grid-breakpoints, ("is": 350px));
 
 // Utility function for extending
 // the values of existing Bootstrap utilities.
