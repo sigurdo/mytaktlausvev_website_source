@@ -10,6 +10,12 @@
         <li class="list-inline-item">
             <a href="{% url 'brewing:DepositCreate' %}" class="btn btn-primary btn-sm my-1">Ny innbetaling</a>
         </li>
+
+        {% if perms.brewing.view_transaction %}
+        <li class="list-inline-item">
+            <a href="{% url 'brewing:BalanceList' %}" class="btn btn-primary btn-sm my-1">Sjå saldoar</a>
+        </li>
+        {% endif %}
     </ul>    
 {% endblock header %}
 

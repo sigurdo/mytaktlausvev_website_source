@@ -1,12 +1,21 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.db.models import Case, F, When
+from django.db.models.aggregates import Sum
+from django.db.models.functions import Coalesce
 from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
-from django.views.generic import CreateView, TemplateView
+from django.views.generic import CreateView, ListView, TemplateView
 
+from accounts.models import UserCustom
 from common.breadcrumbs.breadcrumbs import Breadcrumb, BreadcrumbsMixin
 
 from .forms import BrewPurchaseForm, DepositForm
-from .models import Brew, Transaction
+from .models import Brew, Transaction, TransactionType
+
+
+def breadcrumbs():
+    """Returns breadcrumbs for the brewing views."""
+    return [Breadcrumb(reverse("brewing:BrewView"), "Brygging")]
 
 
 class BrewView(TemplateView):
@@ -18,6 +27,38 @@ class BrewView(TemplateView):
         return super().get_context_data(**kwargs)
 
 
+class BalanceList(PermissionRequiredMixin, BreadcrumbsMixin, ListView):
+    model = UserCustom
+    template_name = "brewing/balance_list.html"
+    context_object_name = "users"
+    permission_required = "brewing.view_transaction"
+
+    def get_breadcrumbs(self):
+        return breadcrumbs()
+
+    def sum_users_transactions_by_type(self, type):
+        """Returns a `Sum` that sums a user's transactions by the `TransactionType` type."""
+        transactions_with_type = Case(
+            When(
+                brewing_transactions__type=type, then=F("brewing_transactions__price")
+            ),
+            default=0,
+        )
+        return Coalesce(Sum(transactions_with_type), 0)
+
+    def get_queryset(self):
+        return (
+            super()
+            .get_queryset()
+            .exclude(membership_status=UserCustom.MembershipStatus.INACTIVE)
+            .annotate(
+                balance=Coalesce(Sum("brewing_transactions__price"), 0),
+                deposited=self.sum_users_transactions_by_type(TransactionType.DEPOSIT),
+                purchased=self.sum_users_transactions_by_type(TransactionType.PURCHASE),
+            )
+        )
+
+
 class DepositCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
     model = Transaction
     form_class = DepositForm
@@ -26,7 +67,7 @@ class DepositCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
     # TODO: Message saying that you've deposited?
 
     def get_breadcrumbs(self):
-        return [Breadcrumb(reverse("brewing:BrewView"), "Brygging")]
+        return breadcrumbs()
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -58,7 +99,7 @@ class BrewPurchaseCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
         )
 
     def get_breadcrumbs(self):
-        return [Breadcrumb(reverse("brewing:BrewView"), "Brygging")]
+        return breadcrumbs()
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()

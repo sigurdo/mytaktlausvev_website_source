@@ -2,7 +2,8 @@ from django.db import IntegrityError
 from django.test import TestCase
 from django.urls import reverse
 
-from accounts.factories import UserFactory
+from accounts.factories import SuperUserFactory, UserFactory
+from accounts.models import UserCustom
 from common.mixins import TestMixin
 
 from .factories import BrewFactory, TransactionFactory
@@ -61,6 +62,39 @@ class TransactionTestSuite(TestMixin, TestCase):
         TransactionFactory(price=-20, type=TransactionType.PURCHASE)
         with self.assertRaises(IntegrityError):
             TransactionFactory(price=20, type=TransactionType.PURCHASE)
+
+
+class BalanceListTestSuite(TestMixin, TestCase):
+    def get_url(self):
+        return reverse("brewing:BalanceList")
+
+    def test_requires_permission_for_viewing_transactions(self):
+        """Should require permission for viewing transactions."""
+        self.assertPermissionRequired(self.get_url(), "brewing.view_transaction")
+
+    def test_excludes_inactive_users(self):
+        """Should exclude inactive users."""
+        inactive = UserFactory(membership_status=UserCustom.MembershipStatus.INACTIVE)
+
+        self.client.force_login(SuperUserFactory())
+        response = self.client.get(self.get_url())
+
+        self.assertNotIn(inactive, response.context["users"])
+
+    def test_annotates_balance_purchased_deposited(self):
+        """Should annotate users' balance, total purchased, and total deposited."""
+        user = SuperUserFactory()
+        TransactionFactory(price=20, type=TransactionType.DEPOSIT, user=user)
+        TransactionFactory(price=20, type=TransactionType.DEPOSIT, user=user)
+        TransactionFactory(price=-20, type=TransactionType.PURCHASE, user=user)
+
+        self.client.force_login(user)
+        response = self.client.get(self.get_url())
+
+        user_in_response = response.context["users"].get(id=user.id)
+        self.assertEqual(user_in_response.balance, 20)
+        self.assertEqual(user_in_response.deposited, 40)
+        self.assertEqual(user_in_response.purchased, -20)
 
 
 class DepositCreateTestSuite(TestMixin, TestCase):
