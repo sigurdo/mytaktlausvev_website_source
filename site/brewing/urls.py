@@ -4,16 +4,16 @@ from .views import (
     BalanceList,
     BrewCreate,
     BrewList,
+    BrewOverview,
     BrewPurchaseCreate,
     BrewUpdate,
-    BrewView,
     DepositCreate,
 )
 
 app_name = "brewing"
 
 urlpatterns = [
-    path("", BrewView.as_view(), name="BrewView"),
+    path("", BrewOverview.as_view(), name="BrewOverview"),
     path("brygg/", BrewList.as_view(), name="BrewList"),
     path("brygg/ny/", BrewCreate.as_view(), name="BrewCreate"),
     path("brygg/<slug:slug>/rediger/", BrewUpdate.as_view(), name="BrewUpdate"),

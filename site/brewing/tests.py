@@ -72,6 +72,24 @@ class TransactionTestSuite(TestMixin, TestCase):
             TransactionFactory(price=20, type=TransactionType.PURCHASE)
 
 
+class BrewOverviewTestSuite(TestMixin, TestCase):
+    def get_url(self):
+        return reverse("brewing:BrewOverview")
+
+    def test_requires_login(self):
+        """Should require login."""
+        self.assertLoginRequired(self.get_url())
+
+    def test_only_shows_available_brews(self):
+        """Should only show brews that are available."""
+        available_brew = BrewFactory(available_for_purchase=True)
+        unavailable_brew = BrewFactory(available_for_purchase=False)
+
+        response = self.client.get(self.get_url())
+        self.assertIn(available_brew, response.context["brews"])
+        self.assertNotIn(unavailable_brew, response.context["brews"])
+
+
 class BrewListTestSuite(TestMixin, TestCase):
     def get_url(self):
         return reverse("brewing:BrewList")

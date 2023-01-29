@@ -5,7 +5,7 @@ from django.db.models.aggregates import Sum
 from django.db.models.functions import Coalesce
 from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
-from django.views.generic import CreateView, ListView, TemplateView, UpdateView
+from django.views.generic import CreateView, ListView, UpdateView
 
 from accounts.models import UserCustom
 from common.breadcrumbs.breadcrumbs import Breadcrumb, BreadcrumbsMixin
@@ -16,18 +16,21 @@ from .models import Brew, Transaction, TransactionType
 
 def breadcrumbs(include_brew_list=False):
     """Returns breadcrumbs for the brewing views."""
-    breadcrumbs = [Breadcrumb(reverse("brewing:BrewView"), "Brygging")]
+    breadcrumbs = [Breadcrumb(reverse("brewing:BrewOverview"), "Brygging")]
     if include_brew_list:
         breadcrumbs.append(Breadcrumb(reverse("brewing:BrewList"), "Alle brygg"))
     return breadcrumbs
 
 
-class BrewView(TemplateView):
-    # TODO: Rename something overview?
-    template_name = "brewing/brewing.html"
+class BrewOverview(LoginRequiredMixin, ListView):
+    model = Brew
+    context_object_name = "available_brews"
+    template_name = "brewing/brew_overview.html"
+
+    def get_queryset(self):
+        return super().get_queryset().exclude(available_for_purchase=False)
 
     def get_context_data(self, **kwargs):
-        kwargs["brews"] = Brew.objects.all()
         kwargs["brew_sizes"] = Brew.Sizes
         return super().get_context_data(**kwargs)
 
@@ -35,6 +38,7 @@ class BrewView(TemplateView):
 class BrewList(LoginRequiredMixin, BreadcrumbsMixin, ListView):
     model = Brew
     context_object_name = "brews"
+    # TODO: Order active first!
 
     def get_breadcrumbs(self):
         return breadcrumbs()
@@ -106,7 +110,7 @@ class DepositCreate(
     model = Transaction
     form_class = DepositForm
     template_name = "common/forms/form.html"
-    success_url = reverse_lazy("brewing:BrewView")
+    success_url = reverse_lazy("brewing:BrewOverview")
     success_message = "Du har innbetalt %(price)s NOK til bryggjekassa."
 
     def get_breadcrumbs(self):
@@ -128,7 +132,7 @@ class BrewPurchaseCreate(
     model = Transaction
     form_class = BrewPurchaseForm
     template_name = "brewing/brew_purchase.html"
-    success_url = reverse_lazy("brewing:BrewView")
+    success_url = reverse_lazy("brewing:BrewOverview")
 
     brew = None
 
