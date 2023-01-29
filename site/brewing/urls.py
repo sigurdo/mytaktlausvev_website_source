@@ -24,5 +24,4 @@ urlpatterns = [
     ),
     path("saldoar/", BalanceList.as_view(), name="BalanceList"),
     path("innbetaling/", DepositCreate.as_view(), name="DepositCreate"),
-    # TODO: This URL should be a child of `brygg/`
 ]

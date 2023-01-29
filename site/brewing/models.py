@@ -20,7 +20,7 @@ from common.models import CreatedModifiedMixin
 
 
 class Brew(CreatedModifiedMixin):
-    # TODO: Bedre admin! På transaksjone au?
+    # TODO: Dev data! + navbar
     name = CharField("namn", max_length=255, blank=True)
     slug = AutoSlugField(
         verbose_name="lenkjenamn", populate_from="name", editable=True, unique=True
@@ -96,7 +96,7 @@ class Transaction(CreatedModifiedMixin):
         related_name="brewing_transactions",
     )
     price = IntegerField("pris")
-    # Help text? Why is comment necessary? Mention that it isn't necessary?
+    # TODO: Help text? Why is comment necessary? Mention that it isn't necessary?
     comment = CharField("kommentar", max_length=255, blank=True)
     type = CharField(
         "type",
@@ -108,7 +108,7 @@ class Transaction(CreatedModifiedMixin):
         return f"{self.user} – {self.get_type_display()} – {self.price} NOK"
 
     class Meta:
-        # ordering = ["name"]
+        ordering = ["created"]
         verbose_name = "transaksjon"
         verbose_name_plural = "transaksjonar"
         constraints = [
@@ -122,5 +122,5 @@ class Transaction(CreatedModifiedMixin):
             )
         ]
 
-    # Optional, required *for new* when transaction type is a purchase?
+    # TODO: Optional, required *for new* when transaction type is a purchase?
     # brew = ForeignKey()
