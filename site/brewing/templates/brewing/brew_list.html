@@ -26,6 +26,10 @@
             <tr>
                 <th>Namn</th>
                 <th>Literpris</th>
+                <th>Tilgjengeleg for kjøp</th>
+                {% if perms.brewing.change_brew %}
+                    <th>Rediger</th>
+                {% endif %}
             </tr>
         </thead>
 
@@ -34,6 +38,17 @@
             <tr>
                 <td>{{ brew.name }}</td>
                 <td>{{ brew.price_per_litre }}</td>
+                <td>{{ brew.available_for_purchase | yesno | capfirst }}</td>
+                {% if perms.brewing.change_brew %}
+                    <td>
+                        <a
+                        href="{% url 'brewing:BrewUpdate' brew.pk %}"
+                        class="btn btn-secondary btn-sm"
+                        >
+                            Rediger
+                        </a>                        
+                    </td>
+                {% endif %}
             </tr>
             {% endfor %}
         </tbody>

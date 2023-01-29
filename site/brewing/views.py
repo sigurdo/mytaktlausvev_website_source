@@ -5,7 +5,7 @@ from django.db.models.aggregates import Sum
 from django.db.models.functions import Coalesce
 from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
-from django.views.generic import CreateView, ListView, TemplateView
+from django.views.generic import CreateView, ListView, TemplateView, UpdateView
 
 from accounts.models import UserCustom
 from common.breadcrumbs.breadcrumbs import Breadcrumb, BreadcrumbsMixin
@@ -40,12 +40,29 @@ class BrewList(LoginRequiredMixin, BreadcrumbsMixin, ListView):
         return breadcrumbs()
 
 
-class BrewCreate(PermissionRequiredMixin, BreadcrumbsMixin, CreateView):
+class BrewCreate(
+    PermissionRequiredMixin, SuccessMessageMixin, BreadcrumbsMixin, CreateView
+):
     model = Brew
     form_class = BrewForm
     template_name = "common/forms/form.html"
     success_url = reverse_lazy("brewing:BrewList")
+    success_message = 'Brygget "%(name)s" vart laga.'
     permission_required = "brewing.add_brew"
+
+    def get_breadcrumbs(self):
+        return breadcrumbs(include_brew_list=True)
+
+
+class BrewUpdate(
+    PermissionRequiredMixin, SuccessMessageMixin, BreadcrumbsMixin, UpdateView
+):
+    model = Brew
+    form_class = BrewForm
+    template_name = "common/forms/form.html"
+    success_url = reverse_lazy("brewing:BrewList")
+    success_message = 'Brygget "%(name)s" vart oppdatert.'
+    permission_required = "brewing.change_brew"
 
     def get_breadcrumbs(self):
         return breadcrumbs(include_brew_list=True)

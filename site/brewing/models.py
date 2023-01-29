@@ -3,6 +3,7 @@ from math import ceil
 from django.conf import settings
 from django.db.models import (
     CASCADE,
+    BooleanField,
     CharField,
     CheckConstraint,
     ForeignKey,
@@ -18,10 +19,14 @@ from common.models import CreatedModifiedMixin
 
 
 class Brew(CreatedModifiedMixin):
+    # TODO: Slugify
     name = CharField("namn", max_length=255, blank=True)
     price_per_litre = IntegerField("literpris")
+    # TODO: Available for purchase burde kunne overrides tå hendingo. Burde ha automatisk,
+    # tegjængele, itte tegjængele. Tegjængele 1 time før, te 24 time ette?
+    available_for_purchase = BooleanField("tilgjengeleg for kjøp", default=False)
+    # TODO: Internt skjema for å kjøpe arbitrere øl for arbitrere folk. Berre folk me spesialtegang fer lov
     # TODO: OG and FG
-    # TODO: aktivt brygg
     # TODO: Vis påslag?
 
     def surcharge(self):

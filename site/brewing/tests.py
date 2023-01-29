@@ -98,6 +98,26 @@ class BrewCreateTestSuite(TestMixin, TestCase):
         self.assertRedirects(response, reverse("brewing:BrewList"))
 
 
+class BrewUpdateTestSuite(TestMixin, TestCase):
+    def setUp(self) -> None:
+        self.brew = BrewFactory()
+
+    def get_url(self):
+        return reverse("brewing:BrewUpdate", args=[self.brew.pk])
+
+    def test_requires_permission_for_creating_brews(self):
+        """Should require permission for changing brews."""
+        self.assertPermissionRequired(self.get_url(), "brewing.change_brew")
+
+    def test_redirects_to_brew_list(self):
+        """Should redirect to the brew list."""
+        self.client.force_login(SuperUserFactory())
+        response = self.client.post(
+            self.get_url(), {"name": "Two Towers", "price_per_litre": 9}
+        )
+        self.assertRedirects(response, reverse("brewing:BrewList"))
+
+
 class BalanceListTestSuite(TestMixin, TestCase):
     def get_url(self):
         return reverse("brewing:BalanceList")
