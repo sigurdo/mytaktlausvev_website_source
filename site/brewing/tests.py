@@ -4,6 +4,7 @@ from django.urls import reverse
 
 from accounts.factories import SuperUserFactory, UserFactory
 from accounts.models import UserCustom
+from common.constants.factories import ConstantFactory
 from common.mixins import TestMixin
 
 from .factories import BrewFactory, TransactionFactory
@@ -11,17 +12,24 @@ from .models import Brew, Transaction, TransactionType
 
 
 class BrewTestSuite(TestMixin, TestCase):
+    def test_surcharge(self):
+        """Returns the value of the surcharge constant, cast to an integer."""
+
     def test_price_per_0_5(self):
+        """Should return the price of the brew per 0.5 L, with the current surcharge."""
+        ConstantFactory(name="Påslag på brygg i NOK", value="2")
         brew = BrewFactory(price_per_litre=20)
-        self.assertEqual(brew.price_per_0_5(), 10)
+        self.assertEqual(brew.price_per_0_5(), 10 + 2)
         brew = BrewFactory(price_per_litre=15)
-        self.assertEqual(brew.price_per_0_5(), 8)
+        self.assertEqual(brew.price_per_0_5(), 8 + 2)
 
     def test_price_per_0_33(self):
+        """Should return the price of the brew per 0.33 L, with the current surcharge."""
+        ConstantFactory(name="Påslag på brygg i NOK", value="2")
         brew = BrewFactory(price_per_litre=9)
-        self.assertEqual(brew.price_per_0_33(), 3)
+        self.assertEqual(brew.price_per_0_33(), 3 + 2)
         brew = BrewFactory(price_per_litre=10)
-        self.assertEqual(brew.price_per_0_33(), 4)
+        self.assertEqual(brew.price_per_0_33(), 4 + 2)
 
     def test_to_str(self):
         """`__str__` should be the brew's name."""

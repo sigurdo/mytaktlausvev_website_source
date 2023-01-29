@@ -13,12 +13,22 @@ from django.db.models import (
 )
 from django.db.models.aggregates import Sum
 
+from common.constants.models import Constant
 from common.models import CreatedModifiedMixin
 
 
 class Brew(CreatedModifiedMixin):
     name = CharField("namn", max_length=255, blank=True)
-    price_per_litre = IntegerField("pris per liter")
+    price_per_litre = IntegerField("literpris")
+    # TODO: OG and FG
+    # TODO: aktivt brygg
+
+    def surcharge(self):
+        """Returns the current surcharge for brews."""
+        surcharge, _ = Constant.objects.get_or_create(
+            name="Påslag på brygg i NOK", defaults={"value": 2}
+        )
+        return int(surcharge.value)
 
     class Sizes(TextChoices):
         SIZE_0_33 = "SIZE_0_33", "0.33 L"
@@ -29,14 +39,14 @@ class Brew(CreatedModifiedMixin):
         Returns the price for 0.33 L of the brew,
         rounded up to an integer.
         """
-        return ceil(self.price_per_litre / 3)
+        return ceil(self.price_per_litre / 3) + self.surcharge()
 
     def price_per_0_5(self):
         """
         Returns the price for 0.5 L of the brew,
         rounded up to an integer.
         """
-        return ceil(self.price_per_litre / 2)
+        return ceil(self.price_per_litre / 2) + self.surcharge()
 
     def __str__(self):
         # TODO: Include price?

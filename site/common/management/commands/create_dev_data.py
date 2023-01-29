@@ -1174,6 +1174,7 @@ Her kan du skrive nykelinformasjon om hendinga. Oppføringane du skriv vil verte
         ConstantFactory(
             name="Instrumentgruppeleiargruppenamn", value=instrument_group_leaders.name
         )
+        ConstantFactory(name="Påslag på brygg i NOK", value="2")
 
         OrchestraFactory(name="Dragern")
         OrchestraFactory(name="Motstanden")
