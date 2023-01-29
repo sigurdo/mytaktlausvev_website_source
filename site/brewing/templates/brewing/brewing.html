@@ -30,20 +30,6 @@
     <section>
         <h2>Brygg</h2>
 
-        <ul>
-            {% for brew in brews %}
-            <li>
-                {{ brew.name }}
-                – 
-                <a href="{% url 'brewing:BrewPurchaseCreate' brew.pk %}?size={{ brew_sizes.SIZE_0_5 }}">
-                    Kjøp 0.5 L for {{ brew.price_per_0_5 }} NOK
-                </a>
-                –
-                <a href="{% url 'brewing:BrewPurchaseCreate' brew.pk %}?size={{ brew_sizes.SIZE_0_33 }}">
-                    Kjøp 0.33 L for {{ brew.price_per_0_33 }} NOK
-                </a>
-            </li>
-            {% endfor %}
-        </ul>
+        {% include "brewing/includes/brew_purchase_list.html" with brews=brews %}
     </section>
 {% endblock content %}
