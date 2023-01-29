@@ -14,12 +14,16 @@ from .forms import BrewForm, BrewPurchaseForm, DepositForm
 from .models import Brew, Transaction, TransactionType
 
 
-def breadcrumbs():
+def breadcrumbs(include_brew_list=False):
     """Returns breadcrumbs for the brewing views."""
-    return [Breadcrumb(reverse("brewing:BrewView"), "Brygging")]
+    breadcrumbs = [Breadcrumb(reverse("brewing:BrewView"), "Brygging")]
+    if include_brew_list:
+        breadcrumbs.append(Breadcrumb(reverse("brewing:BrewList"), "Alle brygg"))
+    return breadcrumbs
 
 
 class BrewView(TemplateView):
+    # TODO: Rename something overview?
     template_name = "brewing/brewing.html"
 
     def get_context_data(self, **kwargs):
@@ -28,15 +32,23 @@ class BrewView(TemplateView):
         return super().get_context_data(**kwargs)
 
 
+class BrewList(LoginRequiredMixin, BreadcrumbsMixin, ListView):
+    model = Brew
+    context_object_name = "brews"
+
+    def get_breadcrumbs(self):
+        return breadcrumbs()
+
+
 class BrewCreate(PermissionRequiredMixin, BreadcrumbsMixin, CreateView):
     model = Brew
     form_class = BrewForm
     template_name = "common/forms/form.html"
-    success_url = reverse_lazy("brewing:BrewView")
+    success_url = reverse_lazy("brewing:BrewList")
     permission_required = "brewing.add_brew"
 
     def get_breadcrumbs(self):
-        return breadcrumbs()
+        return breadcrumbs(include_brew_list=True)
 
 
 class BalanceList(PermissionRequiredMixin, BreadcrumbsMixin, ListView):

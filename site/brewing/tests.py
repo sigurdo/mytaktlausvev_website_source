@@ -72,6 +72,15 @@ class TransactionTestSuite(TestMixin, TestCase):
             TransactionFactory(price=20, type=TransactionType.PURCHASE)
 
 
+class BrewListTestSuite(TestMixin, TestCase):
+    def get_url(self):
+        return reverse("brewing:BrewList")
+
+    def test_requires_permission_for_creating_brews(self):
+        """Should require permission for creating brews."""
+        self.assertLoginRequired(self.get_url())
+
+
 class BrewCreateTestSuite(TestMixin, TestCase):
     def get_url(self):
         return reverse("brewing:BrewCreate")
@@ -79,6 +88,14 @@ class BrewCreateTestSuite(TestMixin, TestCase):
     def test_requires_permission_for_creating_brews(self):
         """Should require permission for creating brews."""
         self.assertPermissionRequired(self.get_url(), "brewing.add_brew")
+
+    def test_redirects_to_brew_list(self):
+        """Should redirect to the brew list."""
+        self.client.force_login(SuperUserFactory())
+        response = self.client.post(
+            self.get_url(), {"name": "Two Towers", "price_per_litre": 9}
+        )
+        self.assertRedirects(response, reverse("brewing:BrewList"))
 
 
 class BalanceListTestSuite(TestMixin, TestCase):

@@ -11,9 +11,13 @@
             <a href="{% url 'brewing:DepositCreate' %}" class="btn btn-primary btn-sm my-1">Ny innbetaling</a>
         </li>
 
+        <li class="list-inline-item">
+            <a href="{% url 'brewing:BrewList' %}" class="btn btn-secondary btn-sm my-1">Alle brygg</a>
+        </li>        
+
         {% if perms.brewing.view_transaction %}
         <li class="list-inline-item">
-            <a href="{% url 'brewing:BalanceList' %}" class="btn btn-primary btn-sm my-1">Sjå saldoar</a>
+            <a href="{% url 'brewing:BalanceList' %}" class="btn btn-secondary btn-sm my-1">Sjå saldoar</a>
         </li>
         {% endif %}
     </ul>
@@ -24,17 +28,7 @@
     Saldo: {{ user.brewing_transactions.balance }} NOK
 
     <section>
-        <header>
-            <h2>Brygg</h2>
-
-            <ul class="list-inline my-1">
-                {% if perms.brewing.add_brew %}
-                <li class="list-inline-item">
-                    <a href="{% url 'brewing:BrewCreate' %}" class="btn btn-primary btn-sm my-1">Nytt brygg</a>
-                </li>
-                {% endif %}
-            </ul>            
-        </header>
+        <h2>Brygg</h2>
 
         <ul>
             {% for brew in brews %}

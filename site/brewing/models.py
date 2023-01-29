@@ -22,11 +22,12 @@ class Brew(CreatedModifiedMixin):
     price_per_litre = IntegerField("literpris")
     # TODO: OG and FG
     # TODO: aktivt brygg
+    # TODO: Vis påslag?
 
     def surcharge(self):
         """Returns the current surcharge for brews."""
         surcharge, _ = Constant.objects.get_or_create(
-            name="Påslag på brygg i NOK", defaults={"value": 2}
+            name="Påslag på brygg i NOK", defaults={"value": "2"}
         )
         return int(surcharge.value)
 
@@ -47,6 +48,13 @@ class Brew(CreatedModifiedMixin):
         rounded up to an integer.
         """
         return ceil(self.price_per_litre / 2) + self.surcharge()
+
+    def alcohol_by_volume(self):
+        """
+        Calculates alcohol by volume (ABV) from OG and FG.
+        Returns `None` if either OG or FG is missing.
+        """
+        return 0
 
     def __str__(self):
         # TODO: Include price?

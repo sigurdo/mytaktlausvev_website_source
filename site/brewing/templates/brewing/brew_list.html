@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs5/jq-3.6.0/dt-1.11.3/datatables.min.css"/>
+{% endblock css %}
+
+{% block title_page %}Brygg{% endblock title_page %}
+{% block title_content %}Brygg{% endblock title_content %}
+
+{% block header %}
+    {{ block.super }}
+
+    {% if perms.brewing.add_brew %}
+        <ul class="list-inline my-1">
+            <li class="list-inline-item">
+                <a href="{% url 'brewing:BrewCreate' %}" class="btn btn-primary btn-sm my-1">Nytt brygg</a>
+            </li>
+        </ul>
+    {% endif %}
+{% endblock header %}
+
+{% block content %}
+<div class="table-responsive">
+    <table class="table table-striped" id="table-brews">
+        <thead>
+            <tr>
+                <th>Namn</th>
+                <th>Literpris</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for brew in brews %}
+            <tr>
+                <td>{{ brew.name }}</td>
+                <td>{{ brew.price_per_litre }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock content %}
+
+{% block js %}
+    <script src="https://cdn.datatables.net/v/bs5/jq-3.6.0/dt-1.11.3/datatables.min.js"></script>
+    {% load static %}
+    <script src="{% static "brewing/brew_list.js" %}"></script>
+{% endblock js %}
