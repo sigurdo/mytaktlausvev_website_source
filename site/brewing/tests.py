@@ -31,6 +31,11 @@ class BrewTestSuite(TestMixin, TestCase):
         brew = BrewFactory(price_per_litre=10)
         self.assertEqual(brew.price_per_0_33(), 4 + 2)
 
+    def test_price_per_litre_must_be_positive(self):
+        """Price per litre must be positive."""
+        with self.assertRaises(IntegrityError):
+            BrewFactory(price_per_litre=-5)
+
     def test_to_str(self):
         """`__str__` should be the brew's name."""
         brew = BrewFactory()
@@ -85,9 +90,10 @@ class BrewOverviewTestSuite(TestMixin, TestCase):
         available_brew = BrewFactory(available_for_purchase=True)
         unavailable_brew = BrewFactory(available_for_purchase=False)
 
+        self.client.force_login(SuperUserFactory())
         response = self.client.get(self.get_url())
-        self.assertIn(available_brew, response.context["brews"])
-        self.assertNotIn(unavailable_brew, response.context["brews"])
+        self.assertIn(available_brew, response.context["available_brews"])
+        self.assertNotIn(unavailable_brew, response.context["available_brews"])
 
 
 class BrewListTestSuite(TestMixin, TestCase):

@@ -10,6 +10,8 @@ from django.utils.timezone import make_aware
 from accounts.models import UserCustom
 from advent_calendar.factories import AdventCalendarFactory, WindowFactory
 from articles.factories import ArticleFactory
+from brewing.factories import BrewFactory, TransactionFactory
+from brewing.models import TransactionType
 from buttons.factories import ButtonDesignFactory
 from common.comments.factories import CommentFactory
 from common.constants.factories import ConstantFactory
@@ -884,6 +886,13 @@ class Command(BaseCommand):
             parent=other_dropdown,
         )
         NavbarItemFactory(
+            text="Brygging",
+            link=reverse("brewing:BrewOverview"),
+            order=2.56,
+            requires_login=True,
+            parent=other_dropdown,
+        )
+        NavbarItemFactory(
             text="Brukarfiler",
             link=reverse("user_files:FileList"),
             order=2.57,
@@ -1098,6 +1107,14 @@ class Command(BaseCommand):
         )
         smash.repertoires.set([march_booklet_repertoire])
         smash.save()
+
+        BrewFactory(
+            name="Gudbrandsdalsvatn", price_per_litre=42, available_for_purchase=True
+        )
+        TransactionFactory(user=leader, price=50, type=TransactionType.DEPOSIT)
+        TransactionFactory(user=member, price=-5, type=TransactionType.PURCHASE)
+        TransactionFactory(user=member, price=-5, type=TransactionType.PURCHASE)
+        TransactionFactory(user=member, price=-5, type=TransactionType.PURCHASE)
 
         EmbeddableTextFactory(
             name="Framgangsmåte for buttonpdfgenerator",

@@ -20,7 +20,7 @@ from common.models import CreatedModifiedMixin
 
 
 class Brew(CreatedModifiedMixin):
-    # TODO: Dev data! + navbar
+    # TODO: Remind people to pay when negative!!!
     name = CharField("namn", max_length=255, blank=True)
     slug = AutoSlugField(
         verbose_name="lenkjenamn", populate_from="name", editable=True, unique=True
@@ -72,7 +72,13 @@ class Brew(CreatedModifiedMixin):
         ordering = ["name"]
         verbose_name = "brygg"
         verbose_name_plural = "brygg"
-        # Validate brew price larger than 0!
+        constraints = [
+            CheckConstraint(
+                check=Q(price_per_litre__gt=0),
+                name="brew_price_per_litre_must_be_positive",
+                violation_error_message="Literprisen til eit brygg må vere positiv.",
+            )
+        ]
 
 
 class TransactionManager(Manager):
@@ -96,7 +102,6 @@ class Transaction(CreatedModifiedMixin):
         related_name="brewing_transactions",
     )
     price = IntegerField("pris")
-    # TODO: Help text? Why is comment necessary? Mention that it isn't necessary?
     comment = CharField("kommentar", max_length=255, blank=True)
     type = CharField(
         "type",
@@ -123,4 +128,5 @@ class Transaction(CreatedModifiedMixin):
         ]
 
     # TODO: Optional, required *for new* when transaction type is a purchase?
+    # TODO: View that shows a history of your transactions
     # brew = ForeignKey()

@@ -21,15 +21,11 @@
         </li>
         {% endif %}
     </ul>
+
+    Din saldo er <strong>{{ user.brewing_transactions.balance }} NOK</strong>!
 {% endblock header %}
 
 
 {% block content %}
-    Saldo: {{ user.brewing_transactions.balance }} NOK
-
-    <section>
-        <h2>Brygg</h2>
-
-        {% include "brewing/includes/brew_purchase_list.html" with brews=available_brews %}
-    </section>
+    {% include "brewing/includes/brew_purchase_list.html" with brews=available_brews %}
 {% endblock content %}

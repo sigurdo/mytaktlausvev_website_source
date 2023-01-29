@@ -38,7 +38,9 @@ class BrewOverview(LoginRequiredMixin, ListView):
 class BrewList(LoginRequiredMixin, BreadcrumbsMixin, ListView):
     model = Brew
     context_object_name = "brews"
-    # TODO: Order active first!
+
+    def get_queryset(self):
+        return super().get_queryset().order_by("available_for_purchase", "name")
 
     def get_breadcrumbs(self):
         return breadcrumbs()

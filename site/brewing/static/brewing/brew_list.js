@@ -1,6 +1,9 @@
 document.addEventListener("DOMContentLoaded", () => {
   new DataTable("#table-brews", {
-    order: [[0, "asc"]],
+    order: [
+      [2, "asc"],
+      [0, "asc"],
+    ],
     paging: false,
     language: {
       zeroRecords: "Ingen brygg funne",
@@ -9,5 +12,6 @@ document.addEventListener("DOMContentLoaded", () => {
       infoFiltered: "(filtrert fra totalt _MAX_ brygg)",
       search: "Søk:",
     },
+    columns: [null, null, null, { orderable: false }],
   });
 });
