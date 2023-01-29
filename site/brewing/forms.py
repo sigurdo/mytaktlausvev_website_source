@@ -1,5 +1,5 @@
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit
+from crispy_forms.layout import HTML, Layout, Submit
 from django.forms import HiddenInput, ModelForm, NumberInput
 
 from .models import Brew, Transaction, TransactionType
@@ -17,6 +17,16 @@ class BrewForm(ModelForm):
 class DepositForm(ModelForm):
     helper = FormHelper()
     helper.add_input(Submit("submit", "Legg inn pengar"))
+    helper.layout = Layout(
+        HTML(
+            """
+                {% load embeddable_text markdown %}
+                {% get_embeddable_text "Innbetaling til bryggjekassa" as text %}
+                {{ text | markdown }}
+                """
+        ),
+        "price",
+    )
 
     def __init__(self, user, *args, **kwargs):
         super().__init__(*args, **kwargs)

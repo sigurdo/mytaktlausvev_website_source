@@ -109,8 +109,6 @@ class DepositCreate(
     success_url = reverse_lazy("brewing:BrewView")
     success_message = "Du har innbetalt %(price)s NOK til bryggjekassa."
 
-    # TODO: Info om betaling te konto
-
     def get_breadcrumbs(self):
         return breadcrumbs()
 

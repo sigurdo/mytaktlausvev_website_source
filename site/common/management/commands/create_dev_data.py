@@ -1169,6 +1169,10 @@ Her kan du skrive nykelinformasjon om hendinga. Oppføringane du skriv vil verte
             name="Instrumentgruppeleiararliste",
             content="Liste over instrumentgruppeleiarar.",
         )
+        EmbeddableTextFactory(
+            name="Innbetaling til bryggjekassa",
+            content="Instruksjonar for innbetaling til bryggjekassa.",
+        )
 
         ConstantFactory(name="Bursdagssangslug", value=birthday_song.slug)
         ConstantFactory(

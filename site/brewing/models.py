@@ -20,6 +20,7 @@ from common.models import CreatedModifiedMixin
 
 class Brew(CreatedModifiedMixin):
     # TODO: Slugify
+    # TODO: Bedre admin! På transaksjone au?
     name = CharField("namn", max_length=255, blank=True)
     price_per_litre = IntegerField("literpris")
     # TODO: Available for purchase burde kunne overrides tå hendingo. Burde ha automatisk,
@@ -62,7 +63,6 @@ class Brew(CreatedModifiedMixin):
         return 0
 
     def __str__(self):
-        # TODO: Include price?
         return self.name
 
     class Meta:
