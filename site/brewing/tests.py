@@ -44,12 +44,12 @@ class TransactionTestSuite(TestMixin, TestCase):
             TransactionFactory(user=user, price=20, type=TransactionType.DEPOSIT)
             TransactionFactory(user=user, price=-10, type=TransactionType.PURCHASE)
 
-        self.assertEqual(user.brewing_transactions.sum(), 30)
+        self.assertEqual(user.brewing_transactions.balance(), 30)
 
     def test_sum_returns_0_if_user_has_no_transactions(self):
         """Should return 0 if the user has no transactions."""
         user = UserFactory()
-        self.assertIs(user.brewing_transactions.sum(), 0)
+        self.assertIs(user.brewing_transactions.balance(), 0)
 
     def test_deposits_must_be_positive(self):
         """Deposits must have a positive price."""
@@ -155,11 +155,11 @@ class DepositCreateTestSuite(TestMixin, TestCase):
     def test_increases_users_balance(self):
         """Should increase a user's balance."""
         user = UserFactory()
-        self.assertEqual(user.brewing_transactions.sum(), 0)
+        self.assertEqual(user.brewing_transactions.balance(), 0)
 
         self.client.force_login(user)
         self.client.post(self.get_url(), {"price": 20})
-        self.assertEqual(user.brewing_transactions.sum(), 20)
+        self.assertEqual(user.brewing_transactions.balance(), 20)
 
 
 class BrewPurchaseCreateTestSuite(TestMixin, TestCase):
@@ -233,10 +233,10 @@ class BrewPurchaseCreateTestSuite(TestMixin, TestCase):
     def test_decreases_users_balance(self):
         """Should decrease a user's balance."""
         user = UserFactory()
-        self.assertEqual(user.brewing_transactions.sum(), 0)
+        self.assertEqual(user.brewing_transactions.balance(), 0)
 
         self.client.force_login(user)
         self.client.post(self.get_url(self.brew))
         self.assertEqual(
-            user.brewing_transactions.sum(), 0 - self.brew.price_per_0_33()
+            user.brewing_transactions.balance(), 0 - self.brew.price_per_0_33()
         )

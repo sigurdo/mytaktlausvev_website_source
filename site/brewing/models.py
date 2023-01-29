@@ -50,7 +50,8 @@ class Brew(CreatedModifiedMixin):
 
 
 class TransactionManager(Manager):
-    def sum(self):
+    def balance(self):
+        """Returns the balance of the queryset."""
         return self.aggregate(sum=Sum("price"))["sum"] or 0
 
 
