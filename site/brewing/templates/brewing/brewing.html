@@ -28,7 +28,7 @@
             <h2>Brygg</h2>
 
             <ul class="list-inline my-1">
-                {% if perms.brewing.create_brew %}
+                {% if perms.brewing.add_brew %}
                 <li class="list-inline-item">
                     <a href="{% url 'brewing:BrewCreate' %}" class="btn btn-primary btn-sm my-1">Nytt brygg</a>
                 </li>

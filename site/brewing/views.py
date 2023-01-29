@@ -33,7 +33,7 @@ class BrewCreate(PermissionRequiredMixin, BreadcrumbsMixin, CreateView):
     form_class = BrewForm
     template_name = "common/forms/form.html"
     success_url = reverse_lazy("brewing:BrewView")
-    permission_required = "brewing.create_brew"
+    permission_required = "brewing.add_brew"
 
     def get_breadcrumbs(self):
         return breadcrumbs()

@@ -70,7 +70,7 @@ class BrewCreateTestSuite(TestMixin, TestCase):
 
     def test_requires_permission_for_creating_brews(self):
         """Should require permission for creating brews."""
-        self.assertPermissionRequired(self.get_url(), "brewing.create_brew")
+        self.assertPermissionRequired(self.get_url(), "brewing.add_brew")
 
 
 class BalanceListTestSuite(TestMixin, TestCase):
