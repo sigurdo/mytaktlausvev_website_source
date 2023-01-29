@@ -1,4 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import Case, F, When
 from django.db.models.aggregates import Sum
 from django.db.models.functions import Coalesce
@@ -38,13 +39,13 @@ class BalanceList(PermissionRequiredMixin, BreadcrumbsMixin, ListView):
 
     def sum_users_transactions_by_type(self, type):
         """Returns a `Sum` that sums a user's transactions by the `TransactionType` type."""
-        transactions_with_type = Case(
+        price_if_matching_type = Case(
             When(
                 brewing_transactions__type=type, then=F("brewing_transactions__price")
             ),
             default=0,
         )
-        return Coalesce(Sum(transactions_with_type), 0)
+        return Coalesce(Sum(price_if_matching_type), 0)
 
     def get_queryset(self):
         return (
@@ -59,12 +60,14 @@ class BalanceList(PermissionRequiredMixin, BreadcrumbsMixin, ListView):
         )
 
 
-class DepositCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
+class DepositCreate(
+    LoginRequiredMixin, SuccessMessageMixin, BreadcrumbsMixin, CreateView
+):
     model = Transaction
     form_class = DepositForm
     template_name = "common/forms/form.html"
     success_url = reverse_lazy("brewing:BrewView")
-    # TODO: Message saying that you've deposited?
+    success_message = "Du har innbetalt %(price)s NOK til bryggjekassa."
 
     def get_breadcrumbs(self):
         return breadcrumbs()
@@ -79,12 +82,13 @@ class DepositCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
         return super().get_context_data(**kwargs)
 
 
-class BrewPurchaseCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
+class BrewPurchaseCreate(
+    LoginRequiredMixin, SuccessMessageMixin, BreadcrumbsMixin, CreateView
+):
     model = Transaction
     form_class = BrewPurchaseForm
     template_name = "brewing/brew_purchase.html"
     success_url = reverse_lazy("brewing:BrewView")
-    # TODO: Message saying that you've purchased?
 
     brew = None
 
@@ -100,6 +104,9 @@ class BrewPurchaseCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
 
     def get_breadcrumbs(self):
         return breadcrumbs()
+
+    def get_success_message(self, cleaned_data) -> str:
+        return f"Du har kjøpt {self.get_brew_size().label} {self.get_brew()} for {abs(cleaned_data['price'])} NOK."
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
