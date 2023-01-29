@@ -1,10 +1,10 @@
-from django.conf import settings
 from django.contrib.auth.models import Group
 from django.db import IntegrityError
 from django.test import TestCase
 from django.urls import reverse
 
 from accounts.factories import SuperUserFactory, UserFactory
+from common.constants.models import Constant
 from common.mixins import TestMixin
 from common.test_utils import create_formset_post_data
 
@@ -259,8 +259,11 @@ class InstrumentGroupLeadersFormTestSuite(TestMixin, TestCase):
 
     def setUp(self):
         self.user = UserFactory()
+        instrument_group_leader_group_name, _ = Constant.objects.get_or_create(
+            name="Instrumentgruppeleiargruppenamn"
+        )
         self.instrument_leader_group = Group.objects.create(
-            name=settings.INSTRUMENT_GROUP_LEADERS_NAME
+            name=instrument_group_leader_group_name.value
         )
         self.instrument_leader_group.user_set.add(self.user)
 
@@ -275,8 +278,11 @@ class InstrumentGroupLeadersUpdateTestSuite(TestMixin, TestCase):
         return reverse("instruments:InstrumentGroupLeadersUpdate")
 
     def setUp(self):
+        instrument_group_leader_group_name, _ = Constant.objects.get_or_create(
+            name="Instrumentgruppeleiargruppenamn"
+        )
         self.instrument_leader_group = Group.objects.create(
-            name=settings.INSTRUMENT_GROUP_LEADERS_NAME
+            name=instrument_group_leader_group_name.value
         )
 
         self.form = InstrumentGroupLeadersForm()

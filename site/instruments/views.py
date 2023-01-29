@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.models import Group
 from django.contrib.messages.views import SuccessMessageMixin
@@ -7,6 +6,7 @@ from django.views.generic import FormView, ListView
 
 from accounts.models import UserCustom
 from common.breadcrumbs.breadcrumbs import Breadcrumb, BreadcrumbsMixin
+from common.constants.models import Constant
 
 from .forms import InstrumentFormset, InstrumentGroupLeadersForm
 from .models import Instrument
@@ -58,8 +58,11 @@ class InstrumentGroupLeaderList(LoginRequiredMixin, ListView):
     template_name = "instruments/instrument_group_leader_list.html"
 
     def get_queryset(self):
+        instrument_group_leader_group_name, _ = Constant.objects.get_or_create(
+            name="Instrumentgruppeleiargruppenamn"
+        )
         instrument_leaders_group, _ = Group.objects.get_or_create(
-            name=settings.INSTRUMENT_GROUP_LEADERS_NAME
+            name=instrument_group_leader_group_name.value
         )
         return instrument_leaders_group.user_set.all()
 

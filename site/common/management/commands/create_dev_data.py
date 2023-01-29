@@ -12,6 +12,7 @@ from advent_calendar.factories import AdventCalendarFactory, WindowFactory
 from articles.factories import ArticleFactory
 from buttons.factories import ButtonDesignFactory
 from common.comments.factories import CommentFactory
+from common.constants.factories import ConstantFactory
 from common.embeddable_text.factories import EmbeddableTextFactory
 from common.test_utils import test_pdf_multipage
 from contact.factories import ContactCategoryFactory
@@ -102,9 +103,7 @@ class Command(BaseCommand):
         lurkar.user_set.add(leader)
         lurkar.user_set.add(retiree)
         lurkar.user_set.add(aspirant)
-        instrument_group_leaders = Group.objects.create(
-            name=settings.INSTRUMENT_GROUP_LEADERS_NAME
-        )
+        instrument_group_leaders = Group.objects.create(name="instrumentgruppeleiar")
         instrument_group_leaders.user_set.add(leader)
         instrument_group_leaders.user_set.add(musical_leader)
         instrument_group_leaders.user_set.add(member)
@@ -1170,5 +1169,11 @@ Her kan du skrive nykelinformasjon om hendinga. Oppføringane du skriv vil verte
             name="Instrumentgruppeleiararliste",
             content="Liste over instrumentgruppeleiarar.",
         )
+
+        ConstantFactory(name="Bursdagssangslug", value=birthday_song.slug)
+        ConstantFactory(
+            name="Instrumentgruppeleiargruppenamn", value=instrument_group_leaders.name
+        )
+
         OrchestraFactory(name="Dragern")
         OrchestraFactory(name="Motstanden")
