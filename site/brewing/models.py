@@ -1,5 +1,6 @@
 from math import ceil
 
+from autoslug.fields import AutoSlugField
 from django.conf import settings
 from django.db.models import (
     CASCADE,
@@ -19,9 +20,11 @@ from common.models import CreatedModifiedMixin
 
 
 class Brew(CreatedModifiedMixin):
-    # TODO: Slugify
     # TODO: Bedre admin! På transaksjone au?
     name = CharField("namn", max_length=255, blank=True)
+    slug = AutoSlugField(
+        verbose_name="lenkjenamn", populate_from="name", editable=True, unique=True
+    )
     price_per_litre = IntegerField("literpris")
     # TODO: Available for purchase burde kunne overrides tå hendingo. Burde ha automatisk,
     # tegjængele, itte tegjængele. Tegjængele 1 time før, te 24 time ette?

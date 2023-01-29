@@ -133,7 +133,7 @@ class BrewPurchaseCreate(
     brew = None
 
     def get_brew(self):
-        return self.brew or get_object_or_404(Brew, pk=self.kwargs["slug"])
+        return self.brew or get_object_or_404(Brew, slug=self.kwargs["slug"])
 
     def get_brew_size(self):
         return (

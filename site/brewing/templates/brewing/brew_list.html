@@ -33,16 +33,16 @@
             </tr>
         </thead>
 
-        <tbody>
+        <tbody class="align-middle">
             {% for brew in brews %}
             <tr>
                 <td>{{ brew.name }}</td>
                 <td>{{ brew.price_per_litre }}</td>
                 <td>{{ brew.available_for_purchase | yesno | capfirst }}</td>
                 {% if perms.brewing.change_brew %}
-                    <td>
+                    <td class="text-center">
                         <a
-                        href="{% url 'brewing:BrewUpdate' brew.pk %}"
+                        href="{% url 'brewing:BrewUpdate' brew.slug %}"
                         class="btn btn-secondary btn-sm"
                         >
                             Rediger

@@ -103,7 +103,7 @@ class BrewUpdateTestSuite(TestMixin, TestCase):
         self.brew = BrewFactory()
 
     def get_url(self):
-        return reverse("brewing:BrewUpdate", args=[self.brew.pk])
+        return reverse("brewing:BrewUpdate", args=[self.brew.slug])
 
     def test_requires_permission_for_creating_brews(self):
         """Should require permission for changing brews."""
@@ -218,7 +218,7 @@ class DepositCreateTestSuite(TestMixin, TestCase):
 
 class BrewPurchaseCreateTestSuite(TestMixin, TestCase):
     def get_url(self, brew, size=Brew.Sizes.SIZE_0_33):
-        return f"{reverse('brewing:BrewPurchaseCreate', args=[brew.pk])}?size={size}"
+        return f"{reverse('brewing:BrewPurchaseCreate', args=[brew.slug])}?size={size}"
 
     def setUp(self) -> None:
         self.brew = BrewFactory()
