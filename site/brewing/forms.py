@@ -5,6 +5,15 @@ from django.forms import HiddenInput, ModelForm, NumberInput
 from .models import Brew, Transaction, TransactionType
 
 
+class BrewForm(ModelForm):
+    helper = FormHelper()
+    helper.add_input(Submit("submit", "Lagre brygg"))
+
+    class Meta:
+        model = Brew
+        fields = ["name", "price_per_litre"]
+
+
 class DepositForm(ModelForm):
     helper = FormHelper()
     helper.add_input(Submit("submit", "Legg inn pengar"))

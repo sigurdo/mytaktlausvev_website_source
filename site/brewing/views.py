@@ -10,7 +10,7 @@ from django.views.generic import CreateView, ListView, TemplateView
 from accounts.models import UserCustom
 from common.breadcrumbs.breadcrumbs import Breadcrumb, BreadcrumbsMixin
 
-from .forms import BrewPurchaseForm, DepositForm
+from .forms import BrewForm, BrewPurchaseForm, DepositForm
 from .models import Brew, Transaction, TransactionType
 
 
@@ -26,6 +26,17 @@ class BrewView(TemplateView):
         kwargs["brews"] = Brew.objects.all()
         kwargs["brew_sizes"] = Brew.Sizes
         return super().get_context_data(**kwargs)
+
+
+class BrewCreate(PermissionRequiredMixin, BreadcrumbsMixin, CreateView):
+    model = Brew
+    form_class = BrewForm
+    template_name = "common/forms/form.html"
+    success_url = reverse_lazy("brewing:BrewView")
+    permission_required = "brewing.create_brew"
+
+    def get_breadcrumbs(self):
+        return breadcrumbs()
 
 
 class BalanceList(PermissionRequiredMixin, BreadcrumbsMixin, ListView):
@@ -68,6 +79,8 @@ class DepositCreate(
     template_name = "common/forms/form.html"
     success_url = reverse_lazy("brewing:BrewView")
     success_message = "Du har innbetalt %(price)s NOK til bryggjekassa."
+
+    # TODO: Info om betaling te konto
 
     def get_breadcrumbs(self):
         return breadcrumbs()

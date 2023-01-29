@@ -16,7 +16,7 @@
             <a href="{% url 'brewing:BalanceList' %}" class="btn btn-primary btn-sm my-1">Sjå saldoar</a>
         </li>
         {% endif %}
-    </ul>    
+    </ul>
 {% endblock header %}
 
 
@@ -24,7 +24,17 @@
     Saldo: {{ user.brewing_transactions.balance }} NOK
 
     <section>
-        <h2>Brygg</h2>
+        <header>
+            <h2>Brygg</h2>
+
+            <ul class="list-inline my-1">
+                {% if perms.brewing.create_brew %}
+                <li class="list-inline-item">
+                    <a href="{% url 'brewing:BrewCreate' %}" class="btn btn-primary btn-sm my-1">Nytt brygg</a>
+                </li>
+                {% endif %}
+            </ul>            
+        </header>
 
         <ul>
             {% for brew in brews %}

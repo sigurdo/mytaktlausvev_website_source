@@ -64,6 +64,15 @@ class TransactionTestSuite(TestMixin, TestCase):
             TransactionFactory(price=20, type=TransactionType.PURCHASE)
 
 
+class BrewCreateTestSuite(TestMixin, TestCase):
+    def get_url(self):
+        return reverse("brewing:BrewCreate")
+
+    def test_requires_permission_for_creating_brews(self):
+        """Should require permission for creating brews."""
+        self.assertPermissionRequired(self.get_url(), "brewing.create_brew")
+
+
 class BalanceListTestSuite(TestMixin, TestCase):
     def get_url(self):
         return reverse("brewing:BalanceList")
