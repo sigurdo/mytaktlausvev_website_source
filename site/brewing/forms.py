@@ -58,16 +58,19 @@ class BrewPurchaseForm(ModelForm):
             if size == Brew.Sizes.SIZE_0_5
             else brew.price_per_0_33()
         )
+        self.initial["brew"] = brew
         self.initial["type"] = TransactionType.PURCHASE
         self.fields["user"].disabled = True
         self.fields["price"].disabled = True
+        self.fields["brew"].disabled = True
         self.fields["type"].disabled = True
 
     class Meta:
         model = Transaction
-        fields = ["price", "user", "type"]
+        fields = ["price", "brew", "user", "type"]
         widgets = {
             "price": HiddenInput,
+            "brew": HiddenInput,
             "user": HiddenInput,
             "type": HiddenInput,
         }

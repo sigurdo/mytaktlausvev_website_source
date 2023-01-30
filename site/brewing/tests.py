@@ -251,10 +251,11 @@ class BrewPurchaseCreateTestSuite(TestMixin, TestCase):
         """Should require login."""
         self.assertLoginRequired(self.get_url(self.brew))
 
-    def test_sets_user_and_transaction_type(self):
+    def test_sets_user_transaction_type_and_brew(self):
         """
         Should set the transaction `user` to the logged-in user,
-        and the transaction type to `PURCHASE`.
+        the transaction type to `PURCHASE`,
+        and the brew to the current brew.
         """
         user = UserFactory()
         self.client.force_login(user)
@@ -264,6 +265,7 @@ class BrewPurchaseCreateTestSuite(TestMixin, TestCase):
         purchase = Transaction.objects.last()
         self.assertEqual(purchase.user, user)
         self.assertEqual(purchase.type, TransactionType.PURCHASE)
+        self.assertEqual(purchase.brew, self.brew)
 
     def test_sets_negative_brew_price_based_on_size(self):
         """Should set the transaction price to the brew's price based on the size, but negative."""
@@ -292,14 +294,20 @@ class BrewPurchaseCreateTestSuite(TestMixin, TestCase):
         purchase = Transaction.objects.last()
         self.assertEqual(purchase.price, -self.brew.price_per_0_33())
 
-    def tests_ignores_changes_to_user_type_and_price(self):
-        """Should ignore changes to the user, transaction type, and price."""
+    def tests_ignores_changes_to_user_type_price_and_brew(self):
+        """Should ignore changes to the user, transaction type, price, and brew."""
+        different_brew = BrewFactory()
         logged_in_user = UserFactory()
         different_user = UserFactory()
         self.client.force_login(logged_in_user)
         self.client.post(
             self.get_url(self.brew),
-            {"price": 20, "user": different_user, "type": TransactionType.DEPOSIT},
+            {
+                "price": 20,
+                "user": different_user,
+                "type": TransactionType.DEPOSIT,
+                "brew": different_brew,
+            },
         )
 
         self.assertEqual(Transaction.objects.count(), 1)
@@ -307,6 +315,7 @@ class BrewPurchaseCreateTestSuite(TestMixin, TestCase):
         self.assertEqual(purchase.user, logged_in_user)
         self.assertEqual(purchase.type, TransactionType.PURCHASE)
         self.assertEqual(purchase.price, -self.brew.price_per_0_33())
+        self.assertEqual(purchase.brew, self.brew)
 
     def test_decreases_users_balance(self):
         """Should decrease a user's balance."""

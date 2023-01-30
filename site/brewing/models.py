@@ -4,6 +4,7 @@ from autoslug.fields import AutoSlugField
 from django.conf import settings
 from django.db.models import (
     CASCADE,
+    SET_NULL,
     BooleanField,
     CharField,
     CheckConstraint,
@@ -101,6 +102,15 @@ class Transaction(CreatedModifiedMixin):
         related_name="brewing_transactions",
     )
     price = IntegerField("pris")
+    # TODO: View that shows a history of your transactions
+    brew = ForeignKey(
+        Brew,
+        on_delete=SET_NULL,
+        related_name="transactions",
+        verbose_name="brygg",
+        null=True,
+        blank=True,
+    )
     comment = CharField("kommentar", max_length=255, blank=True)
     type = CharField(
         "type",
@@ -112,7 +122,7 @@ class Transaction(CreatedModifiedMixin):
         return f"{self.user} – {self.get_type_display()} – {self.price} NOK"
 
     class Meta:
-        ordering = ["created"]
+        ordering = ["-created"]
         verbose_name = "transaksjon"
         verbose_name_plural = "transaksjonar"
         constraints = [
@@ -125,7 +135,3 @@ class Transaction(CreatedModifiedMixin):
                 violation_error_message="Innbetalingar må ha ein positiv pris, kjøp må ha ein negativ pris.",
             )
         ]
-
-    # TODO: Optional, required *for new* when transaction type is a purchase?
-    # TODO: View that shows a history of your transactions
-    # brew = ForeignKey()
