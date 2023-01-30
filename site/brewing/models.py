@@ -20,7 +20,6 @@ from common.models import CreatedModifiedMixin
 
 
 class Brew(CreatedModifiedMixin):
-    # TODO: Remind people to pay when negative!!!
     name = CharField("namn", max_length=255, blank=True)
     slug = AutoSlugField(
         verbose_name="lenkjenamn", populate_from="name", editable=True, unique=True

@@ -3,6 +3,8 @@ from django.test import TestCase
 
 from accounts.factories import UserFactory
 from authentication.forms import LoginForm
+from brewing.factories import TransactionFactory
+from brewing.models import TransactionType
 from polls.factories import PollFactory
 
 from .templatetags.sidebar import sidebar
@@ -27,6 +29,15 @@ class SidebarTestSuite(TestCase):
     def test_login_form_in_context(self):
         """Should include the login form in context."""
         self.assertIsInstance(self.get_sidebar()["form_login"], LoginForm)
+
+    def test_brewing_balance_0_if_not_logged_in(self):
+        """The brewing balance should be 0 if not logged in."""
+        self.assertEqual(self.get_sidebar()["brewing_balance"], 0)
+
+    def test_users_brewing_balance_if_logged_in(self):
+        """The brewing balance should be the user's balance if logged in."""
+        TransactionFactory(user=self.user, price=20, type=TransactionType.DEPOSIT)
+        self.assertEqual(self.get_sidebar()["brewing_balance"], 20)
 
     def test_latest_poll_logged_in(self):
         """Should include the latest poll when logged in."""
