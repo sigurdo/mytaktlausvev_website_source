@@ -26,6 +26,8 @@ ALLOWED_BASE_TAGS = [
     "s",
     "small",
     "span",
+    "sub",
+    "sup",
 ]
 ALLOWED_BASE_ATTRIBUTES = []
 
