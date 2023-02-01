@@ -24,18 +24,7 @@
         <tbody class="align-middle">
             {% for user in users %}
                  <tr>
-                     <td style="width: 60px;">
-                        <div class="mx-auto" style="width: 40px; height: 40px;">
-                            <a
-                                href="{% url 'accounts:ProfileDetail' user.slug %}"
-                                class="d-flex justify-content-center w-100 h-100"
-                            >
-                                <img
-                                    src="{{ user.get_avatar_url }}"
-                                    class="object-fit-cover mw-100 mh-100"
-                                />
-                            </a>
-                        </div>
+                    {% include "accounts/includes/avatar_table_td.html" with user=user only %}
                     </td>
                     <td>
                         <a href="{{ user.get_absolute_url }}">

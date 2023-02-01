@@ -29,7 +29,6 @@ class Brew(CreatedModifiedMixin):
         verbose_name="lenkjenamn", populate_from="name", editable=True, unique=True
     )
     price_per_liter = IntegerField("literpris", blank=True, null=True)
-
     available_for_purchase = BooleanField("tilgjengeleg for kjøp", default=False)
     OG = FloatField(
         "OG",
@@ -43,7 +42,7 @@ class Brew(CreatedModifiedMixin):
         null=True,
         help_text="Final Gravity. Tettleiken av sukker i brygget etter gjæring. Brukt for å berekne alkoholprosent.",
     )
-    logo = ImageField("logo", upload_to="brewing/logos", blank=True)
+    logo = ImageField("logo", upload_to="brewing/logos/", blank=True)
 
     def surcharge(self):
         """Returns the current surcharge for brews."""
@@ -120,7 +119,7 @@ class Brew(CreatedModifiedMixin):
 class TransactionManager(Manager):
     def balance(self):
         """Returns the balance of the queryset."""
-        return self.aggregate(sum=Sum("price"))["sum"] or 0
+        return self.aggregate(balance=Sum("price"))["balance"] or 0
 
 
 class TransactionType(TextChoices):

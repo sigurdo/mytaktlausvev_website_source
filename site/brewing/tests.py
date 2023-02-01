@@ -18,6 +18,9 @@ from .models import Brew, Transaction, TransactionType
 class BrewTestSuite(TestMixin, TestCase):
     def test_surcharge(self):
         """Returns the value of the surcharge constant, cast to an integer."""
+        ConstantFactory(name="Påslag på brygg i NOK", value="5")
+        brew = BrewFactory()
+        self.assertEqual(brew.surcharge(), 5)
 
     def test_price_per_0_5(self):
         """Should return the price of the brew per 0.5 L, with the current surcharge."""
@@ -103,7 +106,7 @@ class TransactionTestSuite(TestMixin, TestCase):
         self.assertIn(transaction.get_type_display(), str(transaction))
         self.assertIn(str(transaction.price), str(transaction))
 
-    def test_sum(self):
+    def test_balance(self):
         """Should return the sum of all transactions in the queryset."""
         user = UserFactory()
         for _ in range(3):
@@ -112,7 +115,7 @@ class TransactionTestSuite(TestMixin, TestCase):
 
         self.assertEqual(user.brewing_transactions.balance(), 30)
 
-    def test_sum_returns_0_if_user_has_no_transactions(self):
+    def test_balance_returns_0_if_user_has_no_transactions(self):
         """Should return 0 if the user has no transactions."""
         user = UserFactory()
         self.assertIs(user.brewing_transactions.balance(), 0)

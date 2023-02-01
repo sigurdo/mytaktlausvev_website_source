@@ -41,7 +41,7 @@ class BrewList(LoginRequiredMixin, BreadcrumbsMixin, ListView):
     context_object_name = "brews"
 
     def get_queryset(self):
-        return super().get_queryset().order_by("available_for_purchase", "name")
+        return super().get_queryset().order_by("-available_for_purchase", "name")
 
     def get_breadcrumbs(self):
         return breadcrumbs()
