@@ -29,10 +29,8 @@ class Brew(CreatedModifiedMixin):
         verbose_name="lenkjenamn", populate_from="name", editable=True, unique=True
     )
     price_per_liter = IntegerField("literpris", blank=True, null=True)
-    # TODO: Available for purchase burde kunne overrides tå hendingo. Burde ha automatisk,
-    # tegjængele, itte tegjængele. Tegjængele 1 time før, te 24 time ette?
+
     available_for_purchase = BooleanField("tilgjengeleg for kjøp", default=False)
-    # TODO: Internt skjema for å kjøpe arbitrere øl for arbitrere folk. Berre folk me spesialtegang fer lov
     OG = FloatField(
         "OG",
         blank=True,
@@ -45,8 +43,6 @@ class Brew(CreatedModifiedMixin):
         null=True,
         help_text="Final Gravity. Tettleiken av sukker i brygget etter gjæring. Brukt for å berekne alkoholprosent.",
     )
-    # TODO: Custom, overridable alcohol percentage?
-    # TODO: Vis påslag?
     logo = ImageField("logo", upload_to="brewing/logos", blank=True)
 
     def surcharge(self):
@@ -142,7 +138,6 @@ class Transaction(CreatedModifiedMixin):
         related_name="brewing_transactions",
     )
     price = IntegerField("pris")
-    # TODO: View that shows a history of your transactions
     brew = ForeignKey(
         Brew,
         on_delete=SET_NULL,
