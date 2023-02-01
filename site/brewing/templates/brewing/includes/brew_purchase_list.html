@@ -5,6 +5,10 @@
             <div class="card-body d-flex flex-column justify-content-center align-items-center">
                 <h3 class="card-title fs-5 mb-0 text-center">{{ brew.name }}</h3>
 
+                <div class="h-32 d-flex align-items-center justify-content-center my-2">
+                    {% include "common/includes/image.html" with url=brew.get_logo_url description=brew.name bp_gallery="brews" only %}
+                </div>                
+
                 <dl class="dl-inline m-0">
                     <dt>Alkoholprosent</dt>
                     <dd>

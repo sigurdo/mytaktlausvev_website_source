@@ -1,6 +1,7 @@
 from http import HTTPStatus
 
 from django.db import IntegrityError
+from django.templatetags.static import static
 from django.test import TestCase
 from django.urls import reverse
 
@@ -8,6 +9,7 @@ from accounts.factories import SuperUserFactory, UserFactory
 from accounts.models import UserCustom
 from common.constants.factories import ConstantFactory
 from common.mixins import TestMixin
+from common.test_utils import test_image
 
 from .factories import BrewFactory, TransactionFactory
 from .models import Brew, Transaction, TransactionType
@@ -70,6 +72,22 @@ class BrewTestSuite(TestMixin, TestCase):
         self.assertIsNone(brew.alcohol_by_volume())
         brew = BrewFactory(OG=None, FG=1.010)
         self.assertIsNone(brew.alcohol_by_volume())
+
+    def test_get_logo_url_logo_exists(self):
+        """
+        `get_logo_url` should return the URL to
+        the brew's logo when it exists.
+        """
+        brew = BrewFactory(logo=test_image())
+        self.assertEqual(brew.get_logo_url(), brew.logo.url)
+
+    def test_get_logo_url_logo_not_exist(self):
+        """
+        `get_logo_url` should return the default logo
+        when the brew's logo doesn't exist.
+        """
+        brew = BrewFactory(logo="")
+        self.assertEqual(brew.get_logo_url(), static("brewing/default-brew-logo.svg"))
 
     def test_to_str(self):
         """`__str__` should be the brew's name."""

@@ -1,5 +1,5 @@
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import HTML, Layout, Submit
+from crispy_forms.layout import HTML, Fieldset, Layout, Submit
 from django.forms import HiddenInput, ModelForm, NumberInput
 
 from .models import Brew, Transaction, TransactionType
@@ -7,11 +7,28 @@ from .models import Brew, Transaction, TransactionType
 
 class BrewForm(ModelForm):
     helper = FormHelper()
-    helper.add_input(Submit("submit", "Lagre brygg"))
+    helper.layout = Layout(
+        Fieldset(
+            "Generelt", "name", "price_per_liter", "available_for_purchase", "logo"
+        ),
+        Fieldset(
+            "Brygging",
+            "OG",
+            "FG",
+        ),
+        Submit("submit", "Lagre brygg"),
+    )
 
     class Meta:
         model = Brew
-        fields = ["name", "price_per_liter", "available_for_purchase", "OG", "FG"]
+        fields = [
+            "name",
+            "price_per_liter",
+            "available_for_purchase",
+            "logo",
+            "OG",
+            "FG",
+        ]
 
 
 class DepositForm(ModelForm):

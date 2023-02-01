@@ -10,12 +10,14 @@ from django.db.models import (
     CheckConstraint,
     FloatField,
     ForeignKey,
+    ImageField,
     IntegerField,
     Manager,
     Q,
     TextChoices,
 )
 from django.db.models.aggregates import Sum
+from django.templatetags.static import static
 
 from common.constants.models import Constant
 from common.models import CreatedModifiedMixin
@@ -45,7 +47,7 @@ class Brew(CreatedModifiedMixin):
     )
     # TODO: Custom, overridable alcohol percentage?
     # TODO: Vis påslag?
-    # TODO: Picture!
+    logo = ImageField("logo", upload_to="brewing/logos", blank=True)
 
     def surcharge(self):
         """Returns the current surcharge for brews."""
@@ -86,6 +88,16 @@ class Brew(CreatedModifiedMixin):
         if not self.OG or not self.FG:
             return None
         return (76.08 * (self.OG - self.FG) / (1.775 - self.OG)) * (self.FG / 0.794)
+
+    def get_logo_url(self):
+        """
+        Returns a URL to the brew's logo if it exists,
+        else the default logo.
+        """
+        if self.logo:
+            return self.logo.url
+        else:
+            return static("brewing/default-brew-logo.svg")
 
     def __str__(self):
         return self.name
