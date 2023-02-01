@@ -8,6 +8,7 @@ from django.db.models import (
     BooleanField,
     CharField,
     CheckConstraint,
+    FloatField,
     ForeignKey,
     IntegerField,
     Manager,
@@ -30,7 +31,19 @@ class Brew(CreatedModifiedMixin):
     # tegjængele, itte tegjængele. Tegjængele 1 time før, te 24 time ette?
     available_for_purchase = BooleanField("tilgjengeleg for kjøp", default=False)
     # TODO: Internt skjema for å kjøpe arbitrere øl for arbitrere folk. Berre folk me spesialtegang fer lov
-    # TODO: OG and FG
+    OG = FloatField(
+        "OG",
+        blank=True,
+        null=True,
+        help_text="Original Gravity. Tettleiken av sukker i brygget før gjæring. Brukt for å berekne alkoholprosent.",
+    )
+    FG = FloatField(
+        "FG",
+        blank=True,
+        null=True,
+        help_text="Final Gravity. Tettleiken av sukker i brygget etter gjæring. Brukt for å berekne alkoholprosent.",
+    )
+    # TODO: Custom, overridable alcohol percentage?
     # TODO: Vis påslag?
     # TODO: Picture!
 
@@ -70,7 +83,9 @@ class Brew(CreatedModifiedMixin):
         Calculates alcohol by volume (ABV) from OG and FG.
         Returns `None` if either OG or FG is missing.
         """
-        return 0
+        if not self.OG or not self.FG:
+            return None
+        return (76.08 * (self.OG - self.FG) / (1.775 - self.OG)) * (self.FG / 0.794)
 
     def __str__(self):
         return self.name

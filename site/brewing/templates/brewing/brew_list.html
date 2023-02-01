@@ -25,8 +25,11 @@
         <thead>
             <tr>
                 <th>Namn</th>
-                <th>Literpris</th>
+                <th>Literpris (NOK)</th>
                 <th>Tilgjengeleg for kjøp</th>
+                <th>OG</th>
+                <th>FG</th>
+                <th>Alkoholprosent</th>
                 {% if perms.brewing.change_brew %}
                     <th>Rediger</th>
                 {% endif %}
@@ -39,6 +42,15 @@
                 <td>{{ brew.name }}</td>
                 <td>{% firstof brew.price_per_liter "Ikkje bestemt" %}</td>
                 <td>{{ brew.available_for_purchase | yesno | capfirst }}</td>
+                <td>{% firstof brew.OG|floatformat:3 "Ukjent" %}</td>
+                <td>{% firstof brew.FG|floatformat:3 "Ukjent" %}</td>
+                <td data-order="{{ brew.alcohol_by_volume }}">
+                    {% if brew.alcohol_by_volume %}
+                        {{ brew.alcohol_by_volume | floatformat }} %
+                    {% else %}
+                        Ukjent
+                    {% endif %}                    
+                </td>
                 {% if perms.brewing.change_brew %}
                     <td class="text-center">
                         <a

@@ -53,6 +53,24 @@ class BrewTestSuite(TestMixin, TestCase):
         with self.assertRaises(IntegrityError):
             BrewFactory(price_per_liter=None, available_for_purchase=True)
 
+    def test_alcohol_by_volume(self):
+        """Should return the ABV calculated from the OG and the FG."""
+        brew = BrewFactory(OG=1.050, FG=1.010)
+        self.assertAlmostEqual(brew.alcohol_by_volume(), 5.34, 2)
+        brew = BrewFactory(OG=1.034, FG=1.002)
+        self.assertAlmostEqual(brew.alcohol_by_volume(), 4.15, 2)
+        brew = BrewFactory(OG=1.062, FG=0.992)
+        self.assertAlmostEqual(brew.alcohol_by_volume(), 9.33, 2)
+
+    def test_alcohol_by_volume_returns_none_if_missing_og_or_fg(self):
+        """Should return `None` if either `OG` or `FG` is missing."""
+        brew = BrewFactory(OG=None, FG=None)
+        self.assertIsNone(brew.alcohol_by_volume())
+        brew = BrewFactory(OG=1.050, FG=None)
+        self.assertIsNone(brew.alcohol_by_volume())
+        brew = BrewFactory(OG=None, FG=1.010)
+        self.assertIsNone(brew.alcohol_by_volume())
+
     def test_to_str(self):
         """`__str__` should be the brew's name."""
         brew = BrewFactory()

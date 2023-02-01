@@ -12,6 +12,6 @@ document.addEventListener("DOMContentLoaded", () => {
       infoFiltered: "(filtrert fra totalt _MAX_ brygg)",
       search: "Søk:",
     },
-    columns: [null, null, null, { orderable: false }],
+    columns: [null, null, null, null, null, null, { orderable: false }],
   });
 });

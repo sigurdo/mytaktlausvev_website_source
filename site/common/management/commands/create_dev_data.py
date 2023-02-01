@@ -1108,13 +1108,28 @@ class Command(BaseCommand):
         smash.repertoires.set([march_booklet_repertoire])
         smash.save()
 
-        BrewFactory(
+        gudbrandsdalsvatn = BrewFactory(
             name="Gudbrandsdalsvatn", price_per_liter=42, available_for_purchase=True
         )
-        TransactionFactory(user=leader, price=50, type=TransactionType.DEPOSIT)
-        TransactionFactory(user=member, price=-5, type=TransactionType.PURCHASE)
-        TransactionFactory(user=member, price=-5, type=TransactionType.PURCHASE)
-        TransactionFactory(user=member, price=-5, type=TransactionType.PURCHASE)
+        BrewFactory(
+            name="Two Towers",
+            price_per_liter=9,
+            available_for_purchase=True,
+            OG=1.050,
+            FG=1.010,
+        )
+        TransactionFactory(
+            user=leader, price=50, type=TransactionType.DEPOSIT, brew=gudbrandsdalsvatn
+        )
+        TransactionFactory(
+            user=member, price=-5, type=TransactionType.PURCHASE, brew=gudbrandsdalsvatn
+        )
+        TransactionFactory(
+            user=member, price=-5, type=TransactionType.PURCHASE, brew=gudbrandsdalsvatn
+        )
+        TransactionFactory(
+            user=member, price=-5, type=TransactionType.PURCHASE, brew=gudbrandsdalsvatn
+        )
 
         EmbeddableTextFactory(
             name="Framgangsmåte for buttonpdfgenerator",
