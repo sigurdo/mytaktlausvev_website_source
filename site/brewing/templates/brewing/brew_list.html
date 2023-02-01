@@ -37,7 +37,7 @@
             {% for brew in brews %}
             <tr>
                 <td>{{ brew.name }}</td>
-                <td>{{ brew.price_per_litre }}</td>
+                <td>{% firstof brew.price_per_litre "Ikkje bestemt" %}</td>
                 <td>{{ brew.available_for_purchase | yesno | capfirst }}</td>
                 {% if perms.brewing.change_brew %}
                     <td class="text-center">

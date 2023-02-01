@@ -1,5 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
+from django.core.exceptions import PermissionDenied
 from django.db.models import Case, F, When
 from django.db.models.aggregates import Sum
 from django.db.models.functions import Coalesce
@@ -139,7 +140,11 @@ class BrewPurchaseCreate(
     brew = None
 
     def get_brew(self):
-        return self.brew or get_object_or_404(Brew, slug=self.kwargs["slug"])
+        if not self.brew:
+            self.brew = get_object_or_404(Brew, slug=self.kwargs["slug"])
+        if not self.brew.available_for_purchase:
+            raise PermissionDenied()
+        return self.brew
 
     def get_brew_size(self):
         return (

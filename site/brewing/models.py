@@ -25,13 +25,15 @@ class Brew(CreatedModifiedMixin):
     slug = AutoSlugField(
         verbose_name="lenkjenamn", populate_from="name", editable=True, unique=True
     )
-    price_per_litre = IntegerField("literpris")
+    # TODO: Rename te `price_per_liter`
+    price_per_litre = IntegerField("literpris", blank=True, null=True)
     # TODO: Available for purchase burde kunne overrides tå hendingo. Burde ha automatisk,
     # tegjængele, itte tegjængele. Tegjængele 1 time før, te 24 time ette?
     available_for_purchase = BooleanField("tilgjengeleg for kjøp", default=False)
     # TODO: Internt skjema for å kjøpe arbitrere øl for arbitrere folk. Berre folk me spesialtegang fer lov
     # TODO: OG and FG
     # TODO: Vis påslag?
+    # TODO: Picture!
 
     def surcharge(self):
         """Returns the current surcharge for brews."""
@@ -48,14 +50,20 @@ class Brew(CreatedModifiedMixin):
         """
         Returns the price for 0.33 L of the brew,
         rounded up to an integer.
+        Returns None if the brew doesn't have a price per litre.
         """
+        if not self.price_per_litre:
+            return None
         return ceil(self.price_per_litre / 3) + self.surcharge()
 
     def price_per_0_5(self):
         """
         Returns the price for 0.5 L of the brew,
         rounded up to an integer.
+        Returns None if the brew doesn't have a price per litre.
         """
+        if not self.price_per_litre:
+            return None
         return ceil(self.price_per_litre / 2) + self.surcharge()
 
     def alcohol_by_volume(self):
@@ -70,14 +78,20 @@ class Brew(CreatedModifiedMixin):
 
     class Meta:
         ordering = ["name"]
+        get_latest_by = "created"
         verbose_name = "brygg"
         verbose_name_plural = "brygg"
         constraints = [
             CheckConstraint(
-                check=Q(price_per_litre__gt=0),
+                check=(Q(price_per_litre__gt=0) | Q(price_per_litre=None)),
                 name="brew_price_per_litre_must_be_positive",
                 violation_error_message="Literprisen til eit brygg må vere positiv.",
-            )
+            ),
+            CheckConstraint(
+                check=(~Q(price_per_litre=None, available_for_purchase=True)),
+                name="brew_price_required_if_available_for_purchase",
+                violation_error_message="Literpris er påkravd om brygget skal vere tilgjengeleg for kjøp.",
+            ),
         ]
 
 
@@ -123,6 +137,7 @@ class Transaction(CreatedModifiedMixin):
 
     class Meta:
         ordering = ["-created"]
+        get_latest_by = "created"
         verbose_name = "transaksjon"
         verbose_name_plural = "transaksjonar"
         constraints = [

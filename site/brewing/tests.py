@@ -1,3 +1,5 @@
+from http import HTTPStatus
+
 from django.db import IntegrityError
 from django.test import TestCase
 from django.urls import reverse
@@ -23,6 +25,11 @@ class BrewTestSuite(TestMixin, TestCase):
         brew = BrewFactory(price_per_litre=15)
         self.assertEqual(brew.price_per_0_5(), 8 + 2)
 
+    def test_price_per_0_5_returns_none_if_price_not_set(self):
+        """Should return `None` if the price of the brew hasn't been set."""
+        brew = BrewFactory(price_per_litre=None, available_for_purchase=False)
+        self.assertIsNone(brew.price_per_0_5())
+
     def test_price_per_0_33(self):
         """Should return the price of the brew per 0.33 L, with the current surcharge."""
         ConstantFactory(name="Påslag på brygg i NOK", value="2")
@@ -31,10 +38,20 @@ class BrewTestSuite(TestMixin, TestCase):
         brew = BrewFactory(price_per_litre=10)
         self.assertEqual(brew.price_per_0_33(), 4 + 2)
 
+    def test_price_per_0_33_returns_none_if_price_not_set(self):
+        """Should return `None` if the price of the brew hasn't been set."""
+        brew = BrewFactory(price_per_litre=None, available_for_purchase=False)
+        self.assertIsNone(brew.price_per_0_33())
+
     def test_price_per_litre_must_be_positive(self):
         """Price per litre must be positive."""
         with self.assertRaises(IntegrityError):
             BrewFactory(price_per_litre=-5)
+
+    def test_price_per_litre_required_to_be_available_for_purchase(self):
+        """Price per litre should be required for the brew to be available for purchase."""
+        with self.assertRaises(IntegrityError):
+            BrewFactory(price_per_litre=None, available_for_purchase=True)
 
     def test_to_str(self):
         """`__str__` should be the brew's name."""
@@ -193,7 +210,7 @@ class DepositCreateTestSuite(TestMixin, TestCase):
         self.client.post(self.get_url(), {"price": 20})
 
         self.assertEqual(Transaction.objects.count(), 1)
-        deposit = Transaction.objects.last()
+        deposit = Transaction.objects.latest()
         self.assertEqual(deposit.user, user)
         self.assertEqual(deposit.type, TransactionType.DEPOSIT)
 
@@ -208,7 +225,7 @@ class DepositCreateTestSuite(TestMixin, TestCase):
         )
 
         self.assertEqual(Transaction.objects.count(), 1)
-        deposit = Transaction.objects.last()
+        deposit = Transaction.objects.latest()
         self.assertEqual(deposit.user, logged_in_user)
         self.assertEqual(deposit.type, TransactionType.DEPOSIT)
 
@@ -262,7 +279,7 @@ class BrewPurchaseCreateTestSuite(TestMixin, TestCase):
         self.client.post(self.get_url(self.brew))
 
         self.assertEqual(Transaction.objects.count(), 1)
-        purchase = Transaction.objects.last()
+        purchase = Transaction.objects.latest()
         self.assertEqual(purchase.user, user)
         self.assertEqual(purchase.type, TransactionType.PURCHASE)
         self.assertEqual(purchase.brew, self.brew)
@@ -272,11 +289,11 @@ class BrewPurchaseCreateTestSuite(TestMixin, TestCase):
         self.client.force_login(UserFactory())
 
         self.client.post(self.get_url(self.brew, Brew.Sizes.SIZE_0_33))
-        purchase = Transaction.objects.last()
+        purchase = Transaction.objects.latest()
         self.assertEqual(purchase.price, -self.brew.price_per_0_33())
 
         self.client.post(self.get_url(self.brew, Brew.Sizes.SIZE_0_5))
-        purchase = Transaction.objects.last()
+        purchase = Transaction.objects.latest()
         self.assertEqual(purchase.price, -self.brew.price_per_0_5())
 
     def test_size_0_33_by_default_and_if_size_invalid(self):
@@ -287,11 +304,11 @@ class BrewPurchaseCreateTestSuite(TestMixin, TestCase):
         self.client.force_login(UserFactory())
 
         self.client.post(self.get_url(self.brew, ""))
-        purchase = Transaction.objects.last()
+        purchase = Transaction.objects.latest()
         self.assertEqual(purchase.price, -self.brew.price_per_0_33())
 
         self.client.post(self.get_url(self.brew, "300 L"))
-        purchase = Transaction.objects.last()
+        purchase = Transaction.objects.latest()
         self.assertEqual(purchase.price, -self.brew.price_per_0_33())
 
     def tests_ignores_changes_to_user_type_price_and_brew(self):
@@ -311,7 +328,7 @@ class BrewPurchaseCreateTestSuite(TestMixin, TestCase):
         )
 
         self.assertEqual(Transaction.objects.count(), 1)
-        purchase = Transaction.objects.last()
+        purchase = Transaction.objects.latest()
         self.assertEqual(purchase.user, logged_in_user)
         self.assertEqual(purchase.type, TransactionType.PURCHASE)
         self.assertEqual(purchase.price, -self.brew.price_per_0_33())
@@ -327,3 +344,11 @@ class BrewPurchaseCreateTestSuite(TestMixin, TestCase):
         self.assertEqual(
             user.brewing_transactions.balance(), 0 - self.brew.price_per_0_33()
         )
+
+    def test_returns_forbidden_for_unavailable_brews(self):
+        """Should return `403 Forbidden` for unavailable brews."""
+        self.client.force_login(SuperUserFactory())
+        unavailable_brew = BrewFactory(available_for_purchase=False)
+
+        response = self.client.get(self.get_url(unavailable_brew))
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
