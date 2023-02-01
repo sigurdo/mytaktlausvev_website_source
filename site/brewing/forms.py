@@ -11,7 +11,7 @@ class BrewForm(ModelForm):
 
     class Meta:
         model = Brew
-        fields = ["name", "price_per_litre", "available_for_purchase"]
+        fields = ["name", "price_per_liter", "available_for_purchase"]
 
 
 class DepositForm(ModelForm):

@@ -25,8 +25,7 @@ class Brew(CreatedModifiedMixin):
     slug = AutoSlugField(
         verbose_name="lenkjenamn", populate_from="name", editable=True, unique=True
     )
-    # TODO: Rename te `price_per_liter`
-    price_per_litre = IntegerField("literpris", blank=True, null=True)
+    price_per_liter = IntegerField("literpris", blank=True, null=True)
     # TODO: Available for purchase burde kunne overrides tå hendingo. Burde ha automatisk,
     # tegjængele, itte tegjængele. Tegjængele 1 time før, te 24 time ette?
     available_for_purchase = BooleanField("tilgjengeleg for kjøp", default=False)
@@ -50,21 +49,21 @@ class Brew(CreatedModifiedMixin):
         """
         Returns the price for 0.33 L of the brew,
         rounded up to an integer.
-        Returns None if the brew doesn't have a price per litre.
+        Returns None if the brew doesn't have a price per liter.
         """
-        if not self.price_per_litre:
+        if not self.price_per_liter:
             return None
-        return ceil(self.price_per_litre / 3) + self.surcharge()
+        return ceil(self.price_per_liter / 3) + self.surcharge()
 
     def price_per_0_5(self):
         """
         Returns the price for 0.5 L of the brew,
         rounded up to an integer.
-        Returns None if the brew doesn't have a price per litre.
+        Returns None if the brew doesn't have a price per liter.
         """
-        if not self.price_per_litre:
+        if not self.price_per_liter:
             return None
-        return ceil(self.price_per_litre / 2) + self.surcharge()
+        return ceil(self.price_per_liter / 2) + self.surcharge()
 
     def alcohol_by_volume(self):
         """
@@ -83,12 +82,12 @@ class Brew(CreatedModifiedMixin):
         verbose_name_plural = "brygg"
         constraints = [
             CheckConstraint(
-                check=(Q(price_per_litre__gt=0) | Q(price_per_litre=None)),
-                name="brew_price_per_litre_must_be_positive",
+                check=(Q(price_per_liter__gt=0) | Q(price_per_liter=None)),
+                name="brew_price_per_liter_must_be_positive",
                 violation_error_message="Literprisen til eit brygg må vere positiv.",
             ),
             CheckConstraint(
-                check=(~Q(price_per_litre=None, available_for_purchase=True)),
+                check=(~Q(price_per_liter=None, available_for_purchase=True)),
                 name="brew_price_required_if_available_for_purchase",
                 violation_error_message="Literpris er påkravd om brygget skal vere tilgjengeleg for kjøp.",
             ),

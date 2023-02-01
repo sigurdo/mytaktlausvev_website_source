@@ -1109,7 +1109,7 @@ class Command(BaseCommand):
         smash.save()
 
         BrewFactory(
-            name="Gudbrandsdalsvatn", price_per_litre=42, available_for_purchase=True
+            name="Gudbrandsdalsvatn", price_per_liter=42, available_for_purchase=True
         )
         TransactionFactory(user=leader, price=50, type=TransactionType.DEPOSIT)
         TransactionFactory(user=member, price=-5, type=TransactionType.PURCHASE)

@@ -11,7 +11,7 @@ class BrewFactory(DjangoModelFactory):
         model = Brew
 
     name = "Gudbrandsdalsvatn"
-    price_per_litre = 42
+    price_per_liter = 42
     available_for_purchase = True
     created_by = SubFactory(UserFactory)
     modified_by = SubFactory(UserFactory)

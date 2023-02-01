@@ -20,38 +20,38 @@ class BrewTestSuite(TestMixin, TestCase):
     def test_price_per_0_5(self):
         """Should return the price of the brew per 0.5 L, with the current surcharge."""
         ConstantFactory(name="Påslag på brygg i NOK", value="2")
-        brew = BrewFactory(price_per_litre=20)
+        brew = BrewFactory(price_per_liter=20)
         self.assertEqual(brew.price_per_0_5(), 10 + 2)
-        brew = BrewFactory(price_per_litre=15)
+        brew = BrewFactory(price_per_liter=15)
         self.assertEqual(brew.price_per_0_5(), 8 + 2)
 
     def test_price_per_0_5_returns_none_if_price_not_set(self):
         """Should return `None` if the price of the brew hasn't been set."""
-        brew = BrewFactory(price_per_litre=None, available_for_purchase=False)
+        brew = BrewFactory(price_per_liter=None, available_for_purchase=False)
         self.assertIsNone(brew.price_per_0_5())
 
     def test_price_per_0_33(self):
         """Should return the price of the brew per 0.33 L, with the current surcharge."""
         ConstantFactory(name="Påslag på brygg i NOK", value="2")
-        brew = BrewFactory(price_per_litre=9)
+        brew = BrewFactory(price_per_liter=9)
         self.assertEqual(brew.price_per_0_33(), 3 + 2)
-        brew = BrewFactory(price_per_litre=10)
+        brew = BrewFactory(price_per_liter=10)
         self.assertEqual(brew.price_per_0_33(), 4 + 2)
 
     def test_price_per_0_33_returns_none_if_price_not_set(self):
         """Should return `None` if the price of the brew hasn't been set."""
-        brew = BrewFactory(price_per_litre=None, available_for_purchase=False)
+        brew = BrewFactory(price_per_liter=None, available_for_purchase=False)
         self.assertIsNone(brew.price_per_0_33())
 
-    def test_price_per_litre_must_be_positive(self):
-        """Price per litre must be positive."""
+    def test_price_per_liter_must_be_positive(self):
+        """Price per liter must be positive."""
         with self.assertRaises(IntegrityError):
-            BrewFactory(price_per_litre=-5)
+            BrewFactory(price_per_liter=-5)
 
-    def test_price_per_litre_required_to_be_available_for_purchase(self):
-        """Price per litre should be required for the brew to be available for purchase."""
+    def test_price_per_liter_required_to_be_available_for_purchase(self):
+        """Price per liter should be required for the brew to be available for purchase."""
         with self.assertRaises(IntegrityError):
-            BrewFactory(price_per_litre=None, available_for_purchase=True)
+            BrewFactory(price_per_liter=None, available_for_purchase=True)
 
     def test_to_str(self):
         """`__str__` should be the brew's name."""
@@ -134,7 +134,7 @@ class BrewCreateTestSuite(TestMixin, TestCase):
         """Should redirect to the brew list."""
         self.client.force_login(SuperUserFactory())
         response = self.client.post(
-            self.get_url(), {"name": "Two Towers", "price_per_litre": 9}
+            self.get_url(), {"name": "Two Towers", "price_per_liter": 9}
         )
         self.assertRedirects(response, reverse("brewing:BrewList"))
 
@@ -154,7 +154,7 @@ class BrewUpdateTestSuite(TestMixin, TestCase):
         """Should redirect to the brew list."""
         self.client.force_login(SuperUserFactory())
         response = self.client.post(
-            self.get_url(), {"name": "Two Towers", "price_per_litre": 9}
+            self.get_url(), {"name": "Two Towers", "price_per_liter": 9}
         )
         self.assertRedirects(response, reverse("brewing:BrewList"))
 
