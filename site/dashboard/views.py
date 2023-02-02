@@ -23,7 +23,9 @@ class DashboardRedirect(RedirectView):
     def get_redirect_url(self, *args, **kwargs):
         if self.request.user.is_authenticated:
             return reverse("dashboard:Dashboard")
-        return reverse("articles:ArticleDetail", args=["om-oss"])
+
+        guest_start_page, _ = Constant.objects.get_or_create(name="Gjestestartside")
+        return guest_start_page.value
 
 
 class Dashboard(LoginRequiredMixin, TemplateView):

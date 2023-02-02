@@ -1206,6 +1206,7 @@ Her kan du skrive nykelinformasjon om hendinga. Oppføringane du skriv vil verte
             content="Instruksjonar for innbetaling til bryggjekassa.",
         )
 
+        ConstantFactory(name="Gjestestartside", value=article_about.get_absolute_url())
         ConstantFactory(name="Bursdagssangslug", value=birthday_song.slug)
         ConstantFactory(
             name="Instrumentgruppeleiargruppenamn", value=instrument_group_leaders.name

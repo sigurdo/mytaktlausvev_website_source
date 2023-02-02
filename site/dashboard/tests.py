@@ -7,6 +7,7 @@ from django.utils.timezone import make_aware, now
 from accounts.factories import UserFactory
 from articles.factories import ArticleFactory
 from common.comments.factories import CommentFactory
+from common.constants.models import Constant
 from common.mixins import TestMixin
 from events.factories import EventFactory
 from events.models import Event
@@ -19,13 +20,15 @@ class DashboardRedirectTestSuite(TestMixin, TestCase):
         return reverse("dashboard:DashboardRedirect")
 
     def test_not_logged_in(self):
-        ArticleFactory(slug="om-oss", public=True)
+        """Should redirect to the configured guest start page when not logged in."""
+        Constant.objects.create(name="Gjestestartside", value="https://example.com")
         response = self.client.get(self.get_url())
         self.assertRedirects(
-            response, reverse("articles:ArticleDetail", args=["om-oss"])
+            response, "https://example.com", fetch_redirect_response=False
         )
 
     def test_logged_in(self):
+        """Should redirect to the dashboard when logged in."""
         self.client.force_login(UserFactory())
         response = self.client.get(self.get_url())
         self.assertRedirects(response, reverse("dashboard:Dashboard"))

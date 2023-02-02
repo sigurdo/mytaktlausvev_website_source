@@ -5,9 +5,19 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs5/jq-3.6.0/dt-1.11.3/datatables.min.css"/>
 {% endblock css %}
 
-{% block title_page%}Saldoar{%endblock title_page%}
+{% block title_page %}Saldoar{%endblock title_page %}
 
-{% block title_content%}Saldoar{% endblock title_content%}
+{% block title_content %}Saldoar{% endblock title_content %}
+
+{% block header %}
+    {{ block.super }}
+
+    <ul class="list-inline my-1">
+        <li class="list-inline-item">
+            <a href="{% url 'admin:brewing_transaction_changelist' %}" class="btn btn-primary btn-sm my-1">Sjå transaksjonar</a>
+        </li>
+    </ul>
+{% endblock header %}
 
 {% block content %}
     <div class="table-responsive">
