@@ -36,7 +36,7 @@ class SidebarTestSuite(TestCase):
 
     def test_users_brewing_balance_if_logged_in(self):
         """The brewing balance should be the user's balance if logged in."""
-        TransactionFactory(user=self.user, price=20, type=TransactionType.DEPOSIT)
+        TransactionFactory(user=self.user, amount=20, type=TransactionType.DEPOSIT)
         self.assertEqual(self.get_sidebar()["brewing_balance"], 20)
 
     def test_latest_poll_logged_in(self):

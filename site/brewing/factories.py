@@ -22,7 +22,7 @@ class TransactionFactory(DjangoModelFactory):
         model = Transaction
 
     user = SubFactory(UserFactory)
-    price = 20
+    amount = 20
     type = TransactionType.DEPOSIT
     created_by = SubFactory(UserFactory)
     modified_by = SubFactory(UserFactory)

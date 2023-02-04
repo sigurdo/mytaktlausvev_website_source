@@ -100,18 +100,18 @@ class BrewTestSuite(TestMixin, TestCase):
 
 class TransactionTestSuite(TestMixin, TestCase):
     def test_to_str(self):
-        """`__str__` should include user's name, the transaction type, and the price."""
+        """`__str__` should include user's name, the transaction type, and the amount."""
         transaction = TransactionFactory()
         self.assertIn(str(transaction.user), str(transaction))
         self.assertIn(transaction.get_type_display(), str(transaction))
-        self.assertIn(str(transaction.price), str(transaction))
+        self.assertIn(str(transaction.amount), str(transaction))
 
     def test_balance(self):
-        """Should return the sum of all transactions in the queryset."""
+        """Should return the sum of all transactions in the queryset, with deposits counted as negative."""
         user = UserFactory()
         for _ in range(3):
-            TransactionFactory(user=user, price=20, type=TransactionType.DEPOSIT)
-            TransactionFactory(user=user, price=-10, type=TransactionType.PURCHASE)
+            TransactionFactory(user=user, amount=20, type=TransactionType.DEPOSIT)
+            TransactionFactory(user=user, amount=10, type=TransactionType.PURCHASE)
 
         self.assertEqual(user.brewing_transactions.balance(), 30)
 
@@ -120,17 +120,13 @@ class TransactionTestSuite(TestMixin, TestCase):
         user = UserFactory()
         self.assertIs(user.brewing_transactions.balance(), 0)
 
-    def test_deposits_must_be_positive(self):
-        """Deposits must have a positive price."""
-        TransactionFactory(price=20, type=TransactionType.DEPOSIT)
+    def test_amount_must_be_positive(self):
+        """The `amount` must be positive."""
+        TransactionFactory(amount=20, type=TransactionType.DEPOSIT)
+        TransactionFactory(amount=20, type=TransactionType.PURCHASE)
         with self.assertRaises(IntegrityError):
-            TransactionFactory(price=-20, type=TransactionType.DEPOSIT)
-
-    def test_purchases_must_be_negative(self):
-        """Purchases must have a negative price."""
-        TransactionFactory(price=-20, type=TransactionType.PURCHASE)
-        with self.assertRaises(IntegrityError):
-            TransactionFactory(price=20, type=TransactionType.PURCHASE)
+            TransactionFactory(amount=-20, type=TransactionType.DEPOSIT)
+            TransactionFactory(amount=-20, type=TransactionType.PURCHASE)
 
 
 class BrewOverviewTestSuite(TestMixin, TestCase):
@@ -218,9 +214,9 @@ class BalanceListTestSuite(TestMixin, TestCase):
     def test_annotates_balance_purchased_deposited(self):
         """Should annotate users' balance, total purchased, and total deposited."""
         user = SuperUserFactory()
-        TransactionFactory(price=20, type=TransactionType.DEPOSIT, user=user)
-        TransactionFactory(price=20, type=TransactionType.DEPOSIT, user=user)
-        TransactionFactory(price=-20, type=TransactionType.PURCHASE, user=user)
+        TransactionFactory(amount=20, type=TransactionType.DEPOSIT, user=user)
+        TransactionFactory(amount=20, type=TransactionType.DEPOSIT, user=user)
+        TransactionFactory(amount=20, type=TransactionType.PURCHASE, user=user)
 
         self.client.force_login(user)
         response = self.client.get(self.get_url())
@@ -228,7 +224,7 @@ class BalanceListTestSuite(TestMixin, TestCase):
         user_in_response = response.context["users"].get(id=user.id)
         self.assertEqual(user_in_response.balance, 20)
         self.assertEqual(user_in_response.deposited, 40)
-        self.assertEqual(user_in_response.purchased, -20)
+        self.assertEqual(user_in_response.purchased, 20)
 
 
 class DepositCreateTestSuite(TestMixin, TestCase):
@@ -246,7 +242,7 @@ class DepositCreateTestSuite(TestMixin, TestCase):
         """
         user = UserFactory()
         self.client.force_login(user)
-        self.client.post(self.get_url(), {"price": 20})
+        self.client.post(self.get_url(), {"amount": 20})
 
         self.assertEqual(Transaction.objects.count(), 1)
         deposit = Transaction.objects.latest()
@@ -260,7 +256,7 @@ class DepositCreateTestSuite(TestMixin, TestCase):
         self.client.force_login(logged_in_user)
         self.client.post(
             self.get_url(),
-            {"price": 20, "user": different_user, "type": TransactionType.PURCHASE},
+            {"amount": 20, "user": different_user, "type": TransactionType.PURCHASE},
         )
 
         self.assertEqual(Transaction.objects.count(), 1)
@@ -268,22 +264,22 @@ class DepositCreateTestSuite(TestMixin, TestCase):
         self.assertEqual(deposit.user, logged_in_user)
         self.assertEqual(deposit.type, TransactionType.DEPOSIT)
 
-    def test_rejects_prices_0_or_smaller(self):
-        """Should reject prices that are 0 or smaller."""
+    def test_rejects_amounts_0_or_smaller(self):
+        """Should reject amounts that are 0 or smaller."""
         self.client.force_login(UserFactory())
 
-        response = self.client.post(self.get_url(), {"price": 0})
+        response = self.client.post(self.get_url(), {"amount": 0})
         self.assertFormError(
             response.context["form"],
             None,
-            "Innbetalingar må ha ein positiv pris, kjøp må ha ein negativ pris.",
+            "Beløpet til ein transaksjon må vere større enn 0.",
         )
 
-        response = self.client.post(self.get_url(), {"price": -50})
+        response = self.client.post(self.get_url(), {"amount": -50})
         self.assertFormError(
             response.context["form"],
             None,
-            "Innbetalingar må ha ein positiv pris, kjøp må ha ein negativ pris.",
+            "Beløpet til ein transaksjon må vere større enn 0.",
         )
 
     def test_increases_users_balance(self):
@@ -292,7 +288,7 @@ class DepositCreateTestSuite(TestMixin, TestCase):
         self.assertEqual(user.brewing_transactions.balance(), 0)
 
         self.client.force_login(user)
-        self.client.post(self.get_url(), {"price": 20})
+        self.client.post(self.get_url(), {"amount": 20})
         self.assertEqual(user.brewing_transactions.balance(), 20)
 
 
@@ -323,35 +319,35 @@ class BrewPurchaseCreateTestSuite(TestMixin, TestCase):
         self.assertEqual(purchase.type, TransactionType.PURCHASE)
         self.assertEqual(purchase.brew, self.brew)
 
-    def test_sets_negative_brew_price_based_on_size(self):
-        """Should set the transaction price to the brew's price based on the size, but negative."""
+    def test_sets_brew_price_based_on_size(self):
+        """Should set the transaction amount to the brew's price based on the size."""
         self.client.force_login(UserFactory())
 
         self.client.post(self.get_url(self.brew, Brew.Sizes.SIZE_0_33))
         purchase = Transaction.objects.latest()
-        self.assertEqual(purchase.price, -self.brew.price_per_0_33())
+        self.assertEqual(purchase.amount, self.brew.price_per_0_33())
 
         self.client.post(self.get_url(self.brew, Brew.Sizes.SIZE_0_5))
         purchase = Transaction.objects.latest()
-        self.assertEqual(purchase.price, -self.brew.price_per_0_5())
+        self.assertEqual(purchase.amount, self.brew.price_per_0_5())
 
     def test_size_0_33_by_default_and_if_size_invalid(self):
         """
-        Should set the transaction price to the brew's 0.33 L price (negative)
+        Should set the transaction amount to the brew's 0.33 L price
         if the size is missing or invalid.
         """
         self.client.force_login(UserFactory())
 
         self.client.post(self.get_url(self.brew, ""))
         purchase = Transaction.objects.latest()
-        self.assertEqual(purchase.price, -self.brew.price_per_0_33())
+        self.assertEqual(purchase.amount, self.brew.price_per_0_33())
 
         self.client.post(self.get_url(self.brew, "300 L"))
         purchase = Transaction.objects.latest()
-        self.assertEqual(purchase.price, -self.brew.price_per_0_33())
+        self.assertEqual(purchase.amount, self.brew.price_per_0_33())
 
-    def tests_ignores_changes_to_user_type_price_and_brew(self):
-        """Should ignore changes to the user, transaction type, price, and brew."""
+    def tests_ignores_changes_to_user_type_amount_and_brew(self):
+        """Should ignore changes to the user, transaction type, amount, and brew."""
         different_brew = BrewFactory()
         logged_in_user = UserFactory()
         different_user = UserFactory()
@@ -359,7 +355,7 @@ class BrewPurchaseCreateTestSuite(TestMixin, TestCase):
         self.client.post(
             self.get_url(self.brew),
             {
-                "price": 20,
+                "amount": 20,
                 "user": different_user,
                 "type": TransactionType.DEPOSIT,
                 "brew": different_brew,
@@ -370,7 +366,7 @@ class BrewPurchaseCreateTestSuite(TestMixin, TestCase):
         purchase = Transaction.objects.latest()
         self.assertEqual(purchase.user, logged_in_user)
         self.assertEqual(purchase.type, TransactionType.PURCHASE)
-        self.assertEqual(purchase.price, -self.brew.price_per_0_33())
+        self.assertEqual(purchase.amount, self.brew.price_per_0_33())
         self.assertEqual(purchase.brew, self.brew)
 
     def test_decreases_users_balance(self):

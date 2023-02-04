@@ -12,7 +12,8 @@
         <section class="card p-3">
             <h2 class="fs-3">Bryggjekassa</h2>
             <p>
-                Du skuldar bryggjekassa <strong>{{ brewing_balance }} NOK</strong>.
+                {% load utils %}
+                Du skuldar bryggjekassa <strong>{{ brewing_balance|abs }} NOK</strong>.
             </p>
 
             <div>

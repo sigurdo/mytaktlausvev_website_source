@@ -84,25 +84,36 @@ class BalanceList(PermissionRequiredMixin, BreadcrumbsMixin, ListView):
     def get_breadcrumbs(self):
         return breadcrumbs()
 
-    def sum_users_transactions_by_type(self, type):
-        """Returns a `Sum` that sums a user's transactions by the `TransactionType` type."""
-        price_if_matching_type = Case(
+    def amount_if_matching_type(self, type):
+        """Returns a `Case` that chooses the transaction `amount` if the type equals `type`, else 0."""
+        return Case(
             When(
-                brewing_transactions__type=type, then=F("brewing_transactions__price")
+                brewing_transactions__type=type, then=F("brewing_transactions__amount")
             ),
             default=0,
         )
-        return Coalesce(Sum(price_if_matching_type), 0)
 
     def get_queryset(self):
+        amount_sign_depending_on_type = Case(
+            When(
+                brewing_transactions__type=TransactionType.DEPOSIT,
+                then=F("brewing_transactions__amount"),
+            ),
+            default=-F("brewing_transactions__amount"),
+        )
+
         return (
             super()
             .get_queryset()
             .exclude(membership_status=UserCustom.MembershipStatus.INACTIVE)
             .annotate(
-                balance=Coalesce(Sum("brewing_transactions__price"), 0),
-                deposited=self.sum_users_transactions_by_type(TransactionType.DEPOSIT),
-                purchased=self.sum_users_transactions_by_type(TransactionType.PURCHASE),
+                balance=Coalesce(Sum(amount_sign_depending_on_type), 0),
+                deposited=Coalesce(
+                    Sum(self.amount_if_matching_type(TransactionType.DEPOSIT)), 0
+                ),
+                purchased=Coalesce(
+                    Sum(self.amount_if_matching_type(TransactionType.PURCHASE)), 0
+                ),
             )
         )
 
@@ -114,7 +125,7 @@ class DepositCreate(
     form_class = DepositForm
     template_name = "common/forms/form.html"
     success_url = reverse_lazy("brewing:BrewOverview")
-    success_message = "Du har innbetalt %(price)s NOK til bryggjekassa."
+    success_message = "Du har innbetalt %(amount)s NOK til bryggjekassa."
 
     def get_breadcrumbs(self):
         return breadcrumbs()
@@ -157,7 +168,7 @@ class BrewPurchaseCreate(
         return breadcrumbs()
 
     def get_success_message(self, cleaned_data) -> str:
-        return f"Du har kjøpt {self.get_brew_size().label} {self.get_brew()} for {abs(cleaned_data['price'])} NOK."
+        return f"Du har kjøpt {self.get_brew_size().label} {self.get_brew()} for {cleaned_data['amount']} NOK."
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()

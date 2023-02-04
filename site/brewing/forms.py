@@ -42,7 +42,7 @@ class DepositForm(ModelForm):
                 {{ text | markdown }}
                 """
         ),
-        "price",
+        "amount",
     )
 
     def __init__(self, user, *args, **kwargs):
@@ -54,9 +54,9 @@ class DepositForm(ModelForm):
 
     class Meta:
         model = Transaction
-        fields = ["price", "user", "type"]
+        fields = ["amount", "user", "type"]
         widgets = {
-            "price": NumberInput(attrs={"min": 1}),
+            "amount": NumberInput(attrs={"min": 1}),
             "user": HiddenInput,
             "type": HiddenInput,
         }
@@ -70,7 +70,7 @@ class BrewPurchaseForm(ModelForm):
         super().__init__(*args, **kwargs)
 
         self.initial["user"] = user
-        self.initial["price"] = -(
+        self.initial["amount"] = (
             brew.price_per_0_5()
             if size == Brew.Sizes.SIZE_0_5
             else brew.price_per_0_33()
@@ -78,15 +78,15 @@ class BrewPurchaseForm(ModelForm):
         self.initial["brew"] = brew
         self.initial["type"] = TransactionType.PURCHASE
         self.fields["user"].disabled = True
-        self.fields["price"].disabled = True
+        self.fields["amount"].disabled = True
         self.fields["brew"].disabled = True
         self.fields["type"].disabled = True
 
     class Meta:
         model = Transaction
-        fields = ["price", "brew", "user", "type"]
+        fields = ["amount", "brew", "user", "type"]
         widgets = {
-            "price": HiddenInput,
+            "amount": HiddenInput,
             "brew": HiddenInput,
             "user": HiddenInput,
             "type": HiddenInput,

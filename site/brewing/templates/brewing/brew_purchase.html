@@ -4,7 +4,7 @@
 	<p>
         {% load utils %}
         Er du sikker på at du vil kjøpe <strong>{{ brew_size }}</strong> {{ brew }}
-        for <strong>{{ form.price.value|abs }} NOK</strong>?
+        for <strong>{{ form.amount.value }} NOK</strong>?
     </p>
 
 	{% load crispy_forms_tags %}

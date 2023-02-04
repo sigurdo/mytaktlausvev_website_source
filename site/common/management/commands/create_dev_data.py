@@ -1118,17 +1118,15 @@ class Command(BaseCommand):
             OG=1.050,
             FG=1.010,
         )
+        TransactionFactory(user=leader, amount=50, type=TransactionType.DEPOSIT)
         TransactionFactory(
-            user=leader, price=50, type=TransactionType.DEPOSIT, brew=gudbrandsdalsvatn
+            user=member, amount=5, type=TransactionType.PURCHASE, brew=gudbrandsdalsvatn
         )
         TransactionFactory(
-            user=member, price=-5, type=TransactionType.PURCHASE, brew=gudbrandsdalsvatn
+            user=member, amount=5, type=TransactionType.PURCHASE, brew=gudbrandsdalsvatn
         )
         TransactionFactory(
-            user=member, price=-5, type=TransactionType.PURCHASE, brew=gudbrandsdalsvatn
-        )
-        TransactionFactory(
-            user=member, price=-5, type=TransactionType.PURCHASE, brew=gudbrandsdalsvatn
+            user=member, amount=5, type=TransactionType.PURCHASE, brew=gudbrandsdalsvatn
         )
 
         EmbeddableTextFactory(

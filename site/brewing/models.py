@@ -6,8 +6,10 @@ from django.db.models import (
     CASCADE,
     SET_NULL,
     BooleanField,
+    Case,
     CharField,
     CheckConstraint,
+    F,
     FloatField,
     ForeignKey,
     ImageField,
@@ -15,6 +17,7 @@ from django.db.models import (
     Manager,
     Q,
     TextChoices,
+    When,
 )
 from django.db.models.aggregates import Sum
 from django.templatetags.static import static
@@ -116,15 +119,21 @@ class Brew(CreatedModifiedMixin):
         ]
 
 
-class TransactionManager(Manager):
-    def balance(self):
-        """Returns the balance of the queryset."""
-        return self.aggregate(balance=Sum("price"))["balance"] or 0
-
-
 class TransactionType(TextChoices):
     PURCHASE = "PURCHASE", "Kjøp"
     DEPOSIT = "DEPOSIT", "Innbetaling"
+
+
+class TransactionManager(Manager):
+    def balance(self):
+        """Returns the balance of the queryset."""
+        amount_sign_depending_on_type = Case(
+            When(type=TransactionType.DEPOSIT, then=F("amount")),
+            default=-F("amount"),
+        )
+        return (
+            self.aggregate(balance=Sum(amount_sign_depending_on_type))["balance"] or 0
+        )
 
 
 class Transaction(CreatedModifiedMixin):
@@ -136,7 +145,7 @@ class Transaction(CreatedModifiedMixin):
         on_delete=CASCADE,
         related_name="brewing_transactions",
     )
-    price = IntegerField("pris")
+    amount = IntegerField("beløp")
     brew = ForeignKey(
         Brew,
         on_delete=SET_NULL,
@@ -153,7 +162,7 @@ class Transaction(CreatedModifiedMixin):
     )
 
     def __str__(self):
-        return f"{self.user} – {self.get_type_display()} – {self.price} NOK"
+        return f"{self.user} – {self.get_type_display()} – {self.amount} NOK"
 
     class Meta:
         ordering = ["-created"]
@@ -162,11 +171,8 @@ class Transaction(CreatedModifiedMixin):
         verbose_name_plural = "transaksjonar"
         constraints = [
             CheckConstraint(
-                check=(
-                    Q(type=TransactionType.DEPOSIT, price__gt=0)
-                    | Q(type=TransactionType.PURCHASE, price__lt=0)
-                ),
-                name="brew_purchases_must_be_negative",
-                violation_error_message="Innbetalingar må ha ein positiv pris, kjøp må ha ein negativ pris.",
+                check=Q(amount__gt=0),
+                name="transaction_amount_must_be_positive",
+                violation_error_message="Beløpet til ein transaksjon må vere større enn 0.",
             )
         ]

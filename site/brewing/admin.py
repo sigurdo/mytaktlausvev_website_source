@@ -28,11 +28,11 @@ class TransactionAdmin(ModelAdmin):
         "created",
         "user",
         "type",
-        "price",
+        "amount",
         "brew",
         "comment",
     )
-    search_fields = ("user__name", "price", "comment", "brew__name")
+    search_fields = ("user__name", "amount", "comment", "brew__name")
     list_filter = ("type",)
     readonly_fields = ("created", "created_by", "modified", "modified_by")
 
