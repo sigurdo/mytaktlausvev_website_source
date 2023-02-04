@@ -22,7 +22,9 @@
         {% endif %}
     </ul>
 
-    Saldoen din er <strong>{{ user.brewing_transactions.balance }} NOK</strong>!
+    {% with user.brewing_transactions.balance as balance %}
+        Saldoen din er <strong>{{ balance }} NOK</strong>! {% if balance < 0 %}Du skuldar bryggjekassa pengar.{% endif %}
+    {% endwith %}
 {% endblock header %}
 
 

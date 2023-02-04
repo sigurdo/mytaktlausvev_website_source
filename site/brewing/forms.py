@@ -1,5 +1,5 @@
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import HTML, Fieldset, Layout, Submit
+from crispy_forms.layout import HTML, Field, Fieldset, Layout, Submit
 from django.forms import HiddenInput, ModelForm, NumberInput
 
 from .models import Brew, Transaction, TransactionType
@@ -42,7 +42,7 @@ class DepositForm(ModelForm):
                 {{ text | markdown }}
                 """
         ),
-        "amount",
+        Field("amount", css_class="w-32"),
     )
 
     def __init__(self, user, *args, **kwargs):
