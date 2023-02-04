@@ -8,7 +8,6 @@ from django.utils.text import slugify
 from pypdf import PdfReader
 
 from accounts.factories import SuperUserFactory, UserFactory
-from common.breadcrumbs.breadcrumbs import Breadcrumb
 from common.mixins import TestMixin
 from common.test_utils import (
     create_formset_post_data,
