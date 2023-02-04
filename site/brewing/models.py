@@ -126,7 +126,10 @@ class TransactionType(TextChoices):
 
 class TransactionManager(Manager):
     def balance(self):
-        """Returns the balance of the queryset."""
+        """
+        Returns the balance of the manager's queryset, most commonly used to
+        return a user's balance by calling `user.brewing_transactions.balance()`.
+        """
         amount_sign_depending_on_type = Case(
             When(type=TransactionType.DEPOSIT, then=F("amount")),
             default=-F("amount"),
