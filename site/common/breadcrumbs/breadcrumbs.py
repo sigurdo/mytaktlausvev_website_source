@@ -35,29 +35,7 @@ class NestingBreadcrumbsMixin(BreadcrumbsMixin):
     """
     A mixin that can be used on a set of class-based views to generate a coherent breadcrumb hierarchy with minimal code.
 
-    ## Explanation of concepts
-
-    Assume you have a class-based view `C` and want to use `NestingBreadcrumbsMixin` to display the following breadcrumbs in it:
-
-    ```
-    `A` / `B`
-    ```
-
-    Then, you should follow the following conventions:
-
-    - `B` must be another class-based view that can be seen as the parent view of `C`.
-    - `B` must implement `get_breadcrumbs_for_children()`.
-        - Typically (but not necessarily!), this is achieved by `B` inheriting `NestingBreadcrumbsMixin` itself. This means `B` has `A` as it's parent view.
-            - Then, `A` in turn must also implement `get_breadcrumbs_for_children()`, which is typically achieved by `A` inheriting `NestingBreadcrumbsMixin` without a parent view.
-    - The relationship between a parent and the child must be defined in the class of the child view, by setting the `nesting_breadcrumb_parent` property or by overriding `get_nesting_breadcrumb_parent()`.
-
-    ## Passing URL parameters to parent view
-
-    By default, the parent view gets no URL parameters (`**kwargs` is `{}`) when generating breadcrumbs for the child. But if the parent view takes URL parameters, they are almost always needed to generate the breadcrumb.
-
-    For a parent view to get the correct URL parameters, you will often have to override `get_nesting_breadcrumb_parent_kwargs()` of the child view. This method should return a dictionary of keywordarguments to use for the parent view, and it has access to the entire scope of the child view.
-
-    Often, the child view has not other URL parameters than the parent view, and they are referenced by the same kwarg names. If this is the case, you can instead set `nesting_breadcrumb_parent_kwargs_same=True` on the child view, and the `self.kwargs` dictionary automatically be passed further.
+    Documentation: https://gitlab.com/taktlause/taktlausveven/-/wikis/Breadcrumbs.
     """
 
     """The class of the "parent" view of the current view, in the breadcrumbs hierarchy."""
