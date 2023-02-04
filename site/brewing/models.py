@@ -109,7 +109,7 @@ class Brew(CreatedModifiedMixin):
             CheckConstraint(
                 check=(Q(price_per_liter__gt=0) | Q(price_per_liter=None)),
                 name="brew_price_per_liter_must_be_positive",
-                violation_error_message="Literprisen til eit brygg må vere positiv.",
+                violation_error_message="Literprisen til eit brygg må vere større enn 0.",
             ),
             CheckConstraint(
                 check=(~Q(price_per_liter=None, available_for_purchase=True)),

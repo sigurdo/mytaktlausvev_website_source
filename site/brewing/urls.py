@@ -15,7 +15,7 @@ app_name = "brewing"
 urlpatterns = [
     path("", BrewOverview.as_view(), name="BrewOverview"),
     path("brygg/", BrewList.as_view(), name="BrewList"),
-    path("brygg/ny/", BrewCreate.as_view(), name="BrewCreate"),
+    path("brygg/nytt/", BrewCreate.as_view(), name="BrewCreate"),
     path("brygg/<slug:slug>/rediger/", BrewUpdate.as_view(), name="BrewUpdate"),
     path(
         "brygg/<slug:slug>/kjop/",
