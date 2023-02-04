@@ -33,7 +33,7 @@ from .forms import (
     PartsUpdateFormset,
 )
 from .models import EditFile, Part, Pdf, Score
-from .views import nav_tabs_score_edit, sheetmusic_breadcrumbs
+from .views import nav_tabs_score_edit
 
 
 class ScoreManagerTestSuite(TestMixin, TestCase):
@@ -359,50 +359,6 @@ class EditFileTestSuite(TestMixin, TestCase):
         self.assertEqual(
             self.edit_file.get_absolute_url(),
             reverse("sheetmusic:ScoreView", kwargs={"slug": self.edit_file.score.slug}),
-        )
-
-
-class SheetmusicBreadcrumbsTestSuite(TestMixin, TestCase):
-    def test_normal(self):
-        self.assertEqual(
-            sheetmusic_breadcrumbs(),
-            [Breadcrumb(reverse("sheetmusic:ScoreList"), "Alle notar")],
-        )
-
-    def test_score(self):
-        score = ScoreFactory()
-        self.assertEqual(
-            sheetmusic_breadcrumbs(score=score),
-            [
-                Breadcrumb(
-                    reverse("sheetmusic:ScoreList"),
-                    "Alle notar",
-                ),
-                Breadcrumb(
-                    reverse("sheetmusic:ScoreView", args=[score.slug]),
-                    str(score),
-                ),
-            ],
-        )
-
-    def test_parts_update_index(self):
-        score = ScoreFactory()
-        self.assertEqual(
-            sheetmusic_breadcrumbs(score=score, parts_update_index=True),
-            [
-                Breadcrumb(
-                    reverse("sheetmusic:ScoreList"),
-                    "Alle notar",
-                ),
-                Breadcrumb(
-                    reverse("sheetmusic:ScoreView", args=[score.slug]),
-                    str(score),
-                ),
-                Breadcrumb(
-                    reverse("sheetmusic:PartsUpdateIndex", args=[score.slug]),
-                    "Rediger stemmer",
-                ),
-            ],
         )
 
 
