@@ -35,7 +35,7 @@ class NestingBreadcrumbsMixin(BreadcrumbsMixin):
     """
     A mixin that can be used on a set of class-based views to generate a coherent breadcrumb hierarchy with minimal code.
 
-    Documentation: https://gitlab.com/taktlause/taktlausveven/-/wikis/Breadcrumbs.
+    Documentation: https://gitlab.com/taktlause/taktlausveven/-/wikis/Breadcrumbs
     """
 
     """The class of the "parent" view of the current view, in the breadcrumbs hierarchy."""
@@ -83,30 +83,39 @@ class NestingBreadcrumbsMixin(BreadcrumbsMixin):
         return self.nesting_breadcrumb_parent_kwargs_same
 
     def get_nesting_breadcrumb_parent_kwargs(self):
-        if self.nesting_breadcrumb_parent_kwargs:
+        if self.nesting_breadcrumb_parent_kwargs is not None:
             return self.nesting_breadcrumb_parent_kwargs
         if self.get_nesting_breadcrumb_parent_kwargs_same():
             return self.kwargs
         return {}
 
     def get_nesting_breadcrumb_title(self):
-        if not self.nesting_breadcrumb_title:
+        if self.nesting_breadcrumb_title is None:
             raise NotImplementedError(
-                f"`nesting_breadcrumb_title` not defined for {self.__class__.__name__}"
+                f"`nesting_breadcrumb_title` not defined for `{self.__class__.__name__}`"
             )
         return self.nesting_breadcrumb_title
 
     def get_nesting_breadcrumb_url_name(self):
-        if self.nesting_breadcrumb_url_name:
+        if self.nesting_breadcrumb_url_name is not None:
             return self.nesting_breadcrumb_url_name
-        app_name = inspect.getmodule(self.__class__).__name__.split(".")[0]
+        exception_description = (
+            f"`nesting_breadcrumb_url_name` not defined for `{self.__class__.__name__}`"
+        )
+        # Try to guess the URL name, based on the convention "app_name:ViewClassName".
+        module_name = inspect.getmodule(self.__class__).__name__
+        if len(module_name.split(".")) < 2:
+            raise NotImplementedError(
+                f"{exception_description} and the module name `{module_name}` is not long enough to be the `views.py` module of an app"
+            )
+        app_name = module_name.split(".")[-2]
         view_name = self.__class__.__name__
         url_name = f"{app_name}:{view_name}"
         try:
             reverse(url_name, kwargs=self.kwargs)
         except NoReverseMatch:
             raise NotImplementedError(
-                f"`nesting_breadcrumb_url_name` not defined for {self.__class__.__name__} and the guessed URL name `{url_name}` with following kwargs: {self.kwargs} had no match"
+                f'{exception_description} and `reverse("{url_name}", kwargs={self.kwargs})` has no match'
             )
         return url_name
 
@@ -133,6 +142,8 @@ class NestingBreadcrumbsMixin(BreadcrumbsMixin):
             *self.get_nesting_breadcrumb_parent_args(),
             **self.get_nesting_breadcrumb_parent_kwargs(),
         )
+        # Set `parent.object` if parent has a `get_object()` method, since this is required and
+        # done in the `get()` method for many of Django's model related views.
         if hasattr(parent, "get_object"):
             parent.object = parent.get_object()
         return parent.get_breadcrumbs_for_children()
