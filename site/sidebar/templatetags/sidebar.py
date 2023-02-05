@@ -18,10 +18,15 @@ def sidebar(user, request_path):
     except Poll.DoesNotExist:
         poll = None
 
+    brewing_balance = (
+        user.brewing_transactions.balance() if user.is_authenticated else 0
+    )
+
     return {
         "user": user,
         "request_path": request_path,
         "form_login": LoginForm(autofocus=False),
+        "brewing_balance": brewing_balance,
         "form_image_sharing_consent": ImageSharingConsentForm(request_path),
         "poll": poll,
     }

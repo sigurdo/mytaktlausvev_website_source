@@ -60,19 +60,7 @@
         <tbody>
             {% for member in members%}
                  <tr>
-                     <td style="width: 60px;">
-                        <div class="mx-auto" style="width: 40px; height: 40px;">
-                            <a
-                                href="{% url 'accounts:ProfileDetail' member.slug %}"
-                                class="d-flex justify-content-center w-100 h-100"
-                            >
-                                <img
-                                    src="{{ member.get_avatar_url }}"
-                                    class="object-fit-cover mw-100 mh-100"
-                                />
-                            </a>
-                        </div>
-                    </td>
+                    {% include "accounts/includes/avatar_table_td.html" with user=member only %}
                      <td> <a href="{{ member.get_absolute_url }}">
                         {{ member.get_name }}
                     </a></td>

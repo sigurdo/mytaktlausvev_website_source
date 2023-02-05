@@ -1,6 +1,5 @@
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
-from django.conf import settings
 from django.contrib.auth.models import Group
 from django.forms import (
     Form,
@@ -11,6 +10,7 @@ from django.forms import (
 )
 
 from accounts.models import UserCustom
+from common.constants.models import Constant
 from common.forms.layouts import DynamicFormsetButton
 from common.forms.widgets import AutocompleteSelect, AutocompleteSelectMultiple
 
@@ -70,8 +70,11 @@ class InstrumentGroupLeadersForm(Form):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        instrument_group_leader_group_name, _ = Constant.objects.get_or_create(
+            name="Instrumentgruppeleiargruppenamn"
+        )
         self.instrument_leaders_group, _ = Group.objects.get_or_create(
-            name=settings.INSTRUMENT_GROUP_LEADERS_NAME
+            name=instrument_group_leader_group_name.value
         )
         self.fields[
             "instrument_group_leaders"
