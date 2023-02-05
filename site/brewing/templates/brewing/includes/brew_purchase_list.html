@@ -13,7 +13,7 @@
                     <dt>Alkoholprosent</dt>
                     <dd>
                         {% if brew.alcohol_by_volume %}
-                            {{ brew.alcohol_by_volume | floatformat }} %
+                            ~{{ brew.alcohol_by_volume | floatformat }} %
                         {% else %}
                             Ukjent
                         {% endif %}

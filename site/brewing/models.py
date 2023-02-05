@@ -157,7 +157,12 @@ class Transaction(CreatedModifiedMixin):
         null=True,
         blank=True,
     )
-    comment = CharField("kommentar", max_length=255, blank=True)
+    comment = CharField(
+        "kommentar",
+        max_length=255,
+        blank=True,
+        help_text="Kommentar til innbetalinga. Ikkje lenger brukt, men beheldt for å bevare eldre data.",
+    )
     type = CharField(
         "type",
         max_length=30,

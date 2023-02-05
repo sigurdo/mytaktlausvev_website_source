@@ -20,7 +20,7 @@ class BrewAdmin(ModelAdmin):
     def alcohol_by_volume(self, obj):
         if not obj.alcohol_by_volume():
             return None
-        return f"{obj.alcohol_by_volume():.1f} %"
+        return f"~{obj.alcohol_by_volume():.1f} %"
 
 
 class TransactionAdmin(ModelAdmin):
