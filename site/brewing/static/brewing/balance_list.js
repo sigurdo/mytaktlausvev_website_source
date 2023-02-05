@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-  new DataTable("#table-balance", {
+  const data_table = new DataTable("#table-balance", {
     order: [[1, "asc"]],
     paging: false,
     language: {
@@ -9,6 +9,22 @@ document.addEventListener("DOMContentLoaded", () => {
       infoFiltered: "(filtrert fra totalt _MAX_ brukarar)",
       search: "Søk:",
     },
-    columns: [{ orderable: false }, null, null, null, null],
+    columns: [{ orderable: false }, null, null, null, null, null],
   });
+
+  const filterMembershipStatus = (membershipStatus) => {
+    data_table
+      .column(2)
+      .search(membershipStatus ? "^" + membershipStatus + "$" : "", true, false)
+      .draw();
+  };
+
+  const selectMembershipStatus = document.querySelector(
+    "#select-membership-status"
+  );
+
+  filterMembershipStatus(selectMembershipStatus.value);
+  selectMembershipStatus.addEventListener("input", (event) =>
+    filterMembershipStatus(event.target.value)
+  );
 });

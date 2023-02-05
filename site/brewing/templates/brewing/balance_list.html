@@ -20,12 +20,32 @@
 {% endblock header %}
 
 {% block content %}
+    <div class="mb-3 col-md-3">
+        <label class="form-label" for="select-membership-status">
+            Medlemsstatus:
+        </label>
+        <select class="select form-select" id="select-membership-status">
+            <option value="">
+                Alle
+            </option>
+            <option value="(Betalande|Aspirant)" selected>
+                Aktive
+            </option>
+            {% for choice, display in membership_status_enum.choices %}
+                <option value="{{ display }}">
+                    {{ display }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+
     <div class="table-responsive">
     <table class="table table-striped table-sm" id="table-balance">
         <thead>
             <tr>
                 <th></th>
                 <th>Namn</th>
+                <th>Medlemsstatus</th>
                 <th>Innbetalt</th>
                 <th>Kjøpt</th>
                 <th>Saldo</th>
@@ -41,6 +61,7 @@
                             {{ user }}
                         </a>
                     </td>
+                    <td>{{ user.get_membership_status_display }}</td>
                     <td>
                         {{ user.deposited }}
                     </td>                    

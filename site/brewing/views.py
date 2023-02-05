@@ -84,6 +84,10 @@ class BalanceList(PermissionRequiredMixin, BreadcrumbsMixin, ListView):
     def get_breadcrumbs(self):
         return breadcrumbs()
 
+    def get_context_data(self, **kwargs):
+        kwargs["membership_status_enum"] = UserCustom.MembershipStatus
+        return super().get_context_data(**kwargs)
+
     def amount_if_matching_type(self, type):
         """Returns a `Case` that chooses the transaction `amount` if the type equals `type`, else 0."""
         return Case(
@@ -105,7 +109,6 @@ class BalanceList(PermissionRequiredMixin, BreadcrumbsMixin, ListView):
         return (
             super()
             .get_queryset()
-            .exclude(membership_status=UserCustom.MembershipStatus.INACTIVE)
             .annotate(
                 balance=Coalesce(Sum(amount_sign_depending_on_type), 0),
                 deposited=Coalesce(

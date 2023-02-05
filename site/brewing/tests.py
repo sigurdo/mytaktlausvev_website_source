@@ -6,7 +6,6 @@ from django.test import TestCase
 from django.urls import reverse
 
 from accounts.factories import SuperUserFactory, UserFactory
-from accounts.models import UserCustom
 from common.constants.factories import ConstantFactory
 from common.mixins import TestMixin
 from common.test_utils import test_image
@@ -125,8 +124,7 @@ class TransactionTestSuite(TestMixin, TestCase):
         TransactionFactory(amount=20, type=TransactionType.DEPOSIT)
         TransactionFactory(amount=20, type=TransactionType.PURCHASE)
         with self.assertRaises(IntegrityError):
-            TransactionFactory(amount=-20, type=TransactionType.DEPOSIT)
-            TransactionFactory(amount=-20, type=TransactionType.PURCHASE)
+            TransactionFactory(amount=-20)
 
 
 class BrewOverviewTestSuite(TestMixin, TestCase):
@@ -201,15 +199,6 @@ class BalanceListTestSuite(TestMixin, TestCase):
     def test_requires_permission_for_viewing_transactions(self):
         """Should require permission for viewing transactions."""
         self.assertPermissionRequired(self.get_url(), "brewing.view_transaction")
-
-    def test_excludes_inactive_users(self):
-        """Should exclude inactive users."""
-        inactive = UserFactory(membership_status=UserCustom.MembershipStatus.INACTIVE)
-
-        self.client.force_login(SuperUserFactory())
-        response = self.client.get(self.get_url())
-
-        self.assertNotIn(inactive, response.context["users"])
 
     def test_annotates_balance_purchased_deposited(self):
         """Should annotate users' balance, total purchased, and total deposited."""
