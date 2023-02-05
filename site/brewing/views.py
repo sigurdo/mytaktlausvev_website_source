@@ -29,7 +29,7 @@ class BrewOverview(LoginRequiredMixin, ListView):
     template_name = "brewing/brew_overview.html"
 
     def get_queryset(self):
-        return super().get_queryset().exclude(available_for_purchase=False)
+        return super().get_queryset().filter(available_for_purchase=True)
 
     def get_context_data(self, **kwargs):
         kwargs["brew_sizes"] = Brew.Sizes
