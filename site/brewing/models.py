@@ -83,7 +83,7 @@ class Brew(CreatedModifiedMixin):
         Calculates alcohol by volume (ABV) from OG and FG.
         Returns `None` if either OG or FG is missing.
         """
-        if not self.OG or not self.FG:
+        if self.OG is None or self.FG is None:
             return None
         return (76.08 * (self.OG - self.FG) / (1.775 - self.OG)) * (self.FG / 0.794)
 

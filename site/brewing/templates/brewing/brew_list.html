@@ -45,7 +45,7 @@
                 <td>{% firstof brew.OG|floatformat:3 "Ukjent" %}</td>
                 <td>{% firstof brew.FG|floatformat:3 "Ukjent" %}</td>
                 <td data-order="{{ brew.alcohol_by_volume }}">
-                    {% if brew.alcohol_by_volume %}
+                    {% if brew.alcohol_by_volume is not None %}
                         ~{{ brew.alcohol_by_volume | floatformat }} %
                     {% else %}
                         Ukjent

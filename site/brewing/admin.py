@@ -18,7 +18,7 @@ class BrewAdmin(ModelAdmin):
 
     @display(description="alkoholprosent")
     def alcohol_by_volume(self, obj):
-        if not obj.alcohol_by_volume():
+        if obj.alcohol_by_volume() is None:
             return None
         return f"~{obj.alcohol_by_volume():.1f} %"
 

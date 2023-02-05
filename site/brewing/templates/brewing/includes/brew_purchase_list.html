@@ -12,7 +12,7 @@
                 <dl class="dl-inline m-0">
                     <dt>Alkoholprosent</dt>
                     <dd>
-                        {% if brew.alcohol_by_volume %}
+                        {% if brew.alcohol_by_volume is not None %}
                             ~{{ brew.alcohol_by_volume | floatformat }} %
                         {% else %}
                             Ukjent
