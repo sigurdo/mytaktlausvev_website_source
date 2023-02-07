@@ -31,7 +31,6 @@ class BreadcrumbsMixin(View):
 
     @classmethod
     def get_breadcrumbs_from_parent(cls, **kwargs):
-        print("get_breadcrumbs_from_parent", kwargs, cls.__name__)
         if cls.breadcrumb_parent is None:
             return []
         return cls.breadcrumb_parent.get_breadcrumbs_for_children(**kwargs)
@@ -51,6 +50,5 @@ class BreadcrumbsMixin(View):
 
     def get_context_data(self, **kwargs):
         kwargs["breadcrumbs"] = self.get_breadcrumbs()
-        print("ja", self.__class__.__name__, kwargs["breadcrumbs"])
         return super().get_context_data(**kwargs)
 
