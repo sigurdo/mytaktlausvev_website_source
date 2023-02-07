@@ -31,7 +31,7 @@ class BreadcrumbsMixin(View):
     def get_breadcrumb(cls, **kwargs) -> Breadcrumb:
         """Must be overriden to return a `Breadcrumb`."""
         raise NotImplementedError(
-            "NestingBreadcrumbsMixin.get_breadcrumb() must be overridden"
+            "BreadcrumbsMixin.get_breadcrumb() must be overridden"
         )
 
     @classmethod
