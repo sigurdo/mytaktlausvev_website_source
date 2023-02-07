@@ -15,7 +15,7 @@ from django.views.generic import DetailView, ListView, View
 from django.views.generic.detail import SingleObjectMixin
 from django.views.generic.edit import CreateView, FormView, UpdateView
 
-from common.breadcrumbs.breadcrumbs import NestingBreadcrumbsMixin
+from common.breadcrumbs.breadcrumbs import Breadcrumb, BreadcrumbsMixin
 from common.forms.views import DeleteViewCustom
 from common.mixins import PermissionOrCreatedMixin
 from common.pdfs.views import PdfReadMinimalMixin
@@ -68,21 +68,31 @@ def nav_tabs_score_edit(score, user):
     return nav_tabs
 
 
-class ScoreList(LoginRequiredMixin, NestingBreadcrumbsMixin, ListView):
+class ScoreList(LoginRequiredMixin, BreadcrumbsMixin, ListView):
     model = Score
     context_object_name = "scores"
-    nesting_breadcrumb_title = "Alle notar"
+
+    @classmethod
+    def get_breadcrumb(cls, **kwargs) -> Breadcrumb:
+        return Breadcrumb(
+            url=reverse("sheetmusic:ScoreList"),
+            label="Alle notar",
+        )
 
     def get_queryset(self):
         return Score.objects.annotate_user_has_favorite_parts(self.request.user)
 
 
-class ScoreView(LoginRequiredMixin, NestingBreadcrumbsMixin, DetailView):
+class ScoreView(LoginRequiredMixin, BreadcrumbsMixin, DetailView):
     model = Score
-    nesting_breadcrumb_parent = ScoreList
+    breadcrumb_parent = ScoreList
 
-    def get_nesting_breadcrumb_title(self):
-        return str(self.get_object())
+    @classmethod
+    def get_breadcrumb(cls, score, **kwargs) -> Breadcrumb:
+        return Breadcrumb(
+            url=reverse("sheetmusic:ScoreView", args=[score.slug]),
+            label=str(score),
+        )
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         user = self.request.user
@@ -123,38 +133,46 @@ class ScoreZip(LoginRequiredMixin, DetailView):
         )
 
 
-class ScoreCreate(LoginRequiredMixin, NestingBreadcrumbsMixin, CreateView):
+class ScoreCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
     model = Score
     form_class = ScoreForm
     template_name = "common/forms/form.html"
-    nesting_breadcrumb_parent = ScoreList
+    breadcrumb_parent = ScoreList
 
     def get_success_url(self):
         return reverse("sheetmusic:PdfsUpload", args=[self.object.slug])
 
 
-class ScoreUpdate(PermissionOrCreatedMixin, NestingBreadcrumbsMixin, UpdateView):
+class ScoreUpdate(PermissionOrCreatedMixin, BreadcrumbsMixin, UpdateView):
     model = Score
     form_class = ScoreForm
     template_name = "common/forms/form.html"
     permission_required = "sheetmusic.change_score"
-    nesting_breadcrumb_parent = ScoreView
-    nesting_breadcrumb_parent_kwargs_same = True
+    breadcrumb_parent = ScoreView
+
+    def get_breadcrumbs_kwargs(self):
+        return {
+            "score": self.get_object(),
+        }
 
     def get_context_data(self, **kwargs):
         kwargs["nav_tabs"] = nav_tabs_score_edit(self.object, self.request.user)
         return super().get_context_data(**kwargs)
 
 
-class ScoreDelete(PermissionOrCreatedMixin, NestingBreadcrumbsMixin, DeleteViewCustom):
+class ScoreDelete(PermissionOrCreatedMixin, BreadcrumbsMixin, DeleteViewCustom):
     model = Score
     success_url = reverse_lazy("sheetmusic:ScoreList")
     permission_required = "sheetmusic.delete_score"
-    nesting_breadcrumb_parent = ScoreView
-    nesting_breadcrumb_parent_kwargs_same = True
+    breadcrumb_parent = ScoreView
+
+    def get_breadcrumbs_kwargs(self):
+        return {
+            "score": self.get_object(),
+        }
 
 
-class PartsUpdateIndex(PermissionOrCreatedMixin, NestingBreadcrumbsMixin, ListView):
+class PartsUpdateIndex(PermissionOrCreatedMixin, BreadcrumbsMixin, ListView):
     model = Pdf
     context_object_name = "pdfs"
     template_name = "sheetmusic/parts_update_index.html"
@@ -167,9 +185,17 @@ class PartsUpdateIndex(PermissionOrCreatedMixin, NestingBreadcrumbsMixin, ListVi
         "sheetmusic.change_part",
         "sheetmusic.delete_part",
     )
-    nesting_breadcrumb_parent = ScoreView
-    nesting_breadcrumb_parent_kwargs_same = True
-    nesting_breadcrumb_title = "Rediger stemmer"
+    breadcrumb_parent = ScoreView
+
+    @classmethod
+    def get_breadcrumb(cls, score, **kwargs) -> Breadcrumb:
+        return Breadcrumb(
+            url=reverse("sheetmusic:PartsUpdateIndex", args=[score.slug]),
+            label="Rediger stemmer",
+        )
+
+    def get_breadcrumbs_kwargs(self):
+        return { "score": self.score }
 
     def get_permission_check_object(self):
         return self.score
@@ -188,7 +214,7 @@ class PartsUpdateIndex(PermissionOrCreatedMixin, NestingBreadcrumbsMixin, ListVi
 
 
 class PartsUpdate(
-    PermissionOrCreatedMixin, NestingBreadcrumbsMixin, SingleObjectMixin, FormView
+    PermissionOrCreatedMixin, BreadcrumbsMixin, SingleObjectMixin, FormView
 ):
     model = Pdf
     form_class = PartsUpdateFormset
@@ -199,10 +225,10 @@ class PartsUpdate(
         "sheetmusic.change_part",
         "sheetmusic.delete_part",
     )
-    nesting_breadcrumb_parent = PartsUpdateIndex
+    breadcrumb_parent = PartsUpdateIndex
 
-    def get_nesting_breadcrumb_parent_kwargs(self):
-        return {"slug": self.kwargs["score_slug"]}
+    def get_breadcrumbs_kwargs(self):
+        return { "score": self.object.score }
 
     def get_object(self, queryset=None):
         return get_object_or_404(
@@ -250,7 +276,7 @@ class PartsUpdate(
 
 
 class PartsUpdateAll(
-    PermissionOrCreatedMixin, NestingBreadcrumbsMixin, SingleObjectMixin, FormView
+    PermissionOrCreatedMixin, BreadcrumbsMixin, SingleObjectMixin, FormView
 ):
     model = Score
     form_class = PartsUpdateAllFormset
@@ -260,8 +286,10 @@ class PartsUpdateAll(
         "sheetmusic.change_part",
         "sheetmusic.delete_part",
     )
-    nesting_breadcrumb_parent = PartsUpdateIndex
-    nesting_breadcrumb_parent_kwargs_same = True
+    breadcrumb_parent = PartsUpdateIndex
+
+    def get_breadcrumbs_kwargs(self):
+        return { "score": self.object }
 
     def setup(self, request, *args, **kwargs):
         """Set `self.object` for `SingleObjectMixin` compatibility."""
@@ -308,15 +336,19 @@ class PartsUpdateAll(
 
 
 class PdfsUpdate(
-    PermissionOrCreatedMixin, NestingBreadcrumbsMixin, SingleObjectMixin, FormView
+    PermissionOrCreatedMixin, BreadcrumbsMixin, SingleObjectMixin, FormView
 ):
     model = Score
     form_class = EditPdfFormset
     template_name = "common/forms/form.html"
     context_object_name = "score"
     permission_required = "sheetmusic.delete_pdf"
-    nesting_breadcrumb_parent = ScoreView
-    nesting_breadcrumb_parent_kwargs_same = True
+    breadcrumb_parent = ScoreView
+
+    def get_breadcrumbs_kwargs(self):
+        return {
+            "score": self.get_object(),
+        }
 
     def setup(self, request, *args, **kwargs):
         """Set `self.object` for `SingleObjectMixin` compatibility."""
@@ -352,15 +384,19 @@ class PdfsUpdate(
         return super().get_context_data(**kwargs)
 
 
-class PdfsUpload(PermissionOrCreatedMixin, NestingBreadcrumbsMixin, FormView):
+class PdfsUpload(PermissionOrCreatedMixin, BreadcrumbsMixin, FormView):
     form_class = UploadPdfForm
     template_name = "common/forms/form.html"
     context_object_name = "score"
     permission_required = ("sheetmusic.add_pdf", "sheetmusic.add_part")
-    nesting_breadcrumb_parent = ScoreView
-    nesting_breadcrumb_parent_kwargs_same = True
+    breadcrumb_parent = ScoreView
 
     score = None
+
+    def get_breadcrumbs_kwargs(self):
+        return {
+            "score": self.get_score(),
+        }
 
     def get_score(self):
         if not self.score:
@@ -446,15 +482,19 @@ class FavoritePartUpdate(LoginRequiredMixin, View):
         return django.http.HttpResponse("deleted")
 
 
-class EditFilesUpload(PermissionOrCreatedMixin, NestingBreadcrumbsMixin, FormView):
+class EditFilesUpload(PermissionOrCreatedMixin, BreadcrumbsMixin, FormView):
     form_class = UploadEditFilesForm
     template_name = "common/forms/form.html"
     context_object_name = "score"
     permission_required = ("sheetmusic.add_editfile",)
-    nesting_breadcrumb_parent = ScoreView
-    nesting_breadcrumb_parent_kwargs_same = True
+    breadcrumb_parent = ScoreView
 
     score = None
+
+    def get_breadcrumbs_kwargs(self):
+        return {
+            "score": self.get_score(),
+        }
 
     def get_score(self):
         if not self.score:
@@ -482,15 +522,19 @@ class EditFilesUpload(PermissionOrCreatedMixin, NestingBreadcrumbsMixin, FormVie
 
 
 class EditFilesUpdate(
-    PermissionOrCreatedMixin, NestingBreadcrumbsMixin, SingleObjectMixin, FormView
+    PermissionOrCreatedMixin, BreadcrumbsMixin, SingleObjectMixin, FormView
 ):
     model = Score
     form_class = EditEditFileFormset
     template_name = "common/forms/form.html"
     context_object_name = "score"
     permission_required = ("sheetmusic.change_editfile", "sheetmusic.delete_editfile")
-    nesting_breadcrumb_parent = ScoreView
-    nesting_breadcrumb_parent_kwargs_same = True
+    breadcrumb_parent = ScoreView
+
+    def get_breadcrumbs_kwargs(self):
+        return {
+            "score": self.object,
+        }
 
     def setup(self, request, *args, **kwargs):
         """Set `self.object` for `SingleObjectMixin` compatibility."""

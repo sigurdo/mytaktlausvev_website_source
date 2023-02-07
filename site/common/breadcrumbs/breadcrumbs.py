@@ -12,138 +12,45 @@ class Breadcrumb:
     Standardized breadcrumb designed to work with `BreadcrumbsMixin` and `common/breadcrumbs/breadcrumbs.html`.
 
     `str` `url`: The URL the breadcrumb should redirect to
-    `str` `name`: The breadcrumb's label
+    `str` `label`: The breadcrumb's label
     """
 
     url: str
-    name: str
+    label: str
 
 
 class BreadcrumbsMixin(View):
-    def get_breadcrumbs(self) -> list:
-        """Must be overriden to return a list of `Breadcrumb`s."""
+    breadcrumb_parent = None
+
+    @classmethod
+    def get_breadcrumb(cls, **kwargs) -> Breadcrumb:
+        """Must be overriden to return a `Breadcrumb`."""
         raise NotImplementedError(
-            "BreadcrumbsMixin.get_breadcrumbs() must be overridden"
+            "NestingBreadcrumbsMixin.get_breadcrumb() must be overridden"
         )
+
+    @classmethod
+    def get_breadcrumbs_from_parent(cls, **kwargs):
+        print("get_breadcrumbs_from_parent", kwargs, cls.__name__)
+        if cls.breadcrumb_parent is None:
+            return []
+        return cls.breadcrumb_parent.get_breadcrumbs_for_children(**kwargs)
+
+    @classmethod
+    def get_breadcrumbs_for_children(cls, **kwargs):
+        return [
+            *cls.get_breadcrumbs_from_parent(**kwargs),
+            cls.get_breadcrumb(**kwargs),
+        ]
+
+    def get_breadcrumbs_kwargs(self):
+        return {}
+
+    def get_breadcrumbs(self):
+        return self.get_breadcrumbs_from_parent(**self.get_breadcrumbs_kwargs())
 
     def get_context_data(self, **kwargs):
         kwargs["breadcrumbs"] = self.get_breadcrumbs()
+        print("ja", self.__class__.__name__, kwargs["breadcrumbs"])
         return super().get_context_data(**kwargs)
 
-
-class NestingBreadcrumbsMixin(BreadcrumbsMixin):
-    """
-    A mixin that can be used on a set of class-based views to generate a coherent breadcrumb hierarchy with minimal code.
-
-    Documentation: https://gitlab.com/taktlause/taktlausveven/-/wikis/Breadcrumbs
-    """
-
-    """The class of the "parent" view of the current view, in the breadcrumbs hierarchy."""
-    nesting_breadcrumb_parent = None
-
-    """Keywordarguments for the the `__init__` method of the parent view."""
-    nesting_breadcrumb_parent_initkwargs = {}
-
-    """Positional arguments for the parent view."""
-    nesting_breadcrumb_parent_args = []
-
-    """
-    When set to `True`, `self.kwargs` will be used used as keywordarguments for the parent view.
-    This behaviour will be overridden by defining `nesting_breadcrumb_parent_kwargs`.
-    """
-    nesting_breadcrumb_parent_kwargs_same = False
-
-    """Keywordarguments for the parent view."""
-    nesting_breadcrumb_parent_kwargs = None
-
-    """
-    Title of the breadcrumb for the current view.
-    This is only used if the view is the parent of another view that uses nesting breadcrumbs.
-    """
-    nesting_breadcrumb_title = None
-
-    """
-    Name of the URL pattern of the current view.
-    This is only used if the view is the parent of another view that uses nesting breadcrumbs.
-    There is usually not necessary to configure it, since `get_nesting_breadcrumb_url_name()`
-    guesses it if it is not given. The guess is based on name and location of the class.
-    """
-    nesting_breadcrumb_url_name = None
-
-    def get_nesting_breadcrumb_parent(self):
-        return self.nesting_breadcrumb_parent
-
-    def get_nesting_breadcrumb_parent_initkwargs(self):
-        return self.nesting_breadcrumb_parent_initkwargs
-
-    def get_nesting_breadcrumb_parent_args(self):
-        return self.nesting_breadcrumb_parent_args
-
-    def get_nesting_breadcrumb_parent_kwargs_same(self):
-        return self.nesting_breadcrumb_parent_kwargs_same
-
-    def get_nesting_breadcrumb_parent_kwargs(self):
-        if self.nesting_breadcrumb_parent_kwargs is not None:
-            return self.nesting_breadcrumb_parent_kwargs
-        if self.get_nesting_breadcrumb_parent_kwargs_same():
-            return self.kwargs
-        return {}
-
-    def get_nesting_breadcrumb_title(self):
-        if self.nesting_breadcrumb_title is None:
-            raise NotImplementedError(
-                f"`nesting_breadcrumb_title` not defined for `{self.__class__.__name__}`"
-            )
-        return self.nesting_breadcrumb_title
-
-    def get_nesting_breadcrumb_url_name(self):
-        if self.nesting_breadcrumb_url_name is not None:
-            return self.nesting_breadcrumb_url_name
-        exception_description = (
-            f"`nesting_breadcrumb_url_name` not defined for `{self.__class__.__name__}`"
-        )
-        # Try to guess the URL name, based on the convention "app_name:ViewClassName".
-        module_name = inspect.getmodule(self.__class__).__name__
-        if len(module_name.split(".")) < 2:
-            raise NotImplementedError(
-                f"{exception_description} and the module name `{module_name}` is not long enough to be the `views.py` module of an app"
-            )
-        app_name = module_name.split(".")[-2]
-        view_name = self.__class__.__name__
-        url_name = f"{app_name}:{view_name}"
-        try:
-            reverse(url_name, kwargs=self.kwargs)
-        except NoReverseMatch:
-            raise NotImplementedError(
-                f'{exception_description} and `reverse("{url_name}", kwargs={self.kwargs})` has no match'
-            )
-        return url_name
-
-    def get_breadcrumbs_for_children(self):
-        return [
-            *self.get_breadcrumbs(),
-            Breadcrumb(
-                url=reverse(
-                    self.get_nesting_breadcrumb_url_name(),
-                    kwargs=self.kwargs,
-                ),
-                name=self.get_nesting_breadcrumb_title(),
-            ),
-        ]
-
-    def get_breadcrumbs(self):
-        if self.nesting_breadcrumb_parent is None:
-            return []
-        parent = self.get_nesting_breadcrumb_parent()(
-            **self.get_nesting_breadcrumb_parent_initkwargs()
-        )
-        parent.setup(
-            self.request,
-            *self.get_nesting_breadcrumb_parent_args(),
-            **self.get_nesting_breadcrumb_parent_kwargs(),
-        )
-        # Set `parent.object` if parent has a `get_object()` method, since this is required and
-        # done in the `get()` method for many of Django's model related views.
-        if hasattr(parent, "get_object"):
-            parent.object = parent.get_object()
-        return parent.get_breadcrumbs_for_children()
