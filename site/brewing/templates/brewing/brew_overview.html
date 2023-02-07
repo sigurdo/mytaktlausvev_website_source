@@ -29,6 +29,12 @@
 
 
 {% block content %}
+    <section>
+        {% load embeddable_text markdown %}
+        {% get_embeddable_text "Bryggjeoversiktinformasjon" as text %}
+        {{ text | markdown }}
+    </section>
+
     {% include "brewing/includes/brew_purchase_list.html" with brews=available_brews %}
 {% endblock content %}
 
