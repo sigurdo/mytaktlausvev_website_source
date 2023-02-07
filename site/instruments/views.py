@@ -12,9 +12,16 @@ from .forms import InstrumentFormset, InstrumentGroupLeadersForm
 from .models import Instrument
 
 
-class InstrumentList(LoginRequiredMixin, ListView):
+class InstrumentList(LoginRequiredMixin, BreadcrumbsMixin, ListView):
     model = Instrument
     context_object_name = "instruments"
+
+    @classmethod
+    def get_breadcrumb(cls, **kwargs) -> Breadcrumb:
+        return Breadcrumb(
+            url=reverse("instruments:InstrumentList"),
+            label="Instrumentoversikt",
+        )
 
     def get_queryset(self):
         return super().get_queryset().prefetch_related("type", "location", "user")
@@ -32,12 +39,10 @@ class InstrumentsUpdate(
         "instruments.change_instrument",
         "instruments.delete_instrument",
     )
+    breadcrumb_parent = InstrumentList
 
     def get_success_url(self) -> str:
         return reverse("instruments:InstrumentList")
-
-    def get_breadcrumbs(self) -> list:
-        return [Breadcrumb(reverse("instruments:InstrumentList"), "Instrumentoversikt")]
 
     def get_context_data(self, **kwargs):
         kwargs["form_title"] = "Rediger instrumentoversikt"
@@ -52,10 +57,18 @@ class InstrumentsUpdate(
         return super().form_invalid(form)
 
 
-class InstrumentGroupLeaderList(LoginRequiredMixin, ListView):
+class InstrumentGroupLeaderList(LoginRequiredMixin, BreadcrumbsMixin, ListView):
     model = UserCustom
     context_object_name = "instrument_group_leaders"
     template_name = "instruments/instrument_group_leader_list.html"
+    breadcrumb_parent = InstrumentList
+
+    @classmethod
+    def get_breadcrumb(cls, **kwargs) -> Breadcrumb:
+        return Breadcrumb(
+            url=reverse("instruments:InstrumentGroupLeaderList"),
+            label="Instrumentgruppeleiarar",
+        )
 
     def get_queryset(self):
         instrument_leaders_group, _ = Group.objects.get_or_create(
@@ -71,17 +84,10 @@ class InstrumentGroupLeadersUpdate(
     template_name = "common/forms/form.html"
     permission_required = ("accounts.edit_instrument_group_leaders",)
     success_message = "Instrumentgruppeleiarar redigert."
+    breadcrumb_parent = InstrumentGroupLeaderList
 
     def get_success_url(self):
         return reverse("instruments:InstrumentGroupLeaderList")
-
-    def get_breadcrumbs(self):
-        return [
-            Breadcrumb(
-                reverse("instruments:InstrumentGroupLeaderList"),
-                "Instrumentgruppeleiarar",
-            )
-        ]
 
     def get_context_data(self, **kwargs):
         kwargs["form_title"] = "Rediger instrumentgruppeleiarar"
