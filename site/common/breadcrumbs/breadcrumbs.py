@@ -1,3 +1,11 @@
+"""
+breadcrumbs.py
+
+Main components of the breadcrumbs system.
+
+Documentation for the breadcrumbs system can be found at https://gitlab.com/taktlause/taktlausveven/-/wikis/Breadcrumbs
+"""
+
 from dataclasses import dataclass
 
 from django.views.generic import View
