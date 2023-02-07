@@ -21,20 +21,20 @@
                 </dl>
 
                 <ul class="list-inline d-flex align-items-center flex-column mt-1">
-                    <li class="list-inline-item m-1">
-                        <a
-                            href="{% url 'brewing:BrewPurchaseCreate' brew.slug %}?size={{ brew_sizes.SIZE_0_5 }}"
-                            class="btn btn-primary btn-sm"
-                        >
-                            Kjøp 0.5 L for {{ brew.price_per_0_5 }} NOK
-                        </a>
-                    </li>
-                    <li class="list-inline-item m-1">
+                    <li class="list-inline-item m-2">
                         <a
                             href="{% url 'brewing:BrewPurchaseCreate' brew.slug %}?size={{ brew_sizes.SIZE_0_33 }}"
                             class="btn btn-primary btn-sm"
                         >
                             Kjøp 0.33 L for {{ brew.price_per_0_33 }} NOK
+                        </a>
+                    </li>                    
+                    <li class="list-inline-item m-2">
+                        <a
+                            href="{% url 'brewing:BrewPurchaseCreate' brew.slug %}?size={{ brew_sizes.SIZE_0_5 }}"
+                            class="btn btn-primary btn-sm"
+                        >
+                            Kjøp 0.5 L for {{ brew.price_per_0_5 }} NOK
                         </a>
                     </li>
                 </ul>
