@@ -195,7 +195,7 @@ class PartsUpdateIndex(PermissionOrCreatedMixin, BreadcrumbsMixin, ListView):
         )
 
     def get_breadcrumbs_kwargs(self):
-        return { "score": self.score }
+        return {"score": self.score}
 
     def get_permission_check_object(self):
         return self.score
@@ -228,7 +228,7 @@ class PartsUpdate(
     breadcrumb_parent = PartsUpdateIndex
 
     def get_breadcrumbs_kwargs(self):
-        return { "score": self.object.score }
+        return {"score": self.object.score}
 
     def get_object(self, queryset=None):
         return get_object_or_404(
@@ -289,7 +289,7 @@ class PartsUpdateAll(
     breadcrumb_parent = PartsUpdateIndex
 
     def get_breadcrumbs_kwargs(self):
-        return { "score": self.object }
+        return {"score": self.object}
 
     def setup(self, request, *args, **kwargs):
         """Set `self.object` for `SingleObjectMixin` compatibility."""

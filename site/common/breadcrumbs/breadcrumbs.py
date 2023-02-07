@@ -1,8 +1,5 @@
-import inspect
 from dataclasses import dataclass
 
-from django.urls import reverse
-from django.urls.exceptions import NoReverseMatch
 from django.views.generic import View
 
 
@@ -51,4 +48,3 @@ class BreadcrumbsMixin(View):
     def get_context_data(self, **kwargs):
         kwargs["breadcrumbs"] = self.get_breadcrumbs()
         return super().get_context_data(**kwargs)
-
