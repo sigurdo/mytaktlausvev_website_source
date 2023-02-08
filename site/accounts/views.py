@@ -137,9 +137,6 @@ class ImageSharingConsentUpdate(LoginRequiredMixin, BreadcrumbsMixin, FormView):
     http_method_names = ["post", "put"]
     breadcrumb_parent = MemberList
 
-    def get_breadcrumbs_kwargs(self):
-        return {"user": self.request.user}
-
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs["instance"] = self.request.user
