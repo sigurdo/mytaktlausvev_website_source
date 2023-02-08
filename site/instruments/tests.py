@@ -1,10 +1,8 @@
-from django.contrib.auth.models import Group
 from django.db import IntegrityError
 from django.test import TestCase
 from django.urls import reverse
 
 from accounts.factories import SuperUserFactory, UserFactory
-from common.constants.models import Constant
 from common.mixins import TestMixin
 from common.test_utils import create_formset_post_data
 
@@ -16,7 +14,7 @@ from .factories import (
     InstrumentTypeDetectionKeywordFactory,
     InstrumentTypeFactory,
 )
-from .forms import InstrumentFormset, InstrumentGroupLeadersForm
+from .forms import InstrumentFormset
 from .models import (
     Instrument,
     InstrumentType,
@@ -243,69 +241,3 @@ class InstrumentsUpdateTestSuite(TestMixin, TestCase):
         self.client.force_login(SuperUserFactory())
         self.client.post(self.get_url(), self.create_post_data())
         self.assertEqual(Instrument.objects.count(), 0)
-
-
-class InstrumentGroupLeaderListTestSuite(TestMixin, TestCase):
-    def get_url(self):
-        return reverse("instruments:InstrumentGroupLeaderList")
-
-    def test_requires_login(self):
-        self.assertLoginRequired(self.get_url())
-
-
-class InstrumentGroupLeadersFormTestSuite(TestMixin, TestCase):
-    def get_url(self):
-        return reverse("instruments:InstrumentGroupLeadersUpdate")
-
-    def setUp(self):
-        self.user = UserFactory()
-        instrument_group_leader_group_name, _ = Constant.objects.get_or_create(
-            name="Instrumentgruppeleiargruppenamn"
-        )
-        self.instrument_leader_group = Group.objects.create(
-            name=instrument_group_leader_group_name.value
-        )
-        self.instrument_leader_group.user_set.add(self.user)
-
-    def test_initial(self):
-        """Initial data should equal instrument group leaders."""
-        form = InstrumentGroupLeadersForm()
-        self.assertQuerysetEqual(form["instrument_group_leaders"].initial, [self.user])
-
-
-class InstrumentGroupLeadersUpdateTestSuite(TestMixin, TestCase):
-    def get_url(self):
-        return reverse("instruments:InstrumentGroupLeadersUpdate")
-
-    def setUp(self):
-        instrument_group_leader_group_name, _ = Constant.objects.get_or_create(
-            name="Instrumentgruppeleiargruppenamn"
-        )
-        self.instrument_leader_group = Group.objects.create(
-            name=instrument_group_leader_group_name.value
-        )
-
-        self.form = InstrumentGroupLeadersForm()
-
-    def test_requires_permission(self):
-        self.assertPermissionRequired(
-            self.get_url(),
-            "accounts.edit_instrument_group_leaders",
-        )
-
-    def test_adds_new_removes_existing_instrument_group_leaders(self):
-        """Should remove existing instrument group leaders."""
-        user = UserFactory()
-        self.instrument_leader_group.user_set.add(user)
-
-        self.client.force_login(SuperUserFactory())
-        self.client.post(self.get_url())
-        self.assertQuerysetEqual(self.instrument_leader_group.user_set.all(), [])
-
-    def test_adds_specified_instrument_group_leaders(self):
-        """Should add specified instrument group leaders."""
-        user = UserFactory()
-
-        self.client.force_login(SuperUserFactory())
-        self.client.post(self.get_url(), {"instrument_group_leaders": [user.pk]})
-        self.assertQuerysetEqual(self.instrument_leader_group.user_set.all(), [user])

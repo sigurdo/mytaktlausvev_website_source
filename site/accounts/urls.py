@@ -4,6 +4,8 @@ from .views import (
     BirthdayList,
     ImageSharingConsentList,
     ImageSharingConsentUpdate,
+    InstrumentGroupLeaderList,
+    InstrumentGroupLeadersUpdate,
     MemberList,
     ProfileDetail,
     UserCustomCreate,
@@ -31,5 +33,15 @@ urlpatterns = [
         "biletedeling/rediger/",
         ImageSharingConsentUpdate.as_view(),
         name="ImageSharingConsentUpdate",
+    ),
+    path(
+        "instrumentgruppeleiarar/",
+        InstrumentGroupLeaderList.as_view(),
+        name="InstrumentGroupLeaderList",
+    ),
+    path(
+        "instrumentgruppeleiarar/rediger/",
+        InstrumentGroupLeadersUpdate.as_view(),
+        name="InstrumentGroupLeadersUpdate",
     ),
 ]

@@ -4,17 +4,25 @@ from django.contrib.auth.mixins import (
     PermissionRequiredMixin,
     UserPassesTestMixin,
 )
+from django.contrib.auth.models import Group
+from django.contrib.messages.views import SuccessMessageMixin
 from django.core.mail import send_mail
 from django.template import Context, Template
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.generic import CreateView, DetailView, FormView, ListView, UpdateView
 
 from common.breadcrumbs.breadcrumbs import Breadcrumb, BreadcrumbsMixin
+from common.constants.models import Constant
 from common.embeddable_text.models import EmbeddableText
 from common.markdown.templatetags.markdown import markdown
 
-from .forms import ImageSharingConsentForm, UserCustomCreateForm, UserCustomUpdateForm
+from .forms import (
+    ImageSharingConsentForm,
+    InstrumentGroupLeadersForm,
+    UserCustomCreateForm,
+    UserCustomUpdateForm,
+)
 from .models import UserCustom
 
 
@@ -160,3 +168,45 @@ class ImageSharingConsentUpdate(LoginRequiredMixin, BreadcrumbsMixin, FormView):
         if next:
             return next
         return self.request.user.get_absolute_url()
+
+
+class InstrumentGroupLeaderList(LoginRequiredMixin, BreadcrumbsMixin, ListView):
+    model = UserCustom
+    context_object_name = "instrument_group_leaders"
+    template_name = "accounts/instrument_group_leader_list.html"
+    breadcrumb_parent = MemberList
+
+    @classmethod
+    def get_breadcrumb(cls, **kwargs) -> Breadcrumb:
+        return Breadcrumb(
+            url=reverse("accounts:InstrumentGroupLeaderList"),
+            label="Instrumentgruppeleiarar",
+        )
+
+    def get_queryset(self):
+        instrument_group_leader_group_name, _ = Constant.objects.get_or_create(
+            name="Instrumentgruppeleiargruppenamn"
+        )
+        instrument_leaders_group, _ = Group.objects.get_or_create(
+            name=instrument_group_leader_group_name.value
+        )
+        return instrument_leaders_group.user_set.all()
+
+
+class InstrumentGroupLeadersUpdate(
+    PermissionRequiredMixin, SuccessMessageMixin, BreadcrumbsMixin, FormView
+):
+    form_class = InstrumentGroupLeadersForm
+    template_name = "common/forms/form.html"
+    permission_required = ("accounts.edit_instrument_group_leaders",)
+    success_message = "Instrumentgruppeleiarar redigert."
+    success_url = reverse_lazy("accounts:InstrumentGroupLeaderList")
+    breadcrumb_parent = InstrumentGroupLeaderList
+
+    def get_context_data(self, **kwargs):
+        kwargs["form_title"] = "Rediger instrumentgruppeleiarar"
+        return super().get_context_data(**kwargs)
+
+    def form_valid(self, form):
+        form.save()
+        return super().form_valid(form)

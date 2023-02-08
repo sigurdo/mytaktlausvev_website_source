@@ -3,10 +3,12 @@ from urllib.parse import urlencode
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML, Fieldset, Layout, Submit
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import Group
 from django.core.exceptions import ValidationError
-from django.forms import BooleanField, ModelForm
+from django.forms import BooleanField, Form, ModelForm, ModelMultipleChoiceField
 from django.urls import reverse
 
+from common.constants.models import Constant
 from common.forms.widgets import (
     AutocompleteSelect,
     AutocompleteSelectMultiple,
@@ -162,3 +164,32 @@ class ImageSharingConsentForm(ModelForm):
         model = UserCustom
         fields = ["image_sharing_consent"]
         help_texts = {"image_sharing_consent": ""}
+
+
+class InstrumentGroupLeadersForm(Form):
+    instrument_group_leaders = ModelMultipleChoiceField(
+        queryset=UserCustom.objects.all(),
+        label="Instrumentgruppeleiarar",
+        widget=AutocompleteSelectMultiple,
+        required=False,
+    )
+
+    helper = FormHelper()
+    helper.add_input(Submit("submit", "Lagre instrumentgruppeleiarar"))
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        instrument_group_leader_group_name, _ = Constant.objects.get_or_create(
+            name="Instrumentgruppeleiargruppenamn"
+        )
+        self.instrument_leaders_group, _ = Group.objects.get_or_create(
+            name=instrument_group_leader_group_name.value
+        )
+        self.fields[
+            "instrument_group_leaders"
+        ].initial = self.instrument_leaders_group.user_set.all()
+
+    def save(self):
+        self.instrument_leaders_group.user_set.set(
+            self.data.getlist("instrument_group_leaders")
+        )

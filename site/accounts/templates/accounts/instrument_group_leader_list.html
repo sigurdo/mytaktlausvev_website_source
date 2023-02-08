@@ -15,7 +15,7 @@
     {{ block.super }}
 
     {% if perms.accounts.edit_instrument_group_leaders %}
-        <a href="{% url "instruments:InstrumentGroupLeadersUpdate" %}" class="btn btn-primary btn-sm my-1"> Rediger instrumentgruppeleiarar </a>
+        <a href="{% url "accounts:InstrumentGroupLeadersUpdate" %}" class="btn btn-primary btn-sm my-1"> Rediger instrumentgruppeleiarar </a>
     {% endif %}
 {% endblock header %}
 
@@ -53,5 +53,5 @@
 {% block js %}
     <script src="https://cdn.datatables.net/v/bs5/jq-3.6.0/dt-1.11.3/datatables.min.js"></script>
     {% load static %}
-    <script src="{% static "instruments/instrument_group_leader_list.js" %}"></script>
+    <script src="{% static "accounts/instrument_group_leader_list.js" %}"></script>
 {% endblock js %}

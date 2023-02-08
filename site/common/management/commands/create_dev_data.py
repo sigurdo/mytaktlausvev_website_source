@@ -732,7 +732,7 @@ class Command(BaseCommand):
         )
         NavbarItemFactory(
             text="Instrumentgruppeleiarar",
-            link=reverse("instruments:InstrumentGroupLeaderList"),
+            link=reverse("accounts:InstrumentGroupLeaderList"),
             order=3,
             requires_login=True,
             parent=about_dropdown,
