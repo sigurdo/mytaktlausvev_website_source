@@ -12,7 +12,6 @@ from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.generic import DetailView, FormView, ListView
 from django.views.generic.base import RedirectView
 
-from common.breadcrumbs.breadcrumbs import Breadcrumb, BreadcrumbsMixin
 from common.forms.views import (
     DeleteViewCustom,
     InlineFormsetCreateView,
@@ -27,14 +26,6 @@ from .forms import (
     SingleVoteForm,
 )
 from .models import Poll, PollType, Vote
-
-
-def breadcrumbs(poll=None):
-    """Returns breadcrumbs for the poll views."""
-    breadcrumbs = [Breadcrumb(reverse("polls:PollList"), "Alle avstemmingar")]
-    if poll:
-        breadcrumbs.append(Breadcrumb(poll.get_absolute_url(), poll))
-    return breadcrumbs
 
 
 class PollMixin:
@@ -84,15 +75,12 @@ class PollRedirect(UserPassesTestMixin, PollMixin, RedirectView):
         return reverse(url_name, args=[poll.slug])
 
 
-class PollResults(UserPassesTestMixin, BreadcrumbsMixin, DetailView):
+class PollResults(UserPassesTestMixin, DetailView):
     model = Poll
     template_name_suffix = "_results"
 
     def test_func(self):
         return self.get_object().public or self.request.user.is_authenticated
-
-    def get_breadcrumbs(self) -> list:
-        return breadcrumbs()
 
     def get_context_data(self, **kwargs):
         kwargs[
@@ -103,7 +91,7 @@ class PollResults(UserPassesTestMixin, BreadcrumbsMixin, DetailView):
         return super().get_context_data(**kwargs)
 
 
-class PollVoteList(LoginRequiredMixin, BreadcrumbsMixin, PollMixin, ListView):
+class PollVoteList(LoginRequiredMixin, PollMixin, ListView):
     model = Vote
     template_name = "polls/poll_vote_list.html"
     context_object_name = "votes"
@@ -118,22 +106,16 @@ class PollVoteList(LoginRequiredMixin, BreadcrumbsMixin, PollMixin, ListView):
             .order_by("-created")
         )
 
-    def get_breadcrumbs(self) -> list:
-        return breadcrumbs(self.get_poll())
 
-
-class PollCreate(PermissionRequiredMixin, BreadcrumbsMixin, InlineFormsetCreateView):
+class PollCreate(PermissionRequiredMixin, InlineFormsetCreateView):
     model = Poll
     form_class = PollCreateForm
     formset_class = ChoiceFormset
     template_name = "common/forms/form.html"
     permission_required = ("polls.add_poll", "polls.add_choice")
 
-    def get_breadcrumbs(self) -> list:
-        return breadcrumbs()
 
-
-class PollUpdate(PermissionRequiredMixin, BreadcrumbsMixin, InlineFormsetUpdateView):
+class PollUpdate(PermissionRequiredMixin, InlineFormsetUpdateView):
     model = Poll
     form_class = PollUpdateForm
     formset_class = ChoiceFormset
@@ -146,11 +128,8 @@ class PollUpdate(PermissionRequiredMixin, BreadcrumbsMixin, InlineFormsetUpdateV
         "polls.delete_vote",
     )
 
-    def get_breadcrumbs(self) -> list:
-        return breadcrumbs(self.object)
 
-
-class PollDelete(PermissionRequiredMixin, BreadcrumbsMixin, DeleteViewCustom):
+class PollDelete(PermissionRequiredMixin, DeleteViewCustom):
     model = Poll
     success_url = reverse_lazy("polls:PollList")
     permission_required = (
@@ -159,11 +138,8 @@ class PollDelete(PermissionRequiredMixin, BreadcrumbsMixin, DeleteViewCustom):
         "polls.delete_vote",
     )
 
-    def get_breadcrumbs(self) -> list:
-        return breadcrumbs(self.object)
 
-
-class VoteCreate(LoginRequiredMixin, BreadcrumbsMixin, PollMixin, FormView):
+class VoteCreate(LoginRequiredMixin, PollMixin, FormView):
     template_name = "polls/vote_form.html"
 
     def get_form_class(self):
@@ -178,9 +154,6 @@ class VoteCreate(LoginRequiredMixin, BreadcrumbsMixin, PollMixin, FormView):
         kwargs["poll"] = self.get_poll()
         kwargs["user"] = self.request.user
         return kwargs
-
-    def get_breadcrumbs(self) -> list:
-        return breadcrumbs()
 
     def form_valid(self, form):
         form.save()
@@ -203,9 +176,7 @@ class VoteCreate(LoginRequiredMixin, BreadcrumbsMixin, PollMixin, FormView):
         return reverse("polls:PollResults", args=[self.get_poll().slug])
 
 
-class VoteDelete(
-    LoginRequiredMixin, BreadcrumbsMixin, PollMixin, SuccessMessageMixin, FormView
-):
+class VoteDelete(LoginRequiredMixin, PollMixin, SuccessMessageMixin, FormView):
     template_name = "polls/vote_delete.html"
     form_class = Form
     success_message = "Stemma di vart fjerna."
@@ -218,9 +189,6 @@ class VoteDelete(
         if not self.votes.exists():
             raise Http404("Du har ikkje stemt på denne avstemminga.")
         return self.votes
-
-    def get_breadcrumbs(self) -> list:
-        return breadcrumbs(self.get_poll())
 
     def get_context_data(self, **kwargs):
         kwargs["votes"] = self.get_votes()
