@@ -2,6 +2,7 @@ from http import HTTPStatus
 from urllib.parse import urlencode
 
 from django.contrib.auth import authenticate
+from django.contrib.auth.models import Group
 from django.core import mail
 from django.db import IntegrityError
 from django.templatetags.static import static
@@ -10,12 +11,17 @@ from django.urls import reverse
 from django.utils.text import slugify
 from django.utils.timezone import now
 
+from common.constants.models import Constant
 from common.mixins import TestMixin
 from common.test_utils import test_image
 from instruments.factories import InstrumentTypeFactory
 
 from .factories import SuperUserFactory, UserFactory
-from .forms import ImageSharingConsentForm, UserCustomCreateForm
+from .forms import (
+    ImageSharingConsentForm,
+    InstrumentGroupLeadersForm,
+    UserCustomCreateForm,
+)
 from .models import UserCustom
 
 
@@ -427,3 +433,67 @@ class ImageSharingConsentUpdateTestSuite(TestMixin, TestCase):
             url, {"image_sharing_consent": UserCustom.ImageSharingConsent.YES}
         )
         self.assertRedirects(response, reverse("dashboard:Dashboard"))
+
+
+class InstrumentGroupLeaderListTestSuite(TestMixin, TestCase):
+    def get_url(self):
+        return reverse("accounts:InstrumentGroupLeaderList")
+
+    def test_requires_login(self):
+        self.assertLoginRequired(self.get_url())
+
+
+class InstrumentGroupLeadersFormTestSuite(TestMixin, TestCase):
+    def setUp(self):
+        self.user = UserFactory()
+        instrument_group_leader_group_name, _ = Constant.objects.get_or_create(
+            name="Instrumentgruppeleiargruppenamn"
+        )
+        self.instrument_leader_group = Group.objects.create(
+            name=instrument_group_leader_group_name.value
+        )
+        self.instrument_leader_group.user_set.add(self.user)
+
+    def test_initial(self):
+        """Initial data should equal instrument group leaders."""
+        form = InstrumentGroupLeadersForm()
+        self.assertQuerysetEqual(form["instrument_group_leaders"].initial, [self.user])
+
+
+class InstrumentGroupLeadersUpdateTestSuite(TestMixin, TestCase):
+    def get_url(self):
+        return reverse("accounts:InstrumentGroupLeadersUpdate")
+
+    def setUp(self):
+        instrument_group_leader_group_name, _ = Constant.objects.get_or_create(
+            name="Instrumentgruppeleiargruppenamn"
+        )
+        self.instrument_leader_group = Group.objects.create(
+            name=instrument_group_leader_group_name.value
+        )
+
+        self.form = InstrumentGroupLeadersForm()
+
+    def test_requires_permission(self):
+        """Should require permission to edit instrument group leaders."""
+        self.assertPermissionRequired(
+            self.get_url(),
+            "accounts.edit_instrument_group_leaders",
+        )
+
+    def test_adds_new_removes_existing_instrument_group_leaders(self):
+        """Should remove existing instrument group leaders."""
+        user = UserFactory()
+        self.instrument_leader_group.user_set.add(user)
+
+        self.client.force_login(SuperUserFactory())
+        self.client.post(self.get_url())
+        self.assertQuerysetEqual(self.instrument_leader_group.user_set.all(), [])
+
+    def test_adds_specified_instrument_group_leaders(self):
+        """Should add specified instrument group leaders."""
+        user = UserFactory()
+
+        self.client.force_login(SuperUserFactory())
+        self.client.post(self.get_url(), {"instrument_group_leaders": [user.pk]})
+        self.assertQuerysetEqual(self.instrument_leader_group.user_set.all(), [user])

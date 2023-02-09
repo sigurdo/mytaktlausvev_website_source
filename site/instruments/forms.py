@@ -1,18 +1,9 @@
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
-from django.contrib.auth.models import Group
-from django.forms import (
-    Form,
-    ModelForm,
-    ModelMultipleChoiceField,
-    TextInput,
-    modelformset_factory,
-)
+from django.forms import ModelForm, TextInput, modelformset_factory
 
-from accounts.models import UserCustom
-from common.constants.models import Constant
 from common.forms.layouts import DynamicFormsetButton
-from common.forms.widgets import AutocompleteSelect, AutocompleteSelectMultiple
+from common.forms.widgets import AutocompleteSelect
 
 from .models import Instrument
 
@@ -55,32 +46,3 @@ InstrumentFormset = modelformset_factory(
 )
 
 InstrumentFormset.helper = InstrumentFormsetHelper()
-
-
-class InstrumentGroupLeadersForm(Form):
-    instrument_group_leaders = ModelMultipleChoiceField(
-        queryset=UserCustom.objects.all(),
-        label="Instrumentgruppeleiarar",
-        widget=AutocompleteSelectMultiple,
-        required=False,
-    )
-
-    helper = FormHelper()
-    helper.add_input(Submit("submit", "Rediger instrumentgruppeleiarar"))
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        instrument_group_leader_group_name, _ = Constant.objects.get_or_create(
-            name="Instrumentgruppeleiargruppenamn"
-        )
-        self.instrument_leaders_group, _ = Group.objects.get_or_create(
-            name=instrument_group_leader_group_name.value
-        )
-        self.fields[
-            "instrument_group_leaders"
-        ].initial = self.instrument_leaders_group.user_set.all()
-
-    def save(self):
-        self.instrument_leaders_group.user_set.set(
-            self.data.getlist("instrument_group_leaders")
-        )

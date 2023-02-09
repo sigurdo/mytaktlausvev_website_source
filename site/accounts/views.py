@@ -4,26 +4,51 @@ from django.contrib.auth.mixins import (
     PermissionRequiredMixin,
     UserPassesTestMixin,
 )
+from django.contrib.auth.models import Group
+from django.contrib.messages.views import SuccessMessageMixin
 from django.core.mail import send_mail
 from django.template import Context, Template
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.generic import CreateView, DetailView, FormView, ListView, UpdateView
 
 from common.breadcrumbs.breadcrumbs import Breadcrumb, BreadcrumbsMixin
+from common.constants.models import Constant
 from common.embeddable_text.models import EmbeddableText
 from common.markdown.templatetags.markdown import markdown
 
-from .forms import ImageSharingConsentForm, UserCustomCreateForm, UserCustomUpdateForm
+from .forms import (
+    ImageSharingConsentForm,
+    InstrumentGroupLeadersForm,
+    UserCustomCreateForm,
+    UserCustomUpdateForm,
+)
 from .models import UserCustom
 
 
-def breadcrumbs(user=None):
-    """Returns breadcrumbs for the accounts views."""
-    breadcrumbs = [Breadcrumb(reverse("accounts:MemberList"), "Alle medlemmar")]
-    if user:
-        breadcrumbs.append(Breadcrumb(user.get_absolute_url(), user))
-    return breadcrumbs
+class MemberList(LoginRequiredMixin, BreadcrumbsMixin, ListView):
+    model = UserCustom
+    template_name = "accounts/member_list.html"
+    context_object_name = "members"
+
+    @classmethod
+    def get_breadcrumb(cls, **kwargs) -> Breadcrumb:
+        return Breadcrumb(
+            url=reverse("accounts:MemberList"),
+            label="Alle medlemmar",
+        )
+
+    def get_queryset(self):
+        return (
+            super()
+            .get_queryset()
+            .prefetch_related("groups")
+            .select_related("instrument_type__group")
+        )
+
+    def get_context_data(self, **kwargs):
+        kwargs["membership_status_enum"] = UserCustom.MembershipStatus
+        return super().get_context_data(**kwargs)
 
 
 class UserCustomCreate(PermissionRequiredMixin, BreadcrumbsMixin, CreateView):
@@ -31,9 +56,7 @@ class UserCustomCreate(PermissionRequiredMixin, BreadcrumbsMixin, CreateView):
     form_class = UserCustomCreateForm
     template_name = "common/forms/form.html"
     permission_required = "accounts.add_usercustom"
-
-    def get_breadcrumbs(self) -> list:
-        return breadcrumbs()
+    breadcrumb_parent = MemberList
 
     def form_valid(self, form):
         response = super().form_valid(form)
@@ -54,47 +77,34 @@ class UserCustomCreate(PermissionRequiredMixin, BreadcrumbsMixin, CreateView):
         return response
 
 
-class UserCustomUpdate(UserPassesTestMixin, BreadcrumbsMixin, UpdateView):
-    model = UserCustom
-    form_class = UserCustomUpdateForm
-    template_name = "common/forms/form.html"
-
-    def get_breadcrumbs(self) -> list:
-        return breadcrumbs(self.object)
-
-    def test_func(self):
-        user = self.request.user
-        return self.get_object() == user or user.has_perm("accounts.change_usercustom")
-
-
 class ProfileDetail(LoginRequiredMixin, BreadcrumbsMixin, DetailView):
     """View for user profiles."""
 
     model = UserCustom
     template_name = "accounts/profile_detail.html"
     context_object_name = "profile"
+    breadcrumb_parent = MemberList
 
-    def get_breadcrumbs(self) -> list:
-        return breadcrumbs()
-
-
-class MemberList(LoginRequiredMixin, ListView):
-
-    model = UserCustom
-    template_name = "accounts/member_list.html"
-    context_object_name = "members"
-
-    def get_queryset(self):
-        return (
-            super()
-            .get_queryset()
-            .prefetch_related("groups")
-            .select_related("instrument_type__group")
+    @classmethod
+    def get_breadcrumb(cls, user, **kwargs) -> Breadcrumb:
+        return Breadcrumb(
+            url=user.get_absolute_url(),
+            label=str(user),
         )
 
-    def get_context_data(self, **kwargs):
-        kwargs["membership_status_enum"] = UserCustom.MembershipStatus
-        return super().get_context_data(**kwargs)
+
+class UserCustomUpdate(UserPassesTestMixin, BreadcrumbsMixin, UpdateView):
+    model = UserCustom
+    form_class = UserCustomUpdateForm
+    template_name = "common/forms/form.html"
+    breadcrumb_parent = ProfileDetail
+
+    def get_breadcrumbs_kwargs(self):
+        return {"user": self.object}
+
+    def test_func(self):
+        user = self.request.user
+        return self.get_object() == user or user.has_perm("accounts.change_usercustom")
 
 
 class BirthdayList(LoginRequiredMixin, BreadcrumbsMixin, ListView):
@@ -102,9 +112,7 @@ class BirthdayList(LoginRequiredMixin, BreadcrumbsMixin, ListView):
     model = UserCustom
     template_name = "accounts/birthday_list.html"
     context_object_name = "users"
-
-    def get_breadcrumbs(self) -> list:
-        return breadcrumbs()
+    breadcrumb_parent = MemberList
 
     def get_queryset(self):
         return UserCustom.objects.active().exclude(birthdate__isnull=True)
@@ -116,9 +124,7 @@ class ImageSharingConsentList(PermissionRequiredMixin, BreadcrumbsMixin, ListVie
     template_name = "accounts/image_sharing_consent_list.html"
     context_object_name = "users"
     permission_required = "accounts.view_image_sharing_consent"
-
-    def get_breadcrumbs(self) -> list:
-        return breadcrumbs()
+    breadcrumb_parent = MemberList
 
     def get_queryset(self):
         return UserCustom.objects.active()
@@ -129,9 +135,7 @@ class ImageSharingConsentUpdate(LoginRequiredMixin, BreadcrumbsMixin, FormView):
     form_class = ImageSharingConsentForm
     template_name = "common/forms/form.html"
     http_method_names = ["post", "put"]
-
-    def get_breadcrumbs(self) -> list:
-        return breadcrumbs(self.request.user)
+    breadcrumb_parent = MemberList
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -161,3 +165,45 @@ class ImageSharingConsentUpdate(LoginRequiredMixin, BreadcrumbsMixin, FormView):
         if next:
             return next
         return self.request.user.get_absolute_url()
+
+
+class InstrumentGroupLeaderList(LoginRequiredMixin, BreadcrumbsMixin, ListView):
+    model = UserCustom
+    context_object_name = "instrument_group_leaders"
+    template_name = "accounts/instrument_group_leader_list.html"
+    breadcrumb_parent = MemberList
+
+    @classmethod
+    def get_breadcrumb(cls, **kwargs) -> Breadcrumb:
+        return Breadcrumb(
+            url=reverse("accounts:InstrumentGroupLeaderList"),
+            label="Instrumentgruppeleiarar",
+        )
+
+    def get_queryset(self):
+        instrument_group_leader_group_name, _ = Constant.objects.get_or_create(
+            name="Instrumentgruppeleiargruppenamn"
+        )
+        instrument_leaders_group, _ = Group.objects.get_or_create(
+            name=instrument_group_leader_group_name.value
+        )
+        return instrument_leaders_group.user_set.all()
+
+
+class InstrumentGroupLeadersUpdate(
+    PermissionRequiredMixin, SuccessMessageMixin, BreadcrumbsMixin, FormView
+):
+    form_class = InstrumentGroupLeadersForm
+    template_name = "common/forms/form.html"
+    permission_required = ("accounts.edit_instrument_group_leaders",)
+    success_message = "Instrumentgruppeleiarar redigert."
+    success_url = reverse_lazy("accounts:InstrumentGroupLeaderList")
+    breadcrumb_parent = InstrumentGroupLeaderList
+
+    def get_context_data(self, **kwargs):
+        kwargs["form_title"] = "Rediger instrumentgruppeleiarar"
+        return super().get_context_data(**kwargs)
+
+    def form_valid(self, form):
+        form.save()
+        return super().form_valid(form)
