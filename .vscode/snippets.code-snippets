@@ -129,8 +129,8 @@
 			"@classmethod",
 			"def get_breadcrumb(cls, $1**kwargs):",
 			"    return Breadcrumb(",
-			"        url=reverse(\"$4\", args=[$2]),",
-			"        label=$3,",
+			"        url=reverse(\"$2\"$3),",
+			"        label=$4,",
 			"    )"
 		]
 	},
