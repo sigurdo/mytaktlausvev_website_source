@@ -15,15 +15,7 @@ from .forms import BrewForm, BrewPurchaseForm, DepositForm
 from .models import Brew, Transaction, TransactionType
 
 
-def breadcrumbs(include_brew_list=False):
-    """Returns breadcrumbs for the brewing views."""
-    breadcrumbs = [Breadcrumb(reverse("brewing:BrewOverview"), "Brygging")]
-    if include_brew_list:
-        breadcrumbs.append(Breadcrumb(reverse("brewing:BrewList"), "Alle brygg"))
-    return breadcrumbs
-
-
-class BrewOverview(LoginRequiredMixin, ListView):
+class BrewOverview(LoginRequiredMixin, BreadcrumbsMixin, ListView):
     model = Brew
     context_object_name = "available_brews"
     template_name = "brewing/brew_overview.html"
@@ -35,16 +27,28 @@ class BrewOverview(LoginRequiredMixin, ListView):
         kwargs["brew_sizes"] = Brew.Sizes
         return super().get_context_data(**kwargs)
 
+    @classmethod
+    def get_breadcrumb(cls, **kwargs):
+        return Breadcrumb(
+            url=reverse("brewing:BrewOverview"),
+            label="Brygging",
+        )
+
 
 class BrewList(LoginRequiredMixin, BreadcrumbsMixin, ListView):
     model = Brew
     context_object_name = "brews"
+    breadcrumb_parent = BrewOverview
 
     def get_queryset(self):
         return super().get_queryset().order_by("-available_for_purchase", "name")
 
-    def get_breadcrumbs(self):
-        return breadcrumbs()
+    @classmethod
+    def get_breadcrumb(cls, **kwargs):
+        return Breadcrumb(
+            url=reverse("brewing:BrewList"),
+            label="Alle brygg",
+        )
 
 
 class BrewCreate(
@@ -56,9 +60,7 @@ class BrewCreate(
     success_url = reverse_lazy("brewing:BrewList")
     success_message = 'Brygget "%(name)s" vart laga.'
     permission_required = "brewing.add_brew"
-
-    def get_breadcrumbs(self):
-        return breadcrumbs(include_brew_list=True)
+    breadcrumb_parent = BrewList
 
 
 class BrewUpdate(
@@ -70,9 +72,7 @@ class BrewUpdate(
     success_url = reverse_lazy("brewing:BrewList")
     success_message = 'Brygget "%(name)s" vart oppdatert.'
     permission_required = "brewing.change_brew"
-
-    def get_breadcrumbs(self):
-        return breadcrumbs(include_brew_list=True)
+    breadcrumb_parent = BrewList
 
 
 class BalanceList(PermissionRequiredMixin, BreadcrumbsMixin, ListView):
@@ -80,9 +80,7 @@ class BalanceList(PermissionRequiredMixin, BreadcrumbsMixin, ListView):
     template_name = "brewing/balance_list.html"
     context_object_name = "users"
     permission_required = "brewing.view_transaction"
-
-    def get_breadcrumbs(self):
-        return breadcrumbs()
+    breadcrumb_parent = BrewOverview
 
     def get_context_data(self, **kwargs):
         kwargs["membership_status_enum"] = UserCustom.MembershipStatus
@@ -129,9 +127,7 @@ class DepositCreate(
     template_name = "common/forms/form.html"
     success_url = reverse_lazy("brewing:BrewOverview")
     success_message = "Du har innbetalt %(amount)s NOK til bryggjekassa."
-
-    def get_breadcrumbs(self):
-        return breadcrumbs()
+    breadcrumb_parent = BrewOverview
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -150,6 +146,7 @@ class BrewPurchaseCreate(
     form_class = BrewPurchaseForm
     template_name = "brewing/brew_purchase.html"
     success_url = reverse_lazy("brewing:BrewOverview")
+    breadcrumb_parent = BrewOverview
 
     brew = None
 
@@ -166,9 +163,6 @@ class BrewPurchaseCreate(
             if self.request.GET.get("size") == Brew.Sizes.SIZE_0_5
             else Brew.Sizes.SIZE_0_33
         )
-
-    def get_breadcrumbs(self):
-        return breadcrumbs()
 
     def get_success_message(self, cleaned_data) -> str:
         return f"Du har kjøpt {self.get_brew_size().label} {self.get_brew()} for {cleaned_data['amount']} NOK."
