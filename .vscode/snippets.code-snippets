@@ -124,7 +124,7 @@
 	},
 	"get_breadcrumb": {
 		"scope": "python",
-		"prefix": ["get_breadcrumb(cls, **kwargs)", "def get_breadcrumb(cls, **kwargs)", "@classmethod\ndef get_breadcrumb(cls, **kwargs)"],
+		"prefix": ["get_breadcrumb(cls, **kwargs)", "def get_breadcrumb(cls, **kwargs)"],
 		"body": [
 			"@classmethod",
 			"def get_breadcrumb(cls, $1**kwargs):",

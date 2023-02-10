@@ -8,10 +8,9 @@ from django.http.response import Http404
 from django.test import TestCase
 from django.urls import reverse
 from django.utils.text import slugify
-from django.utils.timezone import localtime, make_aware, now
+from django.utils.timezone import make_aware, now
 
 from accounts.factories import SuperUserFactory, UserFactory
-from common.breadcrumbs.breadcrumbs import Breadcrumb
 from common.mixins import TestMixin
 from common.test_utils import create_formset_post_data
 from events.models import (
@@ -22,8 +21,10 @@ from events.models import (
     EventKeyinfoEntry,
 )
 from events.views import (
+    EventDetail,
     EventFeed,
-    event_breadcrumbs,
+    EventList,
+    EventListYear,
     get_event_attendance_or_404,
     get_event_or_404,
 )
@@ -270,145 +271,9 @@ class GetterTestSuite(TestCase):
             get_event_attendance_or_404(1913, "not-exist", "also-not-exist")
 
 
-class EventBreadcrumbsTestSuite(TestMixin, TestCase):
-    def test_event_list_upcoming(self):
-        """
-        Calling for `EventList` for upcoming events should give 1 breadcrumb;
-        - To `EventList` for the current year.
-        """
-        current_year = localtime(now()).year
-        self.assertEqual(
-            event_breadcrumbs(),
-            [
-                Breadcrumb(
-                    reverse("events:EventList", args=[current_year]),
-                    f"Hendingar {current_year}",
-                )
-            ],
-        )
-
-    def test_event_create(self):
-        """
-        Calling for `EventCreate` should give 2 breadcrumbs;
-        - To `EventList` for the current year.
-        - To `EventList` for all upcoming events.
-        """
-        current_year = localtime(now()).year
-        event = Event(start_time=now() + timedelta(days=1))
-        self.assertEqual(
-            event_breadcrumbs(event=event, include_event=False),
-            [
-                Breadcrumb(
-                    reverse("events:EventList", args=[current_year]),
-                    f"Hendingar {current_year}",
-                ),
-                Breadcrumb(
-                    reverse("events:EventList"),
-                    "Alle framtidige",
-                ),
-            ],
-        )
-
-    def test_future_event_detail(self):
-        """
-        Calling for `EventDetail` for a future event should give 2 breadcrumbs;
-        - To `EventList` for the event's year
-        - To `EventList` for all upcoming events.
-        """
-        event = EventFactory(start_time=(now() + timedelta(days=370)))
-        year = localtime(event.start_time).year
-        self.assertEqual(
-            event_breadcrumbs(event=event, include_event=False),
-            [
-                Breadcrumb(
-                    reverse("events:EventList", args=[year]),
-                    f"Hendingar {year}",
-                ),
-                Breadcrumb(
-                    reverse("events:EventList"),
-                    "Alle framtidige",
-                ),
-            ],
-        )
-
-    def test_future_event_update(self):
-        """
-        Calling for `EventUpdate` or another deeper view than `EventDetail` for a future event should
-        give 3 breadcrumbs;
-        - To `EventList` for the event's year
-        - To `EventList` for all upcoming events
-        - To `EventDetail` for the event.
-        """
-        event = EventFactory(start_time=(now() + timedelta(days=370)))
-        year = localtime(event.start_time).year
-        self.assertEqual(
-            event_breadcrumbs(event=event),
-            [
-                Breadcrumb(
-                    reverse("events:EventList", args=[year]),
-                    f"Hendingar {year}",
-                ),
-                Breadcrumb(
-                    reverse("events:EventList"),
-                    "Alle framtidige",
-                ),
-                Breadcrumb(
-                    reverse(
-                        "events:EventDetail",
-                        args=[year, event.slug],
-                    ),
-                    str(event),
-                ),
-            ],
-        )
-
-    def test_past_event_detail(self):
-        """
-        Calling for `EventDetail` for a past event should give 1 breadcrumb;
-        - To `EventList` for the event's year.
-        """
-        event = EventFactory(start_time=(now() - timedelta(days=370)))
-        year = localtime(event.start_time).year
-        self.assertEqual(
-            event_breadcrumbs(event=event, include_event=False),
-            [
-                Breadcrumb(
-                    reverse("events:EventList", args=[year]),
-                    f"Hendingar {year}",
-                ),
-            ],
-        )
-
-    def test_past_event_update(self):
-        """
-        Calling for EventUpdate or another deeper view than EventDetail for a past event should
-        give 2 breadcrumbs;
-        - To EventList for the event's year
-        - To EventDetail for the event
-        """
-        event = EventFactory(start_time=(now() - timedelta(days=370)))
-        year = localtime(event.start_time).year
-        self.assertEqual(
-            event_breadcrumbs(event=event),
-            [
-                Breadcrumb(
-                    reverse("events:EventList", args=[year]),
-                    f"Hendingar {year}",
-                ),
-                Breadcrumb(
-                    reverse(
-                        "events:EventDetail",
-                        args=[year, event.slug],
-                    ),
-                    str(event),
-                ),
-            ],
-        )
-
-
 class EventListTestSuite(TestMixin, TestCase):
-    def get_url(self, *args):
-        return reverse("events:EventList", args=args)
+    def get_url(self):
+        return reverse("events:EventList")
 
     def test_requires_login(self):
         self.assertLoginRequired(self.get_url())
@@ -440,6 +305,28 @@ class EventListTestSuite(TestMixin, TestCase):
         response = self.client.get(self.get_url())
         self.assertEquals(len(response.context["events"]), 1)
 
+    def test_breadcrumbs(self):
+        """
+        EventList should have breadcrumbs for the following views:
+        EventListYear(<current year>)
+        """
+        year = now().year
+        self.client.force_login(UserFactory())
+        breadcrumbs = self.client.get(reverse("events:EventList")).context[
+            "breadcrumbs"
+        ]
+        self.assertEqual(
+            breadcrumbs,
+            [
+                EventListYear.get_breadcrumb(year),
+            ],
+        )
+
+
+class EventListYearTestSuite(TestMixin, TestCase):
+    def get_url(self, *args):
+        return reverse("events:EventListYear", args=args)
+
     def test_filter_year_events(self):
         """
         Create different amount of events for 2020, 2021, 2022 and 2023 and check if the number of
@@ -464,6 +351,41 @@ class EventDetailTestSuite(TestMixin, TestCase):
         event = EventFactory()
         self.assertLoginRequired(
             reverse("events:EventDetail", args=[event.start_time.year, event.slug])
+        )
+
+    def test_breadcrumbs_upcoming(self):
+        """
+        An upcoming event should have breadcrumbs for the following views:
+        EventListYear / EventList
+        """
+        event = EventFactory(start_time=now())
+        self.client.force_login(UserFactory())
+        breadcrumbs = self.client.get(
+            reverse("events:EventDetail", args=[event.start_time.year, event.slug])
+        ).context["breadcrumbs"]
+        self.assertEqual(
+            breadcrumbs,
+            [
+                EventListYear.get_breadcrumb(event.start_time.year),
+                EventList.get_breadcrumb(),
+            ],
+        )
+
+    def test_breadcrumbs_old(self):
+        """
+        An old event should have breadcrumbs for the following views:
+        EventListYear
+        """
+        event = EventFactory(start_time=now() - timedelta(days=1))
+        self.client.force_login(UserFactory())
+        breadcrumbs = self.client.get(
+            reverse("events:EventDetail", args=[event.start_time.year, event.slug])
+        ).context["breadcrumbs"]
+        self.assertEqual(
+            breadcrumbs,
+            [
+                EventListYear.get_breadcrumb(event.start_time.year),
+            ],
         )
 
 
@@ -538,6 +460,24 @@ class EventCreateTestSuite(TestMixin, TestCase):
         self.assertEqual(keyinfo.key, "Price")
         self.assertEqual(keyinfo.info, "100kr")
         self.assertEqual(keyinfo.order, 3)
+
+    def test_breadcrumbs(self):
+        """
+        EventCreate should have breadcrumbs for the following views:
+        EventListYear(<current year>) / EventList
+        """
+        year = now().year
+        self.client.force_login(UserFactory())
+        breadcrumbs = self.client.get(reverse("events:EventCreate")).context[
+            "breadcrumbs"
+        ]
+        self.assertEqual(
+            breadcrumbs,
+            [
+                EventListYear.get_breadcrumb(year),
+                EventList.get_breadcrumb(),
+            ],
+        )
 
 
 class EventUpdateTestSuite(TestMixin, TestCase):
@@ -622,6 +562,43 @@ class EventUpdateTestSuite(TestMixin, TestCase):
         self.assertEqual(keyinfo.info, "100kr")
         self.assertEqual(keyinfo.order, 3)
 
+    def test_breadcrumbs_upcoming(self):
+        """
+        EventUpdate for an upcoming event should have breadcrumbs for the following views:
+        EventListYear / EventList / EventDetail
+        """
+        event = EventFactory(start_time=now())
+        self.client.force_login(SuperUserFactory())
+        breadcrumbs = self.client.get(
+            reverse("events:EventUpdate", args=[event.start_time.year, event.slug])
+        ).context["breadcrumbs"]
+        self.assertEqual(
+            breadcrumbs,
+            [
+                EventListYear.get_breadcrumb(event.start_time.year),
+                EventList.get_breadcrumb(),
+                EventDetail.get_breadcrumb(event),
+            ],
+        )
+
+    def test_breadcrumbs_old(self):
+        """
+        EventUpdate for an old event should have breadcrumbs for the following views:
+        EventListYear / EventDetail
+        """
+        event = EventFactory(start_time=now() - timedelta(days=1))
+        self.client.force_login(SuperUserFactory())
+        breadcrumbs = self.client.get(
+            reverse("events:EventUpdate", args=[event.start_time.year, event.slug])
+        ).context["breadcrumbs"]
+        self.assertEqual(
+            breadcrumbs,
+            [
+                EventListYear.get_breadcrumb(event.start_time.year),
+                EventDetail.get_breadcrumb(event),
+            ],
+        )
+
 
 class EventDeleteTestSuite(TestMixin, TestCase):
     def setUp(self):
@@ -671,6 +648,43 @@ class EventDeleteTestSuite(TestMixin, TestCase):
         self.client.post(self.get_url())
         Event.objects.get(pk=self.event.pk)
 
+    def test_breadcrumbs_upcoming(self):
+        """
+        EventDelete for an upcoming event should have breadcrumbs for the following views:
+        EventListYear / EventList / EventDetail
+        """
+        event = EventFactory(start_time=now())
+        self.client.force_login(SuperUserFactory())
+        breadcrumbs = self.client.get(
+            reverse("events:EventDelete", args=[event.start_time.year, event.slug])
+        ).context["breadcrumbs"]
+        self.assertEqual(
+            breadcrumbs,
+            [
+                EventListYear.get_breadcrumb(event.start_time.year),
+                EventList.get_breadcrumb(),
+                EventDetail.get_breadcrumb(event),
+            ],
+        )
+
+    def test_breadcrumbs_old(self):
+        """
+        EventDelete for an old event should have breadcrumbs for the following views:
+        EventListYear / EventDetail
+        """
+        event = EventFactory(start_time=now() - timedelta(days=1))
+        self.client.force_login(SuperUserFactory())
+        breadcrumbs = self.client.get(
+            reverse("events:EventDelete", args=[event.start_time.year, event.slug])
+        ).context["breadcrumbs"]
+        self.assertEqual(
+            breadcrumbs,
+            [
+                EventListYear.get_breadcrumb(event.start_time.year),
+                EventDetail.get_breadcrumb(event),
+            ],
+        )
+
 
 class EventAttendanceListTestSuite(TestMixin, TestCase):
     def get_url(self, event):
@@ -690,6 +704,47 @@ class EventAttendanceListTestSuite(TestMixin, TestCase):
         """Should require the `view_eventattendance` permission."""
         self.assertPermissionRequired(
             self.get_url(self.event), "events.view_eventattendance"
+        )
+
+    def test_breadcrumbs_upcoming(self):
+        """
+        EventAttendanceList for an upcoming event should have breadcrumbs for the following views:
+        EventListYear / EventList / EventDetail
+        """
+        event = EventFactory(start_time=now())
+        self.client.force_login(SuperUserFactory())
+        breadcrumbs = self.client.get(
+            reverse(
+                "events:EventAttendanceList", args=[event.start_time.year, event.slug]
+            )
+        ).context["breadcrumbs"]
+        self.assertEqual(
+            breadcrumbs,
+            [
+                EventListYear.get_breadcrumb(event.start_time.year),
+                EventList.get_breadcrumb(),
+                EventDetail.get_breadcrumb(event),
+            ],
+        )
+
+    def test_breadcrumbs_old(self):
+        """
+        EventAttendanceList for an old event should have breadcrumbs for the following views:
+        EventListYear / EventDetail
+        """
+        event = EventFactory(start_time=now() - timedelta(days=1))
+        self.client.force_login(SuperUserFactory())
+        breadcrumbs = self.client.get(
+            reverse(
+                "events:EventAttendanceList", args=[event.start_time.year, event.slug]
+            )
+        ).context["breadcrumbs"]
+        self.assertEqual(
+            breadcrumbs,
+            [
+                EventListYear.get_breadcrumb(event.start_time.year),
+                EventDetail.get_breadcrumb(event),
+            ],
         )
 
 
@@ -775,6 +830,57 @@ class EventAttendanceUpdateTestSuite(TestMixin, TestCase):
         response = self.client.get(self.get_url(self.attendance))
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
+    def test_breadcrumbs_upcoming(self):
+        """
+        EventAttendanceUpdate for an upcoming event should have breadcrumbs for the following views:
+        EventListYear / EventList / EventDetail
+        """
+        attendance = EventAttendanceFactory(event__start_time=now())
+        self.client.force_login(SuperUserFactory())
+        breadcrumbs = self.client.get(
+            reverse(
+                "events:EventAttendanceUpdate",
+                args=[
+                    attendance.event.start_time.year,
+                    attendance.event.slug,
+                    attendance.person.slug,
+                ],
+            )
+        ).context["breadcrumbs"]
+        self.assertEqual(
+            breadcrumbs,
+            [
+                EventListYear.get_breadcrumb(attendance.event.start_time.year),
+                EventList.get_breadcrumb(),
+                EventDetail.get_breadcrumb(attendance.event),
+            ],
+        )
+
+    def test_breadcrumbs_old(self):
+        """
+        EventAttendanceUpdate for an old event should have breadcrumbs for the following views:
+        EventListYear / EventDetail
+        """
+        attendance = EventAttendanceFactory(event__start_time=now() - timedelta(days=1))
+        self.client.force_login(SuperUserFactory())
+        breadcrumbs = self.client.get(
+            reverse(
+                "events:EventAttendanceUpdate",
+                args=[
+                    attendance.event.start_time.year,
+                    attendance.event.slug,
+                    attendance.person.slug,
+                ],
+            )
+        ).context["breadcrumbs"]
+        self.assertEqual(
+            breadcrumbs,
+            [
+                EventListYear.get_breadcrumb(attendance.event.start_time.year),
+                EventDetail.get_breadcrumb(attendance.event),
+            ],
+        )
+
 
 class EventAttendanceDeleteTestSuite(TestMixin, TestCase):
     def get_url(self, attendance):
@@ -824,6 +930,57 @@ class EventAttendanceDeleteTestSuite(TestMixin, TestCase):
                     self.attendance.event.slug,
                 ],
             ),
+        )
+
+    def test_breadcrumbs_upcoming(self):
+        """
+        EventAttendanceDelete for an upcoming event should have breadcrumbs for the following views:
+        EventListYear / EventList / EventDetail
+        """
+        attendance = EventAttendanceFactory(event__start_time=now())
+        self.client.force_login(SuperUserFactory())
+        breadcrumbs = self.client.get(
+            reverse(
+                "events:EventAttendanceDelete",
+                args=[
+                    attendance.event.start_time.year,
+                    attendance.event.slug,
+                    attendance.person.slug,
+                ],
+            )
+        ).context["breadcrumbs"]
+        self.assertEqual(
+            breadcrumbs,
+            [
+                EventListYear.get_breadcrumb(attendance.event.start_time.year),
+                EventList.get_breadcrumb(),
+                EventDetail.get_breadcrumb(attendance.event),
+            ],
+        )
+
+    def test_breadcrumbs_old(self):
+        """
+        EventAttendanceDelete for an old event should have breadcrumbs for the following views:
+        EventListYear / EventDetail
+        """
+        attendance = EventAttendanceFactory(event__start_time=now() - timedelta(days=1))
+        self.client.force_login(SuperUserFactory())
+        breadcrumbs = self.client.get(
+            reverse(
+                "events:EventAttendanceDelete",
+                args=[
+                    attendance.event.start_time.year,
+                    attendance.event.slug,
+                    attendance.person.slug,
+                ],
+            )
+        ).context["breadcrumbs"]
+        self.assertEqual(
+            breadcrumbs,
+            [
+                EventListYear.get_breadcrumb(attendance.event.start_time.year),
+                EventDetail.get_breadcrumb(attendance.event),
+            ],
         )
 
 

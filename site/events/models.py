@@ -45,6 +45,7 @@ class EventCategory(Model):
 
 class EventManager(Manager):
     def upcoming(self):
+        """Returns a manager of all eventsthat are upcoming (which includes ongoing)."""
         return super().filter(
             Q(end_time__gte=make_aware(datetime.now()))
             | Q(start_time__gte=make_aware(datetime.now() - timedelta(hours=12)))
@@ -126,6 +127,12 @@ class Event(ArticleMixin):
     def is_in_future(self):
         """Returns True if the event is in the future."""
         return self.start_time > make_aware(datetime.now())
+
+    def is_upcoming(self):
+        """Returns True if the event is upcoming (which includes ongoing)."""
+        return (
+            self.end_time is not None and self.end_time >= make_aware(datetime.now())
+        ) or self.start_time >= make_aware(datetime.now() - timedelta(hours=12))
 
     class Meta:
         ordering = ["start_time"]

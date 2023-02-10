@@ -25,7 +25,11 @@ class Breadcrumb:
 
 
 class BreadcrumbsMixin(View):
-    breadcrumb_parent = None
+    breadcrumb_parent: View = None
+
+    @classmethod
+    def get_breadcrumb_parent(cls, **kwargs) -> View:
+        return cls.breadcrumb_parent
 
     @classmethod
     def get_breadcrumb(cls, **kwargs) -> Breadcrumb:
@@ -36,9 +40,10 @@ class BreadcrumbsMixin(View):
 
     @classmethod
     def get_breadcrumbs_from_parent(cls, **kwargs) -> list:
-        if cls.breadcrumb_parent is None:
+        parent = cls.get_breadcrumb_parent(**kwargs)
+        if parent is None:
             return []
-        return cls.breadcrumb_parent.get_breadcrumbs_for_children(**kwargs)
+        return parent.get_breadcrumbs_for_children(**kwargs)
 
     @classmethod
     def get_breadcrumbs_for_children(cls, **kwargs) -> list:
