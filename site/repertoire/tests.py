@@ -7,7 +7,6 @@ from django.utils.timezone import now
 from pypdf import PdfReader
 
 from accounts.factories import SuperUserFactory, UserFactory
-from common.breadcrumbs.breadcrumbs import Breadcrumb
 from common.mixins import TestMixin
 from common.test_utils import create_formset_post_data
 from sheetmusic.factories import FavoritePartFactory, ScoreFactory
@@ -15,7 +14,7 @@ from sheetmusic.factories import FavoritePartFactory, ScoreFactory
 from .factories import RepertoireFactory
 from .forms import RepertoirePdfFormset
 from .models import Repertoire
-from .views import repertoire_breadcrumbs
+from .views import ActiveRepertoires, OldRepertoires, RepertoireDetail
 
 
 class RepertoireManagerTestSuite(TestMixin, TestCase):
@@ -98,100 +97,104 @@ class RepertoireTestSuite(TestMixin, TestCase):
         self.assertNotEqual(self.repertoire.slug, other.slug)
 
 
-class RepertoireBreadcrumbsTestSuite(TestMixin, TestCase):
-    def test_base(self):
-        breadcrumbs = repertoire_breadcrumbs()
-        self.assertEqual(len(breadcrumbs), 1)
-        self.assertEqual(
-            breadcrumbs,
-            [
-                Breadcrumb(
-                    reverse("repertoire:ActiveRepertoires"),
-                    "Repertoar",
-                )
-            ],
-        )
-
-    def test_old(self):
-        breadcrumbs = repertoire_breadcrumbs(
-            repertoire=RepertoireFactory(
-                active_until=(now() - timedelta(days=14)).date()
-            )
-        )
-        self.assertEqual(len(breadcrumbs), 2)
-        self.assertEqual(
-            breadcrumbs[1],
-            Breadcrumb(
-                reverse("repertoire:OldRepertoires"),
-                "Gamle",
-            ),
-        )
-
-    def test_repertoire(self):
-        repertoire = RepertoireFactory()
-        breadcrumbs = repertoire_breadcrumbs(
-            repertoire=repertoire, show_repertoire=True
-        )
-        self.assertEqual(len(breadcrumbs), 2)
-        self.assertEqual(
-            breadcrumbs[1],
-            Breadcrumb(
-                reverse("repertoire:RepertoireDetail", args=[repertoire.slug]),
-                str(repertoire),
-            ),
-        )
-
-    def test_old_repertoire(self):
-        repertoire = RepertoireFactory(active_until=(now() - timedelta(days=14)).date())
-        breadcrumbs = repertoire_breadcrumbs(
-            repertoire=repertoire, show_repertoire=True
-        )
-        self.assertEqual(len(breadcrumbs), 3)
-        self.assertEqual(
-            breadcrumbs[2],
-            Breadcrumb(
-                reverse("repertoire:RepertoireDetail", args=[repertoire.slug]),
-                str(repertoire),
-            ),
-        )
-
-
 class ActiveRepertoiresTestSuite(TestMixin, TestCase):
+    def get_url(self):
+        return reverse("repertoire:ActiveRepertoires")
+
     def test_requires_login(self):
-        self.assertLoginRequired(reverse("repertoire:ActiveRepertoires"))
+        self.assertLoginRequired(self.get_url())
 
     def test_get_queryset(self):
         RepertoireFactory()
         self.client.force_login(UserFactory())
-        response = self.client.get(reverse("repertoire:ActiveRepertoires"))
+        response = self.client.get(self.get_url())
         self.assertEqual(
             list(response.context["repertoires"]), list(Repertoire.objects.active())
         )
 
+    def test_breadcrumbs(self):
+        """
+        ActiveRepertoires should have an empty list of breadcrumbs
+        """
+        self.client.force_login(SuperUserFactory())
+        breadcrumbs = self.client.get(self.get_url()).context["breadcrumbs"]
+        self.assertEqual(breadcrumbs, [])
+
 
 class RepertoireDetailTestSuite(TestMixin, TestCase):
+    def get_url(self, repertoire=None):
+        repertoire = repertoire or self.repertoire
+        return reverse("repertoire:RepertoireDetail", args=[repertoire.slug])
+
     def setUp(self):
         self.repertoire = RepertoireFactory()
 
     def test_requires_login(self):
-        self.assertLoginRequired(
-            reverse("repertoire:RepertoireDetail", args=[self.repertoire.slug])
-        )
+        self.assertLoginRequired(self.get_url())
 
     def test_context_object_name(self):
         self.client.force_login(UserFactory())
-        response = self.client.get(
-            reverse("repertoire:RepertoireDetail", args=[self.repertoire.slug])
-        )
+        response = self.client.get(self.get_url())
         self.assertEqual(response.context["repertoire"], self.repertoire)
+
+    def test_breadcrumbs_active(self):
+        """
+        RepertoireDetail for an active repertoire should have breadcrumbs for the following views:
+        ActiveRepertoires
+        """
+        repertoire = RepertoireFactory(active_until=None)
+        self.client.force_login(SuperUserFactory())
+        breadcrumbs = self.client.get(self.get_url(repertoire)).context["breadcrumbs"]
+        self.assertEqual(
+            breadcrumbs,
+            [
+                ActiveRepertoires.get_breadcrumb(),
+            ],
+        )
+
+    def test_breadcrumbs_old(self):
+        """
+        RepertoireDetail for an old repertoire should have breadcrumbs for the following views:
+        ActiveRepertoires / OldRepertoires
+        """
+        repertoire = RepertoireFactory(active_until=now() - timedelta(days=1))
+        self.client.force_login(SuperUserFactory())
+        breadcrumbs = self.client.get(self.get_url(repertoire)).context["breadcrumbs"]
+        self.assertEqual(
+            breadcrumbs,
+            [
+                ActiveRepertoires.get_breadcrumb(),
+                OldRepertoires.get_breadcrumb(),
+            ],
+        )
 
 
 class OldRepertoiresTestSuite(TestMixin, TestCase):
+    def get_url(self):
+        return reverse("repertoire:OldRepertoires")
+
     def test_requires_login(self):
-        self.assertLoginRequired(reverse("repertoire:OldRepertoires"))
+        self.assertLoginRequired(self.get_url())
+
+    def test_breadcrumbs(self):
+        """
+        OldRepertoires should have breadcrumbs for the following views:
+        ActiveRepertoires
+        """
+        self.client.force_login(SuperUserFactory())
+        breadcrumbs = self.client.get(self.get_url()).context["breadcrumbs"]
+        self.assertEqual(
+            breadcrumbs,
+            [
+                ActiveRepertoires.get_breadcrumb(),
+            ],
+        )
 
 
 class RepertoireCreateTestSuite(TestMixin, TestCase):
+    def get_url(self):
+        return reverse("repertoire:RepertoireCreate")
+
     def setUp(self):
         self.score = ScoreFactory()
         self.test_data = {
@@ -200,27 +203,36 @@ class RepertoireCreateTestSuite(TestMixin, TestCase):
             "scores": [self.score.pk],
         }
 
-    def get_url(self):
-        return reverse("repertoire:RepertoireCreate")
-
     def test_requires_login(self):
-        self.assertLoginRequired(reverse("repertoire:RepertoireCreate"))
+        self.assertLoginRequired(self.get_url())
 
     def test_requires_permission(self):
-        self.assertPermissionRequired(
-            reverse("repertoire:RepertoireCreate"),
-            "repertoire.add_repertoire",
-        )
+        self.assertPermissionRequired(self.get_url(), "repertoire.add_repertoire")
 
     def test_success_redirect(self):
         self.client.force_login(SuperUserFactory())
         response = self.client.post(self.get_url(), self.test_data)
         self.assertRedirects(response, reverse("repertoire:ActiveRepertoires"))
 
+    def test_breadcrumbs(self):
+        """
+        RepertoireCreate should have breadcrumbs for the following views:
+        ActiveRepertoires
+        """
+        self.client.force_login(SuperUserFactory())
+        breadcrumbs = self.client.get(self.get_url()).context["breadcrumbs"]
+        self.assertEqual(
+            breadcrumbs,
+            [
+                ActiveRepertoires.get_breadcrumb(),
+            ],
+        )
+
 
 class RepertoireUpdateTestSuite(TestMixin, TestCase):
-    def get_url(self):
-        return reverse("repertoire:RepertoireUpdate", args=[self.repertoire.slug])
+    def get_url(self, repertoire=None):
+        repertoire = repertoire or self.repertoire
+        return reverse("repertoire:RepertoireUpdate", args=[repertoire.slug])
 
     def setUp(self):
         self.score = ScoreFactory()
@@ -246,10 +258,44 @@ class RepertoireUpdateTestSuite(TestMixin, TestCase):
         response = self.client.post(self.get_url(), self.test_data)
         self.assertRedirects(response, reverse("repertoire:ActiveRepertoires"))
 
+    def test_breadcrumbs_active(self):
+        """
+        RepertoireUpdate for an active repertoire should have breadcrumbs for the following views:
+        ActiveRepertoires / RepertoireDetail
+        """
+        repertoire = RepertoireFactory(active_until=None)
+        self.client.force_login(SuperUserFactory())
+        breadcrumbs = self.client.get(self.get_url(repertoire)).context["breadcrumbs"]
+        self.assertEqual(
+            breadcrumbs,
+            [
+                ActiveRepertoires.get_breadcrumb(),
+                RepertoireDetail.get_breadcrumb(repertoire),
+            ],
+        )
+
+    def test_breadcrumbs_old(self):
+        """
+        RepertoireUpdate for an old repertoire should have breadcrumbs for the following views:
+        ActiveRepertoires / OldRepertoires / RepertoireDetail
+        """
+        repertoire = RepertoireFactory(active_until=now() - timedelta(days=1))
+        self.client.force_login(SuperUserFactory())
+        breadcrumbs = self.client.get(self.get_url(repertoire)).context["breadcrumbs"]
+        self.assertEqual(
+            breadcrumbs,
+            [
+                ActiveRepertoires.get_breadcrumb(),
+                OldRepertoires.get_breadcrumb(),
+                RepertoireDetail.get_breadcrumb(repertoire),
+            ],
+        )
+
 
 class RepertoireDeleteTestSuite(TestMixin, TestCase):
-    def get_url(self):
-        return reverse("repertoire:RepertoireDelete", args=[self.repertoire.slug])
+    def get_url(self, repertoire=None):
+        repertoire = repertoire or self.repertoire
+        return reverse("repertoire:RepertoireDelete", args=[repertoire.slug])
 
     def setUp(self):
         self.repertoire = RepertoireFactory()
@@ -257,10 +303,44 @@ class RepertoireDeleteTestSuite(TestMixin, TestCase):
     def test_requires_permission(self):
         self.assertPermissionRequired(self.get_url(), "repertoire.delete_repertoire")
 
+    def test_breadcrumbs_active(self):
+        """
+        RepertoireDelete for an active repertoire should have breadcrumbs for the following views:
+        ActiveRepertoires / RepertoireDetail
+        """
+        repertoire = RepertoireFactory(active_until=None)
+        self.client.force_login(SuperUserFactory())
+        breadcrumbs = self.client.get(self.get_url(repertoire)).context["breadcrumbs"]
+        self.assertEqual(
+            breadcrumbs,
+            [
+                ActiveRepertoires.get_breadcrumb(),
+                RepertoireDetail.get_breadcrumb(repertoire),
+            ],
+        )
+
+    def test_breadcrumbs_old(self):
+        """
+        RepertoireDelete for an old repertoire should have breadcrumbs for the following views:
+        ActiveRepertoires / OldRepertoires / RepertoireDetail
+        """
+        repertoire = RepertoireFactory(active_until=now() - timedelta(days=1))
+        self.client.force_login(SuperUserFactory())
+        breadcrumbs = self.client.get(self.get_url(repertoire)).context["breadcrumbs"]
+        self.assertEqual(
+            breadcrumbs,
+            [
+                ActiveRepertoires.get_breadcrumb(),
+                OldRepertoires.get_breadcrumb(),
+                RepertoireDetail.get_breadcrumb(repertoire),
+            ],
+        )
+
 
 class RepertoirePdfTestSuite(TestMixin, TestCase):
-    def get_url(self):
-        return reverse("repertoire:RepertoirePdf", args=[self.repertoire.slug])
+    def get_url(self, repertoire=None):
+        repertoire = repertoire or self.repertoire
+        return reverse("repertoire:RepertoirePdf", args=[repertoire.slug])
 
     def create_post_data(self, data=None):
         if data is None:
@@ -300,3 +380,36 @@ class RepertoirePdfTestSuite(TestMixin, TestCase):
         self.assertEqual(response["content-type"], "application/pdf")
         pdf_reader = PdfReader(BytesIO(response.getvalue()))
         self.assertEqual(len(pdf_reader.pages), 3)
+
+    def test_breadcrumbs_active(self):
+        """
+        RepertoirePdf for an active repertoire should have breadcrumbs for the following views:
+        ActiveRepertoires / RepertoireDetail
+        """
+        repertoire = RepertoireFactory(active_until=None)
+        self.client.force_login(SuperUserFactory())
+        breadcrumbs = self.client.get(self.get_url(repertoire)).context["breadcrumbs"]
+        self.assertEqual(
+            breadcrumbs,
+            [
+                ActiveRepertoires.get_breadcrumb(),
+                RepertoireDetail.get_breadcrumb(repertoire),
+            ],
+        )
+
+    def test_breadcrumbs_old(self):
+        """
+        RepertoirePdf for an old repertoire should have breadcrumbs for the following views:
+        ActiveRepertoires / OldRepertoires / RepertoireDetail
+        """
+        repertoire = RepertoireFactory(active_until=now() - timedelta(days=1))
+        self.client.force_login(SuperUserFactory())
+        breadcrumbs = self.client.get(self.get_url(repertoire)).context["breadcrumbs"]
+        self.assertEqual(
+            breadcrumbs,
+            [
+                ActiveRepertoires.get_breadcrumb(),
+                OldRepertoires.get_breadcrumb(),
+                RepertoireDetail.get_breadcrumb(repertoire),
+            ],
+        )
