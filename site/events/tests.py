@@ -312,9 +312,7 @@ class EventListTestSuite(TestMixin, TestCase):
         """
         year = now().year
         self.client.force_login(UserFactory())
-        breadcrumbs = self.client.get(reverse("events:EventList")).context[
-            "breadcrumbs"
-        ]
+        breadcrumbs = self.client.get(self.get_url()).context["breadcrumbs"]
         self.assertEqual(
             breadcrumbs,
             [
@@ -344,14 +342,23 @@ class EventListYearTestSuite(TestMixin, TestCase):
         self.assertEquals(len(self.client.get(self.get_url(2022)).context["events"]), 2)
         self.assertEquals(len(self.client.get(self.get_url(2023)).context["events"]), 3)
 
+    def test_breadcrumbs(self):
+        """
+        EventListYear should have an empty list of breadcrumbs
+        """
+        self.client.force_login(UserFactory())
+        breadcrumbs = self.client.get(self.get_url(1234)).context["breadcrumbs"]
+        self.assertEqual(breadcrumbs, [])
+
 
 class EventDetailTestSuite(TestMixin, TestCase):
+    def get_url(self, event):
+        return reverse("events:EventDetail", args=[event.start_time.year, event.slug])
+
     def test_requires_login(self):
         """Should require login."""
         event = EventFactory()
-        self.assertLoginRequired(
-            reverse("events:EventDetail", args=[event.start_time.year, event.slug])
-        )
+        self.assertLoginRequired(self.get_url(event))
 
     def test_breadcrumbs_upcoming(self):
         """
@@ -360,9 +367,7 @@ class EventDetailTestSuite(TestMixin, TestCase):
         """
         event = EventFactory(start_time=now())
         self.client.force_login(UserFactory())
-        breadcrumbs = self.client.get(
-            reverse("events:EventDetail", args=[event.start_time.year, event.slug])
-        ).context["breadcrumbs"]
+        breadcrumbs = self.client.get(self.get_url(event)).context["breadcrumbs"]
         self.assertEqual(
             breadcrumbs,
             [
@@ -378,9 +383,7 @@ class EventDetailTestSuite(TestMixin, TestCase):
         """
         event = EventFactory(start_time=now() - timedelta(days=1))
         self.client.force_login(UserFactory())
-        breadcrumbs = self.client.get(
-            reverse("events:EventDetail", args=[event.start_time.year, event.slug])
-        ).context["breadcrumbs"]
+        breadcrumbs = self.client.get(self.get_url(event)).context["breadcrumbs"]
         self.assertEqual(
             breadcrumbs,
             [
@@ -468,9 +471,7 @@ class EventCreateTestSuite(TestMixin, TestCase):
         """
         year = now().year
         self.client.force_login(UserFactory())
-        breadcrumbs = self.client.get(reverse("events:EventCreate")).context[
-            "breadcrumbs"
-        ]
+        breadcrumbs = self.client.get(self.get_url()).context["breadcrumbs"]
         self.assertEqual(
             breadcrumbs,
             [
@@ -513,11 +514,10 @@ class EventUpdateTestSuite(TestMixin, TestCase):
             form_data.update({**self.create_formset_post_data()})
         return form_data
 
-    def get_url(self):
+    def get_url(self, event=None):
         """Returns the URL for the event update view for `event`."""
-        return reverse(
-            "events:EventUpdate", args=[self.event.start_time.year, self.event.slug]
-        )
+        event = event or self.event
+        return reverse("events:EventUpdate", args=[event.start_time.year, event.slug])
 
     def test_requires_login(self):
         """Should require login."""
@@ -569,9 +569,7 @@ class EventUpdateTestSuite(TestMixin, TestCase):
         """
         event = EventFactory(start_time=now())
         self.client.force_login(SuperUserFactory())
-        breadcrumbs = self.client.get(
-            reverse("events:EventUpdate", args=[event.start_time.year, event.slug])
-        ).context["breadcrumbs"]
+        breadcrumbs = self.client.get(self.get_url(event)).context["breadcrumbs"]
         self.assertEqual(
             breadcrumbs,
             [
@@ -588,9 +586,7 @@ class EventUpdateTestSuite(TestMixin, TestCase):
         """
         event = EventFactory(start_time=now() - timedelta(days=1))
         self.client.force_login(SuperUserFactory())
-        breadcrumbs = self.client.get(
-            reverse("events:EventUpdate", args=[event.start_time.year, event.slug])
-        ).context["breadcrumbs"]
+        breadcrumbs = self.client.get(self.get_url(event)).context["breadcrumbs"]
         self.assertEqual(
             breadcrumbs,
             [
@@ -604,10 +600,9 @@ class EventDeleteTestSuite(TestMixin, TestCase):
     def setUp(self):
         self.event = EventFactory()
 
-    def get_url(self):
-        return reverse(
-            "events:EventDelete", args=[self.event.start_time.year, self.event.slug]
-        )
+    def get_url(self, event=None):
+        event = event or self.event
+        return reverse("events:EventDelete", args=[event.start_time.year, event.slug])
 
     def test_should_redirect_to_event_list_on_success(self):
         """Should redirect to the event list on success."""
@@ -655,9 +650,7 @@ class EventDeleteTestSuite(TestMixin, TestCase):
         """
         event = EventFactory(start_time=now())
         self.client.force_login(SuperUserFactory())
-        breadcrumbs = self.client.get(
-            reverse("events:EventDelete", args=[event.start_time.year, event.slug])
-        ).context["breadcrumbs"]
+        breadcrumbs = self.client.get(self.get_url(event)).context["breadcrumbs"]
         self.assertEqual(
             breadcrumbs,
             [
@@ -674,9 +667,7 @@ class EventDeleteTestSuite(TestMixin, TestCase):
         """
         event = EventFactory(start_time=now() - timedelta(days=1))
         self.client.force_login(SuperUserFactory())
-        breadcrumbs = self.client.get(
-            reverse("events:EventDelete", args=[event.start_time.year, event.slug])
-        ).context["breadcrumbs"]
+        breadcrumbs = self.client.get(self.get_url(event)).context["breadcrumbs"]
         self.assertEqual(
             breadcrumbs,
             [
@@ -713,11 +704,7 @@ class EventAttendanceListTestSuite(TestMixin, TestCase):
         """
         event = EventFactory(start_time=now())
         self.client.force_login(SuperUserFactory())
-        breadcrumbs = self.client.get(
-            reverse(
-                "events:EventAttendanceList", args=[event.start_time.year, event.slug]
-            )
-        ).context["breadcrumbs"]
+        breadcrumbs = self.client.get(self.get_url(event)).context["breadcrumbs"]
         self.assertEqual(
             breadcrumbs,
             [
@@ -734,11 +721,7 @@ class EventAttendanceListTestSuite(TestMixin, TestCase):
         """
         event = EventFactory(start_time=now() - timedelta(days=1))
         self.client.force_login(SuperUserFactory())
-        breadcrumbs = self.client.get(
-            reverse(
-                "events:EventAttendanceList", args=[event.start_time.year, event.slug]
-            )
-        ).context["breadcrumbs"]
+        breadcrumbs = self.client.get(self.get_url(event)).context["breadcrumbs"]
         self.assertEqual(
             breadcrumbs,
             [
@@ -837,16 +820,7 @@ class EventAttendanceUpdateTestSuite(TestMixin, TestCase):
         """
         attendance = EventAttendanceFactory(event__start_time=now())
         self.client.force_login(SuperUserFactory())
-        breadcrumbs = self.client.get(
-            reverse(
-                "events:EventAttendanceUpdate",
-                args=[
-                    attendance.event.start_time.year,
-                    attendance.event.slug,
-                    attendance.person.slug,
-                ],
-            )
-        ).context["breadcrumbs"]
+        breadcrumbs = self.client.get(self.get_url(attendance)).context["breadcrumbs"]
         self.assertEqual(
             breadcrumbs,
             [
@@ -863,16 +837,7 @@ class EventAttendanceUpdateTestSuite(TestMixin, TestCase):
         """
         attendance = EventAttendanceFactory(event__start_time=now() - timedelta(days=1))
         self.client.force_login(SuperUserFactory())
-        breadcrumbs = self.client.get(
-            reverse(
-                "events:EventAttendanceUpdate",
-                args=[
-                    attendance.event.start_time.year,
-                    attendance.event.slug,
-                    attendance.person.slug,
-                ],
-            )
-        ).context["breadcrumbs"]
+        breadcrumbs = self.client.get(self.get_url(attendance)).context["breadcrumbs"]
         self.assertEqual(
             breadcrumbs,
             [
@@ -939,16 +904,7 @@ class EventAttendanceDeleteTestSuite(TestMixin, TestCase):
         """
         attendance = EventAttendanceFactory(event__start_time=now())
         self.client.force_login(SuperUserFactory())
-        breadcrumbs = self.client.get(
-            reverse(
-                "events:EventAttendanceDelete",
-                args=[
-                    attendance.event.start_time.year,
-                    attendance.event.slug,
-                    attendance.person.slug,
-                ],
-            )
-        ).context["breadcrumbs"]
+        breadcrumbs = self.client.get(self.get_url(attendance)).context["breadcrumbs"]
         self.assertEqual(
             breadcrumbs,
             [
@@ -965,16 +921,7 @@ class EventAttendanceDeleteTestSuite(TestMixin, TestCase):
         """
         attendance = EventAttendanceFactory(event__start_time=now() - timedelta(days=1))
         self.client.force_login(SuperUserFactory())
-        breadcrumbs = self.client.get(
-            reverse(
-                "events:EventAttendanceDelete",
-                args=[
-                    attendance.event.start_time.year,
-                    attendance.event.slug,
-                    attendance.person.slug,
-                ],
-            )
-        ).context["breadcrumbs"]
+        breadcrumbs = self.client.get(self.get_url(attendance)).context["breadcrumbs"]
         self.assertEqual(
             breadcrumbs,
             [

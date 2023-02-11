@@ -18,6 +18,7 @@ class SlugPathMixin:
     Raises a 404 if a matching object can't be found.
     Intented to override `SingleObjectMixin`.
     """
+
     # Cannot be called `object`, because that will make `SubarticleCreate`
     # load `ArticleForm` as an update form instead of a create form.
     object_cached = None
@@ -56,7 +57,7 @@ class ArticleDetail(UserPassesTestMixin, SlugPathMixin, BreadcrumbsMixin, Detail
         else:
             context["subarticles"] = self.object.children.filter(public=True)
         return context
-    
+
     @classmethod
     def get_breadcrumbs_for_children(cls, article, **kwargs):
         return article.breadcrumbs(include_self=True)
@@ -64,6 +65,7 @@ class ArticleDetail(UserPassesTestMixin, SlugPathMixin, BreadcrumbsMixin, Detail
 
 class ArticleCreate(LoginRequiredMixin, CreateView):
     """View for creating an article."""
+
     model = Article
     form_class = ArticleForm
     template_name = "common/forms/form.html"
@@ -71,6 +73,7 @@ class ArticleCreate(LoginRequiredMixin, CreateView):
 
 class SubarticleCreate(SlugPathMixin, BreadcrumbsMixin, ArticleCreate):
     """View for creating a subarticle."""
+
     breadcrumb_parent = ArticleDetail
 
     def get_initial(self):
@@ -80,7 +83,7 @@ class SubarticleCreate(SlugPathMixin, BreadcrumbsMixin, ArticleCreate):
             "public": parent.public,
             "comments_allowed": parent.comments_allowed,
         }
-    
+
     def get_breadcrumbs_kwargs(self):
         return {"article": self.get_object()}
 
@@ -89,6 +92,7 @@ class ArticleUpdate(
     PermissionOrCreatedMixin, SlugPathMixin, BreadcrumbsMixin, UpdateView
 ):
     """View for updating a article."""
+
     model = Article
     form_class = ArticleForm
     template_name = "common/forms/form.html"
@@ -112,6 +116,6 @@ class ArticleDelete(
             if self.object.parent
             else reverse("dashboard:Dashboard")
         )
-    
+
     def get_breadcrumbs_kwargs(self):
         return {"article": self.object}
