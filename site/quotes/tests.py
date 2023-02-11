@@ -7,9 +7,11 @@ from accounts.factories import SuperUserFactory, UserFactory
 from accounts.models import UserCustom
 from common.mixins import TestMixin
 from common.utils import comma_seperate_list
-from quotes.factories import QuoteFactory
-from quotes.forms import QuoteForm
-from quotes.models import Quote
+
+from .factories import QuoteFactory
+from .forms import QuoteForm
+from .models import Quote
+from .views import QuoteList
 
 
 class QuoteTestSuite(TestMixin, TestCase):
@@ -85,6 +87,14 @@ class QuoteListTestSuite(TestMixin, TestCase):
         """Should require login."""
         self.assertLoginRequired(self.get_url())
 
+    def test_breadcrumbs(self):
+        """
+        QuoteList should have an empty list of breadcrumbs
+        """
+        self.client.force_login(SuperUserFactory())
+        breadcrumbs = self.client.get(self.get_url()).context["breadcrumbs"]
+        self.assertEqual(breadcrumbs, [])
+
 
 class QuoteCreateTestSuite(TestMixin, TestCase):
     def get_url(self):
@@ -116,6 +126,20 @@ class QuoteCreateTestSuite(TestMixin, TestCase):
             {"quote": "Du daua", "quoted_as": "Mørke Sjeler"},
         )
         self.assertRedirects(response, reverse("quotes:QuoteList"))
+
+    def test_breadcrumbs(self):
+        """
+        QuoteCreate should have breadcrumbs for the following views:
+        QuoteList
+        """
+        self.client.force_login(SuperUserFactory())
+        breadcrumbs = self.client.get(self.get_url()).context["breadcrumbs"]
+        self.assertEqual(
+            breadcrumbs,
+            [
+                QuoteList.get_breadcrumb(),
+            ],
+        )
 
 
 class QuoteUpdateTestSuite(TestMixin, TestCase):
@@ -173,6 +197,20 @@ class QuoteUpdateTestSuite(TestMixin, TestCase):
         response = self.client.post(self.get_url(), self.quote_data)
         self.assertRedirects(response, reverse("quotes:QuoteList"))
 
+    def test_breadcrumbs(self):
+        """
+        QuoteCreate should have breadcrumbs for the following views:
+        QuoteList
+        """
+        self.client.force_login(SuperUserFactory())
+        breadcrumbs = self.client.get(self.get_url()).context["breadcrumbs"]
+        self.assertEqual(
+            breadcrumbs,
+            [
+                QuoteList.get_breadcrumb(),
+            ],
+        )
+
 
 class QuoteDeleteTestSuite(TestMixin, TestCase):
     def setUp(self):
@@ -202,3 +240,17 @@ class QuoteDeleteTestSuite(TestMixin, TestCase):
         self.client.force_login(SuperUserFactory())
         response = self.client.post(self.get_url())
         self.assertRedirects(response, reverse("quotes:QuoteList"))
+
+    def test_breadcrumbs(self):
+        """
+        QuoteCreate should have breadcrumbs for the following views:
+        QuoteList
+        """
+        self.client.force_login(SuperUserFactory())
+        breadcrumbs = self.client.get(self.get_url()).context["breadcrumbs"]
+        self.assertEqual(
+            breadcrumbs,
+            [
+                QuoteList.get_breadcrumb(),
+            ],
+        )
