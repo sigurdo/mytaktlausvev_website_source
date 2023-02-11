@@ -73,7 +73,7 @@ class TopicCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
         # Here we can not call super().form_valid(), since it will call form.save() which
         # will fail since the form does not know how to set forum
         return HttpResponseRedirect(self.get_success_url())
-    
+
     def get_breadcrumbs_kwargs(self):
         return {"forum": self.forum}
 

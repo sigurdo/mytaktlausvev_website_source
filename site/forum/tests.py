@@ -129,7 +129,6 @@ class ForumListTestSuite(TestMixin, TestCase):
         """
         ForumList should have an empty list of breadcrumbs
         """
-        # attendance = EventAttendanceFactory(event__start_time=now())
         self.client.force_login(SuperUserFactory())
         breadcrumbs = self.client.get(self.get_url()).context["breadcrumbs"]
         self.assertEqual(breadcrumbs, [])

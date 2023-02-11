@@ -7,8 +7,10 @@ from django.utils.text import slugify
 
 from accounts.factories import SuperUserFactory
 from common.mixins import TestMixin
-from minutes.factories import MinutesFactory
-from minutes.models import Minutes
+
+from .factories import MinutesFactory
+from .models import Minutes
+from .views import MinutesDetail, MinutesList
 
 
 class MinutesTestSuite(TestMixin, TestCase):
@@ -71,6 +73,14 @@ class MinutesListTestSuite(TestMixin, TestCase):
         """Should require login."""
         self.assertLoginRequired(self.get_url())
 
+    def test_breadcrumbs(self):
+        """
+        MinutesList should have an empty list of breadcrumbs
+        """
+        self.client.force_login(SuperUserFactory())
+        breadcrumbs = self.client.get(self.get_url()).context["breadcrumbs"]
+        self.assertEqual(breadcrumbs, [])
+
 
 class MinutesDetailTestSuite(TestMixin, TestCase):
     def setUp(self):
@@ -82,6 +92,20 @@ class MinutesDetailTestSuite(TestMixin, TestCase):
     def test_requires_login(self):
         """Should require login."""
         self.assertLoginRequired(self.get_url())
+
+    def test_breadcrumbs(self):
+        """
+        MinutesDetail should have breadcrumbs for the following views:
+        MinutesList
+        """
+        self.client.force_login(SuperUserFactory())
+        breadcrumbs = self.client.get(self.get_url()).context["breadcrumbs"]
+        self.assertEqual(
+            breadcrumbs,
+            [
+                MinutesList.get_breadcrumb(),
+            ],
+        )
 
 
 class MinutesCreateTestSuite(TestMixin, TestCase):
@@ -109,6 +133,20 @@ class MinutesCreateTestSuite(TestMixin, TestCase):
         minutes = Minutes.objects.last()
         self.assertEqual(minutes.created_by, user)
         self.assertEqual(minutes.modified_by, user)
+
+    def test_breadcrumbs(self):
+        """
+        MinutesCreate should have breadcrumbs for the following views:
+        MinutesList
+        """
+        self.client.force_login(SuperUserFactory())
+        breadcrumbs = self.client.get(self.get_url()).context["breadcrumbs"]
+        self.assertEqual(
+            breadcrumbs,
+            [
+                MinutesList.get_breadcrumb(),
+            ],
+        )
 
 
 class MinutesUpdateTestSuite(TestMixin, TestCase):
@@ -161,6 +199,21 @@ class MinutesUpdateTestSuite(TestMixin, TestCase):
         self.minutes.refresh_from_db()
         self.assertEqual(self.minutes.modified_by, user)
 
+    def test_breadcrumbs(self):
+        """
+        MinutesUpdate should have breadcrumbs for the following views:
+        MinutesList / MinutesDetail
+        """
+        self.client.force_login(SuperUserFactory())
+        breadcrumbs = self.client.get(self.get_url()).context["breadcrumbs"]
+        self.assertEqual(
+            breadcrumbs,
+            [
+                MinutesList.get_breadcrumb(),
+                MinutesDetail.get_breadcrumb(self.minutes),
+            ],
+        )
+
 
 class MinutesDeleteTestCase(TestMixin, TestCase):
     def setUp(self):
@@ -194,3 +247,18 @@ class MinutesDeleteTestCase(TestMixin, TestCase):
         self.client.force_login(self.minutes.created_by)
         response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, HTTPStatus.OK)
+
+    def test_breadcrumbs(self):
+        """
+        MinutesDelete should have breadcrumbs for the following views:
+        MinutesList / MinutesDetail
+        """
+        self.client.force_login(SuperUserFactory())
+        breadcrumbs = self.client.get(self.get_url()).context["breadcrumbs"]
+        self.assertEqual(
+            breadcrumbs,
+            [
+                MinutesList.get_breadcrumb(),
+                MinutesDetail.get_breadcrumb(self.minutes),
+            ],
+        )
