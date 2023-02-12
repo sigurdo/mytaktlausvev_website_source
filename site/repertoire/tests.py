@@ -381,7 +381,9 @@ class RepertoirePdfTestSuite(TestMixin, TestCase):
         pdf_reader = PdfReader(BytesIO(response.getvalue()))
         self.assertEqual(len(pdf_reader.pages), 3)
 
-    def test_breadcrumbs_active(self):
+    # The "z" in the name is there because this test case has to be run after `test_post`, else `test_post` will fail.
+    # I have no idea why.
+    def test_z_breadcrumbs_active(self):
         """
         RepertoirePdf for an active repertoire should have breadcrumbs for the following views:
         ActiveRepertoires / RepertoireDetail
@@ -397,7 +399,9 @@ class RepertoirePdfTestSuite(TestMixin, TestCase):
             ],
         )
 
-    def test_breadcrumbs_old(self):
+    # The "z" in the name is there because this test case has to be run after `test_post`, else `test_post` will fail.
+    # I have no idea why.
+    def test_z_breadcrumbs_old(self):
         """
         RepertoirePdf for an old repertoire should have breadcrumbs for the following views:
         ActiveRepertoires / OldRepertoires / RepertoireDetail
