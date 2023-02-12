@@ -346,13 +346,10 @@ class RepertoirePdfTestSuite(TestMixin, TestCase):
         if data is None:
             data = [
                 {
-                    "part": self.score_1.find_user_part(self.user).pk,
-                    "amount": self.amount_1,
-                },
-                {
-                    "part": self.score_2.find_user_part(self.user).pk,
-                    "amount": self.amount_2,
-                },
+                    "part": self.scores[i].find_user_part(self.user).pk,
+                    "amount": self.amounts[i],
+                }
+                for i in range(2)
             ]
         return create_formset_post_data(
             RepertoirePdfFormset,
@@ -363,13 +360,14 @@ class RepertoirePdfTestSuite(TestMixin, TestCase):
 
     def setUp(self):
         self.user = UserFactory()
-        (self.score_1, self.score_2) = (ScoreFactory(), ScoreFactory())
-        (self.amount_1, self.amount_2) = (1, 2)
-        self.repertoire = RepertoireFactory(scores=[self.score_1, self.score_2])
-        (self.favorite_1, self.favorite_2) = (
-            FavoritePartFactory(part__pdf__score=self.score_1, user=self.user),
-            FavoritePartFactory(part__pdf__score=self.score_2, user=self.user),
-        )
+        # Titles are required to ensure consistent ordering on backend and in `create_post_data()`.
+        self.scores = [ScoreFactory(title="A"), ScoreFactory(title="B")]
+        self.amounts = [1, 2]
+        self.repertoire = RepertoireFactory(scores=self.scores)
+        self.favorites = [
+            FavoritePartFactory(part__pdf__score=score, user=self.user)
+            for score in self.scores
+        ]
 
     def test_requires_login(self):
         self.assertLoginRequired(self.get_url())
@@ -381,9 +379,7 @@ class RepertoirePdfTestSuite(TestMixin, TestCase):
         pdf_reader = PdfReader(BytesIO(response.getvalue()))
         self.assertEqual(len(pdf_reader.pages), 3)
 
-    # The "z" in the name is there because this test case has to be run after `test_post`, else `test_post` will fail.
-    # I have no idea why.
-    def test_z_breadcrumbs_active(self):
+    def test_breadcrumbs_active(self):
         """
         RepertoirePdf for an active repertoire should have breadcrumbs for the following views:
         ActiveRepertoires / RepertoireDetail
@@ -399,9 +395,7 @@ class RepertoirePdfTestSuite(TestMixin, TestCase):
             ],
         )
 
-    # The "z" in the name is there because this test case has to be run after `test_post`, else `test_post` will fail.
-    # I have no idea why.
-    def test_z_breadcrumbs_old(self):
+    def test_breadcrumbs_old(self):
         """
         RepertoirePdf for an old repertoire should have breadcrumbs for the following views:
         ActiveRepertoires / OldRepertoires / RepertoireDetail
