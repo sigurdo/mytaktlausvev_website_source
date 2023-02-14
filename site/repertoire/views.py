@@ -13,45 +13,7 @@ from .forms import RepertoireForm, RepertoirePdfFormset
 from .models import Repertoire
 
 
-def repertoire_breadcrumbs(repertoire=None, show_repertoire=False):
-    breadcrumbs = [
-        Breadcrumb(
-            reverse("repertoire:ActiveRepertoires"),
-            "Repertoar",
-        )
-    ]
-    if repertoire is not None:
-        if not repertoire.is_active():
-            breadcrumbs.append(
-                Breadcrumb(
-                    reverse("repertoire:OldRepertoires"),
-                    "Gamle",
-                )
-            )
-        if show_repertoire:
-            breadcrumbs.append(
-                Breadcrumb(
-                    reverse("repertoire:RepertoireDetail", args=[repertoire.slug]),
-                    str(repertoire),
-                )
-            )
-    return breadcrumbs
-
-
-class OldRepertoires(LoginRequiredMixin, BreadcrumbsMixin, ListView):
-    model = Repertoire
-    context_object_name = "repertoires"
-    template_name = "repertoire/old_repertoires.html"
-    ordering = [F("active_until").desc(nulls_first=True)]
-
-    def get_queryset(self):
-        return super().get_queryset().select_related("created_by")
-
-    def get_breadcrumbs(self):
-        return repertoire_breadcrumbs()
-
-
-class ActiveRepertoires(LoginRequiredMixin, ListView):
+class ActiveRepertoires(LoginRequiredMixin, BreadcrumbsMixin, ListView):
     model = Repertoire
     context_object_name = "repertoires"
     template_name = "repertoire/active_repertoires.html"
@@ -65,6 +27,25 @@ class ActiveRepertoires(LoginRequiredMixin, ListView):
                 ),
             )
         )
+
+    @classmethod
+    def get_breadcrumb(cls, **kwargs):
+        return Breadcrumb(reverse("repertoire:ActiveRepertoires"), "Repertoar")
+
+
+class OldRepertoires(LoginRequiredMixin, BreadcrumbsMixin, ListView):
+    model = Repertoire
+    context_object_name = "repertoires"
+    template_name = "repertoire/old_repertoires.html"
+    ordering = [F("active_until").desc(nulls_first=True)]
+    breadcrumb_parent = ActiveRepertoires
+
+    def get_queryset(self):
+        return super().get_queryset().select_related("created_by")
+
+    @classmethod
+    def get_breadcrumb(cls, **kwargs):
+        return Breadcrumb(reverse("repertoire:OldRepertoires"), "Gamle")
 
 
 class RepertoireDetail(LoginRequiredMixin, BreadcrumbsMixin, DetailView):
@@ -86,8 +67,21 @@ class RepertoireDetail(LoginRequiredMixin, BreadcrumbsMixin, DetailView):
             )
         )
 
-    def get_breadcrumbs(self):
-        return repertoire_breadcrumbs(repertoire=self.object)
+    @classmethod
+    def get_breadcrumb_parent(cls, repertoire, **kwargs):
+        if repertoire.is_active():
+            return ActiveRepertoires
+        return OldRepertoires
+
+    def get_breadcrumbs_kwargs(self):
+        return {"repertoire": self.object}
+
+    @classmethod
+    def get_breadcrumb(cls, repertoire, **kwargs):
+        return Breadcrumb(
+            reverse("repertoire:RepertoireDetail", args=[repertoire.slug]),
+            str(repertoire),
+        )
 
 
 class RepertoireCreate(PermissionRequiredMixin, BreadcrumbsMixin, CreateView):
@@ -96,9 +90,7 @@ class RepertoireCreate(PermissionRequiredMixin, BreadcrumbsMixin, CreateView):
     template_name = "common/forms/form.html"
     success_url = reverse_lazy("repertoire:ActiveRepertoires")
     permission_required = "repertoire.add_repertoire"
-
-    def get_breadcrumbs(self):
-        return repertoire_breadcrumbs()
+    breadcrumb_parent = ActiveRepertoires
 
 
 class RepertoireUpdate(PermissionRequiredMixin, BreadcrumbsMixin, UpdateView):
@@ -107,27 +99,27 @@ class RepertoireUpdate(PermissionRequiredMixin, BreadcrumbsMixin, UpdateView):
     template_name = "common/forms/form.html"
     success_url = reverse_lazy("repertoire:ActiveRepertoires")
     permission_required = "repertoire.change_repertoire"
+    breadcrumb_parent = RepertoireDetail
 
-    def get_breadcrumbs(self):
-        return repertoire_breadcrumbs(repertoire=self.object, show_repertoire=True)
+    def get_breadcrumbs_kwargs(self):
+        return {"repertoire": self.object}
 
 
 class RepertoireDelete(PermissionRequiredMixin, BreadcrumbsMixin, DeleteViewCustom):
     model = Repertoire
     success_url = reverse_lazy("repertoire:ActiveRepertoires")
     permission_required = "repertoire.delete_repertoire"
+    breadcrumb_parent = RepertoireDetail
 
-    def get_breadcrumbs(self):
-        return repertoire_breadcrumbs(repertoire=self.object, show_repertoire=True)
+    def get_breadcrumbs_kwargs(self):
+        return {"repertoire": self.object}
 
 
 class RepertoirePdf(LoginRequiredMixin, BreadcrumbsMixin, SingleObjectMixin, FormView):
     model = Repertoire
     template_name = "repertoire/repertoire_pdf.html"
     form_class = RepertoirePdfFormset
-
-    def get_breadcrumbs(self):
-        return repertoire_breadcrumbs(repertoire=self.object, show_repertoire=True)
+    breadcrumb_parent = RepertoireDetail
 
     def get_initial(self):
         return [
@@ -168,3 +160,6 @@ class RepertoirePdf(LoginRequiredMixin, BreadcrumbsMixin, SingleObjectMixin, For
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         return super().post(request, *args, **kwargs)
+
+    def get_breadcrumbs_kwargs(self):
+        return {"repertoire": self.object}

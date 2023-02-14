@@ -11,17 +11,16 @@ from .forms import FileForm
 from .models import File
 
 
-def breadcrumbs():
-    """Returns breadcrumbs for the user_files views."""
-    return [Breadcrumb(reverse("user_files:FileList"), "Brukarfiler")]
-
-
-class FileList(LoginRequiredMixin, ListView):
+class FileList(LoginRequiredMixin, BreadcrumbsMixin, ListView):
     model = File
     context_object_name = "user_files"
 
     def get_queryset(self):
         return super().get_queryset().select_related("created_by")
+
+    @classmethod
+    def get_breadcrumb(cls, **kwargs):
+        return Breadcrumb(reverse("user_files:FileList"), "Brukarfiler")
 
 
 class FileServe(UserPassesTestMixin, View):
@@ -44,9 +43,7 @@ class FileCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
     form_class = FileForm
     template_name = "common/forms/form.html"
     success_url = reverse_lazy("user_files:FileList")
-
-    def get_breadcrumbs(self):
-        return breadcrumbs()
+    breadcrumb_parent = FileList
 
 
 class FileUpdate(PermissionOrCreatedMixin, BreadcrumbsMixin, UpdateView):
@@ -55,17 +52,13 @@ class FileUpdate(PermissionOrCreatedMixin, BreadcrumbsMixin, UpdateView):
     template_name = "common/forms/form.html"
     permission_required = "user_files.change_file"
     success_url = reverse_lazy("user_files:FileList")
-
-    def get_breadcrumbs(self):
-        return breadcrumbs()
+    breadcrumb_parent = FileList
 
 
 class FileDelete(PermissionOrCreatedMixin, BreadcrumbsMixin, DeleteViewCustom):
     model = File
     permission_required = "user_files.delete_file"
-
-    def get_breadcrumbs(self):
-        return breadcrumbs()
+    breadcrumb_parent = FileList
 
     def get_success_url(self):
         return reverse("user_files:FileList")

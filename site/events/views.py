@@ -1,11 +1,9 @@
-from datetime import timedelta
-
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import OuterRef
 from django.db.models.functions import TruncMonth
-from django.http import HttpResponseForbidden
+from django.http import Http404, HttpResponseForbidden
 from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.utils.timezone import localtime, now
@@ -40,74 +38,17 @@ def get_event_attendance_or_404(year, slug_event, slug_person):
     )
 
 
-def event_breadcrumbs(event=None, include_event=True):
-    """
-    Generates breadcrumbs for events in the following fashion:
-    - /hendingar/:                                     "Hendingar [current_year]"
-    - /hendingar/ny:                                   "Hendingar [current_year] / Alle framtidige"
-    - /hendingar/[year]/:                              ""
-    - /hendingar/[year]/[slug]/ for future events:     "Hendingar [year] / Alle framtidige"
-    - /hendingar/[year]/[slug]/ for past events:       "Hendingar [year]"
-    - /hendingar/[year]/[slug]/.../ for future events: "Hendingar [year] / Alle framtidige / [event_title]"
-    - /hendingar/[year]/[slug]/.../ for past events:   "Hendingar [year] / [event_title]"
-    """
-    breadcrumbs = []
-    year = localtime(event.start_time).year if event else localtime(now()).year
-
-    breadcrumbs.append(
-        Breadcrumb(
-            reverse("events:EventList", args=[year]),
-            f"Hendingar {year}",
-        )
-    )
-    if event is None:
-        return breadcrumbs
-
-    if event.is_in_future():
-        breadcrumbs.append(
-            Breadcrumb(
-                reverse("events:EventList"),
-                "Alle framtidige",
-            )
-        )
-
-    if include_event:
-        breadcrumbs.append(
-            Breadcrumb(
-                reverse("events:EventDetail", args=[year, event.slug]),
-                str(event),
-            )
-        )
-
-    return breadcrumbs
-
-
-class EventList(LoginRequiredMixin, BreadcrumbsMixin, ListView):
+class EventListYear(LoginRequiredMixin, BreadcrumbsMixin, ListView):
     model = Event
     context_object_name = "events"
 
-    def get_breadcrumbs(self):
-        if "year" in self.kwargs:
-            return []
-        return event_breadcrumbs()
+    def get_base_queryset(self):
+        return Event.objects.filter(start_time__year=self.kwargs["year"])
 
     def get_queryset(self):
-        match self.kwargs:
-            case {"year": year}:
-                queryset = Event.objects.filter(start_time__year=year)
-            case {"filter_type": filter_type}:
-                if filter_type == "ikkje-svara-på":
-                    queryset = Event.objects.upcoming().exclude(
-                        attendances__person=self.request.user
-                    )
-                else:
-                    queryset = Event.objects.upcoming()
-
-            case _:
-                queryset = Event.objects.upcoming()
-
         return (
-            queryset.annotate(
+            self.get_base_queryset()
+            .annotate(
                 start_month=TruncMonth("start_time"),
                 user_attending_status=EventAttendance.objects.filter(
                     event=OuterRef("pk"), person=self.request.user
@@ -133,14 +74,46 @@ class EventList(LoginRequiredMixin, BreadcrumbsMixin, ListView):
         )
         return form
 
+    @classmethod
+    def get_breadcrumb(cls, year, **kwargs):
+        return Breadcrumb(
+            url=reverse("events:EventListYear", args=[year]),
+            label=f"Hendingar {year}",
+        )
+
+
+class EventList(EventListYear):
+    breadcrumb_parent = EventListYear
+
+    def get_base_queryset(self):
+        return Event.objects.upcoming()
+
+    def get_breadcrumbs_kwargs(self):
+        return {"year": now().year}
+
+    @classmethod
+    def get_breadcrumb(cls, **kwargs):
+        return Breadcrumb(
+            url=reverse("events:EventList"),
+            label="Alle framtidige",
+        )
+
+
+class EventListFilter(EventList):
+    def get_base_queryset(self):
+        match self.kwargs["filter_type"]:
+            case "ikkje-svara-på":
+                return Event.objects.upcoming().exclude(
+                    attendances__person=self.request.user
+                )
+            case _:
+                raise Http404(f"Ugyldig filtertype: {self.kwargs['filter_type']}")
+
 
 class EventDetail(LoginRequiredMixin, BreadcrumbsMixin, DetailView):
     """View for viewing an event."""
 
     model = Event
-
-    def get_breadcrumbs(self):
-        return event_breadcrumbs(event=self.get_object(), include_event=False)
 
     def get_object(self, queryset=None):
         return get_event_or_404(self.kwargs.get("year"), self.kwargs.get("slug"))
@@ -172,6 +145,22 @@ class EventDetail(LoginRequiredMixin, BreadcrumbsMixin, DetailView):
         context["form_attendance"] = self.get_form_attendance()
         return context
 
+    @classmethod
+    def get_breadcrumb_parent(cls, event, **kwargs):
+        if event.is_upcoming():
+            return EventList
+        return EventListYear
+
+    def get_breadcrumbs_kwargs(self):
+        return {"year": self.kwargs["year"], "event": self.object}
+
+    @classmethod
+    def get_breadcrumb(cls, event, **kwargs):
+        return Breadcrumb(
+            url=reverse("events:EventDetail", args=[event.start_time.year, event.slug]),
+            label=str(event),
+        )
+
 
 class EventCreate(LoginRequiredMixin, BreadcrumbsMixin, InlineFormsetCreateView):
     """View for creating an event."""
@@ -180,12 +169,10 @@ class EventCreate(LoginRequiredMixin, BreadcrumbsMixin, InlineFormsetCreateView)
     form_class = EventForm
     formset_class = EventKeyinfoEntryFormset
     template_name = "common/forms/form.html"
+    breadcrumb_parent = EventList
 
-    def get_breadcrumbs(self):
-        return event_breadcrumbs(
-            event=Event(start_time=now() + timedelta(days=1)),
-            include_event=False,
-        )
+    def get_breadcrumbs_kwargs(self):
+        return {"year": now().year}
 
     def get_object(self, queryset=None):
         return get_event_or_404(self.kwargs.get("year"), self.kwargs.get("slug"))
@@ -220,9 +207,7 @@ class EventUpdate(PermissionOrCreatedMixin, BreadcrumbsMixin, InlineFormsetUpdat
     formset_class = EventKeyinfoEntryFormset
     template_name = "common/forms/form.html"
     permission_required = "events.change_event"
-
-    def get_breadcrumbs(self):
-        return event_breadcrumbs(event=self.get_object())
+    breadcrumb_parent = EventDetail
 
     def get_object(self, queryset=None):
         return get_event_or_404(self.kwargs.get("year"), self.kwargs.get("slug"))
@@ -232,17 +217,21 @@ class EventUpdate(PermissionOrCreatedMixin, BreadcrumbsMixin, InlineFormsetUpdat
         kwargs["render_formset"] = False
         return super().get_context_data(**kwargs)
 
+    def get_breadcrumbs_kwargs(self) -> dict:
+        return {"year": self.kwargs["year"], "event": self.object}
+
 
 class EventDelete(PermissionOrCreatedMixin, BreadcrumbsMixin, DeleteViewCustom):
     model = Event
     success_url = reverse_lazy("events:EventList")
     permission_required = "events.delete_event"
+    breadcrumb_parent = EventDetail
 
     def get_object(self, queryset=None):
         return get_event_or_404(self.kwargs.get("year"), self.kwargs.get("slug"))
 
-    def get_breadcrumbs(self):
-        return event_breadcrumbs(event=self.get_object())
+    def get_breadcrumbs_kwargs(self) -> dict:
+        return {"year": self.kwargs["year"], "event": self.object}
 
 
 class EventAttendanceList(PermissionRequiredMixin, BreadcrumbsMixin, ListView):
@@ -251,16 +240,15 @@ class EventAttendanceList(PermissionRequiredMixin, BreadcrumbsMixin, ListView):
     model = EventAttendance
     context_object_name = "attendances"
     permission_required = "events.view_eventattendance"
+    breadcrumb_parent = EventDetail
 
     event = None
 
-    def get_breadcrumbs(self):
-        return event_breadcrumbs(event=self.get_event())
-
     def get_event(self):
-        if self.event:
-            return self.event
-        self.event = get_event_or_404(self.kwargs.get("year"), self.kwargs.get("slug"))
+        if self.event is None:
+            self.event = get_event_or_404(
+                self.kwargs.get("year"), self.kwargs.get("slug")
+            )
         return self.event
 
     def get_queryset(self):
@@ -276,6 +264,9 @@ class EventAttendanceList(PermissionRequiredMixin, BreadcrumbsMixin, ListView):
         context = super().get_context_data(**kwargs)
         context["event"] = self.get_event()
         return context
+
+    def get_breadcrumbs_kwargs(self) -> dict:
+        return {"year": self.kwargs["year"], "event": self.get_event()}
 
 
 class EventAttendanceCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
@@ -316,14 +307,11 @@ class EventAttendanceUpdate(
     model = EventAttendance
     form_class = EventAttendanceForm
     template_name = "common/forms/form.html"
-
     permission_required = "events.change_eventattendance"
     field_created_by = "person"
+    breadcrumb_parent = EventDetail
 
     object = None
-
-    def get_breadcrumbs(self):
-        return event_breadcrumbs(event=self.get_object().event)
 
     def get_object(self):
         if self.object:
@@ -341,6 +329,9 @@ class EventAttendanceUpdate(
     def get_success_url(self):
         return self.get_object().event.get_absolute_url()
 
+    def get_breadcrumbs_kwargs(self) -> dict:
+        return {"year": self.kwargs["year"], "event": self.object.event}
+
 
 class EventAttendanceDelete(
     PermissionOrCreatedMixin, BreadcrumbsMixin, DeleteViewCustom
@@ -349,14 +340,11 @@ class EventAttendanceDelete(
 
     model = EventAttendance
     success_message = "Deltakinga vart fjerna."
-
     permission_required = "events.delete_eventattendance"
     field_created_by = "person"
+    breadcrumb_parent = EventDetail
 
     object = None
-
-    def get_breadcrumbs(self):
-        return event_breadcrumbs(event=self.get_object().event)
 
     def get_object(self):
         if self.object:
@@ -370,6 +358,9 @@ class EventAttendanceDelete(
 
     def get_success_url(self):
         return self.get_object().event.get_absolute_url()
+
+    def get_breadcrumbs_kwargs(self) -> dict:
+        return {"year": self.kwargs["year"], "event": self.object.event}
 
 
 class EventFeed(ICalFeed):

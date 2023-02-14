@@ -10,15 +10,7 @@ from .forms import MinutesForm
 from .models import Minutes
 
 
-def breadcrumbs(minutes=None):
-    """Returns breadcrumbs for the minutes views."""
-    breadcrumbs = [Breadcrumb(reverse("minutes:MinutesList"), "Alle referat")]
-    if minutes:
-        breadcrumbs.append(Breadcrumb(minutes.get_absolute_url(), minutes))
-    return breadcrumbs
-
-
-class MinutesList(LoginRequiredMixin, ListView):
+class MinutesList(LoginRequiredMixin, BreadcrumbsMixin, ListView):
     model = Minutes
     context_object_name = "minutes_list"
     paginate_by = 50
@@ -26,21 +18,25 @@ class MinutesList(LoginRequiredMixin, ListView):
     def get_queryset(self):
         return super().get_queryset().select_related("created_by")
 
+    @classmethod
+    def get_breadcrumb(cls, **kwargs):
+        return Breadcrumb(url=reverse("minutes:MinutesList"), label="Alle referat")
+
 
 class MinutesDetail(LoginRequiredMixin, BreadcrumbsMixin, DetailView):
     model = Minutes
+    breadcrumb_parent = MinutesList
 
-    def get_breadcrumbs(self):
-        return breadcrumbs()
+    @classmethod
+    def get_breadcrumb(cls, minutes, **kwargs):
+        return Breadcrumb(url=minutes.get_absolute_url(), label=str(minutes))
 
 
 class MinutesCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
     model = Minutes
     form_class = MinutesForm
     template_name = "common/forms/form.html"
-
-    def get_breadcrumbs(self):
-        return breadcrumbs()
+    breadcrumb_parent = MinutesList
 
 
 class MinutesUpdate(PermissionOrCreatedMixin, BreadcrumbsMixin, UpdateView):
@@ -48,15 +44,17 @@ class MinutesUpdate(PermissionOrCreatedMixin, BreadcrumbsMixin, UpdateView):
     form_class = MinutesForm
     template_name = "common/forms/form.html"
     permission_required = "minutes.change_minutes"
+    breadcrumb_parent = MinutesDetail
 
-    def get_breadcrumbs(self):
-        return breadcrumbs(self.object)
+    def get_breadcrumbs_kwargs(self):
+        return {"minutes": self.object}
 
 
 class MinutesDelete(PermissionOrCreatedMixin, BreadcrumbsMixin, DeleteViewCustom):
     model = Minutes
     success_url = reverse_lazy("minutes:MinutesList")
     permission_required = "minutes.delete_minutes"
+    breadcrumb_parent = MinutesDetail
 
-    def get_breadcrumbs(self) -> list:
-        return breadcrumbs(self.object)
+    def get_breadcrumbs_kwargs(self):
+        return {"minutes": self.object}

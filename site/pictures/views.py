@@ -12,14 +12,6 @@ from .forms import GalleryForm, ImageCreateForm, ImageFormSet
 from .models import Gallery, Image
 
 
-def breadcrumbs(gallery=None):
-    """Returns breadcrumbs for the gallery views."""
-    breadcrumbs = [Breadcrumb(reverse("pictures:GalleryList"), "Fotoarkiv")]
-    if gallery:
-        breadcrumbs.append(Breadcrumb(gallery.get_absolute_url(), gallery))
-    return breadcrumbs
-
-
 def nav_tabs_gallery_edit(gallery):
     """Returns tab data for editing a gallery."""
     return [
@@ -34,7 +26,7 @@ def nav_tabs_gallery_edit(gallery):
     ]
 
 
-class GalleryList(LoginRequiredMixin, ListView):
+class GalleryList(LoginRequiredMixin, BreadcrumbsMixin, ListView):
     """View for viewing all galleries."""
 
     model = Gallery
@@ -50,17 +42,19 @@ class GalleryList(LoginRequiredMixin, ListView):
             .order_by("-date")
         )
 
+    @classmethod
+    def get_breadcrumb(cls, **kwargs):
+        return Breadcrumb(reverse("pictures:GalleryList"), "Fotoarkiv")
+
 
 class NewestImagesList(LoginRequiredMixin, BreadcrumbsMixin, ListView):
     model = Image
     context_object_name = "images"
     paginate_by = 50
+    breadcrumb_parent = GalleryList
 
     def get_queryset(self):
         return super().get_queryset().select_related("gallery").order_by("-uploaded")
-
-    def get_breadcrumbs(self) -> list:
-        return breadcrumbs()
 
 
 class GalleryDetail(LoginRequiredMixin, BreadcrumbsMixin, ListView):
@@ -70,6 +64,7 @@ class GalleryDetail(LoginRequiredMixin, BreadcrumbsMixin, ListView):
     context_object_name = "images"
     paginate_by = 50
     template_name = "pictures/gallery_detail.html"
+    breadcrumb_parent = GalleryList
 
     gallery = None
 
@@ -81,12 +76,13 @@ class GalleryDetail(LoginRequiredMixin, BreadcrumbsMixin, ListView):
     def get_queryset(self):
         return super().get_queryset().filter(gallery=self.get_gallery())
 
-    def get_breadcrumbs(self) -> list:
-        return breadcrumbs()
-
     def get_context_data(self, **kwargs):
         kwargs["gallery"] = self.get_gallery()
         return super().get_context_data(**kwargs)
+
+    @classmethod
+    def get_breadcrumb(cls, gallery, **kwargs):
+        return Breadcrumb(gallery.get_absolute_url(), gallery)
 
 
 class GalleryCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
@@ -95,9 +91,7 @@ class GalleryCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
     model = Gallery
     form_class = GalleryForm
     template_name = "common/forms/form.html"
-
-    def get_breadcrumbs(self) -> list:
-        return breadcrumbs()
+    breadcrumb_parent = GalleryList
 
     def get_success_url(self) -> str:
         return reverse("pictures:ImageCreate", args=[self.object.slug])
@@ -107,6 +101,7 @@ class ImageCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
     model = Image
     form_class = ImageCreateForm
     template_name = "common/forms/form.html"
+    breadcrumb_parent = GalleryDetail
 
     gallery = None
 
@@ -120,9 +115,6 @@ class ImageCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
         kwargs["gallery"] = self.get_gallery()
         kwargs["user"] = self.request.user
         return kwargs
-
-    def get_breadcrumbs(self) -> list:
-        return breadcrumbs(self.get_gallery())
 
     def get_context_data(self, **kwargs):
         kwargs["gallery"] = self.get_gallery()
@@ -139,6 +131,9 @@ class ImageCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
     def get_success_url(self) -> str:
         return reverse("pictures:GalleryUpdate", args=[self.get_gallery().slug])
 
+    def get_breadcrumbs_kwargs(self):
+        return {"gallery": self.get_gallery()}
+
 
 class GalleryUpdate(LoginRequiredMixin, BreadcrumbsMixin, InlineFormsetUpdateView):
     """View for updating a gallery and its images."""
@@ -147,19 +142,21 @@ class GalleryUpdate(LoginRequiredMixin, BreadcrumbsMixin, InlineFormsetUpdateVie
     form_class = GalleryForm
     formset_class = ImageFormSet
     template_name_suffix = "_form_update"
-
-    def get_breadcrumbs(self) -> list:
-        return breadcrumbs(self.object)
+    breadcrumb_parent = GalleryDetail
 
     def get_context_data(self, **kwargs):
         kwargs["nav_tabs"] = nav_tabs_gallery_edit(self.object)
         return super().get_context_data(**kwargs)
+
+    def get_breadcrumbs_kwargs(self):
+        return {"gallery": self.object}
 
 
 class GalleryDelete(PermissionOrCreatedMixin, BreadcrumbsMixin, DeleteViewCustom):
     model = Gallery
     success_url = reverse_lazy("pictures:GalleryList")
     permission_required = ("pictures.delete_gallery", "pictures.delete_image")
+    breadcrumb_parent = GalleryDetail
 
-    def get_breadcrumbs(self) -> list:
-        return breadcrumbs(self.object)
+    def get_breadcrumbs_kwargs(self):
+        return {"gallery": self.object}

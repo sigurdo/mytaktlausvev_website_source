@@ -16,13 +16,7 @@ from .button_pdf_generator import button_pdf_generator
 from .forms import ButtonDesignForm, ButtonsForm
 
 
-def breadcrumbs():
-    """Returns breadcrumbs for the button views."""
-    breadcrumbs = [Breadcrumb(reverse("buttons:ButtonsView"), "Buttons")]
-    return breadcrumbs
-
-
-class ButtonsView(FormView):
+class ButtonsView(BreadcrumbsMixin, FormView):
     form_class = ButtonsForm
     template_name = "buttons/buttons_view.html"
 
@@ -58,6 +52,13 @@ class ButtonsView(FormView):
         )
         return FileResponse(pdf, content_type="application/pdf", filename="buttons.pdf")
 
+    @classmethod
+    def get_breadcrumb(cls, **kwargs):
+        return Breadcrumb(
+            url=reverse("buttons:ButtonsView"),
+            label="Buttons",
+        )
+
 
 class ButtonDesignServe(UserPassesTestMixin, View):
     def setup(self, request, *args, **kwargs):
@@ -83,9 +84,7 @@ class ButtonDesignCreate(
     template_name = "common/forms/form.html"
     success_message = 'Buttonmotivet "%(name)s" vart laga.'
     success_url = reverse_lazy("buttons:ButtonsView")
-
-    def get_breadcrumbs(self):
-        return breadcrumbs()
+    breadcrumb_parent = ButtonsView
 
 
 class ButtonDesignUpdate(
@@ -97,15 +96,11 @@ class ButtonDesignUpdate(
     success_message = 'Buttonmotivet "%(name)s" vart oppdatert.'
     success_url = reverse_lazy("buttons:ButtonsView")
     permission_required = "buttons.change_buttondesign"
-
-    def get_breadcrumbs(self):
-        return breadcrumbs()
+    breadcrumb_parent = ButtonsView
 
 
 class ButtonDesignDelete(PermissionOrCreatedMixin, BreadcrumbsMixin, DeleteViewCustom):
     model = ButtonDesign
     success_url = reverse_lazy("buttons:ButtonsView")
     permission_required = "buttons.delete_buttondesign"
-
-    def get_breadcrumbs(self):
-        return breadcrumbs()
+    breadcrumb_parent = ButtonsView

@@ -7,9 +7,10 @@ from accounts.factories import SuperUserFactory, UserFactory
 from accounts.models import UserCustom
 from common.mixins import TestMixin
 from common.utils import comma_seperate_list
-from quotes.factories import QuoteFactory
-from quotes.forms import QuoteForm
-from quotes.models import Quote
+
+from .factories import QuoteFactory
+from .forms import QuoteForm
+from .models import Quote
 
 
 class QuoteTestSuite(TestMixin, TestCase):
