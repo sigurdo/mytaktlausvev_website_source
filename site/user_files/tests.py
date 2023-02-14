@@ -10,7 +10,6 @@ from common.test_utils import test_txt_file
 
 from .factories import FileFactory
 from .models import File
-from .views import FileList
 
 
 class FileTestSuite(TestMixin, TestCase):

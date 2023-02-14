@@ -12,7 +12,6 @@ from common.mixins import TestMixin
 
 from .factories import ForumFactory, TopicFactory
 from .models import Topic
-from .views import ForumList, TopicList
 
 
 def create_post_override_created(created, topic=None, **kwargs):

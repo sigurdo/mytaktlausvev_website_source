@@ -14,7 +14,6 @@ from sheetmusic.factories import FavoritePartFactory, ScoreFactory
 from .factories import RepertoireFactory
 from .forms import RepertoirePdfFormset
 from .models import Repertoire
-from .views import ActiveRepertoires, OldRepertoires, RepertoireDetail
 
 
 class RepertoireManagerTestSuite(TestMixin, TestCase):

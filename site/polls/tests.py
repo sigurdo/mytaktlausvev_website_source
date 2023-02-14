@@ -18,7 +18,6 @@ from polls.templatetags.polls import votes_for_user
 from .factories import ChoiceFactory, PollFactory, VoteFactory
 from .forms import ChoiceFormset, MultiVoteForm, SingleVoteForm
 from .models import Choice, Poll, PollType, Vote
-from .views import PollList, PollRedirect
 
 
 class PollTestSuite(TestCase):

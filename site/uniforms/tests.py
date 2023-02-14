@@ -9,7 +9,6 @@ from common.test_utils import create_formset_post_data
 from .factories import JacketFactory, JacketLocationFactory
 from .forms import JacketsFormset
 from .models import Jacket
-from .views import JacketList
 
 
 class JacketTestSuite(TestMixin, TestCase):

@@ -13,7 +13,6 @@ from pictures.forms import ImageCreateForm, ImageFormSet
 
 from .factories import GalleryFactory, ImageFactory
 from .models import Gallery, Image
-from .views import GalleryDetail, GalleryList
 
 
 class GalleryTestSuite(TestCase):

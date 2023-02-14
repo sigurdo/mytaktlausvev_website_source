@@ -20,14 +20,7 @@ from events.models import (
     EventCategory,
     EventKeyinfoEntry,
 )
-from events.views import (
-    EventDetail,
-    EventFeed,
-    EventList,
-    EventListYear,
-    get_event_attendance_or_404,
-    get_event_or_404,
-)
+from events.views import EventFeed, get_event_attendance_or_404, get_event_or_404
 
 from .factories import (
     EventAttendanceFactory,

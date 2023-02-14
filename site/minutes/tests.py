@@ -10,7 +10,6 @@ from common.mixins import TestMixin
 
 from .factories import MinutesFactory
 from .models import Minutes
-from .views import MinutesDetail, MinutesList
 
 
 class MinutesTestSuite(TestMixin, TestCase):
