@@ -101,13 +101,13 @@ class EventList(EventListYear):
 
 class EventListFilter(EventList):
     def get_base_queryset(self):
-        match self.kwargs.filter_type:
+        match self.kwargs["filter_type"]:
             case "ikkje-svara-på":
                 return Event.objects.upcoming().exclude(
                     attendances__person=self.request.user
                 )
             case _:
-                raise Http404(f"Ugyldig filtertype: {self.kwargs.filter_type}")
+                raise Http404(f"Ugyldig filtertype: {self.kwargs['filter_type']}")
 
 
 class EventDetail(LoginRequiredMixin, BreadcrumbsMixin, DetailView):
