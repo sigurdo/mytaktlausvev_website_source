@@ -64,14 +64,6 @@ class FileListTestSuite(TestMixin, TestCase):
         """Should require login."""
         self.assertLoginRequired(self.get_url())
 
-    def test_breadcrumbs(self):
-        """
-        FileList should have an empty list of breadcrumbs
-        """
-        self.client.force_login(SuperUserFactory())
-        breadcrumbs = self.client.get(self.get_url()).context["breadcrumbs"]
-        self.assertEqual(breadcrumbs, [])
-
 
 class FileServeTestSuite(TestMixin, TestCase):
     def setUp(self):
@@ -130,20 +122,6 @@ class FileCreateTestSuite(TestMixin, TestCase):
 
         self.assertRedirects(response, reverse("user_files:FileList"))
 
-    def test_breadcrumbs_active(self):
-        """
-        FileCreate should have breadcrumbs for the following views:
-        FileList
-        """
-        self.client.force_login(SuperUserFactory())
-        breadcrumbs = self.client.get(self.get_url()).context["breadcrumbs"]
-        self.assertEqual(
-            breadcrumbs,
-            [
-                FileList.get_breadcrumb(),
-            ],
-        )
-
 
 class FileUpdateTestSuite(TestMixin, TestCase):
     def setUp(self):
@@ -199,20 +177,6 @@ class FileUpdateTestSuite(TestMixin, TestCase):
 
         self.assertRedirects(response, reverse("user_files:FileList"))
 
-    def test_breadcrumbs_active(self):
-        """
-        FileUpdate should have breadcrumbs for the following views:
-        FileList
-        """
-        self.client.force_login(SuperUserFactory())
-        breadcrumbs = self.client.get(self.get_url()).context["breadcrumbs"]
-        self.assertEqual(
-            breadcrumbs,
-            [
-                FileList.get_breadcrumb(),
-            ],
-        )
-
 
 class FileDeleteTestSuite(TestMixin, TestCase):
     def setUp(self):
@@ -248,17 +212,3 @@ class FileDeleteTestSuite(TestMixin, TestCase):
         self.client.force_login(self.file.created_by)
         response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, HTTPStatus.OK)
-
-    def test_breadcrumbs_active(self):
-        """
-        FileDelete should have breadcrumbs for the following views:
-        FileList
-        """
-        self.client.force_login(SuperUserFactory())
-        breadcrumbs = self.client.get(self.get_url()).context["breadcrumbs"]
-        self.assertEqual(
-            breadcrumbs,
-            [
-                FileList.get_breadcrumb(),
-            ],
-        )

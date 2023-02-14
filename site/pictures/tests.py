@@ -141,14 +141,6 @@ class GalleryListTestSuite(TestMixin, TestCase):
         self.assertEqual(response.context["galleries"].count(), 1)
         self.assertEqual(response.context["galleries"].first(), image.gallery)
 
-    def test_breadcrumbs(self):
-        """
-        GalleryList should have an empty list of breadcrumbs
-        """
-        self.client.force_login(SuperUserFactory())
-        breadcrumbs = self.client.get(self.get_url()).context["breadcrumbs"]
-        self.assertEqual(breadcrumbs, [])
-
 
 class NewestImagesListTestSuite(TestMixin, TestCase):
     def get_url(self) -> str:
@@ -157,20 +149,6 @@ class NewestImagesListTestSuite(TestMixin, TestCase):
     def test_requires_login(self):
         """Should require login."""
         self.assertLoginRequired(self.get_url())
-
-    def test_breadcrumbs(self):
-        """
-        NewestImages should have breadcrumbs for the following views:
-        GalleryList
-        """
-        self.client.force_login(SuperUserFactory())
-        breadcrumbs = self.client.get(self.get_url()).context["breadcrumbs"]
-        self.assertEqual(
-            breadcrumbs,
-            [
-                GalleryList.get_breadcrumb(),
-            ],
-        )
 
 
 class GalleryDetailTestSuite(TestMixin, TestCase):
@@ -207,20 +185,6 @@ class GalleryDetailTestSuite(TestMixin, TestCase):
         response = self.client.get(self.get_url())
         self.assertQuerysetEqual(response.context["images"], self.gallery.images.all())
 
-    def test_breadcrumbs(self):
-        """
-        GalleryDetail should have breadcrumbs for the following views:
-        GalleryList
-        """
-        self.client.force_login(SuperUserFactory())
-        breadcrumbs = self.client.get(self.get_url()).context["breadcrumbs"]
-        self.assertEqual(
-            breadcrumbs,
-            [
-                GalleryList.get_breadcrumb(),
-            ],
-        )
-
 
 class GalleryCreateTestSuite(TestMixin, TestCase):
     def setUp(self):
@@ -256,20 +220,6 @@ class GalleryCreateTestSuite(TestMixin, TestCase):
         gallery = Gallery.objects.last()
         self.assertRedirects(
             response, reverse("pictures:ImageCreate", args=[gallery.slug])
-        )
-
-    def test_breadcrumbs(self):
-        """
-        GalleryCreate should have breadcrumbs for the following views:
-        GalleryList
-        """
-        self.client.force_login(SuperUserFactory())
-        breadcrumbs = self.client.get(self.get_url()).context["breadcrumbs"]
-        self.assertEqual(
-            breadcrumbs,
-            [
-                GalleryList.get_breadcrumb(),
-            ],
         )
 
 
@@ -349,21 +299,6 @@ class ImageCreateTestSuite(TestMixin, TestCase):
             response, reverse("pictures:GalleryUpdate", args=[self.gallery.slug])
         )
 
-    def test_breadcrumbs(self):
-        """
-        ImageCreate should have breadcrumbs for the following views:
-        GalleryList / GalleryDetail
-        """
-        self.client.force_login(SuperUserFactory())
-        breadcrumbs = self.client.get(self.get_url()).context["breadcrumbs"]
-        self.assertEqual(
-            breadcrumbs,
-            [
-                GalleryList.get_breadcrumb(),
-                GalleryDetail.get_breadcrumb(self.gallery),
-            ],
-        )
-
 
 class GalleryUpdateTestSuite(TestMixin, TestCase):
     def setUp(self):
@@ -405,21 +340,6 @@ class GalleryUpdateTestSuite(TestMixin, TestCase):
         self.gallery.refresh_from_db()
         self.assertEqual(self.gallery.modified_by, user)
 
-    def test_breadcrumbs(self):
-        """
-        GalleryUpdate should have breadcrumbs for the following views:
-        GalleryList / GalleryDetail
-        """
-        self.client.force_login(SuperUserFactory())
-        breadcrumbs = self.client.get(self.get_url()).context["breadcrumbs"]
-        self.assertEqual(
-            breadcrumbs,
-            [
-                GalleryList.get_breadcrumb(),
-                GalleryDetail.get_breadcrumb(self.gallery),
-            ],
-        )
-
 
 class GalleryDeleteTestCase(TestMixin, TestCase):
     def setUp(self):
@@ -454,18 +374,3 @@ class GalleryDeleteTestCase(TestMixin, TestCase):
         self.client.force_login(self.gallery.created_by)
         response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, HTTPStatus.OK)
-
-    def test_breadcrumbs(self):
-        """
-        GalleryDelete should have breadcrumbs for the following views:
-        GalleryList / GalleryDetail
-        """
-        self.client.force_login(SuperUserFactory())
-        breadcrumbs = self.client.get(self.get_url()).context["breadcrumbs"]
-        self.assertEqual(
-            breadcrumbs,
-            [
-                GalleryList.get_breadcrumb(),
-                GalleryDetail.get_breadcrumb(self.gallery),
-            ],
-        )

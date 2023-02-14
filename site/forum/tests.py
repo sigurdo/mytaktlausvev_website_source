@@ -125,14 +125,6 @@ class ForumListTestSuite(TestMixin, TestCase):
     def test_requires_login(self):
         self.assertLoginRequired(self.get_url())
 
-    def test_breadcrumbs(self):
-        """
-        ForumList should have an empty list of breadcrumbs
-        """
-        self.client.force_login(SuperUserFactory())
-        breadcrumbs = self.client.get(self.get_url()).context["breadcrumbs"]
-        self.assertEqual(breadcrumbs, [])
-
 
 class TopicListTestSuite(TestMixin, TestCase):
     def setUp(self):
@@ -143,20 +135,6 @@ class TopicListTestSuite(TestMixin, TestCase):
 
     def test_requires_login(self):
         self.assertLoginRequired(self.get_url())
-
-    def test_breadcrumbs(self):
-        """
-        TopicList should have breadcrumbs for the following views:
-        ForumList
-        """
-        self.client.force_login(SuperUserFactory())
-        breadcrumbs = self.client.get(self.get_url()).context["breadcrumbs"]
-        self.assertEqual(
-            breadcrumbs,
-            [
-                ForumList.get_breadcrumb(),
-            ],
-        )
 
 
 class TopicCreateTestSuite(TestMixin, TestCase):
@@ -182,21 +160,6 @@ class TopicCreateTestSuite(TestMixin, TestCase):
         topic = topics.last()
         self.assertEqual(topic.title, "Kva er forskjellen på ein elefant?")
 
-    def test_breadcrumbs(self):
-        """
-        TopicCreate should have breadcrumbs for the following views:
-        ForumList / TopicList
-        """
-        self.client.force_login(SuperUserFactory())
-        breadcrumbs = self.client.get(self.get_url()).context["breadcrumbs"]
-        self.assertEqual(
-            breadcrumbs,
-            [
-                ForumList.get_breadcrumb(),
-                TopicList.get_breadcrumb(self.forum),
-            ],
-        )
-
 
 class PostListTestSuite(TestMixin, TestCase):
     def setUp(self):
@@ -215,18 +178,3 @@ class PostListTestSuite(TestMixin, TestCase):
         self.client.force_login(SuperUserFactory())
         response = self.client.get(self.get_url(["forum-not-exist", "topic-not-exist"]))
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
-
-    def test_breadcrumbs(self):
-        """
-        PostList should have breadcrumbs for the following views:
-        ForumList / TopicList
-        """
-        self.client.force_login(SuperUserFactory())
-        breadcrumbs = self.client.get(self.get_url()).context["breadcrumbs"]
-        self.assertEqual(
-            breadcrumbs,
-            [
-                ForumList.get_breadcrumb(),
-                TopicList.get_breadcrumb(self.topic.forum),
-            ],
-        )

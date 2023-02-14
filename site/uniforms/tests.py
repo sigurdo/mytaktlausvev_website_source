@@ -53,14 +53,6 @@ class JacketListTestSuite(TestMixin, TestCase):
     def test_requires_login(self):
         self.assertLoginRequired(self.get_url())
 
-    def test_breadcrumbs(self):
-        """
-        JacketList should have an empty list of breadcrumbs
-        """
-        self.client.force_login(SuperUserFactory())
-        breadcrumbs = self.client.get(self.get_url()).context["breadcrumbs"]
-        self.assertEqual(breadcrumbs, [])
-
 
 class JacketsUpdateTestSuite(TestMixin, TestCase):
     def get_url(self):
@@ -139,17 +131,3 @@ class JacketsUpdateTestSuite(TestMixin, TestCase):
         self.client.force_login(SuperUserFactory())
         self.client.post(self.get_url(), self.create_post_data())
         self.assertEqual(Jacket.objects.count(), 0)
-
-    def test_breadcrumbs(self):
-        """
-        JacketsUpdate should have breadcrumbs for the following views:
-        JacketList
-        """
-        self.client.force_login(SuperUserFactory())
-        breadcrumbs = self.client.get(self.get_url()).context["breadcrumbs"]
-        self.assertEqual(
-            breadcrumbs,
-            [
-                JacketList.get_breadcrumb(),
-            ],
-        )

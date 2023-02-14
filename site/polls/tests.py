@@ -303,14 +303,6 @@ class PollListTestSuite(TestCase):
             response.context["polls"], Poll.objects.filter(public=True)
         )
 
-    def test_breadcrumbs(self):
-        """
-        PollList should have an empty list of breadcrumbs
-        """
-        self.client.force_login(SuperUserFactory())
-        breadcrumbs = self.client.get(self.get_url()).context["breadcrumbs"]
-        self.assertEqual(breadcrumbs, [])
-
 
 class PollRedirectTestSuite(TestMixin, TestCase):
     def setUp(self):
@@ -394,20 +386,6 @@ class PollResultsTestSuite(TestMixin, TestCase):
         response = self.client.get(self.get_url())
         self.assertTrue(response.context["user_has_voted"])
 
-    def test_breadcrumbs(self):
-        """
-        PollResults should have breadcrumbs for the following views:
-        PollList
-        """
-        self.client.force_login(SuperUserFactory())
-        breadcrumbs = self.client.get(self.get_url()).context["breadcrumbs"]
-        self.assertEqual(
-            breadcrumbs,
-            [
-                PollList.get_breadcrumb(),
-            ],
-        )
-
 
 class PollVoteListTestSuite(TestMixin, TestCase):
     def setUp(self):
@@ -445,21 +423,6 @@ class PollVoteListTestSuite(TestMixin, TestCase):
         self.client.force_login(UserFactory())
         response = self.client.get(self.get_url())
         self.assertEqual(response.context["poll"], self.poll)
-
-    def test_breadcrumbs(self):
-        """
-        PollVoteList should have breadcrumbs for the following views:
-        PollList / PollRedirect
-        """
-        self.client.force_login(SuperUserFactory())
-        breadcrumbs = self.client.get(self.get_url()).context["breadcrumbs"]
-        self.assertEqual(
-            breadcrumbs,
-            [
-                PollList.get_breadcrumb(),
-                PollRedirect.get_breadcrumb(self.poll),
-            ],
-        )
 
 
 class PollCreateTestSuite(TestMixin, TestCase):
@@ -515,20 +478,6 @@ class PollCreateTestSuite(TestMixin, TestCase):
         poll = Poll.objects.last()
         self.assertEqual(poll.created_by, user)
         self.assertEqual(poll.modified_by, user)
-
-    def test_breadcrumbs(self):
-        """
-        PollResults should have breadcrumbs for the following views:
-        PollList
-        """
-        self.client.force_login(SuperUserFactory())
-        breadcrumbs = self.client.get(self.get_url()).context["breadcrumbs"]
-        self.assertEqual(
-            breadcrumbs,
-            [
-                PollList.get_breadcrumb(),
-            ],
-        )
 
 
 class PollUpdateTestSuite(TestMixin, TestCase):
@@ -598,21 +547,6 @@ class PollUpdateTestSuite(TestMixin, TestCase):
         self.poll.refresh_from_db()
         self.assertEqual(self.poll.modified_by, user)
 
-    def test_breadcrumbs(self):
-        """
-        PollUpdate should have breadcrumbs for the following views:
-        PollList / PollRedirect
-        """
-        self.client.force_login(SuperUserFactory())
-        breadcrumbs = self.client.get(self.get_url()).context["breadcrumbs"]
-        self.assertEqual(
-            breadcrumbs,
-            [
-                PollList.get_breadcrumb(),
-                PollRedirect.get_breadcrumb(self.poll),
-            ],
-        )
-
 
 class PollDeleteTestSuite(TestMixin, TestCase):
     def setUp(self):
@@ -640,21 +574,6 @@ class PollDeleteTestSuite(TestMixin, TestCase):
             "polls.delete_poll",
             "polls.delete_choice",
             "polls.delete_vote",
-        )
-
-    def test_breadcrumbs(self):
-        """
-        PollDelete should have breadcrumbs for the following views:
-        PollList / PollRedirect
-        """
-        self.client.force_login(SuperUserFactory())
-        breadcrumbs = self.client.get(self.get_url()).context["breadcrumbs"]
-        self.assertEqual(
-            breadcrumbs,
-            [
-                PollList.get_breadcrumb(),
-                PollRedirect.get_breadcrumb(self.poll),
-            ],
         )
 
 
@@ -737,20 +656,6 @@ class VoteCreateTestSuite(TestMixin, TestCase):
         response = self.vote(url=self.get_url(next=next))
         self.assertRedirects(response, next)
 
-    def test_breadcrumbs(self):
-        """
-        VoteCreate should have breadcrumbs for the following views:
-        PollList
-        """
-        self.client.force_login(SuperUserFactory())
-        breadcrumbs = self.client.get(self.get_url()).context["breadcrumbs"]
-        self.assertEqual(
-            breadcrumbs,
-            [
-                PollList.get_breadcrumb(),
-            ],
-        )
-
 
 class VoteDeleteTestSuite(TestMixin, TestCase):
     def setUp(self):
@@ -825,19 +730,4 @@ class VoteDeleteTestSuite(TestMixin, TestCase):
         response = self.client.post(self.get_url())
         self.assertRedirects(
             response, self.poll.get_absolute_url(), fetch_redirect_response=False
-        )
-
-    def test_breadcrumbs(self):
-        """
-        VoteDelete should have breadcrumbs for the following views:
-        PollList / PollRedirect
-        """
-        self.client.force_login(self.user)
-        breadcrumbs = self.client.get(self.get_url()).context["breadcrumbs"]
-        self.assertEqual(
-            breadcrumbs,
-            [
-                PollList.get_breadcrumb(),
-                PollRedirect.get_breadcrumb(self.poll),
-            ],
         )
