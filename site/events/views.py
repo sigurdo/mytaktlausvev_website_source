@@ -152,8 +152,6 @@ class EventDetail(LoginRequiredMixin, BreadcrumbsMixin, DetailView):
         return EventListYear
 
     def get_breadcrumbs_kwargs(self):
-        # In this case, we have to provide "event" even though it is not used by any parents
-        # because it is used to choose the parent.
         return {"year": self.kwargs["year"], "event": self.object}
 
     @classmethod

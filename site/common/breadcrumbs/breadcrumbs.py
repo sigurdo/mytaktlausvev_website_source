@@ -53,6 +53,12 @@ class BreadcrumbsMixin(View):
         ]
 
     def get_breadcrumbs_kwargs(self) -> dict:
+        """
+        Returns kwargs to use for breadcrumb classmethods of both the current and all parent views.
+
+        It is not necessary to provide kwargs for `get_breadcrumb()` of the current view, since a
+        view should only display breadcrumbs for its parents. No need for a page to link to itself.
+        """
         return {}
 
     def get_breadcrumbs(self) -> list:

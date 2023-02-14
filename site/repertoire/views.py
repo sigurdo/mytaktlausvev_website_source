@@ -74,7 +74,6 @@ class RepertoireDetail(LoginRequiredMixin, BreadcrumbsMixin, DetailView):
         return OldRepertoires
 
     def get_breadcrumbs_kwargs(self):
-        # Have to pass the repertoire because it is used in `get_breadcrumb_parent`.
         return {"repertoire": self.object}
 
     @classmethod
