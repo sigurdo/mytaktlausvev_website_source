@@ -122,7 +122,12 @@ class EventDetail(LoginRequiredMixin, BreadcrumbsMixin, DetailView):
         attendance = self.object.get_attendance(self.request.user)
         form = EventAttendanceForm(
             instance=attendance,
-            initial={"status": Attendance.ATTENDING} if not attendance else None,
+            initial={
+                "status": Attendance.ATTENDING,
+                "instrument_type": self.request.user.instrument_type,
+            }
+            if not attendance
+            else None,
         )
         if not attendance:
             form.helper.form_action = reverse(
