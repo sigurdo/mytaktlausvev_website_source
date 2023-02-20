@@ -21,6 +21,7 @@ from events.models import (
     EventKeyinfoEntry,
 )
 from events.views import EventFeed, get_event_attendance_or_404, get_event_or_404
+from instruments.factories import InstrumentTypeFactory
 
 from .factories import (
     EventAttendanceFactory,
@@ -194,6 +195,33 @@ class EventAttendanceTestSuite(TestCase):
     def test_to_str_includes_status(self):
         """`__str__` should include the status."""
         self.assertIn(self.attendance.get_status_display(), str(self.attendance))
+
+    def test_instrument_group_returns_group_if_registered(self):
+        """
+        `instrument_group` should return the instrument group
+        if an instrument type has been registered.
+        """
+        instrument_type = InstrumentTypeFactory()
+        attendance = EventAttendanceFactory(instrument_type=instrument_type)
+        self.assertEqual(attendance.instrument_group(), instrument_type.group)
+
+    def test_instrument_group_returns_users_group_if_group_not_registered(self):
+        """
+        `instrument_group` should return the user's instrument group
+        if an instrument type hasn't been registered, and the user has an instrument type.
+        """
+        user = UserFactory(instrument_type=InstrumentTypeFactory())
+        attendance = EventAttendanceFactory(person=user, instrument_type=None)
+        self.assertEqual(attendance.instrument_group(), user.instrument_type.group)
+
+    def test_instrument_group_returns_none_if_no_instrument_type(self):
+        """
+        `instrument_group` should return `None`
+        if neither the attendance nor the user has an instrument type.
+        """
+        user = UserFactory(instrument_type=None)
+        attendance = EventAttendanceFactory(person=user, instrument_type=None)
+        self.assertIsNone(attendance.instrument_group())
 
 
 class EventKeyinfoEntryTestSuite(TestMixin, TestCase):

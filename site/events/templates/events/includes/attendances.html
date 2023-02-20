@@ -23,7 +23,7 @@
                             </a>
                         </td>
                         <td>
-                            {{ attendance.person.instrument_type.group }}
+                            {% firstof attendance.instrument_group "Ukjent" %}
                         </td>
                         <td>
                             {{ attendance.person.jacket.number }}
