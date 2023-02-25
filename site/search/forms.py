@@ -23,7 +23,7 @@ class SearchForm(Form):
         widget=TextInput(
             {
                 "type": "search",
-                "data-hx-trigger": "keyup changed delay:500ms, search",
+                "data-hx-trigger": "keyup changed delay:250ms, search",
                 "data-hx-get": reverse_lazy("search:Search"),
                 "autofocus": True,
             }

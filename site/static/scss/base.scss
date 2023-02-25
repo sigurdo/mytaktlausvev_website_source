@@ -106,6 +106,9 @@ th {
   display: none;
 }
 
+// Ensure the indicator is hidden when you load the page.
+// Without this, the indicator is only hidden when the JS library loads,
+// leading to a flicker of the indicator when you load the page.
 .htmx-indicator {
   opacity: 0;
 }
