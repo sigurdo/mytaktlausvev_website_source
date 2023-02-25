@@ -1,0 +1,34 @@
+<ul class="list-unstyled">
+    {% for search_result in search_results %}
+        <li class="mb-4">
+            <h3 class="fs-5">
+                <a href="{{ search_result.url }}">
+                    {{ search_result.title }}
+                </a>
+            </h3>
+
+            <ul class="list-inline">
+                <li class="list-inline-item">
+                    {% load utils %}
+                    {{ search_result.object | verbose_name | capfirst }}
+                </li>
+                <li class="list-inline-item">
+                    <a
+                        href="{% url 'accounts:ProfileDetail' search_result.meta.created_by__slug %}"
+                    >
+                        {{ search_result.meta.created_by__username }}
+                    </a>
+                </li>
+                <li class="list-inline-item">
+                    {% load utils %}
+                    <time
+                        datetime="{{ search_result.meta.created }}"
+                        title="{{ search_result.meta.created | parse_iso8601  }}"
+                    >
+                        {{ search_result.meta.created | parse_iso8601 }}
+                    </time>
+                </li>
+            </ul>
+        </li>
+    {% endfor %}
+</ul>
