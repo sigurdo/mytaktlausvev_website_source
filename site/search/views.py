@@ -1,13 +1,25 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
-from watson.views import SearchView
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+from django.views.decorators.http import require_GET
+from watson.search import search
 
-from search.forms import SearchForm
+from .forms import SearchForm
 
 
-class Search(LoginRequiredMixin, SearchView):
-    template_name = "search/search.html"
+@require_GET
+@login_required
+def search_view(request):
+    template = (
+        "search/partials/search_results.html"
+        if request.headers.get("Hx-Request")
+        else "search/search.html"
+    )
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["form"] = SearchForm(initial={"q": context["query"]})
-        return context
+    return render(
+        request,
+        template,
+        {
+            "search_results": search(request.GET.get("query", "")[:50]),
+            "form": SearchForm,
+        },
+    )
