@@ -19,7 +19,7 @@ def search_view(request):
         request,
         template,
         {
-            "search_results": search(request.GET.get("query", "")[:50]),
+            "search_results": search(request.GET.get("query", ""))[:50],
             "form": SearchForm,
         },
     )
