@@ -9,7 +9,12 @@ class BrewForm(ModelForm):
     helper = FormHelper()
     helper.layout = Layout(
         Fieldset(
-            "Generelt", "name", "price_per_liter", "available_for_purchase", "logo"
+            "Generelt",
+            "name",
+            "price_per_liter",
+            "available_for_purchase",
+            "empty",
+            "logo",
         ),
         Fieldset(
             "Brygging",
@@ -25,6 +30,7 @@ class BrewForm(ModelForm):
             "name",
             "price_per_liter",
             "available_for_purchase",
+            "empty",
             "logo",
             "OG",
             "FG",

@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const data_table = new DataTable("#table-balance", {
+  const dataTable = new DataTable("#table-balance", {
     order: [[1, "asc"]],
     paging: false,
     language: {
@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   const filterMembershipStatus = (membershipStatus) => {
-    data_table
+    dataTable
       .column(2)
       .search(membershipStatus ? "^" + membershipStatus + "$" : "", true, false)
       .draw();
