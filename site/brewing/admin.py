@@ -8,12 +8,13 @@ class BrewAdmin(ModelAdmin):
         "name",
         "price_per_liter",
         "available_for_purchase",
+        "empty",
         "OG",
         "FG",
         "alcohol_by_volume",
     )
     search_fields = ("name", "price_per_liter", "OG", "FG")
-    list_filter = ("available_for_purchase",)
+    list_filter = ("available_for_purchase", "empty")
     readonly_fields = ("created", "created_by", "modified", "modified_by")
 
     @display(description="alkoholprosent")

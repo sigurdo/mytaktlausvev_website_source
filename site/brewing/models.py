@@ -33,6 +33,9 @@ class Brew(CreatedModifiedMixin):
     )
     price_per_liter = IntegerField("literpris", blank=True, null=True)
     available_for_purchase = BooleanField("tilgjengeleg for kjøp", default=False)
+    empty = BooleanField(
+        "tomt", default=False, help_text="Om brygget har vorte drukke opp."
+    )
     OG = FloatField(
         "OG",
         blank=True,
@@ -115,6 +118,11 @@ class Brew(CreatedModifiedMixin):
                 check=(~Q(price_per_liter=None, available_for_purchase=True)),
                 name="brew_price_required_if_available_for_purchase",
                 violation_error_message="Literpris er påkravd om brygget skal vere tilgjengeleg for kjøp.",
+            ),
+            CheckConstraint(
+                check=(~Q(empty=True, available_for_purchase=True)),
+                name="empty_brews_cannot_be_available_for_purchase",
+                violation_error_message="Tomme brygg kan ikkje vere tilgjengelege for kjøp.",
             ),
         ]
 

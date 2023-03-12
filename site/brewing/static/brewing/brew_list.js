@@ -1,9 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
-  new DataTable("#table-brews", {
-    order: [
-      [2, "asc"],
-      [0, "asc"],
-    ],
+  const dataTable = new DataTable("#table-brews", {
+    order: [[1, "desc"]],
     paging: false,
     language: {
       zeroRecords: "Ingen brygg funne",
@@ -12,6 +9,30 @@ document.addEventListener("DOMContentLoaded", () => {
       infoFiltered: "(filtrert fra totalt _MAX_ brygg)",
       search: "Søk:",
     },
-    columns: [null, null, null, null, null, null, { orderable: false }],
+    columns: [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      { orderable: false },
+    ],
   });
+
+  const filterEmptyBrews = (showEmptyBrews) => {
+    dataTable
+      .column(4)
+      .search(showEmptyBrews ? "" : "false", true, false)
+      .draw();
+  };
+
+  const showEmptyBrews = document.querySelector("#show-empty-brews");
+
+  filterEmptyBrews(showEmptyBrews.checked);
+  showEmptyBrews.addEventListener("input", (event) =>
+    filterEmptyBrews(event.target.checked)
+  );
 });

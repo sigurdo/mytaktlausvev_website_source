@@ -39,9 +39,7 @@ class BrewList(LoginRequiredMixin, BreadcrumbsMixin, ListView):
     model = Brew
     context_object_name = "brews"
     breadcrumb_parent = BrewOverview
-
-    def get_queryset(self):
-        return super().get_queryset().order_by("-available_for_purchase", "name")
+    ordering = ("empty", "name")
 
     @classmethod
     def get_breadcrumb(cls, **kwargs):

@@ -57,6 +57,11 @@ class BrewTestSuite(TestMixin, TestCase):
         with self.assertRaises(IntegrityError):
             BrewFactory(price_per_liter=None, available_for_purchase=True)
 
+    def test_empty_brews_cannot_be_available_for_purchase(self):
+        """Empty brews cannot be available for purchase."""
+        with self.assertRaises(IntegrityError):
+            BrewFactory(empty=True, available_for_purchase=True)
+
     def test_alcohol_by_volume(self):
         """Should return the ABV calculated from the OG and the FG."""
         brew = BrewFactory(OG=1.050, FG=1.010)
@@ -90,6 +95,10 @@ class BrewTestSuite(TestMixin, TestCase):
         """
         brew = BrewFactory(logo="")
         self.assertEqual(brew.get_logo_url(), static("brewing/default-brew-logo.svg"))
+
+    def test_empty_defaults_to_false(self):
+        """A brew's emptiness should default to false."""
+        self.assertFalse(BrewFactory().empty)
 
     def test_to_str(self):
         """`__str__` should be the brew's name."""
