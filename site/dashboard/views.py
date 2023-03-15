@@ -121,7 +121,14 @@ class Dashboard(LoginRequiredMixin, TemplateView):
             birthdate__month=timezone.localdate().month,
             birthdate__day=timezone.localdate().day,
         )
-        return comma_seperate_list([user.get_name() for user in current_birthdays])
+        birthday_names = [user.get_name() for user in current_birthdays]
+
+        current_date = timezone.localdate()
+        is_dt_birthday = current_date.month == 2 and current_date.day == 14
+        if is_dt_birthday:
+            birthday_names.append("Dei Taktlause")
+
+        return comma_seperate_list(birthday_names)
 
     def get_birthday_song(self):
         """Returns birthday song score if it exists."""
