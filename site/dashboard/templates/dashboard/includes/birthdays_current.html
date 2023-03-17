@@ -1,5 +1,8 @@
+{% if user.name != "" and user.name in current_birthdays %}
+<h2> Gratulerer med dagen {{ current_birthdays }}!!! 🎉🥳🎈  </h2>
+{% else %}
 <h2> {{ current_birthdays }} har bursdag!!! 🎉🥳🎈 </h2>
-
+{%endif%}
 {% if birthday_song %}
     <p class="mb-0">
         Spill gjerne
