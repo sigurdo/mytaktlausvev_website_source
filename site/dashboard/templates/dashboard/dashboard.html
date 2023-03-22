@@ -6,21 +6,19 @@
 {% block content %}
 <div class="row gy-4">
 	{% if current_birthdays %}
-	<div class="col-md-12">
-		<div class="card h-100 p-3 shadow-sm">
-			<div class="card-body">
-				{% include "dashboard/includes/birthdays_current.html" with current_birthdays=current_birthdays
-				birthday_song=birthday_song only %}
+		<div class="col-md-12">
+			<div class="card h-100 p-3 shadow-sm">
+				<div class="card-body">
+					{% include "dashboard/includes/birthdays_current.html" with current_birthdays=current_birthdays birthday_song=birthday_song only %}
+				</div>
 			</div>
 		</div>
-	</div>
 	{% endif %}
 
 	<div class="col-md-6">
 		<div class="card h-100 p-3 shadow-sm">
 			<div class="card-body">
-				{% include "dashboard/includes/events.html" with events=events
-				number_events_answered=number_events_answered only %}
+				{% include "dashboard/includes/events.html" with events=events number_events_answered=number_events_answered only %}
 			</div>
 		</div>
 	</div>
@@ -44,8 +42,7 @@
 	<div class="col-md-6">
 		<div class="card h-100 p-3 shadow-sm">
 			<div class="card-body">
-				{% include "dashboard/includes/birthdays_upcoming.html" with upcoming_birthdays=upcoming_birthdays only
-				%}
+				{% include "dashboard/includes/birthdays_upcoming.html" with upcoming_birthdays=upcoming_birthdays only %}
 			</div>
 		</div>
 	</div>
@@ -101,9 +98,8 @@
 {% endblock %}
 
 {% block js %}
-<script src="https://cdn.jsdelivr.net/npm/bigpicture@2.6.1/dist/BigPicture.min.js"
-	integrity="sha256-OsbS8Cw/fMpgT6GBFfqhvmX9yJLwzE6+me56KzpSbAs=" crossorigin="anonymous"></script>
-{% load static %}
-<script src="{% static " events/ical_button.js" %}"></script>
-<script src="{% static " common/js/lightbox.js" %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bigpicture@2.6.1/dist/BigPicture.min.js" integrity="sha256-OsbS8Cw/fMpgT6GBFfqhvmX9yJLwzE6+me56KzpSbAs=" crossorigin="anonymous"></script>
+    {% load static %}
+    <script src="{% static "events/ical_button.js" %}"></script>
+    <script src="{% static "common/js/lightbox.js" %}"></script>
 {% endblock js %}
