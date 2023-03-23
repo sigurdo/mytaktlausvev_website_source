@@ -1,4 +1,4 @@
-<h2> {{ current_birthdays }} har bursdag!!! 🎉🥳🎈 </h2>
+<h2> Gratulerer med dagen {{ current_birthdays }}!!! 🎉🥳🎈 </h2>
 
 {% if birthday_song %}
     <p class="mb-0">
@@ -6,6 +6,6 @@
         {% if birthday_song.part %}
             <a href="{{ birthday_song.part.get_absolute_url }}">{{ birthday_song.part }}</a> på
         {% endif %}
-        <a href="{{ birthday_song.get_absolute_url }}">{{ birthday_song.title }}</a>!
+            <a href="{{ birthday_song.get_absolute_url }}">{{ birthday_song.title }}</a>!
     </p>
 {% endif %}
