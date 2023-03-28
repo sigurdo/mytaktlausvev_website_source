@@ -7,7 +7,8 @@ from .models import ButtonDesign
 
 class ButtonsForm(Form):
     images = ImageField(
-        widget=ClearableFileInput(attrs={"multiple": True}), label="Motiv"
+        widget=ClearableFileInput(attrs={"multiple": True}),
+        label="Motiv (du kan laste opp fleire samstundes!)",
     )
     num_of_each = IntegerField(
         min_value=1, max_value=64, initial=1, label="Antal buttons av kvart motiv"
