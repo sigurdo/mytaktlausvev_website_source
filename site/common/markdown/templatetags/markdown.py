@@ -26,6 +26,8 @@ ALLOWED_BASE_TAGS = [
     "s",
     "small",
     "span",
+    "sub",
+    "sup",
 ]
 ALLOWED_BASE_ATTRIBUTES = []
 
@@ -117,7 +119,7 @@ def escape_non_inline_markdown(string):
     is assumed to not contain any newlines.
 
     The logic behind the regex patterns is described on the wiki:
-    https://gitlab.com/taktlause/taktlausveven/-/wikis/Markdown
+    https://gitlab.com/taktlause/taktlausveven/-/wikis/Markdown/escape_non_inline_markdown
     """
 
     patterns = [
@@ -151,7 +153,7 @@ def markdown_inline_filter(string, allow_links=True):
     Equivalent to the `markdown` filter, but renders only inline markdown elements.
 
     A more detailed description can be found on the wiki,
-    https://gitlab.com/taktlause/taktlausveven/-/wikis/Markdown
+    https://gitlab.com/taktlause/taktlausveven/-/wikis/Markdown/markdown_inline_filter
     """
 
     # Replace eventual newlines and carriage returns with spaces.

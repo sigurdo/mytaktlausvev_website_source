@@ -64,6 +64,11 @@
                                     {% endif %}
                                 </dd>
 
+                                <dt>E-post</dt>
+                                <dd>
+                                    <a href="mailto:{{ profile.email }}">{{ profile.email }}</a>
+                                </dd>
+
                                 <dt>Adresse</dt>
                                 <dd class="p-margin-last-0">
                                     {% if profile.address %}
@@ -183,6 +188,13 @@
                         <div class="card-body">
                             <h2 class="fs-3">Anna</h2>
                             <dl>
+                                {% if user == profile or perms.brewing.view_transaction %}
+                                <dt>Bryggjekassesaldo</dt>
+                                <dd>
+                                    {{ profile.brewing_transactions.balance }} NOK
+                                </dd>
+                                {% endif %}
+
                                 <dt>Lys modus</dt>
                                 <dd>
                                     {{ profile.light_mode | yesno | capfirst }}

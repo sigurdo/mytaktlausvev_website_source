@@ -122,6 +122,18 @@
 		],
 		"description": "Create a new TestSuite for a view that requires permission",
 	},
+	"get_breadcrumb": {
+		"scope": "python",
+		"prefix": ["get_breadcrumb"],
+		"body": [
+			"@classmethod",
+			"def get_breadcrumb(cls, $1**kwargs):",
+			"    return Breadcrumb(",
+			"        url=reverse(\"$2:$3\"$4),",
+			"        label=$5,",
+			"    )"
+		]
+	}
 	"Django template boilerplate": {
 		"scope": "django-html",
 		"prefix": ["boilerplate", "extends base.html"],

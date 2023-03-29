@@ -93,7 +93,10 @@ class EventAttendanceForm(ModelForm):
 
     class Meta:
         model = EventAttendance
-        fields = ["status"]
+        fields = ["status", "instrument_type"]
+        widgets = {
+            "instrument_type": AutocompleteSelect,
+        }
 
 
 class EventKeyinfoEntryForm(ModelForm):

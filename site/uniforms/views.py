@@ -8,24 +8,16 @@ from .forms import JacketsFormset
 from .models import Jacket
 
 
-def breadcrumbs(jacket=None):
-    """Returns breadcrumbs for the uniforms views."""
-    breadcrumbs = [Breadcrumb(reverse("uniforms:JacketList"), "Jakkeoversikt")]
-    if jacket:
-        breadcrumbs.append(
-            Breadcrumb(
-                reverse("uniforms:JacketUsers", args=[jacket.number]), str(jacket)
-            )
-        )
-    return breadcrumbs
-
-
-class JacketList(LoginRequiredMixin, ListView):
+class JacketList(LoginRequiredMixin, BreadcrumbsMixin, ListView):
     model = Jacket
     context_object_name = "jackets"
 
     def get_queryset(self):
         return super().get_queryset().prefetch_related("location", "owner")
+
+    @classmethod
+    def get_breadcrumb(cls, **kwargs):
+        return Breadcrumb(reverse("uniforms:JacketList"), "Jakkeoversikt")
 
 
 class JacketsUpdate(PermissionRequiredMixin, BreadcrumbsMixin, FormView):
@@ -36,12 +28,10 @@ class JacketsUpdate(PermissionRequiredMixin, BreadcrumbsMixin, FormView):
         "uniforms.change_jacket",
         "uniforms.delete_jacket",
     )
+    breadcrumb_parent = JacketList
 
     def get_success_url(self):
         return reverse("uniforms:JacketList")
-
-    def get_breadcrumbs(self) -> list:
-        return breadcrumbs()
 
     def get_context_data(self, **kwargs):
         kwargs["form_title"] = "Rediger jakkeoversikt"

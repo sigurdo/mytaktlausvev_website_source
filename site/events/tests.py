@@ -8,10 +8,9 @@ from django.http.response import Http404
 from django.test import TestCase
 from django.urls import reverse
 from django.utils.text import slugify
-from django.utils.timezone import localtime, make_aware, now
+from django.utils.timezone import make_aware, now
 
 from accounts.factories import SuperUserFactory, UserFactory
-from common.breadcrumbs.breadcrumbs import Breadcrumb
 from common.mixins import TestMixin
 from common.test_utils import create_formset_post_data
 from events.models import (
@@ -21,12 +20,8 @@ from events.models import (
     EventCategory,
     EventKeyinfoEntry,
 )
-from events.views import (
-    EventFeed,
-    event_breadcrumbs,
-    get_event_attendance_or_404,
-    get_event_or_404,
-)
+from events.views import EventFeed, get_event_attendance_or_404, get_event_or_404
+from instruments.factories import InstrumentTypeFactory
 
 from .factories import (
     EventAttendanceFactory,
@@ -201,6 +196,33 @@ class EventAttendanceTestSuite(TestCase):
         """`__str__` should include the status."""
         self.assertIn(self.attendance.get_status_display(), str(self.attendance))
 
+    def test_instrument_group_returns_group_if_registered(self):
+        """
+        `instrument_group` should return the instrument group
+        if an instrument type has been registered.
+        """
+        instrument_type = InstrumentTypeFactory()
+        attendance = EventAttendanceFactory(instrument_type=instrument_type)
+        self.assertEqual(attendance.instrument_group(), instrument_type.group)
+
+    def test_instrument_group_returns_users_group_if_group_not_registered(self):
+        """
+        `instrument_group` should return the user's instrument group
+        if an instrument type hasn't been registered, and the user has an instrument type.
+        """
+        user = UserFactory(instrument_type=InstrumentTypeFactory())
+        attendance = EventAttendanceFactory(person=user, instrument_type=None)
+        self.assertEqual(attendance.instrument_group(), user.instrument_type.group)
+
+    def test_instrument_group_returns_none_if_no_instrument_type(self):
+        """
+        `instrument_group` should return `None`
+        if neither the attendance nor the user has an instrument type.
+        """
+        user = UserFactory(instrument_type=None)
+        attendance = EventAttendanceFactory(person=user, instrument_type=None)
+        self.assertIsNone(attendance.instrument_group())
+
 
 class EventKeyinfoEntryTestSuite(TestMixin, TestCase):
     def test_to_str(self):
@@ -270,145 +292,9 @@ class GetterTestSuite(TestCase):
             get_event_attendance_or_404(1913, "not-exist", "also-not-exist")
 
 
-class EventBreadcrumbsTestSuite(TestMixin, TestCase):
-    def test_event_list_upcoming(self):
-        """
-        Calling for `EventList` for upcoming events should give 1 breadcrumb;
-        - To `EventList` for the current year.
-        """
-        current_year = localtime(now()).year
-        self.assertEqual(
-            event_breadcrumbs(),
-            [
-                Breadcrumb(
-                    reverse("events:EventList", args=[current_year]),
-                    f"Hendingar {current_year}",
-                )
-            ],
-        )
-
-    def test_event_create(self):
-        """
-        Calling for `EventCreate` should give 2 breadcrumbs;
-        - To `EventList` for the current year.
-        - To `EventList` for all upcoming events.
-        """
-        current_year = localtime(now()).year
-        event = Event(start_time=now() + timedelta(days=1))
-        self.assertEqual(
-            event_breadcrumbs(event=event, include_event=False),
-            [
-                Breadcrumb(
-                    reverse("events:EventList", args=[current_year]),
-                    f"Hendingar {current_year}",
-                ),
-                Breadcrumb(
-                    reverse("events:EventList"),
-                    "Alle framtidige",
-                ),
-            ],
-        )
-
-    def test_future_event_detail(self):
-        """
-        Calling for `EventDetail` for a future event should give 2 breadcrumbs;
-        - To `EventList` for the event's year
-        - To `EventList` for all upcoming events.
-        """
-        event = EventFactory(start_time=(now() + timedelta(days=370)))
-        year = localtime(event.start_time).year
-        self.assertEqual(
-            event_breadcrumbs(event=event, include_event=False),
-            [
-                Breadcrumb(
-                    reverse("events:EventList", args=[year]),
-                    f"Hendingar {year}",
-                ),
-                Breadcrumb(
-                    reverse("events:EventList"),
-                    "Alle framtidige",
-                ),
-            ],
-        )
-
-    def test_future_event_update(self):
-        """
-        Calling for `EventUpdate` or another deeper view than `EventDetail` for a future event should
-        give 3 breadcrumbs;
-        - To `EventList` for the event's year
-        - To `EventList` for all upcoming events
-        - To `EventDetail` for the event.
-        """
-        event = EventFactory(start_time=(now() + timedelta(days=370)))
-        year = localtime(event.start_time).year
-        self.assertEqual(
-            event_breadcrumbs(event=event),
-            [
-                Breadcrumb(
-                    reverse("events:EventList", args=[year]),
-                    f"Hendingar {year}",
-                ),
-                Breadcrumb(
-                    reverse("events:EventList"),
-                    "Alle framtidige",
-                ),
-                Breadcrumb(
-                    reverse(
-                        "events:EventDetail",
-                        args=[year, event.slug],
-                    ),
-                    str(event),
-                ),
-            ],
-        )
-
-    def test_past_event_detail(self):
-        """
-        Calling for `EventDetail` for a past event should give 1 breadcrumb;
-        - To `EventList` for the event's year.
-        """
-        event = EventFactory(start_time=(now() - timedelta(days=370)))
-        year = localtime(event.start_time).year
-        self.assertEqual(
-            event_breadcrumbs(event=event, include_event=False),
-            [
-                Breadcrumb(
-                    reverse("events:EventList", args=[year]),
-                    f"Hendingar {year}",
-                ),
-            ],
-        )
-
-    def test_past_event_update(self):
-        """
-        Calling for EventUpdate or another deeper view than EventDetail for a past event should
-        give 2 breadcrumbs;
-        - To EventList for the event's year
-        - To EventDetail for the event
-        """
-        event = EventFactory(start_time=(now() - timedelta(days=370)))
-        year = localtime(event.start_time).year
-        self.assertEqual(
-            event_breadcrumbs(event=event),
-            [
-                Breadcrumb(
-                    reverse("events:EventList", args=[year]),
-                    f"Hendingar {year}",
-                ),
-                Breadcrumb(
-                    reverse(
-                        "events:EventDetail",
-                        args=[year, event.slug],
-                    ),
-                    str(event),
-                ),
-            ],
-        )
-
-
 class EventListTestSuite(TestMixin, TestCase):
-    def get_url(self, *args):
-        return reverse("events:EventList", args=args)
+    def get_url(self):
+        return reverse("events:EventList")
 
     def test_requires_login(self):
         self.assertLoginRequired(self.get_url())
@@ -440,6 +326,11 @@ class EventListTestSuite(TestMixin, TestCase):
         response = self.client.get(self.get_url())
         self.assertEquals(len(response.context["events"]), 1)
 
+
+class EventListYearTestSuite(TestMixin, TestCase):
+    def get_url(self, *args):
+        return reverse("events:EventListYear", args=args)
+
     def test_filter_year_events(self):
         """
         Create different amount of events for 2020, 2021, 2022 and 2023 and check if the number of
@@ -459,12 +350,13 @@ class EventListTestSuite(TestMixin, TestCase):
 
 
 class EventDetailTestSuite(TestMixin, TestCase):
+    def get_url(self, event):
+        return reverse("events:EventDetail", args=[event.start_time.year, event.slug])
+
     def test_requires_login(self):
         """Should require login."""
         event = EventFactory()
-        self.assertLoginRequired(
-            reverse("events:EventDetail", args=[event.start_time.year, event.slug])
-        )
+        self.assertLoginRequired(self.get_url(event))
 
 
 class EventCreateTestSuite(TestMixin, TestCase):
@@ -573,11 +465,10 @@ class EventUpdateTestSuite(TestMixin, TestCase):
             form_data.update({**self.create_formset_post_data()})
         return form_data
 
-    def get_url(self):
+    def get_url(self, event=None):
         """Returns the URL for the event update view for `event`."""
-        return reverse(
-            "events:EventUpdate", args=[self.event.start_time.year, self.event.slug]
-        )
+        event = event or self.event
+        return reverse("events:EventUpdate", args=[event.start_time.year, event.slug])
 
     def test_requires_login(self):
         """Should require login."""
@@ -627,10 +518,9 @@ class EventDeleteTestSuite(TestMixin, TestCase):
     def setUp(self):
         self.event = EventFactory()
 
-    def get_url(self):
-        return reverse(
-            "events:EventDelete", args=[self.event.start_time.year, self.event.slug]
-        )
+    def get_url(self, event=None):
+        event = event or self.event
+        return reverse("events:EventDelete", args=[event.start_time.year, event.slug])
 
     def test_should_redirect_to_event_list_on_success(self):
         """Should redirect to the event list on success."""

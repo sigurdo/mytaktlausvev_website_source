@@ -8,9 +8,16 @@ from .forms import InstrumentFormset
 from .models import Instrument
 
 
-class InstrumentList(LoginRequiredMixin, ListView):
+class InstrumentList(LoginRequiredMixin, BreadcrumbsMixin, ListView):
     model = Instrument
     context_object_name = "instruments"
+
+    @classmethod
+    def get_breadcrumb(cls, **kwargs) -> Breadcrumb:
+        return Breadcrumb(
+            url=reverse("instruments:InstrumentList"),
+            label="Instrumentoversikt",
+        )
 
     def get_queryset(self):
         return super().get_queryset().prefetch_related("type", "location", "user")
@@ -28,12 +35,10 @@ class InstrumentsUpdate(
         "instruments.change_instrument",
         "instruments.delete_instrument",
     )
+    breadcrumb_parent = InstrumentList
 
     def get_success_url(self) -> str:
         return reverse("instruments:InstrumentList")
-
-    def get_breadcrumbs(self) -> list:
-        return [Breadcrumb(reverse("instruments:InstrumentList"), "Instrumentoversikt")]
 
     def get_context_data(self, **kwargs):
         kwargs["form_title"] = "Rediger instrumentoversikt"

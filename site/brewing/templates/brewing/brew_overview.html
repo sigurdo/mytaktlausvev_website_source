@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title_page %}Brygging{% endblock title_page %}
+{% block title_content %}Brygging{% endblock title_content %}
+
+{% block header %}
+    {{ block.super }}
+
+    <ul class="list-inline my-1">
+        <li class="list-inline-item">
+            <a href="{% url 'brewing:DepositCreate' %}" class="btn btn-primary btn-sm my-1">Ny innbetaling</a>
+        </li>
+
+        <li class="list-inline-item">
+            <a href="{% url 'brewing:BrewList' %}" class="btn btn-secondary btn-sm my-1">Alle brygg</a>
+        </li>        
+
+        {% if perms.brewing.view_transaction %}
+        <li class="list-inline-item">
+            <a href="{% url 'brewing:BalanceList' %}" class="btn btn-secondary btn-sm my-1">Sjå saldoar</a>
+        </li>
+        {% endif %}
+    </ul>
+
+    {% with user.brewing_transactions.balance as balance %}
+        Saldoen din er <strong>{{ balance }} NOK</strong>! {% if balance < 0 %}Du skuldar bryggjekassa pengar.{% endif %}
+    {% endwith %}
+{% endblock header %}
+
+
+{% block content %}
+    <section>
+        {% load embeddable_text markdown %}
+        {% get_embeddable_text "Bryggjeoversiktinformasjon" as text %}
+        {{ text | markdown }}
+    </section>
+
+    {% include "brewing/includes/brew_purchase_list.html" with brews=available_brews %}
+{% endblock content %}
+
+{% block js %}
+    <script src="https://cdn.jsdelivr.net/npm/bigpicture@2.6.1/dist/BigPicture.min.js" integrity="sha256-OsbS8Cw/fMpgT6GBFfqhvmX9yJLwzE6+me56KzpSbAs=" crossorigin="anonymous"></script>
+    {% load static %}
+    <script src="{% static "common/js/lightbox.js" %}"></script>    
+{% endblock js %}

@@ -19,19 +19,27 @@ class SlugPathMixin:
     Intented to override `SingleObjectMixin`.
     """
 
+    # Cannot be called `object`, because that will make `SubarticleCreate`
+    # load `ArticleForm` as an update form instead of a create form.
+    object_cached = None
+
     def get_object(self):
+        if self.object_cached is not None:
+            return self.object_cached
+
         path = self.kwargs.get("path")
         slug_object = path.split("/")[-1]
 
         candidates = self.get_queryset().filter(slug=slug_object)
         for candidate in candidates:
             if candidate.path() == path:
-                return candidate
+                self.object_cached = candidate
+                return self.object_cached
 
         raise Http404(f"Couldn't find and article matching path '{path}'.")
 
 
-class ArticleDetail(UserPassesTestMixin, BreadcrumbsMixin, SlugPathMixin, DetailView):
+class ArticleDetail(UserPassesTestMixin, SlugPathMixin, BreadcrumbsMixin, DetailView):
     """View for viewing an article."""
 
     model = Article
@@ -39,7 +47,7 @@ class ArticleDetail(UserPassesTestMixin, BreadcrumbsMixin, SlugPathMixin, Detail
     def test_func(self):
         return self.get_object().public or self.request.user.is_authenticated
 
-    def get_breadcrumbs(self) -> list:
+    def get_breadcrumbs(self):
         return self.object.breadcrumbs()
 
     def get_context_data(self, **kwargs):
@@ -49,6 +57,10 @@ class ArticleDetail(UserPassesTestMixin, BreadcrumbsMixin, SlugPathMixin, Detail
         else:
             context["subarticles"] = self.object.children.filter(public=True)
         return context
+
+    @classmethod
+    def get_breadcrumbs_for_children(cls, article, **kwargs):
+        return article.breadcrumbs(include_self=True)
 
 
 class ArticleCreate(LoginRequiredMixin, CreateView):
@@ -62,8 +74,7 @@ class ArticleCreate(LoginRequiredMixin, CreateView):
 class SubarticleCreate(SlugPathMixin, BreadcrumbsMixin, ArticleCreate):
     """View for creating a subarticle."""
 
-    def get_breadcrumbs(self) -> list:
-        return self.get_object().breadcrumbs(include_self=True)
+    breadcrumb_parent = ArticleDetail
 
     def get_initial(self):
         parent = self.get_object()
@@ -73,9 +84,12 @@ class SubarticleCreate(SlugPathMixin, BreadcrumbsMixin, ArticleCreate):
             "comments_allowed": parent.comments_allowed,
         }
 
+    def get_breadcrumbs_kwargs(self):
+        return {"article": self.get_object()}
+
 
 class ArticleUpdate(
-    PermissionOrCreatedMixin, BreadcrumbsMixin, SlugPathMixin, UpdateView
+    PermissionOrCreatedMixin, SlugPathMixin, BreadcrumbsMixin, UpdateView
 ):
     """View for updating a article."""
 
@@ -83,19 +97,18 @@ class ArticleUpdate(
     form_class = ArticleForm
     template_name = "common/forms/form.html"
     permission_required = "articles.change_article"
+    breadcrumb_parent = ArticleDetail
 
-    def get_breadcrumbs(self) -> list:
-        return self.object.breadcrumbs(include_self=True)
+    def get_breadcrumbs_kwargs(self):
+        return {"article": self.object}
 
 
 class ArticleDelete(
-    PermissionOrCreatedMixin, BreadcrumbsMixin, SlugPathMixin, DeleteViewCustom
+    PermissionOrCreatedMixin, SlugPathMixin, BreadcrumbsMixin, DeleteViewCustom
 ):
     model = Article
     permission_required = "articles.delete_article"
-
-    def get_breadcrumbs(self) -> list:
-        return self.object.breadcrumbs(include_self=True)
+    breadcrumb_parent = ArticleDetail
 
     def get_success_url(self) -> str:
         return (
@@ -103,3 +116,6 @@ class ArticleDelete(
             if self.object.parent
             else reverse("dashboard:Dashboard")
         )
+
+    def get_breadcrumbs_kwargs(self):
+        return {"article": self.object}

@@ -90,6 +90,7 @@ INSTALLED_APPS = [
     "authentication",
     "accounts",
     "common",
+    "common.constants",
     "common.forms",
     "common.embeddable_text",
     "common.comments",
@@ -118,6 +119,7 @@ INSTALLED_APPS = [
     "minutes",
     "user_files",
     "external_orchestras",
+    "brewing",
 ]
 
 MIDDLEWARE = [
@@ -365,6 +367,3 @@ SASS_PROCESSOR_INCLUDE_DIRS = [
 
 ENABLE_PWA_MANIFEST = True
 ENABLE_SERVICEWORKER = not DEBUG
-
-# Miscellaneous constants
-BIRTHDAY_SONG_SLUG = "hurra-for-deg"

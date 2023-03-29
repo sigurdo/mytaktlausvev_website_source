@@ -40,6 +40,7 @@ urlpatterns = [
     path("avstemmingar/", include("polls.urls")),
     path("fotoarkiv/", include("pictures.urls")),
     path("referat/", include("minutes.urls")),
+    path("brygging/", include("brewing.urls")),
     path("brukarfiler/", include("user_files.urls")),
     path("pdfar/", include("common.pdfs.urls")),
     path("", include("search.urls")),

@@ -8,6 +8,25 @@
         </section>
     {% endif %}
 
+    {% if user.is_authenticated and brewing_balance < 0 %}
+        <section class="card p-3">
+            <h2 class="fs-3">Bryggjekassa</h2>
+            <p>
+                {% load utils %}
+                Du skuldar bryggjekassa <strong>{{ brewing_balance|abs }} NOK</strong>.
+            </p>
+
+            <div>
+                <a
+                    href="{% url 'brewing:DepositCreate' %}"
+                    class="btn btn-primary btn d-inline-block"
+                >
+                    Legg inn pengar
+                </a>
+            </div>
+        </section>
+    {% endif %}    
+
     {% if user.is_authenticated and user.image_sharing_consent == "UNKNOWN" %}
         <section class="card p-3">
             <h2 class="fs-3">Sosiale medier</h2>

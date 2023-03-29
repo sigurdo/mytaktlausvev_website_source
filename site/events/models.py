@@ -24,6 +24,7 @@ from django.urls import reverse
 from django.utils.timezone import localtime, make_aware, now
 
 from common.models import ArticleMixin
+from instruments.models import InstrumentType
 from pictures.models import Gallery
 from repertoire.models import Repertoire
 from sheetmusic.models import Score
@@ -45,6 +46,7 @@ class EventCategory(Model):
 
 class EventManager(Manager):
     def upcoming(self):
+        """Returns a manager for upcoming and ongoing events."""
         return super().filter(
             Q(end_time__gte=make_aware(datetime.now()))
             | Q(start_time__gte=make_aware(datetime.now() - timedelta(hours=12)))
@@ -127,6 +129,12 @@ class Event(ArticleMixin):
         """Returns True if the event is in the future."""
         return self.start_time > make_aware(datetime.now())
 
+    def is_upcoming(self):
+        """Returns True if the event is upcoming or ongoing."""
+        return (
+            self.end_time is not None and self.end_time >= make_aware(datetime.now())
+        ) or self.start_time >= make_aware(datetime.now() - timedelta(hours=12))
+
     class Meta:
         ordering = ["start_time"]
         verbose_name = "hending"
@@ -161,6 +169,14 @@ class EventAttendance(Model):
         verbose_name="person",
         related_name="event_attendances",
     )
+    instrument_type = ForeignKey(
+        InstrumentType,
+        null=True,
+        blank=True,
+        on_delete=SET_NULL,
+        verbose_name="instrumenttype",
+        related_name="event_attendances",
+    )
     status = CharField("status", max_length=255, choices=Attendance.choices)
 
     created = DateTimeField("laga", auto_now_add=True)
@@ -168,6 +184,19 @@ class EventAttendance(Model):
 
     def __str__(self):
         return f"{self.event} - {self.person} - {self.get_status_display()}"
+
+    def instrument_group(self):
+        """
+        Returns the attendance's instrument group, depending on what data exists, in this order:
+        - `self`'s instrument group
+        - `person`'s instrument group
+        - `None`
+        """
+        if self.instrument_type:
+            return self.instrument_type.group
+        elif self.person.instrument_type:
+            return self.person.instrument_type.group
+        return None
 
     class Meta:
         verbose_name = "hendingdeltaking"

@@ -18,6 +18,11 @@ def get_range(length):
     return range(length)
 
 
+@register.filter(name="abs")
+def abs_filter(value):
+    return abs(value)
+
+
 @register.filter
 def filename(file):
     return basename(file.name)

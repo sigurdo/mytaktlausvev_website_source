@@ -1,12 +1,12 @@
 from django.urls import path
 from django.views.generic import RedirectView
 
-from .views import Search
+from .views import search_view
 
 app_name = "search"
 
 urlpatterns = [
-    path("søk/", Search.as_view(), name="Search"),
+    path("søk/", search_view, name="Search"),
     path(
         "search/",
         RedirectView.as_view(

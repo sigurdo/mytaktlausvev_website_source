@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block sidebar %}{% endblock sidebar %}
+
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs5/jq-3.6.0/dt-1.11.3/datatables.min.css"/>
+{% endblock css %}
+
+{% block title_page %}Brygg{% endblock title_page %}
+{% block title_content %}Brygg{% endblock title_content %}
+
+{% block header %}
+    {{ block.super }}
+
+    {% if perms.brewing.add_brew %}
+        <ul class="list-inline my-1">
+            <li class="list-inline-item">
+                <a href="{% url 'brewing:BrewCreate' %}" class="btn btn-primary btn-sm my-1">Nytt brygg</a>
+            </li>
+        </ul>
+    {% endif %}
+{% endblock header %}
+
+{% block content %}
+<div class="mb-3 form-check">
+    <input class="checkboxinput form-check-input" type="checkbox" value="" id="show-empty-brews" />
+    <label class="form-check-label" for="show-empty-brews">
+        Vis tomme brygg
+    </label>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-sm table-striped" id="table-brews">
+        <thead>
+            <tr>
+                <th>Namn</th>
+                <th>Laga</th>
+                <th>Literpris (NOK)</th>
+                <th>Tilgjengeleg for kjøp</th>
+                <th>Tomt</th>
+                <th>OG</th>
+                <th>FG</th>
+                <th>Alkoholprosent</th>
+                {% if perms.brewing.change_brew %}
+                    <th>Rediger</th>
+                {% endif %}
+            </tr>
+        </thead>
+
+        <tbody class="align-middle">
+            {% for brew in brews %}
+            <tr>
+                <td>{{ brew.name }}</td>
+                <td data-order="{{ brew.created | date:"U" }}">{{ brew.created | date:"j. F Y" }}</td>
+                <td>{% firstof brew.price_per_liter "Ikkje bestemt" %}</td>
+                <td>{{ brew.available_for_purchase | yesno | capfirst }}</td>
+                <td data-search="{{ brew.empty }}">{{ brew.empty | yesno | capfirst }}</td>
+                <td>{% firstof brew.OG|floatformat:3 "Ukjent" %}</td>
+                <td>{% firstof brew.FG|floatformat:3 "Ukjent" %}</td>
+                <td data-order="{{ brew.alcohol_by_volume }}">
+                    {% if brew.alcohol_by_volume is not None %}
+                        ~{{ brew.alcohol_by_volume | floatformat }} %
+                    {% else %}
+                        Ukjent
+                    {% endif %}
+                </td>
+                {% if perms.brewing.change_brew %}
+                    <td class="text-center">
+                        <a
+                        href="{% url 'brewing:BrewUpdate' brew.slug %}"
+                        class="btn btn-secondary btn-sm"
+                        >
+                            Rediger
+                        </a>                        
+                    </td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock content %}
+
+{% block js %}
+    <script src="https://cdn.datatables.net/v/bs5/jq-3.6.0/dt-1.11.3/datatables.min.js"></script>
+    {% load static %}
+    <script src="{% static "brewing/brew_list.js" %}"></script>
+{% endblock js %}

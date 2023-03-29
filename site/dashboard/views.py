@@ -1,7 +1,6 @@
 """Views for the 'dashboard'-module."""
 from datetime import datetime, timedelta
 
-from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Max, Q
 from django.urls import reverse
@@ -11,6 +10,7 @@ from django.views.generic import RedirectView, TemplateView
 
 from accounts.models import UserCustom
 from common.comments.models import Comment
+from common.constants.models import Constant
 from common.utils import comma_seperate_list, random_sample_queryset
 from events.models import Event
 from minutes.models import Minutes
@@ -23,7 +23,9 @@ class DashboardRedirect(RedirectView):
     def get_redirect_url(self, *args, **kwargs):
         if self.request.user.is_authenticated:
             return reverse("dashboard:Dashboard")
-        return reverse("articles:ArticleDetail", args=["om-oss"])
+
+        guest_start_page, _ = Constant.objects.get_or_create(name="Gjestestartside")
+        return guest_start_page.value
 
 
 class Dashboard(LoginRequiredMixin, TemplateView):
@@ -119,11 +121,19 @@ class Dashboard(LoginRequiredMixin, TemplateView):
             birthdate__month=timezone.localdate().month,
             birthdate__day=timezone.localdate().day,
         )
-        return comma_seperate_list([user.get_name() for user in current_birthdays])
+        birthday_names = [user.get_name() for user in current_birthdays]
+
+        current_date = timezone.localdate()
+        is_dt_birthday = current_date.month == 2 and current_date.day == 14
+        if is_dt_birthday:
+            birthday_names.append("Dei Taktlause")
+
+        return comma_seperate_list(birthday_names)
 
     def get_birthday_song(self):
         """Returns birthday song score if it exists."""
-        birthday_songs = Score.objects.filter(slug=settings.BIRTHDAY_SONG_SLUG)
+        birthday_song_slug, _ = Constant.objects.get_or_create(name="Bursdagssangslug")
+        birthday_songs = Score.objects.filter(slug=birthday_song_slug.value)
         if birthday_songs.exists():
             birthday_song = birthday_songs.first()
             birthday_song.part = birthday_song.find_user_part(self.request.user)

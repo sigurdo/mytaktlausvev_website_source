@@ -2,6 +2,11 @@
 @import "bootstrap/scss/variables";
 @import "bootstrap/scss/utilities";
 
+// `smr`, or "Smaller", is a
+// new grid breakpoint for tiny devices
+// between Bootstrap's `sm` breakpoint and `xs` breakpoint.
+$grid-breakpoints: map-merge($grid-breakpoints, ("smr": 350px));
+
 // Utility function for extending
 // the values of existing Bootstrap utilities.
 // https://getbootstrap.com/docs/5.0/utilities/api/#modify-utilities

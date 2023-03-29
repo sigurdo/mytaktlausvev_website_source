@@ -34,19 +34,19 @@
                 {% with view.kwargs.year as year %}
                     <ol class="list-unstyled">
                         <li class="d-inline">
-                            <a class="btn btn-primary" href="{% url "events:EventList" year|add:"-2" %}"> {{year|add:"-2"}} </a>
+                            <a class="btn btn-primary" href="{% url "events:EventListYear" year|add:"-2" %}"> {{year|add:"-2"}} </a>
                         </li>
                         <li class="d-inline">
-                            <a class="btn btn-primary" href="{% url "events:EventList" year|add:"-1" %}"> {{year|add:"-1"}} </a>
+                            <a class="btn btn-primary" href="{% url "events:EventListYear" year|add:"-1" %}"> {{year|add:"-1"}} </a>
                         </li>
                         <li class="d-inline">
-                            <a class="btn btn-primary active" href="{% url "events:EventList" year|add:"0" %}"> {{year|add:"0"}} </a>
+                            <a class="btn btn-primary active" href="{% url "events:EventListYear" year|add:"0" %}"> {{year|add:"0"}} </a>
                         </li>
                         <li class="d-inline">
-                            <a class="btn btn-primary" href="{% url "events:EventList" year|add:"1" %}"> {{year|add:"1"}} </a>
+                            <a class="btn btn-primary" href="{% url "events:EventListYear" year|add:"1" %}"> {{year|add:"1"}} </a>
                         </li>
                         <li class="d-inline">
-                            <a class="btn btn-primary" href="{% url "events:EventList" year|add:"2" %}"> {{year|add:"2"}} </a>
+                            <a class="btn btn-primary" href="{% url "events:EventListYear" year|add:"2" %}"> {{year|add:"2"}} </a>
                         </li>
                     </ol>
                 {% endwith %}
@@ -56,7 +56,7 @@
             <a class="btn btn-primary" href="{% url "events:EventList" %}"> Alle framtidige </a>
             {% else %}
                 {% now "Y" as current_year %}
-                <a class="btn btn-primary" href="{% url "events:EventList" current_year %}"> Heile året </a>
+                <a class="btn btn-primary" href="{% url "events:EventListYear" current_year %}"> Heile året </a>
                 {% if view.kwargs.filter_type == "ikkje-svara-på" %}
                     <a class="btn btn-primary" href="{% url "events:EventList" %}"> Alle framtidige </a>
                 {% else %}

@@ -14,12 +14,7 @@ from quotes.models import Quote
 from .forms import QuoteForm
 
 
-def breadcrumbs():
-    """Returns breadcrumbs for the quotes views."""
-    return [Breadcrumb(reverse("quotes:QuoteList"), "Sitat")]
-
-
-class QuoteList(LoginRequiredMixin, ListView):
+class QuoteList(LoginRequiredMixin, BreadcrumbsMixin, ListView):
     model = Quote
     context_object_name = "quotes"
     paginate_by = 50
@@ -42,14 +37,16 @@ class QuoteList(LoginRequiredMixin, ListView):
             kwargs["title"] = "Sitat"
         return super().get_context_data(**kwargs)
 
+    @classmethod
+    def get_breadcrumb(cls, **kwargs):
+        return Breadcrumb(reverse("quotes:QuoteList"), "Sitat")
+
 
 class QuoteCreate(LoginRequiredMixin, BreadcrumbsMixin, CreateView):
     model = Quote
     form_class = QuoteForm
     template_name = "common/forms/form.html"
-
-    def get_breadcrumbs(self) -> list:
-        return breadcrumbs()
+    breadcrumb_parent = QuoteList
 
     def get_success_url(self) -> str:
         return reverse("quotes:QuoteList")
@@ -60,9 +57,7 @@ class QuoteUpdate(PermissionOrCreatedMixin, BreadcrumbsMixin, UpdateView):
     form_class = QuoteForm
     template_name = "common/forms/form.html"
     permission_required = "quotes.change_quote"
-
-    def get_breadcrumbs(self) -> list:
-        return breadcrumbs()
+    breadcrumb_parent = QuoteList
 
     def get_success_url(self) -> str:
         return reverse("quotes:QuoteList")
@@ -71,9 +66,7 @@ class QuoteUpdate(PermissionOrCreatedMixin, BreadcrumbsMixin, UpdateView):
 class QuoteDelete(PermissionOrCreatedMixin, BreadcrumbsMixin, DeleteViewCustom):
     model = Quote
     permission_required = "quotes.delete_quote"
-
-    def get_breadcrumbs(self) -> list:
-        return breadcrumbs()
+    breadcrumb_parent = QuoteList
 
     def get_success_url(self) -> str:
         return reverse("quotes:QuoteList")

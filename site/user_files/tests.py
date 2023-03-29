@@ -12,7 +12,7 @@ from .factories import FileFactory
 from .models import File
 
 
-class FileTestCase(TestMixin, TestCase):
+class FileTestSuite(TestMixin, TestCase):
     def setUp(self):
         self.file = FileFactory()
 

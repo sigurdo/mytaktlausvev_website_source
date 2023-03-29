@@ -10,8 +10,11 @@ from django.utils.timezone import make_aware
 from accounts.models import UserCustom
 from advent_calendar.factories import AdventCalendarFactory, WindowFactory
 from articles.factories import ArticleFactory
+from brewing.factories import BrewFactory, TransactionFactory
+from brewing.models import TransactionType
 from buttons.factories import ButtonDesignFactory
 from common.comments.factories import CommentFactory
+from common.constants.factories import ConstantFactory
 from common.embeddable_text.factories import EmbeddableTextFactory
 from common.test_utils import test_pdf_multipage
 from contact.factories import ContactCategoryFactory
@@ -95,13 +98,17 @@ class Command(BaseCommand):
             membership_status=UserCustom.MembershipStatus.PAYING,
         )
 
-        board = Group.objects.create(name="Styret")
+        board = Group.objects.create(name="styret")
         board.user_set.add(leader)
         board.user_set.add(musical_leader)
-        lurkar = Group.objects.create(name="Lurkargjengen")
+        lurkar = Group.objects.create(name="lurkargjengen")
         lurkar.user_set.add(leader)
         lurkar.user_set.add(retiree)
         lurkar.user_set.add(aspirant)
+        instrument_group_leaders = Group.objects.create(name="instrumentgruppeleiar")
+        instrument_group_leaders.user_set.add(leader)
+        instrument_group_leaders.user_set.add(musical_leader)
+        instrument_group_leaders.user_set.add(member)
 
         article_about = ArticleFactory(
             title="Om oss",
@@ -724,9 +731,16 @@ class Command(BaseCommand):
             parent=about_dropdown,
         )
         NavbarItemFactory(
+            text="Instrumentgruppeleiarar",
+            link=reverse("accounts:InstrumentGroupLeaderList"),
+            order=3,
+            requires_login=True,
+            parent=about_dropdown,
+        )
+        NavbarItemFactory(
             text="Kontakt oss",
             link=reverse("contact:ContactView"),
-            order=3,
+            order=4,
             requires_login=False,
             parent=about_dropdown,
         )
@@ -868,6 +882,13 @@ class Command(BaseCommand):
             text="Referat",
             link=reverse("minutes:MinutesList"),
             order=2.55,
+            requires_login=True,
+            parent=other_dropdown,
+        )
+        NavbarItemFactory(
+            text="Brygging",
+            link=reverse("brewing:BrewOverview"),
+            order=2.56,
             requires_login=True,
             parent=other_dropdown,
         )
@@ -1087,6 +1108,27 @@ class Command(BaseCommand):
         smash.repertoires.set([march_booklet_repertoire])
         smash.save()
 
+        gudbrandsdalsvatn = BrewFactory(
+            name="Gudbrandsdalsvatn", price_per_liter=42, available_for_purchase=True
+        )
+        BrewFactory(
+            name="Two Towers",
+            price_per_liter=9,
+            available_for_purchase=True,
+            OG=1.050,
+            FG=1.010,
+        )
+        TransactionFactory(user=leader, amount=50, type=TransactionType.DEPOSIT)
+        TransactionFactory(
+            user=member, amount=5, type=TransactionType.PURCHASE, brew=gudbrandsdalsvatn
+        )
+        TransactionFactory(
+            user=member, amount=5, type=TransactionType.PURCHASE, brew=gudbrandsdalsvatn
+        )
+        TransactionFactory(
+            user=member, amount=5, type=TransactionType.PURCHASE, brew=gudbrandsdalsvatn
+        )
+
         EmbeddableTextFactory(
             name="Framgangsmåte for buttonpdfgenerator",
             content="""
@@ -1153,5 +1195,25 @@ Her kan du skrive nykelinformasjon om hendinga. Oppføringane du skriv vil verte
             name="Inaktiv brukar",
             content="Du har ikkje betalt medlemskontingent for (MYTAKTLAUSVEV_VARIABLE(appearance.orchestra_name_short)). Du har difor fått status som inaktiv.",
         )
+        EmbeddableTextFactory(
+            name="Instrumentgruppeleiararliste",
+            content="Liste over instrumentgruppeleiarar.",
+        )
+        EmbeddableTextFactory(
+            name="Innbetaling til bryggjekassa",
+            content="Instruksjonar for innbetaling til bryggjekassa.",
+        )
+        EmbeddableTextFactory(
+            name="Bryggjeoversiktinformasjon",
+            content="Informasjon om brygg.",
+        )
+
+        ConstantFactory(name="Gjestestartside", value=article_about.get_absolute_url())
+        ConstantFactory(name="Bursdagssangslug", value=birthday_song.slug)
+        ConstantFactory(
+            name="Instrumentgruppeleiargruppenamn", value=instrument_group_leaders.name
+        )
+        ConstantFactory(name="Påslag på brygg i NOK", value="2")
+
         OrchestraFactory(name="Dragern")
         OrchestraFactory(name="Motstanden")

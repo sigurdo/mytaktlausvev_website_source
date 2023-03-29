@@ -7,8 +7,9 @@ from django.utils.text import slugify
 
 from accounts.factories import SuperUserFactory
 from common.mixins import TestMixin
-from minutes.factories import MinutesFactory
-from minutes.models import Minutes
+
+from .factories import MinutesFactory
+from .models import Minutes
 
 
 class MinutesTestSuite(TestMixin, TestCase):
