@@ -120,6 +120,7 @@ INSTALLED_APPS = [
     "user_files",
     "external_orchestras",
     "brewing",
+    "salvage_diary",
 ]
 
 MIDDLEWARE = [
