@@ -42,6 +42,7 @@ from pictures.models import Image
 from polls.factories import ChoiceFactory, PollFactory, VoteFactory
 from quotes.factories import QuoteFactory
 from repertoire.factories import RepertoireFactory
+from salvage_diary.factories import MascotFactory, SalvageDiaryEntryFactory
 from sheetmusic.factories import (
     FavoritePartFactory,
     PartFactory,
@@ -920,6 +921,18 @@ class Command(BaseCommand):
             parent=other_dropdown,
         )
         NavbarItemFactory(
+            text="Bergedagbok",
+            link=reverse("salvage_diary:SalvageDiaryEntryList"),
+            order=4,
+            parent=other_dropdown,
+        )
+        NavbarItemFactory(
+            text="Maskoter",
+            link=reverse("salvage_diary:MascotList"),
+            order=4.5,
+            parent=other_dropdown,
+        )
+        NavbarItemFactory(
             text="Søk",
             link=reverse("search:Search"),
             order=5,
@@ -1217,3 +1230,31 @@ Her kan du skrive nykelinformasjon om hendinga. Oppføringane du skriv vil verte
 
         OrchestraFactory(name="Dragern")
         OrchestraFactory(name="Motstanden")
+        mascot = MascotFactory(
+            name="Berge Bergesen",
+            creationStartDate=date.today(),
+            creationEndDate=date.today(),
+            password="FreeWorldFantasy",
+            creators=[musical_leader],
+            slug="berge",
+        )
+        SalvageDiaryEntryFactory(
+            title="Den store berginga!",
+            mascot=mascot,
+            thieves="Wouldn't you like to know wheater boy",
+            story="""
+Det hendte i de dager under Nidaros SMASH at taktlauses første maskot ble berga av ingen ringere enn oss!
+Cupcake ipsum dolor sit amet I love I love carrot cake chocolate bar. Jujubes soufflé candy canes oat cake bonbon. 
+Topping sesame snaps I love soufflé carrot cake bonbon chocolate icing gummies. Sesame snaps dragée cheesecake I love toffee powder fruitcake gummies tiramisu.
+Apple pie gummi bears tart dragée tootsie roll sugar plum liquorice bear claw danish. I love fruitcake chocolate cake chocolate bar marzipan macaroon brownie lemon drops. 
+Tootsie roll chocolate cake jelly beans pastry chocolate cake gingerbread fruitcake halvah. Tart cupcake chocolate cake cupcake tiramisu shortbread I love gingerbread. 
+I love soufflé candy cotton candy fruitcake. Pastry powder dessert toffee I love jelly beans. Bear claw dragée caramels pudding icing jelly. 
+Oat cake lollipop I love chocolate cake gummi bears pastry pudding candy I love. Soufflé lollipop sweet fruitcake I love chocolate I love.
+Chocolate I love dragée cotton candy lemon drops sugar plum soufflé. Jelly-o sweet I love brownie cheesecake. Jujubes I love fruitcake tiramisu I love danish I love bonbon. 
+Wafer cotton candy cupcake candy cake marzipan lollipop I love carrot cake. Cake lollipop liquorice bonbon macaroon jujubes chocolate bar cheesecake lemon drops. 
+Macaroon chupa chups liquorice soufflé shortbread fruitcake cotton candy macaroon chocolate. Chupa chups soufflé biscuit jelly oat cake sugar plum jelly.
+Brownie sweet jujubes candy canes fruitcake cookie gummi bears. Chupa chups biscuit tootsie roll chocolate cake toffee candy dessert cookie oat cake. Cake I love marshmallow lollipop I love gummies. Danish bear claw icing sweet macaroon. Biscuit dessert sugar plum oat cake toffee chocolate bar icing pudding. Powder candy canes cheesecake carrot cake chupa chups. Sweet roll jujubes apple pie I love fruitcake.
+"""
+            "",
+            event="Nidaros SMASH V23",
+        )

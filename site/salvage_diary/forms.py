@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 from django.forms import CharField, HiddenInput, ModelForm
 
 from accounts.models import UserCustom
-from common.forms.widgets import AutocompleteSelectMultiple
+from common.forms.widgets import AutocompleteSelectMultiple, DateDateInput
 from salvage_diary.models import Mascot, SalvageDiaryEntry
 
 
@@ -26,14 +26,21 @@ class MascotForm(ModelForm):
             "image",
             "creationStartDate",
             "creationEndDate",
-            "passord",
+            "password",
             "creators",
         ]
-        widgets = {"creators": AutocompleteSelectMultiple}
+        widgets = {
+            "creators": AutocompleteSelectMultiple,
+            "creationStartDate": DateDateInput,
+            "creationEndDate": DateDateInput,
+        }
 
 
 class SalvageDiaryEntryForm(ModelForm):
-    password = CharField()
+    password = CharField(
+        label="Passord",
+        help_text="Dette finner dykk eit stad på maskoten.",
+    )
     helper = FormHelper()
     helper.add_input(Submit("submit", "Legg inn"))
 
@@ -46,11 +53,11 @@ class SalvageDiaryEntryForm(ModelForm):
         cleaned_data = super().clean()
         password = cleaned_data.get("password")
         mascot = cleaned_data.get("mascot")
-        mascotPassword = Mascot.objects.get(name=mascot).passord
+        mascotPassword = Mascot.objects.get(name=mascot).password
 
         if password != mascotPassword:
             raise ValidationError(
-                "Passordet matcher ikke",
+                "Passordet matcher ikke. Obs! Bilde må lastes opp igjen",
                 code="invalid",
             )
 

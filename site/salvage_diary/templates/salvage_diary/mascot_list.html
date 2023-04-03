@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title_page %} Maskoter {% endblock title_page %}
+{% block title_content %} Maskoter {% endblock title_content %}
+
+{% block header %}
+    {{ block.super }}
+    <ul class="list-inline my-1">
+        <li class="list-inline-item"> <a class="btn btn-primary btn-sm my-1" href="{% url 'salvage_diary:MascotCreate' %}">Legg til maskot</a>
+            </li>
+    <li class="list-inline-item">
+        <a href="{% url 'salvage_diary:SalvageDiaryEntryList' %}" class="btn btn-secondary btn-sm">Bergedagbok</a>
+    </li>
+</ul>
+{% endblock header %}
+
+
+{% block content %}
+    {% if mascots %}
+        {% include "salvage_diary/includes/mascot.html" with mascots=mascots %}
+    {% else %}
+        <p>Ingen maskota laga.</p>
+    {% endif %}
+{% endblock %}

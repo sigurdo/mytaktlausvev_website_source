@@ -14,26 +14,27 @@ from django.db.models import (
 from django.utils.timezone import now
 
 from common.models import CreatedModifiedMixin
+from common.utils import comma_seperate_list
 
 
 class Mascot(CreatedModifiedMixin):
     name = CharField("namn", max_length=255)
     image = ImageField("bilete", upload_to="pictures/", blank=True)
     creationStartDate = DateField(
-        "startdato", blank=True, help_text="Når starta laginga av maskoten?"
+        "startdato", blank=True, null=True, help_text="Når starta laginga av maskoten?"
     )
     creationEndDate = DateField(
-        "sluttdato", blank=True, help_text="Når ble maskoten ferdig?"
+        "sluttdato", blank=True, null=True, help_text="Når ble maskoten ferdig?"
     )
-    passord = CharField(
+    password = CharField(
         "passord",
         max_length=255,
         blank=True,
-        help_text="Dette finner dykk eit stad på maskoten.",
+        help_text="Ein tekst streng som vi fester på maskoten under arrangement",
     )
     creators = ManyToManyField(
         settings.AUTH_USER_MODEL,
-        verbose_name="creator",
+        verbose_name="Skapere",
     )
 
     slug = AutoSlugField(
@@ -50,6 +51,15 @@ class Mascot(CreatedModifiedMixin):
     def __str__(self):
         return self.name
 
+    def get_creators(self):
+        return comma_seperate_list([user.get_name() for user in self.creators.all()])
+
+    def get_creationStartDate(self):
+        return self.creationStartDate or "?"
+
+    def get_creationEndDate(self):
+        return self.creationEndDate or "?"
+
 
 class SalvageDiaryEntry(Model):
     title = CharField("titel", max_length=255)
@@ -61,7 +71,12 @@ class SalvageDiaryEntry(Model):
         verbose_name="maskot",
         related_name="salvageEntries",
     )
-    image = ImageField("bilete", upload_to="salvage_diary/pictures", blank=True)
+    image = ImageField(
+        "bilete",
+        upload_to="salvage_diary/pictures",
+        blank=True,
+        help_text="Ønskar du fleir bilde, lag fleir innlegg",
+    )
     story = TextField(
         "Historie",
         blank=True,

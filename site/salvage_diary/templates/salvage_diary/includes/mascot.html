@@ -1,0 +1,45 @@
+<ul class="row row-cols-1  row-cols-l-2 g-3 list-unstyled">
+    {% for mascot in mascots %}
+        <li class="col">
+            <div class="card h-100">
+                <div class="card-body d-flex flex-column justify-content-left align-items-left">
+                    <h3 class="card-title fs-5 mb-0 text-center">{{ mascot.name }}</h3>
+                    {% if mascot.image.url is not None %}
+                        <div class="m-3 h-72 d-flex align-items-center justify-content-center my-2">
+                            {% include "common/includes/image.html" with url=mascot.image.url description=mascot.name only %}
+                        </div>     
+            
+                    {% endif %}
+            
+                    <dl class="dl-inline m-0">
+                        <dt>Laga i perioden</dt>
+                        <dd>{{ mascot.get_creationStartDate }} - {{ mascot.get_creationEndDate }}</dd>
+                        <dt>Laga av</dt>
+                        <dd>
+                            {{ mascot.get_creators }}
+                        </dd>
+                    </dl>   
+                    {% if mascot.created_by == request.user or perms.salvage_diary.change_mascot or perms.salvage_diary.delete_mascot %}
+                    <ul class="list-inline my-1">
+                        {% if perms.salvage_diary.change_mascot or mascot.created_by == request.user %}
+                        <li class="list-inline-item">
+                            <a href="{% url 'salvage_diary:MascotUpdate' mascot.pk %}" class="btn btn-primary btn-sm">
+                                Rediger maskot
+                            </a>
+                        </li>
+                        {% endif %}
+                        
+                        {% if perms.salvage_diary.delete_mascot or mascot.created_by == request.user %}
+                        <li class="list-inline-item">
+                            <a href="{% url 'salvage_diary:MascotDelete' mascot.pk %}" class="btn btn-danger btn-sm">
+                                Slett maskot
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                    {% endif %}
+                </div>
+            </div>
+        </li>
+    {% endfor %}
+</ul>
