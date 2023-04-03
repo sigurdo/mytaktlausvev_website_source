@@ -1247,7 +1247,7 @@ Her kan du skrive nykelinformasjon om hendinga. Oppføringane du skriv vil verte
             password="HarDuEinSjøbanan",
             creators=[leader],
             slug="sal",
-            note="Har vært savna siden medaljegalla H22"
+            note="Har vært savna siden medaljegalla H22",
         )
         SalvageDiaryEntryFactory(
             title="Den store berginga!",
