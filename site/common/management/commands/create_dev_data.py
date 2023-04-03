@@ -924,12 +924,14 @@ class Command(BaseCommand):
             text="Bergedagbok",
             link=reverse("salvage_diary:SalvageDiaryEntryList"),
             order=4,
+            requires_login=False,
             parent=other_dropdown,
         )
         NavbarItemFactory(
             text="Maskoter",
             link=reverse("salvage_diary:MascotList"),
             order=4.5,
+            requires_login=True,
             parent=other_dropdown,
         )
         NavbarItemFactory(
@@ -1230,7 +1232,7 @@ Her kan du skrive nykelinformasjon om hendinga. Oppføringane du skriv vil verte
 
         OrchestraFactory(name="Dragern")
         OrchestraFactory(name="Motstanden")
-        mascot = MascotFactory(
+        mascotBerge = MascotFactory(
             name="Berge Bergesen",
             creationStartDate=date.today(),
             creationEndDate=date.today(),
@@ -1238,9 +1240,18 @@ Her kan du skrive nykelinformasjon om hendinga. Oppføringane du skriv vil verte
             creators=[musical_leader],
             slug="berge",
         )
+        mascotSal = MascotFactory(
+            name="Sal Salvage",
+            creationStartDate=date.today(),
+            creationEndDate=date.today(),
+            password="HarDuEinSjøbanan",
+            creators=[leader],
+            slug="sal",
+            note="Har vært savna siden medaljegalla H22"
+        )
         SalvageDiaryEntryFactory(
             title="Den store berginga!",
-            mascot=mascot,
+            mascot=mascotBerge,
             thieves="Wouldn't you like to know wheater boy",
             story="""
 Det hendte i de dager under Nidaros SMASH at taktlauses første maskot ble berga av ingen ringere enn oss!
@@ -1257,4 +1268,11 @@ Brownie sweet jujubes candy canes fruitcake cookie gummi bears. Chupa chups bisc
 """
             "",
             event="Nidaros SMASH V23",
+        )
+        SalvageDiaryEntryFactory(
+            title="den lille berginga",
+            mascot=mascotSal,
+            thieves="inside job",
+            story="Vi kom, vi så, vi berga",
+            event="Medaljegalla H22",
         )
