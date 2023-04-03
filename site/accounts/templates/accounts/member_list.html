@@ -46,12 +46,12 @@
             <option value="">
                 Alle
             </option>
-            <option value="(Betalande|Aspirant)" selected>
+            <option value="Aktivt medlem" selected>
                 Aktive
             </option>
             {% for choice, display in membership_status_enum.choices %}
-                <option value="{{display}}">
-                    {{display}}
+                <option value="{{ display }}">
+                    {{ display }}
                 </option>
             {% endfor %}
         </select>
@@ -71,16 +71,21 @@
             </tr>
         </thead>
         <tbody>
-            {% for member in members%}
+            {% for member in members %}
                  <tr>
                     {% include "accounts/includes/avatar_table_td.html" with user=member only %}
                      <td> <a href="{{ member.get_absolute_url }}">
                         {{ member.get_name }}
                     </a></td>
-                     <td>{{member.get_membership_status_display}}</td>
-                     <td>{{member.instrument_type.group}}</td>
-                     <td>{{member.email}}</td>
-                     <td>{{member.phone_number}}</td>
+                     <td>
+                        {{ member.get_membership_status_display }}
+                        {% if member.is_active_member %}
+                            <span class="visually-hidden">Aktivt medlem</span>
+                        {% endif %}
+                    </td>
+                     <td>{{ member.instrument_type.group }}</td>
+                     <td>{{ member.email }}</td>
+                     <td>{{ member.phone_number }}</td>
                      <td>
                         <ul class="m-0">
                         {% for group in member.groups.all %}
@@ -88,7 +93,7 @@
                         {% endfor %}
                         </ul>
                     </td>
-                 </tr >
+                 </tr>
             {% endfor %}
         </tbody>
     </table>

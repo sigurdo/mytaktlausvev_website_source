@@ -28,7 +28,7 @@
             <option value="">
                 Alle
             </option>
-            <option value="(Betalande|Aspirant)" selected>
+            <option value="Aktivt medlem" selected>
                 Aktive
             </option>
             {% for choice, display in membership_status_enum.choices %}
@@ -61,7 +61,12 @@
                             {{ user }}
                         </a>
                     </td>
-                    <td>{{ user.get_membership_status_display }}</td>
+                    <td>
+                        {{ user.get_membership_status_display }}
+                        {% if user.is_active_member %}
+                            <span class="visually-hidden">Aktivt medlem</span>
+                        {% endif %}
+                    </td>
                     <td>
                         {{ user.deposited }}
                     </td>                    

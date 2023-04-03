@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const filterMembershipStatus = (membershipStatus) => {
     data_table
       .column(2)
-      .search(membershipStatus ? "^" + membershipStatus + "$" : "", true, false)
+      .search(membershipStatus ? membershipStatus : "", true, false)
       .draw();
   };
 
