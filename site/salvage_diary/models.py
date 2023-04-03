@@ -1,3 +1,4 @@
+from autoslug.fields import AutoSlugField
 from django.conf import settings
 from django.db.models import (
     CASCADE,
@@ -24,10 +25,22 @@ class Mascot(CreatedModifiedMixin):
     creationEndDate = DateField(
         "sluttdato", blank=True, help_text="Når ble maskoten ferdig?"
     )
-    passord = CharField("passord", max_length=255, blank=True)
+    passord = CharField(
+        "passord",
+        max_length=255,
+        blank=True,
+        help_text="Dette finner dykk eit stad på maskoten.",
+    )
     creators = ManyToManyField(
         settings.AUTH_USER_MODEL,
         verbose_name="creator",
+    )
+
+    slug = AutoSlugField(
+        verbose_name="lenkjenamn",
+        populate_from="name",
+        unique=True,
+        editable=True,
     )
 
     class Meta:
@@ -40,7 +53,7 @@ class Mascot(CreatedModifiedMixin):
 
 class SalvageDiaryEntry(Model):
     title = CharField("titel", max_length=255)
-    time = DateTimeField("tidspunkt", default=now)
+    date = DateTimeField("tidspunkt", default=now)
     thieves = CharField("bergere", max_length=255, help_text="Kvem er dykk?")
     mascot = ForeignKey(
         Mascot,
@@ -48,7 +61,7 @@ class SalvageDiaryEntry(Model):
         verbose_name="maskot",
         related_name="salvageEntries",
     )
-    image = ImageField("bilete", upload_to="pictures/", blank=True)
+    image = ImageField("bilete", upload_to="salvage_diary/pictures", blank=True)
     story = TextField(
         "Historie",
         blank=True,
@@ -62,8 +75,8 @@ class SalvageDiaryEntry(Model):
     )
 
     def __str__(self):
-        return self.mascot + " - " + self.title
-    
+        return self.title
+
     class Meta:
         verbose_name = "bergedagbokinnlegg"
         verbose_name_plural = "bergedagbokinnlegg"

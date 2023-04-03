@@ -2,7 +2,7 @@
 
 from django.contrib import admin
 
-from .models import SalvageDiaryEntry, Mascot
+from .models import Mascot, SalvageDiaryEntry
 
 
 class MascotAdmin(admin.ModelAdmin):
@@ -10,8 +10,10 @@ class MascotAdmin(admin.ModelAdmin):
 
     readonly_fields = ("created", "created_by", "modified", "modified_by")
 
+
 class SalvageDiaryAdmin(admin.ModelAdmin):
     list_display = ("title", "mascot", "thieves")
+
 
 admin.site.register(Mascot, MascotAdmin)
 admin.site.register(SalvageDiaryEntry, SalvageDiaryAdmin)

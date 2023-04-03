@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title_page %}{{ title }}{% endblock title_page %}
+{% block title_content %}{{ title }}{% endblock title_content %}
+
+
+{% block content %}
+{% if salvageDiaryEntires %}
+        
+        {% include "salvage_diary/includes/salvageDiaryEntry.html" with salvageDiaryEntires=salvageDiaryEntires only %}
+       
+    {% else %}
+        <p>Ingen innlegg registert.</p>
+    {% endif %}
+{% endblock %}
