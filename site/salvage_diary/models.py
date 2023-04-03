@@ -44,6 +44,11 @@ class Mascot(CreatedModifiedMixin):
         editable=True,
     )
 
+    note = TextField(
+        "Notat",
+        blank=True,
+    )
+
     class Meta:
         verbose_name = "maskot"
         verbose_name_plural = "maskoter"

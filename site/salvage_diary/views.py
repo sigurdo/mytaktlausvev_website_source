@@ -15,7 +15,7 @@ from .models import Mascot, SalvageDiaryEntry
 class MascotList(LoginRequiredMixin, BreadcrumbsMixin, ListView):
     model = Mascot
     context_object_name = "mascots"
-    queryset = Mascot.objects.order_by("-name")
+    queryset = Mascot.objects.order_by("name")
 
     @classmethod
     def get_breadcrumb(cls, **kwargs):

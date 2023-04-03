@@ -28,6 +28,7 @@ class MascotForm(ModelForm):
             "creationEndDate",
             "password",
             "creators",
+            "note",
         ]
         widgets = {
             "creators": AutocompleteSelectMultiple,

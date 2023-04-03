@@ -1,4 +1,4 @@
-<ul class="row row-cols-1  row-cols-l-2 g-3 list-unstyled">
+<ul class="row row-cols-1  row-cols-md-2 g-3 list-unstyled">
     {% for mascot in mascots %}
         <li class="col">
             <div class="card h-100">
@@ -18,25 +18,30 @@
                         <dd>
                             {{ mascot.get_creators }}
                         </dd>
+                        {% if mascot.note %}
+                            <hr>
+                            {% load markdown %}
+                            {{ mascot.note | markdown }}
+                        {% endif %}
                     </dl>   
                     {% if mascot.created_by == request.user or perms.salvage_diary.change_mascot or perms.salvage_diary.delete_mascot %}
-                    <ul class="list-inline my-1">
-                        {% if perms.salvage_diary.change_mascot or mascot.created_by == request.user %}
-                        <li class="list-inline-item">
-                            <a href="{% url 'salvage_diary:MascotUpdate' mascot.pk %}" class="btn btn-primary btn-sm">
-                                Rediger maskot
-                            </a>
-                        </li>
-                        {% endif %}
+                        <ul class="list-inline my-1">
+                            {% if perms.salvage_diary.change_mascot or mascot.created_by == request.user %}
+                            <li class="list-inline-item">
+                                <a href="{% url 'salvage_diary:MascotUpdate' mascot.pk %}" class="btn btn-primary btn-sm">
+                                    Rediger maskot
+                                </a>
+                            </li>
+                            {% endif %}
                         
-                        {% if perms.salvage_diary.delete_mascot or mascot.created_by == request.user %}
-                        <li class="list-inline-item">
-                            <a href="{% url 'salvage_diary:MascotDelete' mascot.pk %}" class="btn btn-danger btn-sm">
-                                Slett maskot
-                            </a>
-                        </li>
+                            {% if perms.salvage_diary.delete_mascot or mascot.created_by == request.user %}
+                            <li class="list-inline-item">
+                                <a href="{% url 'salvage_diary:MascotDelete' mascot.pk %}" class="btn btn-danger btn-sm">
+                                    Slett maskot
+                                </a>
+                            </li>
                         {% endif %}
-                    </ul>
+                        </ul>
                     {% endif %}
                 </div>
             </div>
