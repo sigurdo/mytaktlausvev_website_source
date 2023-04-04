@@ -3,7 +3,7 @@ from factory.django import DjangoModelFactory
 
 from accounts.factories import UserFactory
 
-from .models import Mascot, SalvageDiaryEntry
+from .models import Mascot, SalvageDiaryEntryExternal, SalvageDiaryEntryInternal
 
 
 class MascotFactory(DjangoModelFactory):
@@ -24,10 +24,21 @@ class MascotFactory(DjangoModelFactory):
         self.creators.set(user_list)
 
 
-class SalvageDiaryEntryFactory(DjangoModelFactory):
+class SalvageDiaryEntryExternalFactory(DjangoModelFactory):
     class Meta:
-        model = SalvageDiaryEntry
+        model = SalvageDiaryEntryExternal
 
     title = "Berging av Pandaen"
     thieves = "Juff-banden"
     mascot = SubFactory(MascotFactory)
+
+
+class SalvageDiaryEntryInternalFactory(DjangoModelFactory):
+    class Meta:
+        model = SalvageDiaryEntryInternal
+
+    title = "Berging av Pandaen"
+    thieves = "Juff-banden"
+    item = "Hans Harald"
+    created_by = SubFactory(UserFactory)
+    modified_by = SubFactory(UserFactory)

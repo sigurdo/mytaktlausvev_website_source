@@ -8,7 +8,6 @@
                         <div class="m-3 h-72 d-flex align-items-center justify-content-center my-2">
                             {% include "common/includes/image.html" with url=mascot.image.url description=mascot.name only %}
                         </div>     
-            
                     {% endif %}
             
                     <dl class="dl-inline m-0">
@@ -27,20 +26,19 @@
                     {% if mascot.created_by == request.user or perms.salvage_diary.change_mascot or perms.salvage_diary.delete_mascot %}
                         <ul class="list-inline my-1">
                             {% if perms.salvage_diary.change_mascot or mascot.created_by == request.user %}
-                            <li class="list-inline-item">
-                                <a href="{% url 'salvage_diary:MascotUpdate' mascot.pk %}" class="btn btn-primary btn-sm">
-                                    Rediger maskot
-                                </a>
-                            </li>
+                                <li class="list-inline-item">
+                                    <a href="{% url 'salvage_diary:MascotUpdate' mascot.pk %}" class="btn btn-primary btn-sm">
+                                        Rediger maskot
+                                    </a>
+                                </li>
                             {% endif %}
-                        
                             {% if perms.salvage_diary.delete_mascot or mascot.created_by == request.user %}
-                            <li class="list-inline-item">
-                                <a href="{% url 'salvage_diary:MascotDelete' mascot.pk %}" class="btn btn-danger btn-sm">
-                                    Slett maskot
-                                </a>
-                            </li>
-                        {% endif %}
+                                <li class="list-inline-item">
+                                    <a href="{% url 'salvage_diary:MascotDelete' mascot.pk %}" class="btn btn-danger btn-sm">
+                                        Slett maskot
+                                    </a>
+                                </li>
+                            {% endif %}
                         </ul>
                     {% endif %}
                 </div>

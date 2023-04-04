@@ -68,14 +68,7 @@ class Mascot(CreatedModifiedMixin):
 
 class SalvageDiaryEntry(Model):
     title = CharField("titel", max_length=255)
-    date = DateTimeField("tidspunkt", default=now)
     thieves = CharField("bergere", max_length=255, help_text="Kvem er dykk?")
-    mascot = ForeignKey(
-        Mascot,
-        on_delete=CASCADE,
-        verbose_name="maskot",
-        related_name="salvageEntries",
-    )
     image = ImageField(
         "bilete",
         upload_to="salvage_diary/pictures",
@@ -98,5 +91,38 @@ class SalvageDiaryEntry(Model):
         return self.title
 
     class Meta:
+        abstract = True
+
+
+class SalvageDiaryEntryExternal(SalvageDiaryEntry):
+    created = DateTimeField("tidspunkt", default=now)
+    mascot = ForeignKey(
+        Mascot,
+        on_delete=CASCADE,
+        verbose_name="maskot",
+        related_name="salvageEntries",
+    )
+
+    def get_item_or_mascot(self):
+        return self.mascot
+
+    def get_is_internal(self):
+        return False
+
+    class Meta:
         verbose_name = "bergedagbokinnlegg"
         verbose_name_plural = "bergedagbokinnlegg"
+
+
+class SalvageDiaryEntryInternal(SalvageDiaryEntry, CreatedModifiedMixin):
+    item = CharField("objekt", max_length=255, help_text="Kva ble berga?")
+
+    def get_item_or_mascot(self):
+        return self.item
+
+    def get_is_internal(self):
+        return True
+
+    class Meta:
+        verbose_name = "bergedagbokinnlegg - DT"
+        verbose_name_plural = "bergedagbokinnlegg - DT"

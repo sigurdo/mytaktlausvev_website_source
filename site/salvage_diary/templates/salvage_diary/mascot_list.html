@@ -6,12 +6,15 @@
 {% block header %}
     {{ block.super }}
     <ul class="list-inline my-1">
-        <li class="list-inline-item"> <a class="btn btn-primary btn-sm my-1" href="{% url 'salvage_diary:MascotCreate' %}">Legg til maskot</a>
+        {% if user.is_authenticated %}
+            <li class="list-inline-item"> 
+                <a class="btn btn-primary btn-sm my-1" href="{% url 'salvage_diary:MascotCreate' %}">Legg til maskot</a>
             </li>
-    <li class="list-inline-item">
-        <a href="{% url 'salvage_diary:SalvageDiaryEntryList' %}" class="btn btn-secondary btn-sm">Bergedagbok</a>
-    </li>
-</ul>
+        {% endif %}
+        <li class="list-inline-item">
+            <a href="{% url 'salvage_diary:SalvageDiaryEntryList' %}" class="btn btn-secondary btn-sm">Bergedagbok</a>
+        </li>
+    </ul>
 {% endblock header %}
 
 

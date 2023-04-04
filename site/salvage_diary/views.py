@@ -8,11 +8,16 @@ from common.breadcrumbs.breadcrumbs import Breadcrumb, BreadcrumbsMixin
 from common.forms.views import DeleteViewCustom
 from common.mixins import PermissionOrCreatedMixin
 
-from .forms import MascotForm, SalvageDiaryEntryForm
-from .models import Mascot, SalvageDiaryEntry
+from .forms import (
+    MascotForm,
+    SalvageDiaryEntryExternalForm,
+    SalvageDiaryEntryExternalUpdateForm,
+    SalvageDiaryEntryInternalForm,
+)
+from .models import Mascot, SalvageDiaryEntryExternal, SalvageDiaryEntryInternal
 
 
-class MascotList(LoginRequiredMixin, BreadcrumbsMixin, ListView):
+class MascotList(BreadcrumbsMixin, ListView):
     model = Mascot
     context_object_name = "mascots"
     queryset = Mascot.objects.order_by("name")
@@ -50,23 +55,29 @@ class MascotDelete(PermissionOrCreatedMixin, BreadcrumbsMixin, DeleteViewCustom)
     success_url = reverse_lazy("salvage_diary:MascotList")
 
 
-class SalvageDiaryEntryList(BreadcrumbsMixin, ListView):
-    model = SalvageDiaryEntry
-    context_object_name = "salvageDiaryEntires"
-    queryset = SalvageDiaryEntry.objects.order_by("-date").select_related("mascot")
+class SalvageDiaryEntryExternalList(BreadcrumbsMixin, ListView):
+    template_name = "salvage_diary/salvagediaryentryexternal_list.html"
+    model = SalvageDiaryEntryExternal
+    context_object_name = "salvageDiaryEntries"
+    queryset = SalvageDiaryEntryExternal.objects.order_by("-created").select_related(
+        "mascot"
+    )
+    paginate_by = 10
 
     @classmethod
     def get_breadcrumb(cls, **kwargs):
         return Breadcrumb(reverse("salvage_diary:SalvageDiaryEntryList"), "Bergedagbok")
 
 
-class SalvageDiaryEntryCreate(SuccessMessageMixin, BreadcrumbsMixin, CreateView):
-    model = SalvageDiaryEntry
-    form_class = SalvageDiaryEntryForm
+class SalvageDiaryEntryExternalCreate(
+    SuccessMessageMixin, BreadcrumbsMixin, CreateView
+):
+    model = SalvageDiaryEntryExternal
+    form_class = SalvageDiaryEntryExternalForm
     template_name = "common/forms/form.html"
     success_message = "Bergedagbokinnlegget blei laga!"
     success_url = reverse_lazy("salvage_diary:SalvageDiaryEntryList")
-    breadcrumb_parent = SalvageDiaryEntryList
+    breadcrumb_parent = SalvageDiaryEntryExternalList
 
     mascot = None
 
@@ -83,3 +94,68 @@ class SalvageDiaryEntryCreate(SuccessMessageMixin, BreadcrumbsMixin, CreateView)
     def get_context_data(self, **kwargs):
         kwargs["mascot"] = self.get_mascot()
         return super().get_context_data(**kwargs)
+
+
+class SalvageDiaryEntryExternalUpdate(
+    PermissionOrCreatedMixin, BreadcrumbsMixin, UpdateView
+):
+    model = SalvageDiaryEntryExternal
+    form_class = SalvageDiaryEntryExternalUpdateForm
+    template_name = "common/forms/form.html"
+    permission_required = "salvage_diary.change_salvagediaryentryexternal"
+    breadcrumb_parent = SalvageDiaryEntryExternalList
+    success_url = reverse_lazy("salvage_diary:SalvageDiaryEntryList")
+
+
+class SalvageDiaryEntryExternalDelete(
+    PermissionOrCreatedMixin, BreadcrumbsMixin, DeleteViewCustom
+):
+    model = SalvageDiaryEntryExternal
+    permission_required = "salvage_diary.delete_salvagediaryentryexternal"
+    breadcrumb_parent = SalvageDiaryEntryExternalList
+    success_url = reverse_lazy("salvage_diary:SalvageDiaryEntryList")
+
+
+class SalvageDiaryEntryInternalList(BreadcrumbsMixin, ListView):
+    template_name = "salvage_diary/salvagediaryentryinternal_list.html"
+    model = SalvageDiaryEntryInternal
+    context_object_name = "salvageDiaryEntries"
+    queryset = SalvageDiaryEntryInternal.objects.order_by("-created")
+    paginate_by = 10
+
+    @classmethod
+    def get_breadcrumb(cls, **kwargs):
+        return Breadcrumb(
+            reverse("salvage_diary:SalvageDiaryEntryListInternal"), "Bergedagbok"
+        )
+
+
+class SalvageDiaryEntryInternalCreate(
+    LoginRequiredMixin, SuccessMessageMixin, BreadcrumbsMixin, CreateView
+):
+    model = SalvageDiaryEntryInternal
+    form_class = SalvageDiaryEntryInternalForm
+    template_name = "common/forms/form.html"
+    success_message = "Bergedagbokinnlegget blei laga!"
+    success_url = reverse_lazy("salvage_diary:SalvageDiaryEntryListInternal")
+    breadcrumb_parent = SalvageDiaryEntryInternalList
+
+
+class SalvageDiaryEntryInternalUpdate(
+    PermissionOrCreatedMixin, BreadcrumbsMixin, UpdateView
+):
+    model = SalvageDiaryEntryInternal
+    form_class = SalvageDiaryEntryInternalForm
+    template_name = "common/forms/form.html"
+    permission_required = "salvage_diary.change_salvagediaryentryinternal"
+    breadcrumb_parent = SalvageDiaryEntryInternalList
+    success_url = reverse_lazy("salvage_diary:SalvageDiaryEntryListInternal")
+
+
+class SalvageDiaryEntryInternalDelete(
+    PermissionOrCreatedMixin, BreadcrumbsMixin, DeleteViewCustom
+):
+    model = SalvageDiaryEntryInternal
+    permission_required = "salvage_diary.delete_salvagediaryentryinternal"
+    breadcrumb_parent = SalvageDiaryEntryInternalList
+    success_url = reverse_lazy("salvage_diary:SalvageDiaryEntryListInternal")

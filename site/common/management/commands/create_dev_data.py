@@ -42,7 +42,11 @@ from pictures.models import Image
 from polls.factories import ChoiceFactory, PollFactory, VoteFactory
 from quotes.factories import QuoteFactory
 from repertoire.factories import RepertoireFactory
-from salvage_diary.factories import MascotFactory, SalvageDiaryEntryFactory
+from salvage_diary.factories import (
+    MascotFactory,
+    SalvageDiaryEntryExternalFactory,
+    SalvageDiaryEntryInternalFactory,
+)
 from sheetmusic.factories import (
     FavoritePartFactory,
     PartFactory,
@@ -1249,7 +1253,7 @@ Her kan du skrive nykelinformasjon om hendinga. Oppføringane du skriv vil verte
             slug="sal",
             note="Har vært savna siden medaljegalla H22",
         )
-        SalvageDiaryEntryFactory(
+        SalvageDiaryEntryExternalFactory(
             title="Den store berginga!",
             mascot=mascotBerge,
             thieves="Wouldn't you like to know wheater boy",
@@ -1269,10 +1273,17 @@ Brownie sweet jujubes candy canes fruitcake cookie gummi bears. Chupa chups bisc
             "",
             event="Nidaros SMASH V23",
         )
-        SalvageDiaryEntryFactory(
+        SalvageDiaryEntryExternalFactory(
             title="den lille berginga",
             mascot=mascotSal,
             thieves="inside job",
             story="Vi kom, vi så, vi berga",
             event="Medaljegalla H22",
+        )
+        SalvageDiaryEntryInternalFactory(
+            title="VI BERGA PANDAEN!",
+            item="Hans Harald",
+            thieves="Juff-banden",
+            story="Aner ikke hvordan det skjedde, men vi fikk tak i pandaen!",
+            event="Nidaros SMASH V23",
         )
