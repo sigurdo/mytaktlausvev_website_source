@@ -43,16 +43,28 @@ class MascotUpdate(PermissionOrCreatedMixin, BreadcrumbsMixin, UpdateView):
     model = Mascot
     form_class = MascotForm
     template_name = "common/forms/form.html"
-    permission_required = "salvage_diary.change_mascot"
     breadcrumb_parent = MascotList
     success_url = reverse_lazy("salvage_diary:MascotList")
+
+    def has_permission(self):
+        user = self.request.user
+        return (
+            user.has_perm("salvage_diary.change_mascot")
+            or self.get_object().creators.filter(username=user.username).exists()
+        )
 
 
 class MascotDelete(PermissionOrCreatedMixin, BreadcrumbsMixin, DeleteViewCustom):
     model = Mascot
-    permission_required = "salvage_diary.delete_mascot"
     breadcrumb_parent = MascotList
     success_url = reverse_lazy("salvage_diary:MascotList")
+
+    def has_permission(self):
+        user = self.request.user
+        return (
+            user.has_perm("salvage_diary.delete_mascot")
+            or self.get_object().creators.filter(username=user.username).exists()
+        )
 
 
 class SalvageDiaryEntryExternalList(BreadcrumbsMixin, ListView):

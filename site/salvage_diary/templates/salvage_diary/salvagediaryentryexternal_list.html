@@ -7,11 +7,11 @@
     {{ block.super }}
     
     <ul class="list-inline my-1">
+        <li class="list-inline-item">
+            <a class="btn btn-secondary btn-sm my-1" href="{% url 'salvage_diary:MascotList' %}">Maskotar</a>
+        </li>
         <li class="list-inline-item"> 
             <a class="btn btn-secondary btn-sm my-1" href="{% url 'salvage_diary:SalvageDiaryEntryListInternal' %}">Taktlaus-berginger</a>
-        </li>
-        <li class="list-inline-item">
-            <a class="btn btn-secondary btn-sm my-1" href="{% url 'salvage_diary:MascotList' %}">Maskoter</a>
         </li>
     </ul>
 {% endblock header %}

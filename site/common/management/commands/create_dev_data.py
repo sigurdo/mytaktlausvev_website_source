@@ -932,7 +932,7 @@ class Command(BaseCommand):
             parent=other_dropdown,
         )
         NavbarItemFactory(
-            text="Maskoter",
+            text="Maskotar",
             link=reverse("salvage_diary:MascotList"),
             order=4.5,
             requires_login=True,
@@ -1238,16 +1238,16 @@ Her kan du skrive nykelinformasjon om hendinga. Oppføringane du skriv vil verte
         OrchestraFactory(name="Motstanden")
         mascotBerge = MascotFactory(
             name="Berge Bergesen",
-            creationStartDate=date.today(),
-            creationEndDate=date.today(),
+            creation_start_date=date.today(),
+            creation_end_date=date.today(),
             password="FreeWorldFantasy",
             creators=[musical_leader],
             slug="berge",
         )
         mascotSal = MascotFactory(
             name="Sal Salvage",
-            creationStartDate=date.today(),
-            creationEndDate=date.today(),
+            creation_start_date=date.today(),
+            creation_end_date=date.today(),
             password="HarDuEinSjøbanan",
             creators=[leader],
             slug="sal",
@@ -1284,6 +1284,7 @@ Brownie sweet jujubes candy canes fruitcake cookie gummi bears. Chupa chups bisc
             title="VI BERGA PANDAEN!",
             item="Hans Harald",
             thieves="Juff-banden",
+            users=[leader, aspirant],
             story="Aner ikke hvordan det skjedde, men vi fikk tak i pandaen!",
-            event="Nidaros SMASH V23",
+            event=smash,
         )

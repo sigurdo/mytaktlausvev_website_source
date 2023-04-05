@@ -1,51 +1,43 @@
-<ul class="row row-cols-1  row-cols-xxl-2 g-3 list-unstyled">
+<ul class="row row-cols-1 row-cols-sm-2 row-cols-xl-3 g-3 list-unstyled">
     {% for entry in salvageDiaryEntries %}
         <li class="col">
             <div class="card h-100">
                 <div class="card-body d-flex flex-column justify-content-left align-items-left">
-                    <h3 class="card-title fs-5 mb-0 text-center">{{ entry.title }}</h3>
+                    <h2 class="card-title fs-5 mb-0 text-center">{{ entry.title }}</h3>
                     {% if entry.image.url is not None %}
                         <div class="m-3 h-72 d-flex align-items-center justify-content-center my-2">
                             {% include "common/includes/image.html" with url=entry.image.url description=entry.title only %}
                         </div>     
                     {%endif%}
-                    <ul class="row row-cols-1  row-cols-md-2 g-3 list-unstyled">
-                        <li class="col">
-                            <dl class="dl-inline m-0">
+                    <dl class="dl-inline m-0">
+                        <ul class="row row-cols-1  row-cols-md-2 g-3 list-unstyled">
+                            <li class="col">
                                 <dt>Berget</dt>
-                                <dd>{{ entry.get_item_or_mascot }}</dd>
+                                <dd>{{ entry.item_or_mascot }}</dd>
                                 <dt>Bergera</dt>
-                                <dd>{{ entry.thieves }}</dd>
-                            </dl>
-                        </li>
-                        <li class="col">
-                            <dl class="dl-inline m-0">
-
+                                <dd>{% firstof entry.thieves entry.get_users "Ukjent" %}</dd>
+                            </li>
+                            <li class="col">  
                                 <dt>Når</dt>
-                                <dd >
+                                <dd>
                                     <time datetime="{{ entry.created | date:"c" }}">
-                                        {{ entry.created | date:"j. b Y" }}
+                                            {{ entry.created | date:"j. b Y" }}
                                     </time>
-                                </td>
+                                </dd>
                                 <dt>Under</dt>
                                 <dd>
-                                    {% if entry.event  %}
-                                    {{ entry.event }}
-                                    {% else %}
-                                    Ukjent
-                                    {% endif %}
+                                    {% firstof entry.event "Ukjent" %}
                                 </dd>
-                            </dl>
-                        </li>
-                    </ul>
-                </dl>   
+                            </li>
+                        </ul>
+                    </dl>
                     {% if entry.story %}
                         <hr>
                         {% load markdown %}
                         {{ entry.story | markdown }}
                     {% endif %}
 
-                    {% if entry.get_is_internal %}
+                    {% if entry.is_internal %}
                         {% if entry.created_by == request.user or perms.salvage_diary.change_salvagediaryentryinternal or perms.salvage_diary.delete_salvagediaryentryinternal %}
                             <ul class="list-inline my-1">
                                 {% if perms.salvage_diary.change_salvagediaryentryinternal or entry.created_by == request.user %}

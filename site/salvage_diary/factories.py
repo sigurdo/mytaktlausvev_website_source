@@ -11,7 +11,6 @@ class MascotFactory(DjangoModelFactory):
         model = Mascot
 
     name = "Berge Bergesen"
-    slug = "berge"
 
     created_by = SubFactory(UserFactory)
     modified_by = SubFactory(UserFactory)
@@ -42,3 +41,10 @@ class SalvageDiaryEntryInternalFactory(DjangoModelFactory):
     item = "Hans Harald"
     created_by = SubFactory(UserFactory)
     modified_by = SubFactory(UserFactory)
+
+    @post_generation
+    def users(self, create, user_list):
+        if not create or not user_list:
+            return
+
+        self.users.set(user_list)

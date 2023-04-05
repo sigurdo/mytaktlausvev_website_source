@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
-{% block title_page %} Maskoter {% endblock title_page %}
-{% block title_content %} Maskoter {% endblock title_content %}
+{% block title_page %} Maskotar {% endblock title_page %}
+{% block title_content %} Maskotar {% endblock title_content %}
 
 {% block header %}
     {{ block.super }}
@@ -14,6 +14,9 @@
         <li class="list-inline-item">
             <a href="{% url 'salvage_diary:SalvageDiaryEntryList' %}" class="btn btn-secondary btn-sm">Bergedagbok</a>
         </li>
+        <li class="list-inline-item">
+            <a href="{% url 'salvage_diary:SalvageDiaryEntryListInternal' %}" class="btn btn-secondary btn-sm">Taktlaus-berginger</a>
+        </li>
     </ul>
 {% endblock header %}
 
@@ -22,6 +25,16 @@
     {% if mascots %}
         {% include "salvage_diary/includes/mascot.html" with mascots=mascots %}
     {% else %}
-        <p>Ingen maskota laga.</p>
+        <p>Ingen maskotar registrert.</p>
     {% endif %}
 {% endblock %}
+
+{% block js %}
+    <script
+        src="https://cdn.jsdelivr.net/npm/bigpicture@2.6.1/dist/BigPicture.min.js"
+        integrity="sha256-OsbS8Cw/fMpgT6GBFfqhvmX9yJLwzE6+me56KzpSbAs="
+        crossorigin="anonymous"
+    ></script>
+    {% load static %}
+    <script src="{% static "common/js/lightbox.js" %}"></script>
+{% endblock js %}
