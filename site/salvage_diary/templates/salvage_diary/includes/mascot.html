@@ -16,7 +16,7 @@
                         <dd>
                             {{ mascot.get_creators }}
                         </dd>
-                        {% if request.user in mascot.creators.all or perms.salvage_diary.change_mascot or perms.salvage_diary.delete_mascot %}
+                        {% if mascot.created_by == request.user or request.user in mascot.creators.all or perms.salvage_diary.change_mascot or perms.salvage_diary.delete_mascot %}
                         <dt>Url til NFC-tag</dt>
                         <dd>
                             {{ mascot.get_url }}
@@ -28,16 +28,16 @@
                         {% load markdown %}
                         {{ mascot.note | markdown }}
                     {% endif %}
-                    {% if request.user in mascot.creators.all or perms.salvage_diary.change_mascot or perms.salvage_diary.delete_mascot %}
+                    {% if mascot.created_by == request.user or request.user in mascot.creators.all or perms.salvage_diary.change_mascot or perms.salvage_diary.delete_mascot %}
                         <ul class="list-inline my-1">
-                            {% if perms.salvage_diary.change_mascot or request.user in mascot.creators.all %}
+                            {% if perms.salvage_diary.change_mascot or mascot.created_by == request.user or request.user in mascot.creators.all %}
                                 <li class="list-inline-item">
                                     <a href="{% url 'salvage_diary:MascotUpdate' mascot.slug %}" class="btn btn-primary btn-sm">
                                         Rediger maskot
                                     </a>
                                 </li>
                             {% endif %}
-                            {% if perms.salvage_diary.delete_mascot or request.user in mascot.creators.all %}
+                            {% if perms.salvage_diary.delete_mascot or mascot.created_by == request.user or request.user in mascot.creators.all %}
                                 <li class="list-inline-item">
                                     <a href="{% url 'salvage_diary:MascotDelete' mascot.slug %}" class="btn btn-danger btn-sm">
                                         Slett maskot
