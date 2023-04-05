@@ -1,5 +1,6 @@
 from autoslug.fields import AutoSlugField
 from django.conf import settings
+from django.contrib.sites.models import Site
 from django.db.models import (
     CASCADE,
     SET_NULL,
@@ -36,7 +37,7 @@ class Mascot(CreatedModifiedMixin):
         "passord",
         max_length=255,
         blank=True,
-        help_text="Dette er eit passord me festar på maskoten under hendinga som bergarne må fylla inn i forma for å forsikra oss om at dei har berga maskoten.",
+        help_text="Dette er eit passord me festar på maskoten under hendinga som bergarne må fylla inn i skjemaet for å forsikra oss om at dei har berga maskoten.",
     )
     creators = ManyToManyField(
         settings.AUTH_USER_MODEL,
@@ -78,8 +79,7 @@ class Mascot(CreatedModifiedMixin):
         return comma_seperate_list([user.get_name() for user in self.creators.all()])
 
     def get_url(self):
-        url = reverse("salvage_diary:SalvageDiaryEntryExternalCreate", args=[self.slug])
-        return "https://taktlaus.no" + url
+        return f"https://{Site.objects.get_current().domain}{reverse('salvage_diary:SalvageDiaryEntryExternalCreate', args=[self.slug])}"
 
 
 class SalvageDiaryEntry(Model):

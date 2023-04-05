@@ -8,10 +8,7 @@
                         <div class="m-3 h-72 d-flex align-items-center justify-content-center my-2">
                             {% include "common/includes/image.html" with url=mascot.image.url description=mascot.name only %}
                         </div>     
-                    {% endif %}
-                    {% load salvage_diary %}
-                    {% user_is_creator mascot request.user as user_is_creator_permission %}
-            
+                    {% endif %}            
                     <dl class="dl-inline m-0">
                         <dt>Laga i perioden</dt>
                         <dd>{% firstof mascot.creation_start_date "?" %} - {% firstof mascot.creation_end_date "?" %}</dd>
@@ -19,7 +16,7 @@
                         <dd>
                             {{ mascot.get_creators }}
                         </dd>
-                        {% if user_is_creator_permission or perms.salvage_diary.change_mascot or perms.salvage_diary.delete_mascot %}
+                        {% if request.user in mascot.creators.all or perms.salvage_diary.change_mascot or perms.salvage_diary.delete_mascot %}
                         <dt>Url til NFC-tag</dt>
                         <dd>
                             {{ mascot.get_url }}
@@ -31,16 +28,16 @@
                         {% load markdown %}
                         {{ mascot.note | markdown }}
                     {% endif %}
-                    {% if user_is_creator_permission or perms.salvage_diary.change_mascot or perms.salvage_diary.delete_mascot %}
+                    {% if request.user in mascot.creators.all or perms.salvage_diary.change_mascot or perms.salvage_diary.delete_mascot %}
                         <ul class="list-inline my-1">
-                            {% if perms.salvage_diary.change_mascot or user_is_creator_permission %}
+                            {% if perms.salvage_diary.change_mascot or request.user in mascot.creators.all %}
                                 <li class="list-inline-item">
                                     <a href="{% url 'salvage_diary:MascotUpdate' mascot.slug %}" class="btn btn-primary btn-sm">
                                         Rediger maskot
                                     </a>
                                 </li>
                             {% endif %}
-                            {% if perms.salvage_diary.delete_mascot or user_is_creator_permission %}
+                            {% if perms.salvage_diary.delete_mascot or request.user in mascot.creators.all %}
                                 <li class="list-inline-item">
                                     <a href="{% url 'salvage_diary:MascotDelete' mascot.slug %}" class="btn btn-danger btn-sm">
                                         Slett maskot
