@@ -42,6 +42,11 @@ from pictures.models import Image
 from polls.factories import ChoiceFactory, PollFactory, VoteFactory
 from quotes.factories import QuoteFactory
 from repertoire.factories import RepertoireFactory
+from salvage_diary.factories import (
+    MascotFactory,
+    SalvageDiaryEntryExternalFactory,
+    SalvageDiaryEntryInternalFactory,
+)
 from sheetmusic.factories import (
     FavoritePartFactory,
     PartFactory,
@@ -920,6 +925,20 @@ class Command(BaseCommand):
             parent=other_dropdown,
         )
         NavbarItemFactory(
+            text="Bergedagbok",
+            link=reverse("salvage_diary:SalvageDiaryEntryList"),
+            order=4,
+            requires_login=False,
+            parent=other_dropdown,
+        )
+        NavbarItemFactory(
+            text="Maskotar",
+            link=reverse("salvage_diary:MascotList"),
+            order=4.5,
+            requires_login=True,
+            parent=other_dropdown,
+        )
+        NavbarItemFactory(
             text="Søk",
             link=reverse("search:Search"),
             order=5,
@@ -1217,3 +1236,55 @@ Her kan du skrive nykelinformasjon om hendinga. Oppføringane du skriv vil verte
 
         OrchestraFactory(name="Dragern")
         OrchestraFactory(name="Motstanden")
+        mascotBerge = MascotFactory(
+            name="Berge Bergesen",
+            creation_start_date=date.today(),
+            creation_end_date=date.today(),
+            password="FreeWorldFantasy",
+            creators=[musical_leader],
+            slug="berge",
+        )
+        mascotSal = MascotFactory(
+            name="Sal Salvage",
+            creation_start_date=date.today(),
+            creation_end_date=date.today(),
+            password="HarDuEinSjøbanan",
+            creators=[leader],
+            slug="sal",
+            note="Har vært savna siden medaljegalla H22",
+        )
+        SalvageDiaryEntryExternalFactory(
+            title="Den store berginga!",
+            mascot=mascotBerge,
+            thieves="Wouldn't you like to know wheater boy",
+            story="""
+Det hendte i de dager under Nidaros SMASH at taktlauses første maskot ble berga av ingen ringere enn oss!
+Cupcake ipsum dolor sit amet I love I love carrot cake chocolate bar. Jujubes soufflé candy canes oat cake bonbon. 
+Topping sesame snaps I love soufflé carrot cake bonbon chocolate icing gummies. Sesame snaps dragée cheesecake I love toffee powder fruitcake gummies tiramisu.
+Apple pie gummi bears tart dragée tootsie roll sugar plum liquorice bear claw danish. I love fruitcake chocolate cake chocolate bar marzipan macaroon brownie lemon drops. 
+Tootsie roll chocolate cake jelly beans pastry chocolate cake gingerbread fruitcake halvah. Tart cupcake chocolate cake cupcake tiramisu shortbread I love gingerbread. 
+I love soufflé candy cotton candy fruitcake. Pastry powder dessert toffee I love jelly beans. Bear claw dragée caramels pudding icing jelly. 
+Oat cake lollipop I love chocolate cake gummi bears pastry pudding candy I love. Soufflé lollipop sweet fruitcake I love chocolate I love.
+Chocolate I love dragée cotton candy lemon drops sugar plum soufflé. Jelly-o sweet I love brownie cheesecake. Jujubes I love fruitcake tiramisu I love danish I love bonbon. 
+Wafer cotton candy cupcake candy cake marzipan lollipop I love carrot cake. Cake lollipop liquorice bonbon macaroon jujubes chocolate bar cheesecake lemon drops. 
+Macaroon chupa chups liquorice soufflé shortbread fruitcake cotton candy macaroon chocolate. Chupa chups soufflé biscuit jelly oat cake sugar plum jelly.
+Brownie sweet jujubes candy canes fruitcake cookie gummi bears. Chupa chups biscuit tootsie roll chocolate cake toffee candy dessert cookie oat cake. Cake I love marshmallow lollipop I love gummies. Danish bear claw icing sweet macaroon. Biscuit dessert sugar plum oat cake toffee chocolate bar icing pudding. Powder candy canes cheesecake carrot cake chupa chups. Sweet roll jujubes apple pie I love fruitcake.
+"""
+            "",
+            event="Nidaros SMASH V23",
+        )
+        SalvageDiaryEntryExternalFactory(
+            title="den lille berginga",
+            mascot=mascotSal,
+            thieves="inside job",
+            story="Vi kom, vi så, vi berga",
+            event="Medaljegalla H22",
+        )
+        SalvageDiaryEntryInternalFactory(
+            title="VI BERGA PANDAEN!",
+            item="Hans Harald",
+            thieves="Juff-banden",
+            users=[leader, aspirant],
+            story="Aner ikke hvordan det skjedde, men vi fikk tak i pandaen!",
+            event=smash,
+        )

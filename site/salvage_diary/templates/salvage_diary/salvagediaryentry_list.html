@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title_page %}Bergedagbok{% endblock title_page %}
+{% block title_content %}Bergedagbok{% endblock title_content %}
+
+
+{% block content %}
+    {% if salvageDiaryEntries  %}
+            {% include "salvage_diary/includes/salvageDiaryEntry.html" with salvageDiaryEntries=salvageDiaryEntries  %}
+            {% include "common/includes/pagination.html" with pagination_label="Sitatsida" %}
+    {% else %}
+        <p>Ingen innlegg registrert.</p>
+    {% endif %}
+{% endblock %}
+
+{% block js %}
+    <script
+        src="https://cdn.jsdelivr.net/npm/bigpicture@2.6.1/dist/BigPicture.min.js"
+        integrity="sha256-OsbS8Cw/fMpgT6GBFfqhvmX9yJLwzE6+me56KzpSbAs="
+        crossorigin="anonymous"
+    ></script>
+    {% load static %}
+    <script src="{% static "common/js/lightbox.js" %}"></script>
+{% endblock js %}

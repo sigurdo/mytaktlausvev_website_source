@@ -1,0 +1,23 @@
+{% extends "salvage_diary/salvagediaryentry_list.html" %}
+
+{% block title_page %}Bergedagbok{% endblock title_page %}
+{% block title_content %}Bergedagbok{% endblock title_content %}
+
+{% block header %}
+    {{ block.super }}
+
+    <ul class="list-inline my-1">
+        {% if user.is_authenticated %}
+            <li class="list-inline-item"> 
+                <a class="btn btn-primary btn-sm my-1" href="{% url 'salvage_diary:SalvageDiaryEntryInternalCreate' %}">Legg inn innlegg</a>
+            </li>
+        {% endif %}
+        <li class="list-inline-item">
+            <a class="btn btn-secondary btn-sm my-1" href="{% url 'salvage_diary:SalvageDiaryEntryList' %}">Andre bergingar</a>        
+        </li>
+        <li class="list-inline-item">
+            <a class="btn btn-secondary btn-sm my-1" href="{% url 'salvage_diary:MascotList' %}">Maskotar</a>
+        </li>
+    </ul>
+     
+{% endblock header %}
