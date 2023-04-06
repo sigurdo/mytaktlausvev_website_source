@@ -26,15 +26,23 @@ from .models import UserCustom
 
 
 class UserCustomManagerTestCase(TestCase):
-    def test_active_includes_only_paying_members_and_aspirants(self):
+    def test_active_includes_paying_members_aspirants_and_overriden_active(self):
+        """
+        `active()` should include paying members, aspirants,
+        and members with `is_active_override` set to `True`.
+        """
         aspirant = UserFactory(membership_status=UserCustom.MembershipStatus.ASPIRANT)
         paying = UserFactory(membership_status=UserCustom.MembershipStatus.PAYING)
         UserFactory(membership_status=UserCustom.MembershipStatus.RETIRED)
         UserFactory(membership_status=UserCustom.MembershipStatus.HONORARY)
+        honorary_but_overriden_active = UserFactory(
+            membership_status=UserCustom.MembershipStatus.HONORARY,
+            is_active_override=True,
+        )
 
         self.assertQuerysetEqual(
             UserCustom.objects.active(),
-            [aspirant, paying],
+            [aspirant, paying, honorary_but_overriden_active],
             ordered=False,
         )
 
@@ -148,7 +156,8 @@ class UserCustomTest(TestMixin, TestCase):
     def test_is_active_member_returns_true_for_active_members(self):
         """
         `is_active_member` should return true for active members,
-        meaning paying members and aspirants.
+        meaning paying members, aspirants,
+        and members with `is_active_override` set to `True`.
         """
         self.assertTrue(
             UserFactory(
@@ -160,11 +169,18 @@ class UserCustomTest(TestMixin, TestCase):
                 membership_status=UserCustom.MembershipStatus.PAYING
             ).is_active_member()
         )
+        self.assertTrue(
+            UserFactory(
+                membership_status=UserCustom.MembershipStatus.HONORARY,
+                is_active_override=True,
+            ).is_active_member()
+        )
 
     def test_is_active_member_returns_false_for_not_active_members(self):
         """
         `is_active_member` should return false for members that aren't active,
-        meaning all members except paying members and aspirants.
+        meaning all members except paying members, aspirants,
+        and members with `is_active_override` set to `False`.
         """
         self.assertFalse(
             UserFactory(
@@ -181,6 +197,11 @@ class UserCustomTest(TestMixin, TestCase):
                 membership_status=UserCustom.MembershipStatus.INACTIVE
             ).is_active_member()
         )
+
+    def test_is_active_override_defaults_to_false(self):
+        """`is_active_override` should default to false."""
+        user = UserFactory()
+        self.assertFalse(user.is_active_override)
 
     def test_has_storage_access_defaults_to_false(self):
         """`has_storage_access` should default to false."""

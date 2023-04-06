@@ -34,6 +34,7 @@ class UserAdminCustom(UserAdmin):
                     "membership_period",
                     "instrument_type",
                     "can_wear_hats",
+                    "is_active_override",
                 )
             },
         ),
@@ -62,7 +63,13 @@ class UserAdminCustom(UserAdmin):
         "date_joined",
         "can_wear_hats",
     )
-    list_filter = ("is_staff", "is_superuser", "groups", "membership_status")
+    list_filter = (
+        "is_staff",
+        "is_superuser",
+        "groups",
+        "membership_status",
+        "is_active_override",
+    )
     list_editable = ("membership_status", "can_wear_hats")
     search_fields = ("username", "name", "email")
 
