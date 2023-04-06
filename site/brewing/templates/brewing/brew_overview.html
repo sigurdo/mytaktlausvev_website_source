@@ -38,8 +38,3 @@
     {% include "brewing/includes/brew_purchase_list.html" with brews=available_brews %}
 {% endblock content %}
 
-{% block js %}
-    <script src="https://cdn.jsdelivr.net/npm/bigpicture@2.6.1/dist/BigPicture.min.js" integrity="sha256-OsbS8Cw/fMpgT6GBFfqhvmX9yJLwzE6+me56KzpSbAs=" crossorigin="anonymous"></script>
-    {% load static %}
-    <script src="{% static "common/js/lightbox.js" %}"></script>    
-{% endblock js %}
