@@ -85,7 +85,7 @@ class Mascot(CreatedModifiedMixin):
 class SalvageDiaryEntry(Model):
     title = CharField("tittel", max_length=255)
     thieves = CharField(
-        "bergere", max_length=255, help_text="Kven er dykk?", blank=True
+        "bergere", max_length=255, help_text="Kven er dokker?", blank=True
     )
     image = ImageField(
         "bilete",
@@ -96,7 +96,7 @@ class SalvageDiaryEntry(Model):
     story = TextField(
         "Historie",
         blank=True,
-        help_text="Kva skjedde? Korleis berga dykk den? Kva har dykk endra?",
+        help_text="Kva skjedde? Korleis berga dokker den? Kva har dokker endra?",
     )
 
     def __str__(self):
