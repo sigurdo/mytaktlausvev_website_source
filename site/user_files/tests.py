@@ -9,7 +9,6 @@ from common.mixins import TestMixin
 from common.test_utils import test_txt_file
 
 from .factories import FileFactory
-from .models import File
 
 
 class FileTestSuite(TestMixin, TestCase):

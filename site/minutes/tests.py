@@ -5,7 +5,6 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils.text import slugify
 
-from accounts.factories import SuperUserFactory
 from common.mixins import TestMixin
 
 from .factories import MinutesFactory

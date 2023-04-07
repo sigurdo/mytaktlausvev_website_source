@@ -4,12 +4,11 @@ from django.contrib.contenttypes.models import ContentType
 from django.test import TestCase
 from django.urls import reverse
 
-from accounts.factories import SuperUserFactory, UserFactory
+from accounts.factories import UserFactory
 from articles.factories import ArticleFactory
 from common.mixins import TestMixin
 
 from .factories import CommentFactory
-from .models import Comment
 
 
 class CommentTestCase(TestCase):

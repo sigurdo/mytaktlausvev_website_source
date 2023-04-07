@@ -10,7 +10,6 @@ from common.utils import comma_seperate_list
 
 from .factories import QuoteFactory
 from .forms import QuoteForm
-from .models import Quote
 
 
 class QuoteTestSuite(TestMixin, TestCase):
