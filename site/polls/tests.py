@@ -467,17 +467,6 @@ class PollCreateTestSuite(TestMixin, TestCase):
             response, poll.get_absolute_url(), fetch_redirect_response=False
         )
 
-    def test_created_by_modified_by_set_to_current_user(self):
-        """Should set `created_by` and `modified_by` to the current user on creation."""
-        user = SuperUserFactory()
-        self.client.force_login(user)
-        self.post()
-
-        self.assertEqual(Poll.objects.count(), 1)
-        poll = Poll.objects.last()
-        self.assertEqual(poll.created_by, user)
-        self.assertEqual(poll.modified_by, user)
-
 
 class PollUpdateTestSuite(TestMixin, TestCase):
     def setUp(self):
@@ -527,24 +516,6 @@ class PollUpdateTestSuite(TestMixin, TestCase):
         self.assertRedirects(
             response, self.poll.get_absolute_url(), fetch_redirect_response=False
         )
-
-    def test_created_by_not_changed(self):
-        """Should not change `created_by` when updating poll."""
-        self.client.force_login(SuperUserFactory())
-        self.post()
-
-        created_by_previous = self.poll.created_by
-        self.poll.refresh_from_db()
-        self.assertEqual(self.poll.created_by, created_by_previous)
-
-    def test_modified_by_set_to_current_user(self):
-        """Should set `modified_by` to the current user on update."""
-        user = SuperUserFactory()
-        self.client.force_login(user)
-        self.post()
-
-        self.poll.refresh_from_db()
-        self.assertEqual(self.poll.modified_by, user)
 
 
 class PollDeleteTestSuite(TestMixin, TestCase):

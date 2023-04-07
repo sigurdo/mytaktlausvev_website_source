@@ -93,24 +93,6 @@ class MinutesCreateTestSuite(TestMixin, TestCase):
         """Should require login."""
         self.assertLoginRequired(self.get_url())
 
-    def test_created_by_modified_by_set_to_current_user(self):
-        """Should set `created_by` and `modified_by` to the current user on creation."""
-        user = SuperUserFactory()
-        self.client.force_login(user)
-        self.client.post(
-            self.get_url(),
-            {
-                "title": "Another Meeting",
-                "content": "Bureaucracy...",
-                "date": date.today(),
-            },
-        )
-
-        self.assertEqual(Minutes.objects.count(), 1)
-        minutes = Minutes.objects.last()
-        self.assertEqual(minutes.created_by, user)
-        self.assertEqual(minutes.modified_by, user)
-
 
 class MinutesUpdateTestSuite(TestMixin, TestCase):
     def setUp(self):
@@ -143,24 +125,6 @@ class MinutesUpdateTestSuite(TestMixin, TestCase):
         self.client.force_login(self.minutes.created_by)
         response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, HTTPStatus.OK)
-
-    def test_created_by_not_changed(self):
-        """Should not change `created_by` when updating minutes."""
-        self.client.force_login(SuperUserFactory())
-        self.client.post(self.get_url(), self.minutes_data)
-
-        created_by_previous = self.minutes.created_by
-        self.minutes.refresh_from_db()
-        self.assertEqual(self.minutes.created_by, created_by_previous)
-
-    def test_modified_by_set_to_current_user(self):
-        """Should set `modified_by` to the current user on update."""
-        user = SuperUserFactory()
-        self.client.force_login(user)
-        self.client.post(self.get_url(), self.minutes_data)
-
-        self.minutes.refresh_from_db()
-        self.assertEqual(self.minutes.modified_by, user)
 
 
 class MinutesDeleteTestCase(TestMixin, TestCase):

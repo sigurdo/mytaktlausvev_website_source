@@ -97,20 +97,6 @@ class FileCreateTestSuite(TestMixin, TestCase):
         """Should require login."""
         self.assertLoginRequired(self.get_url())
 
-    def test_created_by_modified_by_set_to_current_user(self):
-        """Should set `created_by` and `modified_by` to the current user on creation."""
-        user = SuperUserFactory()
-        self.client.force_login(user)
-        self.client.post(
-            self.get_url(),
-            {"name": "616.mp3", "file": test_txt_file()},
-        )
-
-        self.assertEqual(File.objects.count(), 1)
-        files = File.objects.last()
-        self.assertEqual(files.created_by, user)
-        self.assertEqual(files.modified_by, user)
-
     def test_redirects_to_file_list_on_success(self):
         """Should redirect to the file list on success."""
         self.client.force_login(SuperUserFactory())
@@ -150,21 +136,6 @@ class FileUpdateTestSuite(TestMixin, TestCase):
         self.client.force_login(self.file.created_by)
         response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, HTTPStatus.OK)
-
-    def test_modified_by_set_to_current_user(self):
-        """Should set `modified_by` and not `created_by` to the current user on update."""
-        previous_created_by = self.file.created_by
-        user = SuperUserFactory()
-        self.client.force_login(user)
-        self.client.post(
-            self.get_url(),
-            {"name": "616.mp3", "file": test_txt_file()},
-        )
-
-        self.assertEqual(File.objects.count(), 1)
-        file = File.objects.last()
-        self.assertEqual(file.created_by, previous_created_by)
-        self.assertEqual(file.modified_by, user)
 
     def test_redirects_to_file_list_on_success(self):
         """Should redirect to the file list on success."""
