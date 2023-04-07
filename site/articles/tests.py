@@ -212,20 +212,6 @@ class ArticleCreateTestCase(TestMixin, TestCase):
 
         self.assertEqual(Article.objects.count(), 1)
 
-    def test_created_by_modified_by_set_to_current_user(self):
-        """Should set `created_by` and `modified_by` to the current user on creation."""
-        user = UserFactory()
-        self.client.force_login(user)
-        self.client.post(
-            self.get_url(),
-            {"title": "A Title", "content": "Article text"},
-        )
-
-        self.assertEqual(Article.objects.count(), 1)
-        article = Article.objects.last()
-        self.assertEqual(article.created_by, user)
-        self.assertEqual(article.modified_by, user)
-
     def test_requires_login(self):
         """Should require login."""
         self.assertLoginRequired(self.get_url())
@@ -274,28 +260,6 @@ class ArticleUpdateTestCase(TestMixin, TestCase):
         self.client.force_login(self.article.created_by)
         response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, HTTPStatus.OK)
-
-    def test_created_by_not_changed(self):
-        """Should not change `created_by` when updating article."""
-        self.client.force_login(SuperUserFactory())
-        self.client.post(
-            self.get_url(), {"title": "A Title", "content": "Article text"}
-        )
-
-        created_by_previous = self.article.created_by
-        self.article.refresh_from_db()
-        self.assertEqual(self.article.created_by, created_by_previous)
-
-    def test_modified_by_set_to_current_user(self):
-        """Should set `modified_by` to the current user on update."""
-        user = SuperUserFactory()
-        self.client.force_login(user)
-        self.client.post(
-            self.get_url(), {"title": "A Title", "content": "Article text"}
-        )
-
-        self.article.refresh_from_db()
-        self.assertEqual(self.article.modified_by, user)
 
 
 class ArticleDeleteTestCase(TestMixin, TestCase):

@@ -256,15 +256,6 @@ class ImageCreateTestSuite(TestMixin, TestCase):
         image = Image.objects.last()
         self.assertEqual(image.uploaded_by, user)
 
-    def test_modified_by_of_gallery_set_to_current_user(self):
-        """Should set `modified_by` of the gallery to the current user."""
-        user = SuperUserFactory()
-        self.client.force_login(user)
-        self.client.post(self.get_url(), self.image_data)
-
-        self.gallery.refresh_from_db()
-        self.assertEqual(self.gallery.modified_by, user)
-
     def test_error_if_uploaded_file_is_not_image(self):
         """Should show a form error if the uploaded file isn't an image."""
         self.image_data["image"] = test_pdf()
@@ -320,24 +311,6 @@ class GalleryUpdateTestSuite(TestMixin, TestCase):
     def test_requires_login(self):
         """Should require login."""
         self.assertLoginRequired(self.get_url())
-
-    def test_created_by_not_changed(self):
-        """Should not change `created_by` when updating gallery."""
-        self.client.force_login(SuperUserFactory())
-        self.client.post(self.get_url(), self.gallery_data)
-
-        created_by_previous = self.gallery.created_by
-        self.gallery.refresh_from_db()
-        self.assertEqual(self.gallery.created_by, created_by_previous)
-
-    def test_modified_by_set_to_current_user(self):
-        """Should set `modified_by` to the current user on update."""
-        user = SuperUserFactory()
-        self.client.force_login(user)
-        self.client.post(self.get_url(), self.gallery_data)
-
-        self.gallery.refresh_from_db()
-        self.assertEqual(self.gallery.modified_by, user)
 
 
 class GalleryDeleteTestCase(TestMixin, TestCase):

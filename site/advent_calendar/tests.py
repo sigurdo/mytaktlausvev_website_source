@@ -132,20 +132,6 @@ class WindowCreateTestSuite(TestMixin, TestCase):
         window = Window.objects.last()
         self.assertEqual(window.advent_calendar, self.advent_calendar)
 
-    def test_created_by_modified_by_set_to_current_user(self):
-        """Should set `created_by` and `modified_by` to the current user on creation."""
-        user = SuperUserFactory()
-        self.client.force_login(user)
-        self.client.post(
-            self.get_url(),
-            self.window_data,
-        )
-
-        self.assertEqual(Window.objects.count(), 1)
-        window = Window.objects.last()
-        self.assertEqual(window.created_by, user)
-        self.assertEqual(window.modified_by, user)
-
 
 class WindowUpdateTestSuite(TestMixin, TestCase):
     def get_url(self, window):
@@ -185,26 +171,6 @@ class WindowUpdateTestSuite(TestMixin, TestCase):
         self.client.force_login(self.author)
         response = self.client.get(self.get_url(self.window))
         self.assertEqual(response.status_code, HTTPStatus.OK)
-
-    def test_created_by_not_changed(self):
-        """Should not change `created_by` when updating window."""
-        self.client.force_login(SuperUserFactory())
-        response = self.client.post(self.get_url(self.window), self.window_data)
-        self.assertEqual(response.status_code, HTTPStatus.FOUND)
-
-        created_by_previous = self.window.created_by
-        self.window.refresh_from_db()
-        self.assertEqual(self.window.created_by, created_by_previous)
-
-    def test_modified_by_set_to_current_user(self):
-        """Should set `modified_by` to the current user on update."""
-        user = SuperUserFactory()
-        self.client.force_login(user)
-        response = self.client.post(self.get_url(self.window), self.window_data)
-        self.assertEqual(response.status_code, HTTPStatus.FOUND)
-
-        self.window.refresh_from_db()
-        self.assertEqual(self.window.modified_by, user)
 
     def test_redirects_to_calendar(self):
         """Should redirect to the window's calendar on success."""

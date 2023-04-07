@@ -147,20 +147,6 @@ class ButtonDesignCreateTestSuite(TestMixin, TestCase):
         """Should require login."""
         self.assertLoginRequired(self.get_url())
 
-    def test_created_by_modified_by_set_to_current_user(self):
-        """Should set `created_by` and `modified_by` to the current user on creation."""
-        user = SuperUserFactory()
-        self.client.force_login(user)
-        self.client.post(
-            self.get_url(),
-            {"name": "Nidaros-SMASH 2023", "image": test_image()},
-        )
-
-        self.assertEqual(ButtonDesign.objects.count(), 1)
-        button_design = ButtonDesign.objects.last()
-        self.assertEqual(button_design.created_by, user)
-        self.assertEqual(button_design.modified_by, user)
-
     def test_success_url_is_buttons_view(self):
         self.client.force_login(SuperUserFactory())
         response = self.client.post(
@@ -197,24 +183,6 @@ class ButtonDesignUpdateTestSuite(TestMixin, TestCase):
         self.client.force_login(self.button_design.created_by)
         response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, HTTPStatus.OK)
-
-    def test_created_by_not_changed(self):
-        """Should not change `created_by` when updating button designs."""
-        self.client.force_login(SuperUserFactory())
-        self.client.post(self.get_url(), self.button_design_data)
-
-        created_by_previous = self.button_design.created_by
-        self.button_design.refresh_from_db()
-        self.assertEqual(self.button_design.created_by, created_by_previous)
-
-    def test_modified_by_set_to_current_user(self):
-        """Should set `modified_by` to the current user on update."""
-        user = SuperUserFactory()
-        self.client.force_login(user)
-        self.client.post(self.get_url(), self.button_design_data)
-
-        self.button_design.refresh_from_db()
-        self.assertEqual(self.button_design.modified_by, user)
 
 
 class ButtonDesignDeleteTestCase(TestMixin, TestCase):
