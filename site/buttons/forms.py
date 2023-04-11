@@ -19,6 +19,25 @@ class ButtonsForm(Form):
         initial=57,
         label="Synleg diameter for kvar button i mm",
     )
+    button_backside_padding_mm = IntegerField(
+        min_value=0,
+        max_value=100,
+        initial=5,
+        label="Tjukn på baksidepolstring i mm",
+        help_text="Kor tjukk polstringa (padding) på baksida skal vere. Denne avstanden må vere rekna inn i motivet du lastar opp."
+    )
+    button_minimum_distance_mm = IntegerField(
+        min_value=0,
+        max_value=100,
+        initial=0,
+        label="Minste avstand millom kvar button i mm",
+    )
+    paper_margin_mm = IntegerField(
+        min_value=0,
+        max_value=100,
+        initial=3,
+        label="Papirmarg i mm",
+    )
 
     helper = FormHelper()
     helper.add_input(Submit("submit", "Generer PDF"))
