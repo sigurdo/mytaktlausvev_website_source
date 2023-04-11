@@ -24,7 +24,7 @@ class ButtonsForm(Form):
         max_value=100,
         initial=5,
         label="Tjukn på baksidepolstring i mm",
-        help_text="Kor tjukk polstringa (padding) på baksida skal vere. Denne avstanden må vere rekna inn i motivet du lastar opp."
+        help_text="Kor tjukk polstringa (padding) på baksida skal vere. Denne avstanden må vere rekna inn i motivet du lastar opp.",
     )
     button_minimum_distance_mm = IntegerField(
         min_value=0,
