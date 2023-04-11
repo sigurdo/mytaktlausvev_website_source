@@ -1153,7 +1153,7 @@ class Command(BaseCommand):
             content="""
 ## Framgangsmåte
 
-1. Design nokre motiv du vil lage buttons av. Designet må vere like langt som det er breidt (om ikkje vert det strekt) og ikkje ha noke viktig motiv utanfor sirkelen med sentrum midt i motivet og diameter lik breidda/høgda (om ikkje vert det borte).
+1. Design nokre motiv du vil lage buttons av. Designet må vere like langt som det er breidt (om ikkje vert det strekt) og ikkje ha noke viktig motiv utanfor sirkelen med sentrum midt i motivet og diameter lik breidda/høgda (om ikkje vert det borte). Til dømes, hvis du har buttondiameter på 10 mm og sett tjukn på baksidepolstringa til 5 mm, må du klippe ut papirskiver med diameter på 20 mm. Da må det synlege motivet halde seg innanfor ein sirkel med diameter lik halve biletebreidda og resten av biletet vert berre ein del av polstringa. Polstringa kan du fylle med passande fargar, slik at buttonen blir pen rundt kanten også.
 2. Last opp motiva her som bilete og oppgje kor mange buttons du ynskjer av kvart motiv. Om du skal lage buttons i ei anna storleik enn Dei Taktlause sin standard, endre ynskja diameter.
 3. Trykk generer PDF, vent til sida svarar (dette kan ta nokre sekund om du provar å lage mange eller store buttons) og print ut.
 """,

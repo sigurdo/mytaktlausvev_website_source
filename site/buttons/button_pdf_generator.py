@@ -41,7 +41,8 @@ def button_pdf_generator(
     page_margin_left_mm=3,
     button_visible_width_mm=57,
     button_visible_height_mm=57,
-    button_margin_mm=10,
+    button_backside_padding_mm=5,
+    button_minimum_distance_mm=0,
     button_outline_mm=0.5,
 ):
     """
@@ -66,24 +67,40 @@ def button_pdf_generator(
     page_margin_right_px = mm_to_px(page_margin_right_mm)
     page_margin_bottom_px = mm_to_px(page_margin_bottom_mm)
     page_margin_left_px = mm_to_px(page_margin_left_mm)
-    button_full_width_px = mm_to_px(button_visible_width_mm + button_margin_mm)
-    button_full_height_px = mm_to_px(button_visible_height_mm + button_margin_mm)
+    button_full_width_px = mm_to_px(
+        button_visible_width_mm + 2 * button_backside_padding_mm
+    )
+    button_full_height_px = mm_to_px(
+        button_visible_height_mm + 2 * button_backside_padding_mm
+    )
+    button_minimum_distance_px = mm_to_px(button_minimum_distance_mm)
     button_outline_px = mm_to_px(button_outline_mm)
 
     # Calculate dependent parameter based on input parameters
+
     num_buttons_horizontal = (
-        page_width_px - page_margin_left_px - page_margin_right_px
-    ) // button_full_width_px
+        page_width_px
+        - page_margin_left_px
+        - page_margin_right_px
+        - button_minimum_distance_px
+    ) // (button_full_width_px + button_minimum_distance_px)
     num_buttons_vertical = (
-        page_height_px - page_margin_top_px - page_margin_bottom_px
-    ) // button_full_height_px
+        page_height_px
+        - page_margin_top_px
+        - page_margin_bottom_px
+        - button_minimum_distance_px
+    ) // (button_full_height_px + button_minimum_distance_px)
     num_buttons_per_page = num_buttons_horizontal * num_buttons_vertical
     num_pages = ceil(len(images) * num_of_each / num_buttons_per_page)
     array_left_px = (
-        page_width_px - (num_buttons_horizontal * button_full_width_px)
+        page_width_px
+        - (num_buttons_horizontal * button_full_width_px)
+        - ((num_buttons_horizontal - 1) * button_minimum_distance_px)
     ) // 2
     array_top_px = (
-        page_height_px - (num_buttons_vertical * button_full_height_px)
+        page_height_px
+        - (num_buttons_vertical * button_full_height_px)
+        - ((num_buttons_vertical - 1) * button_minimum_distance_px)
     ) // 2
 
     # List of pages to append to in for loop
@@ -131,8 +148,12 @@ def button_pdf_generator(
                     )
 
                     # Calculate position on page
-                    offset_left = array_left_px + (c * button_full_width_px)
-                    offset_top = array_top_px + (r * button_full_height_px)
+                    offset_left = array_left_px + (
+                        c * (button_full_width_px + button_minimum_distance_px)
+                    )
+                    offset_top = array_top_px + (
+                        r * (button_full_height_px + button_minimum_distance_px)
+                    )
 
                     background.paste(
                         img.copy(), (offset_left, offset_top), mask=img.copy()

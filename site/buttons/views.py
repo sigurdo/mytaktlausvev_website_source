@@ -38,6 +38,9 @@ class ButtonsView(BreadcrumbsMixin, FormView):
         images = [PIL.Image.open(image) for image in images]
         num_of_each = form.cleaned_data["num_of_each"]
         button_visible_diameter_mm = form.cleaned_data["button_visible_diameter_mm"]
+        button_backside_padding_mm = form.cleaned_data["button_backside_padding_mm"]
+        button_minimum_distance_mm = form.cleaned_data["button_minimum_distance_mm"]
+        paper_margin_mm = form.cleaned_data["paper_margin_mm"]
 
         # Perform PDF generation in a multiprocessing pool to retain responsiveness for other
         # requests in the meantime.
@@ -48,6 +51,12 @@ class ButtonsView(BreadcrumbsMixin, FormView):
                 "num_of_each": num_of_each,
                 "button_visible_width_mm": button_visible_diameter_mm,
                 "button_visible_height_mm": button_visible_diameter_mm,
+                "button_backside_padding_mm": button_backside_padding_mm,
+                "button_minimum_distance_mm": button_minimum_distance_mm,
+                "page_margin_top_mm": paper_margin_mm,
+                "page_margin_right_mm": paper_margin_mm,
+                "page_margin_bottom_mm": paper_margin_mm,
+                "page_margin_left_mm": paper_margin_mm,
             },
         )
         return FileResponse(pdf, content_type="application/pdf", filename="buttons.pdf")

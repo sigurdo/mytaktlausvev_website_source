@@ -73,7 +73,10 @@ class ButtonsViewTestSuite(TestMixin, TestCase):
         self.test_data = {
             "images": test_image(),
             "num_of_each": 1,
-            "button_visible_diameter_mm": 67,
+            "button_visible_diameter_mm": 57,
+            "button_backside_padding_mm": 5,
+            "button_minimum_distance_mm": 3,
+            "paper_margin_mm": 3,
         }
 
     def test_get_do_not_require_login(self):
