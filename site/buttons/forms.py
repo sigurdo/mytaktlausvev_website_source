@@ -1,6 +1,6 @@
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Layout, Fieldset, Field
 from crispy_forms.bootstrap import Accordion, AccordionGroup
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Field, Layout, Submit
 from django.forms import ClearableFileInput, Form, ImageField, IntegerField, ModelForm
 
 from .models import ButtonDesign
@@ -47,8 +47,18 @@ class ButtonsForm(Form):
         Field("images"),
         Field("num_of_each"),
         Accordion(
-            AccordionGroup("Buttonstorleik", "button_visible_diameter_mm", "button_backside_padding_mm", active=False),
-            AccordionGroup("Papiroppsett", "button_minimum_distance_mm", "paper_margin_mm", active=False),
+            AccordionGroup(
+                "Buttonstorleik",
+                "button_visible_diameter_mm",
+                "button_backside_padding_mm",
+                active=False,
+            ),
+            AccordionGroup(
+                "Papiroppsett",
+                "button_minimum_distance_mm",
+                "paper_margin_mm",
+                active=False,
+            ),
         ),
     )
 
