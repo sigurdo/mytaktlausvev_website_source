@@ -147,7 +147,7 @@ class SalvageDiaryEntryInternalCreate(
 ):
     model = SalvageDiaryEntryInternal
     form_class = SalvageDiaryEntryInternalForm
-    template_name = "common/forms/form.html"
+    template_name = "salvage_diary/salvagediaryentryinternal_form.html"
     success_message = "Bergedagbokinnlegget blei laga!"
     success_url = reverse_lazy("salvage_diary:SalvageDiaryEntryListInternal")
     breadcrumb_parent = SalvageDiaryEntryInternalList
