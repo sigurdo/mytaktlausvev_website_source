@@ -56,25 +56,50 @@ class UserCustomTest(TestMixin, TestCase):
             reverse("accounts:ProfileDetail", args=[user.slug]),
         )
 
-    def test_to_str_name_exists(self):
-        """`__str__` should return name when it exists."""
-        user = UserFactory(name="Bob Bobbington")
-        self.assertEqual(str(user), user.name)
+    def test_to_str_preferred_name_exists(self):
+        """`__str__` should return preferred name when it exists."""
+        user = UserFactory(name="Bob Bobbington", preferred_name="Bob")
+        self.assertEqual(str(user), "Bob")
 
-    def test_to_str_name_not_exist(self):
-        """`__str__` should return username when name doesn't exist."""
-        user = UserFactory(name="")
+    def test_to_str_no_preferred_name_but(self):
+        """`__str__` should return a created preferred name when `name` but not `preferred_name` exists."""
+        user = UserFactory(name="Bob Bobbington", preferred_name="")
+        self.assertEqual(str(user), "Bob B")
+
+    def test_to_str_preferred_and_name_not_exist(self):
+        """`__str__` should return `username` when `preferred_name` and `name` doesn't exist."""
+        user = UserFactory(name="", preferred_name="")
         self.assertEqual(str(user), user.username)
 
-    def test_get_name_returns_name_if_exists(self):
+    def test_get_full_name_returns_full_name_if_exists(self):
         """Should return `name` if it exists."""
         user = UserFactory(name="Bob Bobbington")
-        self.assertEqual(user.get_name(), user.name)
+        self.assertEqual(user.get_full_name(), user.name)
 
-    def test_get_name_returns_username_if_name_not_exist(self):
+    def test_get_name_returns_username_if_full_name_not_exist(self):
         """Should return `username` if `name` doesn't exist."""
         user = UserFactory(name="")
-        self.assertEqual(user.get_name(), user.username)
+        self.assertEqual(user.get_full_name(), user.username)
+
+    def test_get_preferred_name_if_preferred_name(self):
+        """`get_preferred_name` should return `preferred_name` if it exists."""
+        user = UserFactory(preferred_name="Jarl Berge")
+        self.assertEqual(user.get_preferred_name(), user.preferred_name)
+
+    def test_get_preferred_name_no_preferred_name_but_name(self):
+        """`get_preferred_name` should return a created preferred name if `preferred_name` doesn't exist, but `name` exists."""
+        user = UserFactory(name="Karl Gustav", preferred_name="")
+        self.assertEqual(user.get_preferred_name(), "Karl G")
+
+    def test_get_preferred_name_no_preferred_name_but_only_one_name(self):
+        """`get_preferred_name` should return `name` if no `preferred_name` and the user only has one name."""
+        user = UserFactory(name="Godrick", preferred_name="")
+        self.assertEqual(user.get_preferred_name(), "Godrick")
+
+    def test_get_preferred_name_neither_preferred_nor_name(self):
+        """`get_preferred_name` should return `username` if neither `preferred_name` nor `name` exists."""
+        user = UserFactory(preferred_name="", name="")
+        self.assertEqual(user.get_preferred_name(), user.username)
 
     def test_default_membership_status_is_aspirant(self):
         """The default membership status should be `ASPIRANT`."""

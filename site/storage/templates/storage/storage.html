@@ -33,7 +33,7 @@
             <tbody>
                 {% for user in active_users %}
                         <tr>
-                            <td> <a href="{{ user.get_absolute_url }}"> {{ user.get_name }} </a> </td>
+                            <td> <a href="{{ user.get_absolute_url }}"> {{ user }} </a> </td>
                             <td> {{ user.student_card_number }} </td>
                             <td>
                                 {{ user.has_storage_access | yesno | capfirst }}

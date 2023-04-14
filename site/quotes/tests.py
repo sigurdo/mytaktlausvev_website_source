@@ -51,7 +51,9 @@ class QuoteTestSuite(TestMixin, TestCase):
         quote = QuoteFactory(quoted_as="", users=[user_1, user_2])
         self.assertEqual(
             quote.quoted_as_or_users(),
-            comma_seperate_list([user_1.get_name(), user_2.get_name()]),
+            comma_seperate_list(
+                [user_1.get_preferred_name(), user_2.get_preferred_name()]
+            ),
         )
 
 

@@ -18,7 +18,7 @@ class QuoteAdmin(admin.ModelAdmin):
 
     @admin.display(description="involverte medlemmar")
     def get_involved_users(self, obj):
-        return ", ".join(user.get_name() for user in obj.users.all())
+        return ", ".join(user.get_preferred_name() for user in obj.users.all())
 
 
 admin.site.register(Quote, QuoteAdmin)

@@ -190,7 +190,7 @@ class EventAttendanceTestSuite(TestCase):
 
     def test_to_str_includes_user_name(self):
         """`__str__` should include the user's name."""
-        self.assertIn(self.attendance.person.get_name(), str(self.attendance))
+        self.assertIn(self.attendance.person.get_preferred_name(), str(self.attendance))
 
     def test_to_str_includes_status(self):
         """`__str__` should include the status."""

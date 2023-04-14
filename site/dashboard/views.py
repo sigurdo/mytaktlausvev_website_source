@@ -121,7 +121,7 @@ class Dashboard(LoginRequiredMixin, TemplateView):
             birthdate__month=timezone.localdate().month,
             birthdate__day=timezone.localdate().day,
         )
-        birthday_names = [user.get_name() for user in current_birthdays]
+        birthday_names = [user.get_preferred_name() for user in current_birthdays]
 
         current_date = timezone.localdate()
         is_dt_birthday = current_date.month == 2 and current_date.day == 14
