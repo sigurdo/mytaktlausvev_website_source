@@ -1,4 +1,9 @@
 @import "bootswatch/dist/flatly/variables";
+
+// Flatly does not define these two variables, which darkly defines, that are very neat for writing theme-agnostic design CSS
+$body-color: #000000;
+$body-bg: #f5f5f5;
+
 @import "variables";
 @import "variables-light";
 @import "utilities";
