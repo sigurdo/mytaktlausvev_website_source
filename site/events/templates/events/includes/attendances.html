@@ -19,7 +19,7 @@
                         {% include "accounts/includes/avatar_table_td.html" with user=attendance.person only %}
                         <td>
                             <a href="{{ attendance.person.get_absolute_url }}">
-                                {{ attendance.person.get_name }}
+                                {{ attendance.person }}
                             </a>
                         </td>
                         <td>

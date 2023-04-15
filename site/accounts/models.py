@@ -53,6 +53,12 @@ class UserCustom(AbstractUser):
     first_name = None
     last_name = None
     name = CharField("fullt namn", max_length=255, blank=True)
+    preferred_name = CharField(
+        "føretrekt namn",
+        max_length=255,
+        blank=True,
+        help_text="Namnet du føretrekkjer at andre brukar.",
+    )
     birthdate = DateField("fødselsdato", null=True, blank=True)
     phone_number = CharField("telefonnummer", max_length=255, blank=True)
     address = TextField("adresse", blank=True)
@@ -161,11 +167,27 @@ class UserCustom(AbstractUser):
     objects = UserManagerCustom()
 
     def __str__(self):
-        return self.get_name()
+        return self.get_preferred_name()
 
-    def get_name(self):
+    def get_full_name(self):
         """Returns `name` if it exists, else `username`."""
         return self.name or self.username
+
+    def get_preferred_name(self):
+        """
+        Returns the user's name in this order, depending on what exists:
+        - Preferred name
+        - First name and the first letter of the user's last name
+        - `username`
+        """
+        if self.preferred_name:
+            return self.preferred_name
+        elif self.name:
+            names = self.name.split(" ")
+            if len(names) == 1:
+                return self.name
+            return f"{names[0]} {names[-1][0]}"
+        return self.username
 
     def is_active_member(self):
         """

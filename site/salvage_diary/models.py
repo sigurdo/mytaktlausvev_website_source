@@ -76,7 +76,9 @@ class Mascot(CreatedModifiedMixin):
         return self.name
 
     def get_creators(self):
-        return comma_seperate_list([user.get_name() for user in self.creators.all()])
+        return comma_seperate_list(
+            [user.get_preferred_name() for user in self.creators.all()]
+        )
 
     def get_url(self):
         return f"https://{Site.objects.get_current().domain}{reverse('salvage_diary:SalvageDiaryEntryExternalCreate', args=[self.slug])}"
@@ -157,7 +159,9 @@ class SalvageDiaryEntryInternal(SalvageDiaryEntry, CreatedModifiedMixin):
         return True
 
     def get_users(self):
-        return comma_seperate_list([user.get_name() for user in self.users.all()])
+        return comma_seperate_list(
+            [user.get_preferred_name() for user in self.users.all()]
+        )
 
     class Meta:
         verbose_name = "bergedagbokinnlegg - DT"

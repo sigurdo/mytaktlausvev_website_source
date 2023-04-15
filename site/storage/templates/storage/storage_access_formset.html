@@ -14,7 +14,7 @@
             {% for form in formset %}
             <tr>
                 <td>
-                    {{ form.instance.get_name }}
+                    {{ form.instance }}
                     <input
                         type="hidden"
                         name="{{ formset.prefix }}-{{ forloop.counter0 }}-id"

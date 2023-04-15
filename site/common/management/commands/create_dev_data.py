@@ -100,6 +100,7 @@ class Command(BaseCommand):
             "muikalsk@taktlaus.no",
             "password",
             name="Musikalsk leiar",
+            preferred_name="Daddy",
             membership_status=UserCustom.MembershipStatus.PAYING,
         )
 

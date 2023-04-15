@@ -13,6 +13,7 @@ class UserAdminCustom(UserAdmin):
             {
                 "fields": (
                     "name",
+                    "preferred_name",
                     "email",
                     "birthdate",
                     "phone_number",
@@ -71,7 +72,7 @@ class UserAdminCustom(UserAdmin):
         "is_active_override",
     )
     list_editable = ("membership_status", "can_wear_hats")
-    search_fields = ("username", "name", "email")
+    search_fields = ("username", "name", "preferred_name", "email")
 
 
 admin.site.register(UserCustom, UserAdminCustom)

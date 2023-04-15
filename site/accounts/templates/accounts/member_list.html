@@ -75,7 +75,7 @@
                  <tr>
                     {% include "accounts/includes/avatar_table_td.html" with user=member only %}
                      <td> <a href="{{ member.get_absolute_url }}">
-                        {{ member.get_name }}
+                        {{ member.get_full_name }}
                     </a></td>
                      <td>
                         {{ member.get_membership_status_display }}

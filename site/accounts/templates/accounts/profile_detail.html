@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title_page %}{{ profile.get_name }}{% endblock title_page %}
+{% block title_page %}{{ profile.get_full_name }}{% endblock title_page %}
 
 {% block content %}
     <div class="row gy-3">
@@ -12,7 +12,7 @@
                 />
             </div>
             <h1 class="fs-3 text-center mb-1">
-                {{ profile.get_name }}
+                {{ profile.get_full_name }}
             </h1>
             <div class="text-center">
                 @{{ profile.username }}
@@ -42,6 +42,9 @@
                             <dl>
                                 <dt>Fullt namn</dt>
                                 <dd>{% firstof profile.name "Ukjent" %}</dd>
+
+                                <dt>Føretrekt namn</dt>
+                                <dd>{{ profile.get_preferred_name }}</dd>                                
 
                                 <dt>Fødselsdato</dt>
                                 <dd>{% firstof profile.birthdate "Ukjent" %}</dd>
