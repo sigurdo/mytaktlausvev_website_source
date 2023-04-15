@@ -183,7 +183,7 @@ class UserCustom(AbstractUser):
         if self.preferred_name:
             return self.preferred_name
         elif self.name:
-            names = self.name.split(" ")
+            names = self.name.strip().split(" ")
             if len(names) == 1:
                 return self.name
             return f"{names[0]} {names[-1][0]}"
