@@ -41,10 +41,7 @@
                             <h2 class="fs-3">Personleg</h2>
                             <dl>
                                 <dt>Fullt namn</dt>
-                                <dd>{% firstof profile.name "Ukjent" %}</dd>
-
-                                <dt>Føretrekt namn</dt>
-                                <dd>{{ profile.get_preferred_name }}</dd>                                
+                                <dd>{% firstof profile.name "Ukjent" %}</dd>                                
 
                                 <dt>Fødselsdato</dt>
                                 <dd>{% firstof profile.birthdate "Ukjent" %}</dd>
