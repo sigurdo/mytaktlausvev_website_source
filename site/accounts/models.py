@@ -180,6 +180,8 @@ class UserCustom(AbstractUser):
         - First name and the first letter of the user's last name
         - `username`
         """
+        return self.get_full_name()
+
         if self.preferred_name:
             return self.preferred_name
         elif self.name:
