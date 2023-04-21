@@ -111,7 +111,6 @@ class UserCustomUpdateForm(ModelForm):
         Fieldset(
             "Personleg",
             "name",
-            "preferred_name",
             "phone_number",
             "birthdate",
             "address",
@@ -130,7 +129,6 @@ class UserCustomUpdateForm(ModelForm):
             "email",
             "avatar",
             "name",
-            "preferred_name",
             "phone_number",
             "birthdate",
             "address",
