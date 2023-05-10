@@ -48,7 +48,7 @@ class Repertoire(CreatedModifiedMixin, Model):
         ),
     )
     active_until = DateField(
-        verbose_name="aktivt til",
+        verbose_name="aktivt til og med",
         default=None,
         blank=True,
         null=True,
