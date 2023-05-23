@@ -25,7 +25,9 @@ class Quote(CreatedModifiedMixin):
         return (
             self.quoted_as
             if self.quoted_as
-            else comma_seperate_list([user.get_name() for user in self.users.all()])
+            else comma_seperate_list(
+                [user.get_preferred_name() for user in self.users.all()]
+            )
         )
 
     class Meta:

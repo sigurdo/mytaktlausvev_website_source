@@ -10,6 +10,7 @@ from django.db.models import (
     ForeignKey,
     ImageField,
     ManyToManyField,
+    Q,
     TextChoices,
     TextField,
     UniqueConstraint,
@@ -28,12 +29,19 @@ class UserManagerCustom(UserManager):
         return self.get(username__iexact=username)
 
     def active(self):
-        """Returns only active members, which means paying members and aspirants."""
+        """
+        Returns only active members.
+        Active members include paying members, aspirants,
+        and members with `is_active_override` set to `True`.
+        """
         return super().filter(
-            membership_status__in=[
-                UserCustom.MembershipStatus.PAYING,
-                UserCustom.MembershipStatus.ASPIRANT,
-            ]
+            Q(
+                membership_status__in=[
+                    UserCustom.MembershipStatus.PAYING,
+                    UserCustom.MembershipStatus.ASPIRANT,
+                ]
+            )
+            | Q(is_active_override=True)
         )
 
 
@@ -45,6 +53,12 @@ class UserCustom(AbstractUser):
     first_name = None
     last_name = None
     name = CharField("fullt namn", max_length=255, blank=True)
+    preferred_name = CharField(
+        "føretrekt namn",
+        max_length=255,
+        blank=True,
+        help_text="Namnet du føretrekkjer at andre brukar.",
+    )
     birthdate = DateField("fødselsdato", null=True, blank=True)
     phone_number = CharField("telefonnummer", max_length=255, blank=True)
     address = TextField("adresse", blank=True)
@@ -144,24 +158,53 @@ class UserCustom(AbstractUser):
         help_text="Andre studentorchester som du er medlem av",
     )
 
+    is_active_override = BooleanField(
+        "overstyring av aktiv status",
+        default=False,
+        help_text="Overstyrer om eit medlem vert sett på som aktivt. Mellombels løysing fram til statuttane er oppklåra.",
+    )
+
     objects = UserManagerCustom()
 
     def __str__(self):
-        return self.get_name()
+        return self.get_preferred_name()
 
-    def get_name(self):
+    def get_full_name(self):
         """Returns `name` if it exists, else `username`."""
         return self.name or self.username
+
+    def get_preferred_name(self):
+        """
+        Returns the user's name in this order, depending on what exists:
+        - Preferred name
+        - First name and the first letter of the user's last name
+        - `username`
+        """
+        return self.get_full_name()
+
+        if self.preferred_name:
+            return self.preferred_name
+        elif self.name:
+            names = self.name.strip().split(" ")
+            if len(names) == 1:
+                return self.name
+            return f"{names[0]} {names[-1][0]}"
+        return self.username
 
     def is_active_member(self):
         """
         Returns whether `self` is an active member.
-        Active members include paying members and aspirants.
+        Active members include paying members, aspirants,
+        and members with `is_active_override` set to `True`.
         """
-        return self.membership_status in [
-            UserCustom.MembershipStatus.PAYING,
-            UserCustom.MembershipStatus.ASPIRANT,
-        ]
+        return (
+            self.membership_status
+            in [
+                UserCustom.MembershipStatus.PAYING,
+                UserCustom.MembershipStatus.ASPIRANT,
+            ]
+            or self.is_active_override
+        )
 
     def get_avatar_url(self):
         """

@@ -43,6 +43,7 @@ urlpatterns = [
     path("brygging/", include("brewing.urls")),
     path("brukarfiler/", include("user_files.urls")),
     path("pdfar/", include("common.pdfs.urls")),
+    path("bergedagbok/", include("salvage_diary.urls")),
     path("", include("search.urls")),
     path("", include("easter_eggs.urls")),
     path("", include("articles.urls")),

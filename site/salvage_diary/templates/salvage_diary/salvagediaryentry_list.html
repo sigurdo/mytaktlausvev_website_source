@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title_page %}Bergedagbok{% endblock title_page %}
+{% block title_content %}Bergedagbok{% endblock title_content %}
+
+
+{% block content %}
+    {% if salvageDiaryEntries  %}
+            {% include "salvage_diary/includes/salvageDiaryEntry.html" with salvageDiaryEntries=salvageDiaryEntries  %}
+            {% include "common/includes/pagination.html" with pagination_label="Sitatsida" %}
+    {% else %}
+        <p>Ingen innlegg registrert.</p>
+    {% endif %}
+{% endblock %}

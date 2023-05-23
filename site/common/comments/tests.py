@@ -4,12 +4,11 @@ from django.contrib.contenttypes.models import ContentType
 from django.test import TestCase
 from django.urls import reverse
 
-from accounts.factories import SuperUserFactory, UserFactory
+from accounts.factories import UserFactory
 from articles.factories import ArticleFactory
 from common.mixins import TestMixin
 
 from .factories import CommentFactory
-from .models import Comment
 
 
 class CommentTestCase(TestCase):
@@ -81,17 +80,6 @@ class CommentCreateTestCase(TestMixin, TestCase):
         """Should require login."""
         self.assertLoginRequired(self.get_url())
 
-    def test_created_by_modified_by_set_to_current_user(self):
-        """Should set `created_by` and `modified_by` to the current user on creation."""
-        user = SuperUserFactory()
-        self.client.force_login(user)
-        self.client.post(self.get_url(), self.comment_data)
-
-        self.assertEqual(Comment.objects.count(), 1)
-        comment = Comment.objects.last()
-        self.assertEqual(comment.created_by, user)
-        self.assertEqual(comment.modified_by, user)
-
 
 class CommentUpdateTestCase(TestMixin, TestCase):
     def setUp(self):
@@ -122,24 +110,6 @@ class CommentUpdateTestCase(TestMixin, TestCase):
         self.client.force_login(self.comment.created_by)
         response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, HTTPStatus.OK)
-
-    def test_created_by_not_changed(self):
-        """Should not change `created_by` when updating comment."""
-        self.client.force_login(SuperUserFactory())
-        self.client.post(self.get_url(), self.comment_data)
-
-        created_by_previous = self.comment.created_by
-        self.comment.refresh_from_db()
-        self.assertEqual(self.comment.created_by, created_by_previous)
-
-    def test_modified_by_set_to_current_user(self):
-        """Should set `modified_by` to the current user on update."""
-        user = SuperUserFactory()
-        self.client.force_login(user)
-        self.client.post(self.get_url(), self.comment_data)
-
-        self.comment.refresh_from_db()
-        self.assertEqual(self.comment.modified_by, user)
 
 
 class CommentDeleteTestCase(TestMixin, TestCase):

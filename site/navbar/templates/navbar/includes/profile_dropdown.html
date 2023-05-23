@@ -26,7 +26,7 @@
                         p-2
                         "
                         href="{{ user.get_absolute_url }}">
-                        <div class="fw-bold">{{ user }}</div>
+                        <div class="fw-bold">{{ user.get_full_name }}</div>
                         <div class="text-decoration-none">
                             {% if user.instrument_type %}
                                 {{ user.instrument_type }}

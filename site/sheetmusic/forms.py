@@ -178,7 +178,6 @@ class EditPdfForm(ModelForm):
     class Meta:
         model = Pdf
         fields = ["file"]
-        widgets = {"file": ClearableFileInput(attrs={"disabled": True})}
 
 
 EditPdfFormset = modelformset_factory(

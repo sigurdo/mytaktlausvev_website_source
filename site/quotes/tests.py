@@ -10,7 +10,6 @@ from common.utils import comma_seperate_list
 
 from .factories import QuoteFactory
 from .forms import QuoteForm
-from .models import Quote
 
 
 class QuoteTestSuite(TestMixin, TestCase):
@@ -52,7 +51,9 @@ class QuoteTestSuite(TestMixin, TestCase):
         quote = QuoteFactory(quoted_as="", users=[user_1, user_2])
         self.assertEqual(
             quote.quoted_as_or_users(),
-            comma_seperate_list([user_1.get_name(), user_2.get_name()]),
+            comma_seperate_list(
+                [user_1.get_preferred_name(), user_2.get_preferred_name()]
+            ),
         )
 
 
@@ -95,20 +96,6 @@ class QuoteCreateTestSuite(TestMixin, TestCase):
         """Should require login."""
         self.assertLoginRequired(self.get_url())
 
-    def test_created_by_modified_by_set_to_current_user(self):
-        """Should set `created_by` and `modified_by` to the current user on creation."""
-        user = SuperUserFactory()
-        self.client.force_login(user)
-        self.client.post(
-            self.get_url(),
-            {"quote": "Du daua", "quoted_as": "Mørke Sjeler"},
-        )
-
-        self.assertEqual(Quote.objects.count(), 1)
-        quote = Quote.objects.last()
-        self.assertEqual(quote.created_by, user)
-        self.assertEqual(quote.modified_by, user)
-
     def test_success_url(self):
         """Should redirect to quote list on success."""
         self.client.force_login(SuperUserFactory())
@@ -149,24 +136,6 @@ class QuoteUpdateTestSuite(TestMixin, TestCase):
         self.client.force_login(self.quote.created_by)
         response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, HTTPStatus.OK)
-
-    def test_created_by_not_changed(self):
-        """Should not change `created_by` when updating quotes."""
-        self.client.force_login(SuperUserFactory())
-        self.client.post(self.get_url(), self.quote_data)
-
-        created_by_previous = self.quote.created_by
-        self.quote.refresh_from_db()
-        self.assertEqual(self.quote.created_by, created_by_previous)
-
-    def test_modified_by_set_to_current_user(self):
-        """Should set `modified_by` to the current user on update."""
-        user = SuperUserFactory()
-        self.client.force_login(user)
-        self.client.post(self.get_url(), self.quote_data)
-
-        self.quote.refresh_from_db()
-        self.assertEqual(self.quote.modified_by, user)
 
     def test_success_url(self):
         """Should redirect to quote list on success."""

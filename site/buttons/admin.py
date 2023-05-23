@@ -5,7 +5,7 @@ from .models import ButtonDesign
 
 class ButtonDesignAdmin(admin.ModelAdmin):
     list_display = ("name", "created_by")
-    search_fields = ("name", "created_by__get_name")
+    search_fields = ("name", "created_by__name")
     prepopulated_fields = {"slug": ("name",)}
 
 
