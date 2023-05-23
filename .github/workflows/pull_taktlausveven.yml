@@ -15,7 +15,7 @@ jobs:
       - name: Pull changes
         id: pull
         run: |
-          cd website_build
+          cd website_source
             git remote add taktlausveven https://gitlab.com/taktlause/taktlausveven.git
             git merge taktlausveven/main
             if [ $(git fetch --dry-run) != "" ]
