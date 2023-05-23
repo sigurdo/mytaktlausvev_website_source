@@ -15,17 +15,15 @@ jobs:
       - name: Pull changes
         id: pull
         run: |
-          cd website_source
-            git remote add taktlausveven https://gitlab.com/taktlause/taktlausveven.git
-            git merge taktlausveven/main
-            if [ $(git fetch --dry-run) != "" ]
-            then
-              echo "new_changes=1" >> "$GITHUB_OUTPUT"
-            else
-              echo "new_changes=0" >> "$GITHUB_OUTPUT"
-            fi
-          cd ..
-      
+          git remote add taktlausveven https://gitlab.com/taktlause/taktlausveven.git
+          git merge taktlausveven/main
+          if [ $(git fetch --dry-run) != "" ]
+          then
+            echo "new_changes=1" >> "$GITHUB_OUTPUT"
+          else
+            echo "new_changes=0" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Create Pull Request
         if: steps.pull.outputs.new_changes == 1
         uses: peter-evans/create-pull-request@v5
