@@ -9,8 +9,6 @@ on:
 jobs:
   pull_and_create_pr:
     runs-on: ubuntu-latest
-    outputs:
-      repository_changed
     steps:
       - uses: actions/checkout@v3
 
