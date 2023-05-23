@@ -1,10 +1,10 @@
 name: Pull new commits from Taktlausveven
 
-on:
-  push:
-    branches: [ "main" ]
-  schedule:
-    - cron: "0 0 * * *"
+# on:
+#   push:
+#     branches: [ "main" ]
+#   schedule:
+#     - cron: "0 0 * * *"
 
 jobs:
   pull_and_create_pr:
