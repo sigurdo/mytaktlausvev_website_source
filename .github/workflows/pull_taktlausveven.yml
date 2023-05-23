@@ -27,7 +27,7 @@ jobs:
           cd ..
       
       - name: Create Pull Request
-        if: steps.pull.outputs.new_changes == "1"
+        if: steps.pull.outputs.new_changes == 1
         uses: peter-evans/create-pull-request@v5
         with:
           committer: Mergeman <mergeman@mytaktlausvev.no>
